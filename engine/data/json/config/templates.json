@@ -1,0 +1,9 @@
+{   
+    "small_blue":{
+        "rects":{
+            "AC":"10 < _value_ < 1100",
+            "AB":"10 < _value_ < 1300"
+            },
+        "area":"_value_ > 10"
+    }
+}

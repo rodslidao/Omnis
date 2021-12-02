@@ -1,0 +1,9 @@
+{
+    "function":"basic_process",
+    "filter":"small_blue",
+    "loop":{
+        "type":"while",
+        "break_function":"server_stop_handler",
+        "range":10
+        }
+}

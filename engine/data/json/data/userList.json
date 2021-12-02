@@ -1,0 +1,35 @@
+{
+    "logged": {
+        "name": "Henrycke",
+        "lastAcess": 1633445174112,
+        "id": 12462584986,
+        "newUserIndex": null,
+        "level": "Parallax"
+    },
+    "userList": [
+        {
+            "name": "Rodrigo Gomes",
+            "id": "45585921835",
+            "lastAcess": 1633378146572,
+            "level": "Parallax"
+        },
+        {
+            "name": "Arthur",
+            "id": "321",
+            "lastAcess": 0,
+            "level": "Operador"
+        },
+        {
+            "name": "Ronaldo",
+            "id": "111",
+            "lastAcess": 0,
+            "level": "Manutenção"
+        },
+        {
+            "name": "Henrycke",
+            "lastAcess": 1633445174112,
+            "id": 12462584986,
+            "level": "Parallax"
+        }
+    ]
+}

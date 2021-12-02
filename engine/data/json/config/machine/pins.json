@@ -1,0 +1,26 @@
+{
+    "claw":{
+        "pin":31,
+        "on": 255,
+        "off": 0,
+        "command":"M42",
+        "values": " P_pin_ S_state_",
+        "desciption":"Quando acionado, abre a garra pneumática."
+    },
+    "ligth1":{
+        "pin":32,
+        "on": 255,
+        "off": 0,
+        "command":"M42",
+        "values": " P_pin_ S_state_",
+        "desciption":"Quando acionado, abre a garra pneumática."
+    },
+    "ligth2":{
+        "pin":33,
+        "on": 255,
+        "off": 0,
+        "command":"M74",
+        "values": " P_pin_ S_state_",
+        "desciption":"Quando acionado, abre a garra pneumática."
+    }
+}

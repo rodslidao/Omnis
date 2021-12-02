@@ -1,0 +1,4 @@
+
+engine/data/log/logs/*
+engine/externallibs/*
+*.pyc

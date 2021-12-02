@@ -1,0 +1,8 @@
+{
+    "ip": "localhost",
+    "connectionId": 123456,
+    "port": 5000,
+    "updateTime":5,
+    "stop_process":"server_stop_handler",
+    "reset_process":"server_stop_handler"
+}
