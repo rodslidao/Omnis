@@ -30,13 +30,14 @@ nodes = {
 
 rules = [
     {'input': ['None'], 'node': 'startup_serials'},
+    {'define': {'machine': 'controller'}},
     # {'define':{'att_center':"rectangle"}},
-    {'input': ['start_movment_name','speed'], 'node': 'coordinates_movments'},
+    {'input': ['start_movment_name','speed', 'machine'], 'node': 'coordinates_movments'},
     # {'input': ['filter_name'], 'node': 'identify_by_name', 'output': 'obj_to_process'},
     # {'input': ['att_center','obj_to_process'], 'node': 'get_obj_attribute_in_dataset', 'output': 'centers'},
     #{'input': ['obj_to_process'], 'node': 'obj_center_getter', 'output': 'centers'},
     # {'input': ['centers'], 'node': 'print'},
-    {'input': ['mount_movment_name', 'speed'], 'node': 'coordinates_movments'},
+    {'input': ['mount_movment_name', 'speed', 'machine'], 'node': 'coordinates_movments'},
     # {'input': ['trigger_pin', 'actuator_name'], 'node': 'trigger_pin'},
 ]
 

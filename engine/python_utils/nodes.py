@@ -69,7 +69,7 @@ def startup_serials(*args):
 def isTrigged(trigger):
      return stopreasons_objects[trigger].isStopped()
 
-def Mover(movment_name, replace, controller_name='controller', _id=f"{__name__}:{line()}", *args, **kwargs):
+def Mover(movment_name, replace, controller_name, _id=f"{__name__}:{line()}", *args, **kwargs):
     for steps in positions_json.value[movment_name]:
         ordem = move.setPositon(
             steps,
