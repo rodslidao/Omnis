@@ -1,4 +1,4 @@
-# Omnis
+# Omnis - VueJs
 ![enter image description here](https://img.shields.io/badge/build-1.0.0-green)
 
 ## Project setup
@@ -11,7 +11,7 @@ pip install -r requirements.txt
 ### Compiles and hot-reloads for development
 ```
 npm run serve
-python .\engine_H\WebConfig.py
+python .\engine\main.py
 ```
 
 ### Compiles and minifies for production
