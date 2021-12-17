@@ -1,5 +1,5 @@
 {
-    "function":"basic_process",
+    "function":"main",
     "filter":"small_blue",
     "loop":{
         "type":"while",

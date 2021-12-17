@@ -2,3 +2,6 @@
 engine/data/log/logs/*
 engine/externallibs/*
 *.pyc
+node_modules
+src/*
+.vscode/*

@@ -1,101 +1,408 @@
-{   "beforeStarting":[
+{
+    "beforeStarting": [
         [
-            {"axis": "X", "coordinate": 0.0, "channel": 0, "await":false},
-            {"axis": "Y", "coordinate": 0.0, "channel": 0, "await":false},
-            {"axis": "Z", "coordinate": 0.0, "channel": 0, "await":false},
-            {"axis": "F", "coordinate": 0.0, "channel": 0, "await":false},
-            {"axis": "E", "coordinate": 0.0, "channel": 1, "await":false},
-            {"axis": "A", "coordinate": 0.0, "channel": 1, "await":false},
-            {"axis": "B", "coordinate": 0.0, "channel": 1, "await":false},
-            {"axis": "C", "coordinate": 0.0, "channel": 1, "await":false},
-            {"axis": "F", "coordinate": 0.0, "channel": 1, "await":false}   
+            {
+                "axis": "X",
+                "coordinate": 0.0,
+                "channel": 0,
+                "await": false
+            },
+            {
+                "axis": "Y",
+                "coordinate": 0.0,
+                "channel": 0,
+                "await": false
+            },
+            {
+                "axis": "Z",
+                "coordinate": 0.0,
+                "channel": 0,
+                "await": false
+            },
+            {
+                "axis": "F",
+                "coordinate": 0.0,
+                "channel": 0,
+                "await": false
+            },
+            {
+                "axis": "E",
+                "coordinate": 0.0,
+                "channel": 1,
+                "await": false
+            },
+            {
+                "axis": "A",
+                "coordinate": 0.0,
+                "channel": 1,
+                "await": false
+            },
+            {
+                "axis": "B",
+                "coordinate": 0.0,
+                "channel": 1,
+                "await": false
+            },
+            {
+                "axis": "C",
+                "coordinate": 0.0,
+                "channel": 1,
+                "await": false
+            },
+            {
+                "axis": "F",
+                "coordinate": 0.0,
+                "channel": 1,
+                "await": false
+            }
         ]
     ],
-    "beforeHoming":[
+    "beforeHoming": [
         [
-            {"axis": "X", "coordinate": 0.0, "channel": 0, "await":false},
-            {"axis": "Y", "coordinate": 0.0, "channel": 0, "await":false},
-            {"axis": "Z", "coordinate": 0.0, "channel": 0, "await":false},
-            {"axis": "E", "coordinate": 0.0, "channel": 1, "await":false},
-            {"axis": "A", "coordinate": 0.0, "channel": 1, "await":false},
-            {"axis": "B", "coordinate": 0.0, "channel": 1, "await":false},
-            {"axis": "C", "coordinate": 0.0, "channel": 1, "await":false},
-            {"axis": "F", "coordinate": 0.0, "channel": 1, "await":false}   
+            {
+                "axis": "X",
+                "coordinate": 0.0,
+                "channel": 0,
+                "await": false
+            },
+            {
+                "axis": "Y",
+                "coordinate": 0.0,
+                "channel": 0,
+                "await": false
+            },
+            {
+                "axis": "Z",
+                "coordinate": 0.0,
+                "channel": 0,
+                "await": false
+            },
+            {
+                "axis": "E",
+                "coordinate": 0.0,
+                "channel": 1,
+                "await": false
+            },
+            {
+                "axis": "A",
+                "coordinate": 0.0,
+                "channel": 1,
+                "await": false
+            },
+            {
+                "axis": "B",
+                "coordinate": 0.0,
+                "channel": 1,
+                "await": false
+            },
+            {
+                "axis": "C",
+                "coordinate": 0.0,
+                "channel": 1,
+                "await": false
+            },
+            {
+                "axis": "F",
+                "coordinate": 0.0,
+                "channel": 1,
+                "await": false
+            }
         ]
     ],
-    "afterHoming":[
+    "afterHoming": [
         [
-            {"axis": "X", "coordinate": 0.0, "channel": 0, "await":false},
-            {"axis": "Y", "coordinate": 0.0, "channel": 0, "await":false},
-            {"axis": "Z", "coordinate": 0.0, "channel": 0, "await":false},
-            {"axis": "E", "coordinate": 0.0, "channel": 1, "await":false},
-            {"axis": "A", "coordinate": 0.0, "channel": 1, "await":false},
-            {"axis": "B", "coordinate": 0.0, "channel": 1, "await":false},
-            {"axis": "C", "coordinate": 0.0, "channel": 1, "await":false},
-            {"axis": "F", "coordinate": 0.0, "channel": 1, "await":false}   
+            {
+                "axis": "X",
+                "coordinate": 0.0,
+                "channel": 0,
+                "await": false
+            },
+            {
+                "axis": "Y",
+                "coordinate": 0.0,
+                "channel": 0,
+                "await": false
+            },
+            {
+                "axis": "Z",
+                "coordinate": 0.0,
+                "channel": 0,
+                "await": false
+            },
+            {
+                "axis": "E",
+                "coordinate": 0.0,
+                "channel": 1,
+                "await": false
+            },
+            {
+                "axis": "A",
+                "coordinate": 0.0,
+                "channel": 1,
+                "await": false
+            },
+            {
+                "axis": "B",
+                "coordinate": 0.0,
+                "channel": 1,
+                "await": false
+            },
+            {
+                "axis": "C",
+                "coordinate": 0.0,
+                "channel": 1,
+                "await": false
+            },
+            {
+                "axis": "F",
+                "coordinate": 0.0,
+                "channel": 1,
+                "await": false
+            }
         ],
         [
-            {"axis": "X", "coordinate": 10.0, "channel": 0, "await":true},
-            {"axis": "Y", "coordinate": 10.0, "channel": 0, "await":true},
-            {"axis": "Z", "coordinate": 10.0, "channel": 0, "await":true},
-            {"axis": "E", "coordinate": 10.0, "channel": 1, "await":false},
-            {"axis": "A", "coordinate": 10.0, "channel": 1, "await":false},
-            {"axis": "B", "coordinate": 10.0, "channel": 1, "await":false},
-            {"axis": "C", "coordinate": 10.0, "channel": 1, "await":false},
-            {"axis": "F", "coordinate": 10.0, "channel": 1, "await":false}
-        ]   
+            {
+                "axis": "X",
+                "coordinate": 10.0,
+                "channel": 0,
+                "await": true
+            },
+            {
+                "axis": "Y",
+                "coordinate": 10.0,
+                "channel": 0,
+                "await": true
+            },
+            {
+                "axis": "Z",
+                "coordinate": 10.0,
+                "channel": 0,
+                "await": true
+            },
+            {
+                "axis": "E",
+                "coordinate": 10.0,
+                "channel": 1,
+                "await": false
+            },
+            {
+                "axis": "A",
+                "coordinate": 10.0,
+                "channel": 1,
+                "await": false
+            },
+            {
+                "axis": "B",
+                "coordinate": 10.0,
+                "channel": 1,
+                "await": false
+            },
+            {
+                "axis": "C",
+                "coordinate": 10.0,
+                "channel": 1,
+                "await": false
+            },
+            {
+                "axis": "F",
+                "coordinate": 10.0,
+                "channel": 1,
+                "await": false
+            }
+        ]
     ],
-    "analisisHole":[
-        {"axis": "X", "coordinate": "variable", "channel": 0, "await":true},
-        {"axis": "Y", "coordinate": "variable", "channel": 0, "await":true},
-        {"axis": "Z", "coordinate": "variable", "channel": 0, "await":true},
-        {"axis": "A", "coordinate": "variable", "channel": 0, "await":true},
-        {"axis": "F", "coordinate": "variable", "channel": 0, "await":true}
-    ],
-    "analisisScrew":[
-        {"axis": "X", "coordinate": 266, "channel": 0, "await":true},
-        {"axis": "Y", "coordinate": 0.0, "channel": 0, "await":true},
-        {"axis": "F", "coordinate": "variable", "channel": 0, "await":true},
-        {"axis": "A", "coordinate": 360, "channel": 1, "await":true},
-        {"axis": "F", "coordinate": "variable", "channel": 1, "await":true}
-    ],
-    "screw":[
-        {"axis": "Z", "coordinate": "variable", "channel": 0, "await":true},
-        {"axis": "F", "coordinate": "variable", "channel": 0, "await":true}
-    ],
-    "catch":[
-        {"axis": "A", "coordinate": 0.0, "channel": 0, "await":false},
-        {"axis": "F", "coordinate": "variable", "channel": 0, "await":true},
-        {"axis": "X", "coordinate": 13.6, "channel": 1, "await":false},
-        {"axis": "Y", "coordinate": 50, "channel": 1, "await":false},
-        {"axis": "F", "coordinate": "variable", "channel": 1, "await":true}
-    ],
-    "drop":[
-        {"axis": "X", "coordinate": "variable", "channel": 0, "await":true},
-        {"axis": "Y", "coordinate": "variable", "channel": 0, "await":true},
-        {"axis": "F", "coordinate": "variable", "channel": 0, "await":true},
-
-        {"axis": "A", "coordinate": "variable", "channel": 1, "await":false},
-        {"axis": "F", "coordinate": "variable", "channel": 1, "await":false}
-    ],
-    "anlise":[
+    "analisisHole": [
         [
-            {"X":200, "Y":10, "Z":100, "A":0},
-            {"X":200, "Y":10, "Z":100, "A":180},
-            {"X":200, "Y":10, "Z":100, "A":180},
-            {"X":200, "Y":10, "Z":100, "A":270},
-            {"X":200, "Y":10, "Z":100, "A":360},
-            {"X":200, "Y":10, "Z":100, "A":360}
+            {
+                "axis": "X",
+                "coordinate": "variable",
+                "channel": 0,
+                "await": true
+            },
+            {
+                "axis": "Y",
+                "coordinate": "variable",
+                "channel": 0,
+                "await": true
+            },
+            {
+                "axis": "Z",
+                "coordinate": "variable",
+                "channel": 0,
+                "await": true
+            },
+            {
+                "axis": "A",
+                "coordinate": "variable",
+                "channel": 0,
+                "await": true
+            },
+            {
+                "axis": "F",
+                "coordinate": "variable",
+                "channel": 0,
+                "await": true
+            }
+        ]
+    ],
+    "analisisScrew": [
+        [
+            {
+                "axis": "X",
+                "coordinate": 266,
+                "channel": 0,
+                "await": true
+            },
+            {
+                "axis": "Y",
+                "coordinate": 0.0,
+                "channel": 0,
+                "await": true
+            },
+            {
+                "axis": "F",
+                "coordinate": "variable",
+                "channel": 0,
+                "await": true
+            },
+            {
+                "axis": "A",
+                "coordinate": 360,
+                "channel": 1,
+                "await": true
+            },
+            {
+                "axis": "F",
+                "coordinate": "variable",
+                "channel": 1,
+                "await": true
+            }
+        ]
+    ],
+    "screw": [
+        [
+            {
+                "axis": "Z",
+                "coordinate": "variable",
+                "channel": 0,
+                "await": true
+            },
+            {
+                "axis": "F",
+                "coordinate": "variable",
+                "channel": 0,
+                "await": true
+            }
+        ]
+    ],
+    "catch": [
+        [
+            {
+                "axis": "Y",
+                "coordinate": 200,
+                "channel": 0,
+                "await": true
+            },
+            {
+                "axis": "variable",
+                "coordinate": 4000,
+                "channel": 0,
+                "await": true
+            }
+        ]
+    ],
+    "drop": [
+        [
+            {
+                "axis": "Y",
+                "coordinate": 0,
+                "channel": 1,
+                "await": true
+            },
+            {
+                "axis": "variable",
+                "coordinate": 5000,
+                "channel": 1,
+                "await": true
+            }
+        ]
+    ],
+    "anlise": [
+        [
+            {
+                "X": 200,
+                "Y": 10,
+                "Z": 100,
+                "A": 0
+            },
+            {
+                "X": 200,
+                "Y": 10,
+                "Z": 100,
+                "A": 180
+            },
+            {
+                "X": 200,
+                "Y": 10,
+                "Z": 100,
+                "A": 180
+            },
+            {
+                "X": 200,
+                "Y": 10,
+                "Z": 100,
+                "A": 270
+            },
+            {
+                "X": 200,
+                "Y": 10,
+                "Z": 100,
+                "A": 360
+            },
+            {
+                "X": 200,
+                "Y": 10,
+                "Z": 100,
+                "A": 360
+            }
         ],
         [
-            {"X":300, "Y":10, "Z":100, "A":0},
-            {"X":300, "Y":10, "Z":100, "A":180},
-            {"X":300, "Y":10, "Z":100, "A":180},
-            {"X":300, "Y":10, "Z":100, "A":270},
-            {"X":300, "Y":10, "Z":100, "A":360},
-            {"X":300, "Y":10, "Z":100, "A":360}
-        
+            {
+                "X": 300,
+                "Y": 10,
+                "Z": 100,
+                "A": 0
+            },
+            {
+                "X": 300,
+                "Y": 10,
+                "Z": 100,
+                "A": 180
+            },
+            {
+                "X": 300,
+                "Y": 10,
+                "Z": 100,
+                "A": 180
+            },
+            {
+                "X": 300,
+                "Y": 10,
+                "Z": 100,
+                "A": 270
+            },
+            {
+                "X": 300,
+                "Y": 10,
+                "Z": 100,
+                "A": 360
+            },
+            {
+                "X": 300,
+                "Y": 10,
+                "Z": 100,
+                "A": 360
+            }
         ]
     ]
-
 }

@@ -2,6 +2,7 @@
     "enable":["small_blue"],
     "filters":{
         "small_blue":{
+            "name":"small_blue",
             "colors":{
                 "name":"deep_blue",
                 "mode":"hsv"

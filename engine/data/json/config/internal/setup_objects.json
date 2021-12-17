@@ -1,0 +1,15 @@
+[
+    {"name":"cameras", "folder":"editable", "value":"cameras", "class":"device", "node":"new_camera", "identifier":"name"},
+    {"name":"filters", "folder":"editable", "value":"enable", "class":"macro", "node":"identificador", "identifier":"identificator_name"},
+    {"name":"devicefilter", "folder":"editable", "value":null},
+    {"name":"stopreasons", "folder":"editable"},
+    {"name":"production", "folder":"editable"},
+    {"name":"templates", "folder":"editable"},
+    {"name":"keypoints", "folder":"editable"},
+    {"name":"process", "folder":"editable"},
+    {"name":"serial", "folder":"editable"},
+    {"name":"server", "folder":"editable"},
+    {"name":"window", "folder":"editable"},
+    {"name":"debug", "folder":"editable"},
+    {"name":"users", "folder":"editable"}
+]

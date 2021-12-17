@@ -1,0 +1,5 @@
+[
+    {"name":"server_stop_handler", "initial":false},
+    {"name":"exception_stop_handler", "initial":false},
+    {"name":"server_pause_handler", "initial":false}
+]
