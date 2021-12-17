@@ -1,4 +1,4 @@
 [
-    {"name":"controller", "baudrate":250000, "port":"COM6", "reconnect":false, "gcode":true}
+    {"name":"controller", "baudrate":250000, "port":"COM3", "reconnect":false, "gcode":true}
     
 ]
