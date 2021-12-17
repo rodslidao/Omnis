@@ -1,4 +1,4 @@
-# Tração CEO
+# Omnis
 ![enter image description here](https://img.shields.io/badge/build-1.0.0-green)
 
 ## Project setup
