@@ -30,24 +30,24 @@ class Process():
             print ("Stopped at:" + (datetime.now()).strftime('%m/%d/%Y, %H:%M:%S'))     # Imprime a data e hora de parada do processo  
 
     def _stop(self):
-        if not self.stop_event.is_set(): # Se o processo não estiver parado
-            self.stop_event.set()        # Marca o processo como parado
-            machine_objects['controller'].stop() # Para a máquina, e inibe novos movimentos
-            self.start_event.clear()     # Limpa o evento de início. (Uma nova requisição de início pode ser feita)
+        if not self.stop_event.is_set():                                                # Se o processo não estiver parado
+            self.stop_event.set()                                                       # Marca o processo como parado
+            machine_objects['controller'].stop()                                        # Para a máquina, e inibe novos movimentos
+            self.start_event.clear()                                                    # Limpa o evento de início. (Uma nova requisição de início pode ser feita)
 
     def _pause(self):                    
-        if not self.pause_event.is_set():         # Se o processo não estiver pausado
-            self.pause_event.set()                # Pausa o processo
-            machine_objects['controller'].pause() # Pausa a máquina, e inibe novos movimentos.
+        if not self.pause_event.is_set():                                               # Se o processo não estiver pausado
+            self.pause_event.set()                                                      # Pausa o processo
+            machine_objects['controller'].pause()                                       # Pausa a máquina, e inibe novos movimentos.
             
 
     def _resume(self):
-        if not self.resume_event.is_set():          # Se uma requisição de resume não estiver em execução
-            self.resume_event.set()                 # Marca a requisição de resume como em execução
-            machine_objects['controller'].resume()  # Resume a máquina, e permite novos movimentos.
-            self.stop_event.clear() # Limpa o evento de parada. (Uma nova requisição de parada pode ser feita)
-            self.pause_event.clear() # Limpa o evento de pausa. (Uma nova requisição de pausa pode ser feita)
-            self.resume_event.clear() # Limpa o evento de resume. (Uma nova requisição de resume pode ser feita)
+        if not self.resume_event.is_set():                                              # Se uma requisição de resume não estiver em execução
+            self.resume_event.set()                                                     # Marca a requisição de resume como em execução
+            machine_objects['controller'].resume()                                      # Resume a máquina, e permite novos movimentos.
+            self.stop_event.clear()                                                     # Limpa o evento de parada. (Uma nova requisição de parada pode ser feita)
+            self.pause_event.clear()                                                    # Limpa o evento de pausa. (Uma nova requisição de pausa pode ser feita)
+            self.resume_event.clear()                                                   # Limpa o evento de resume. (Uma nova requisição de resume pode ser feita)
     
 # ===========================================================================
 # ================================ Main Code ================================
