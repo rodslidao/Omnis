@@ -1,0 +1,38 @@
+{
+    "server": [
+        {
+            "name": "Parallax",
+            "ip": "192.168.1.31",
+            "connectionId": 123456,
+            "port": 5000,
+            "updateTime": 5,
+            "stop_process": "server_stop_handler",
+            "reset_process": "server_stop_handler",
+            "buildDir": "C:/Users/Henrycke/Documents/GitHub/Omnis-Interface/dist"
+        }
+    ],
+    "serial": [
+        {
+            "name": "controller",
+            "baudrate": 250000,
+            "port": "COM6",
+            "reconnect": false,
+            "gcode": true
+        },
+        {
+            "name": "Serial2",
+            "baudrate": 5000,
+            "port": "COM6",
+            "reconnect": false,
+            "gcode": true
+        }
+    ],
+    "deviceFilter": [
+        {
+            "name": "DeviceFilter1",
+            "filter": "small_blue",
+            "camera_device": "camera0",
+            "machine": "controller"
+        }
+    ]
+}

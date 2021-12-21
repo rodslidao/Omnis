@@ -55,7 +55,7 @@ class Process():
 
 
 if __name__ == '__main__':
-    _process = Process(process_json.value["filter"])
+    _process = Process(filter_name="small_blue")
 
     def resume(*args, **kwargs): _process._resume()
     def start(*args, **kwargs): _process._start()

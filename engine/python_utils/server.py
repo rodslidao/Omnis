@@ -2,7 +2,7 @@ from threading import Thread
 from datetime import time
 
 from flask_socketio import SocketIO, emit, join_room, leave_room, close_room, rooms, disconnect
-from flask import Flask, Response, request, session,copy_current_request_context
+from flask import Flask, Response, request, session,copy_current_request_context, render_template
 from flask_cors import CORS
 
 from engineio.payload import Payload
@@ -11,6 +11,7 @@ from waitress import serve
 from time import sleep
 
 import concurrent.futures as cf
+import subprocess
 import logging
 import random
 import json
@@ -52,7 +53,7 @@ class Server(object):
         self.port = app_port
         self.thread = None
         self.ip = app_ip
-        self.app = Flask(__name__, template_folder = self.buildfolder)
+        self.app = Flask(__name__, template_folder = self.buildfolder, static_folder = f"{self.buildfolder}/static")
         self.socketio = SocketIO(self.app, async_mode=None, async_handlers=True, cors_allowed_origins='*')
         CORS(self.app)
         self.process = {}
@@ -115,6 +116,10 @@ class Server(object):
                            {'data': json.dumps(update, indent=2, ensure_ascii=False)})
                 socketio.sleep(self.report_time)
 
+        # @app.route('/')
+        # def index():
+        #     print('index:', self.buildfolder)
+        #     return render_template('index.html', async_mode=socketio.async_mode)
 
         @socketio.on('call_function')
         def call_function(message):

@@ -1,0 +1,24 @@
+{
+    "server": [
+        {
+            "name": "Parallax"
+        }
+    ],
+    "serial": [
+        {
+            "name": "controller",
+            "baudrate": 250000
+        },
+        {
+            "name": "Serial2"
+        }
+    ],
+    "deviceFilter": [
+        {
+            "name": "DeviceFilter1"
+        },
+        {
+            "name": "DeviceFilter2"
+        }
+    ]
+}
