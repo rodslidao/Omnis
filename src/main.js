@@ -12,6 +12,7 @@ import { BaklavaVuePlugin } from '@baklavajs/plugin-renderer-vue'
 import '@baklavajs/plugin-renderer-vue/dist/styles.css'
 Vue.use(BaklavaVuePlugin)
 
+
 // import VueSocketIOExt from 'vue-socket.io-extended';
 // import { io } from 'socket.io-client';
 // import store from './store/index'
@@ -19,10 +20,6 @@ Vue.use(BaklavaVuePlugin)
 // const socket = io('http://192.168.1.31:5000');
 
 // Vue.use(VueSocketIOExt, socket, { store });
-
-
-
-
 
 //const SocketInstance = SocketIO(MY_URL);
 // -------
@@ -79,7 +76,7 @@ Vue.use(VueHaptic, {
 
 
 //Vue.use(VueSocketIO, SocketInstance)
-Vue.use(VueTheMask, JsonEditor, VueApexCharts)
+Vue.use(VueTheMask, JsonEditor, VueApexCharts,BaklavaVuePlugin)
 
 Vue.config.productionTip = false
 import "@/assets/scss/main.scss";

@@ -34,6 +34,7 @@ export const actions = {
   SEND_GCODE: "sendGcode",
   SHOW_POPUP: "showPopup",
   START_SCAN: "startScan",
+  SAVE_NODE: "saveNode",
 };
 
 const store = new Vuex.Store({
@@ -548,6 +549,12 @@ const store = new Vuex.Store({
           console.log("STOP Process")
           // code block
           break;
+
+        // case actions.SAVE_NODE + "_success":
+        //   console.log("SAVE NODE"); 
+        //   success = true;
+        //   // code block
+        //   break;
 
         case "update":
           state = Object.assign(state, message.parameter);
