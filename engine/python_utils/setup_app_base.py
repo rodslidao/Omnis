@@ -1,37 +1,12 @@
 # from imports import *
 import os
-import json as js
+# import json as js
 script_dir = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..'))
 config_json_dir = script_dir+r'data/json/config'
 data_json_dir = script_dir+'data/json/data'
 main_dir = script_dir+'..'
 
-class json():
-    def __init__(self, _path, create_if_not_exist=False) -> None:
-        self.path = _path
-
-        try:
-            with open(f"{_path}", 'r', encoding='utf8') as json_file:
-                self.json = js.load(json_file)
-        except Exception as e:
-            print(e)
-            self.json = {}
-            self.save()
-    
-    def save(self):
-        with open(f"{self.path}", 'w', encoding='utf8') as json_file:
-            js.dump(self.json, json_file, ensure_ascii=False, indent=4)
-
-    def get(self, data):
-        return self.json.get(data)
-
-    def __call__(self, data=None):
-        if isinstance(data, dict):
-            self.json = data
-        return self.json
-
-    def __str__(self) -> str:
-        return str(dict(self.json))
+from common_classes import *
 
 _main_json = json(script_dir+r'\main.json')
 _main_copy_json = json(script_dir+r'\config\main_copy.json')

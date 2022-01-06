@@ -1,26 +1,42 @@
-from pymongo import collection
+from pymongo import MongoClient, collection
 from pprint import pprint
+from common_classes import *
+class MongoDB(json):
+    def __init__(self, host, port, initialDB="admin") -> None:
+        self.port = port
+        self.host = host
+        self.client = MongoClient(f"mongodb://{self.host}:{self.port}", connect=True)
+        self.database = self.client.get_database(initialDB)
+    
+    def get_collections(self):
+        return self.database.list_collection_names()
 
-def get_database(db):
-    import pymongo
-    #return pymongo.MongoClient(f"mongodb+srv://sherensberk:5V*wj$QxbcvXrpGT@cluster0.diykb.mongodb.net/{db}?retryWrites=true&w=majority")[db]
-    return pymongo.MongoClient(f"mongodb://omnis:omnis@localhost:37018/{db}", connect=True)[db]
+    def acces_db_function(self, function, *args, **kwargs):
+        return getattr(self.database, function)(*args, **kwargs)
     
-# This is added so that many files can reuse the function get_database()
-if __name__ == "__main__":    
+    def acces_collection_function(self,collection, function, *args, **kwargs):
+        return getattr(self.database[collection], function)(*args, **kwargs)
+
+    def insert_one(self, collection, data):
+        self.database[collection].insert_one(data).inserted_id
+
+    def insert_many(self, collection, data):
+        pprint(data)
+        self.database[collection].insert_many(data)
     
-    # Get the database
-    Omnis = get_database('omnis')
-    print(Omnis['camerasteste'].find_one())
-    # c = Omnis.test
-    # musica = {
-    #           "nome": "Nothing left to say",
-    #           "banda": "Imagine Dragons",
-    #           "categorias": ["indie", "rock"],
-    #           "lancamento": "datetime.datetime.now()"
-    #          }
-    # c.insert_one(musica).inserted_id
-    # print(c.find_one())
-    # # collection = Omnis['cameras']
-    # # for n in collection.find():
-    # #     pprint(n)
+    def find_one(self, collection, query):
+        return self.database[collection].find_one(query)
+    
+    def find_many(self, collection, query):
+        return self.database[collection].find(query)
+
+import os
+from os.path import isfile, join
+script_dir = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..'))
+mypath = fr"{script_dir}\data\json\config\editable\data"
+onlyfiles = [f.split(".")[0] for f in os.listdir(mypath) if isfile(join(mypath, f))]
+mongo = MongoDB("192.168.1.31", 27017, "Omnis")
+for name in onlyfiles:
+    if name not in mongo.get_collections():
+        json_file = json(fr"{mypath}\{name}.json")()
+        mongo.insert_many(name, json_file)
