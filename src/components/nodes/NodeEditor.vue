@@ -1,6 +1,9 @@
 <template>
-  <div style="height: 100%; width: 100vw">
-    <ActionMenuForNodes :editor="editor" class="action-buttons"></ActionMenuForNodes>
+  <div>
+    <ActionMenuForNodes
+      :editor="editor"
+      class="action-buttons"
+    ></ActionMenuForNodes>
     <baklava-editor :plugin="viewPlugin" />
   </div>
 </template>
@@ -15,13 +18,14 @@ import { Editor } from "@baklavajs/core";
 import { ViewPlugin } from "@baklavajs/plugin-renderer-vue";
 import { OptionPlugin } from "@baklavajs/plugin-options-vue";
 import { Engine } from "@baklavajs/plugin-engine";
-import { MoveNode } from "../components/nodes/MoveNode";
+import { MoveNode } from "@/components/nodes/MoveNode";
 import { InterfaceTypePlugin } from "@baklavajs/plugin-interface-types";
-import ActionMenuForNodes from "../components/nodes/ActionMenuForNodes.vue";
+import ActionMenuForNodes from "@/components/nodes/ActionMenuForNodes.vue";
 
 export default {
   // mixins: [mixins],
   // name: "NodeEditor",
+  props: {},
 
   data: () => ({
     editor: new Editor(),
@@ -31,7 +35,7 @@ export default {
   }),
 
   components: {
-    ActionMenuForNodes
+    ActionMenuForNodes,
   },
 
   created() {
@@ -45,7 +49,7 @@ export default {
     this.editor.use(this.engine);
 
     // Show a minimap in the top right corner
-    this.viewPlugin.enableMinimap = true;
+    this.viewPlugin.enableMinimap = false;
 
     // register the nodes we have defined, so they can be
     // added by the user as well as saved & loaded.
@@ -70,7 +74,6 @@ export default {
     this.intfTypePlugin.addType("int", "#ff0055");
 
     console.log(this.editor.save());
-
   },
 
   computed: {
@@ -90,19 +93,25 @@ export default {
       return n;
     },
   },
+
+  mounted() {
+    this.$nextTick(function () {
+      // put code here
+      this.$emit("name", "Raja Tamil");
+    });
+  },
 };
 </script>
 
 <style lang="scss" >
-
 .node.--type-MoveNode {
-    // background-color: red;
+  // background-color: red;
 }
 
-.v-main__wrap{
-  height: auto;
+.v-main__wrap {
   width: 100vw;
 }
+
 .action-buttons {
   bottom: 0;
   position: absolute;

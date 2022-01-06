@@ -8,7 +8,8 @@ import Success from '@/views/Success'
 import Scan from '@/views/Scan'
 import Progress from '@/views/Progress'
 import Dashboard from '@/views/Dashboard'
-import NodeEditor from '@/views/NodeEditor'
+import NodeWorkspace from '@/views/NodeWorkspace'
+import NodeEditor from '@/components/nodes/NodeEditor'
 
 Vue.use(Router)
 
@@ -51,6 +52,12 @@ const routes = [
 
         name: 'node',
         path: '/node',
+        component: NodeWorkspace,
+    }
+    , {
+
+        name: 'nodeEditor',
+        path: '/nodeEditor',
         component: NodeEditor,
     }
 

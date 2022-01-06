@@ -1,29 +1,32 @@
 <template>
-
-    <v-speed-dial
-      v-model="fab"
-      :top="top"
-      :bottom="bottom"
-      :right="right"
-      :left="left"
-      :direction="direction"
-      :open-on-hover="hover"
-      :transition="transition"
-      class="d-flex flex-end"
-      
+  <v-speed-dial
+    v-model="fab"
+    :top="top"
+    :bottom="bottom"
+    :right="right"
+    :left="left"
+    :direction="direction"
+    :open-on-hover="hover"
+    :transition="transition"
+    class="d-flex flex-end"
+  >
+    <template v-slot:activator>
+      <v-btn color="primary" fab dark>
+        <v-icon v-if="fab"> mdi-close </v-icon>
+        <v-icon dark v-else> mdi-dots-vertical </v-icon>
+      </v-btn>
+    </template>
+    <v-btn
+      color="primary"
+      class=""
+      dark
+      v-for="(item, index) in items"
+      :key="index"
+      @click="findFunction(item.method)"
     >
-      <template v-slot:activator>
-          <v-btn  color="primary" fab dark>
-          <v-icon v-if="fab">
-            mdi-close
-          </v-icon>
-          <v-icon dark v-else > mdi-plus </v-icon>
-        </v-btn>
-      </template>
-      <v-btn color="primary" class="" dark v-for="(item, index) in items" :key="index" @click="findFunction(item.method)"> 
-          <v-icon left dark>{{ item.icon }} </v-icon>{{ item.title }}
-        </v-btn>
-    </v-speed-dial>
+      <v-icon left dark>{{ item.icon }} </v-icon>{{ item.title }}
+    </v-btn>
+  </v-speed-dial>
 </template>
 
 <script>
@@ -31,14 +34,13 @@ import { mapMutations } from "vuex";
 
 export default {
   name: "ActionMenuForNodes",
-
   props: {
-  editor: Object,
+    editor: Object,
   },
 
   data() {
     return {
-      direction: 'top',
+      direction: "top",
       fab: false,
       fling: false,
       hover: false,
@@ -48,7 +50,7 @@ export default {
       bottom: true,
       left: false,
 
-      transition: 'slide-y-reverse-transition',
+      transition: "slide-y-reverse-transition",
       items: [
         {
           title: "Salvar",
@@ -69,8 +71,8 @@ export default {
     },
 
     save() {
-        console.log("save");
-        console.log( this.editor.save());
+      console.log("save");
+      console.log(this.editor.save());
       this.SEND_MESSAGE({
         type: "SAVE_NODE",
         payload: this.editor.save(),
@@ -100,8 +102,8 @@ export default {
 
 <style lang="scss">
 .v-speed-dial--direction-top .v-speed-dial__list {
-    flex-direction: column-reverse;
-    bottom: 100%;
-    align-items: flex-end;
+  flex-direction: column-reverse;
+  bottom: 100%;
+  align-items: flex-end;
 }
 </style>
