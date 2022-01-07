@@ -7,15 +7,15 @@
             "options": [
                 [
                     "Hardware",
-                    "Octopus V1.1"
+                    "controller"
                 ],
                 [
                     "X",
-                    true
+                    null
                 ],
                 [
                     "Y",
-                    null
+                    true
                 ],
                 [
                     "Z",
@@ -46,7 +46,7 @@
                     }
                 ],
                 [
-                    "X ",
+                    "Y ",
                     {
                         "id": "ni_164147702048110",
                         "value": 100
@@ -68,15 +68,15 @@
             "options": [
                 [
                     "Hardware",
-                    "Octopus V1.1"
+                    "controller"
                 ],
                 [
                     "X",
-                    true
+                    null
                 ],
                 [
                     "Y",
-                    null
+                    true
                 ],
                 [
                     "Z",
@@ -107,7 +107,7 @@
                     }
                 ],
                 [
-                    "X ",
+                    "Y ",
                     {
                         "id": "ni_164147703486511",
                         "value": -100
@@ -129,15 +129,15 @@
             "options": [
                 [
                     "Hardware",
-                    "Octopus V1.1"
+                    "controller"
                 ],
                 [
                     "X",
-                    true
+                    null
                 ],
                 [
                     "Y",
-                    null
+                    true
                 ],
                 [
                     "Z",
@@ -168,7 +168,7 @@
                     }
                 ],
                 [
-                    "X ",
+                    "Y ",
                     {
                         "id": "ni_164147708580719",
                         "value": 300
