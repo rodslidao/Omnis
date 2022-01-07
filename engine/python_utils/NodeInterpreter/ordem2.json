@@ -2,12 +2,12 @@
     "nodes": [
         {
             "type": "MoveNode",
-            "id": "node_16414770159090",
+            "id": "node_16414902349610",
             "name": "Movimento",
             "options": [
                 [
                     "Hardware",
-                    "Octopus V1.1"
+                    "Selecione uma Placa"
                 ],
                 [
                     "X",
@@ -15,7 +15,7 @@
                 ],
                 [
                     "Y",
-                    null
+                    false
                 ],
                 [
                     "Z",
@@ -27,35 +27,35 @@
                 [
                     "Entrada",
                     {
-                        "id": "ni_16414770159091",
+                        "id": "ni_16414902349611",
                         "value": 0
                     }
                 ],
                 [
                     "Velocidade",
                     {
-                        "id": "ni_16414770159092",
-                        "value": 2500
+                        "id": "ni_16414902349612",
+                        "value": 10000
                     }
                 ],
                 [
                     "Saida",
                     {
-                        "id": "ni_16414770159093",
+                        "id": "cc",
                         "value": null
                     }
                 ],
                 [
                     "X ",
                     {
-                        "id": "ni_164147702048110",
-                        "value": 100
+                        "id": "ni_164149028723524",
+                        "value": 0
                     }
                 ]
             ],
             "position": {
-                "x": 50,
-                "y": 140
+                "x": 365,
+                "y": 63
             },
             "width": 245,
             "twoColumn": true,
@@ -63,20 +63,20 @@
         },
         {
             "type": "MoveNode",
-            "id": "node_16414770159104",
+            "id": "node_16414902349634",
             "name": "Movimento",
             "options": [
                 [
                     "Hardware",
-                    "Octopus V1.1"
+                    "Selecione uma Placa"
                 ],
                 [
                     "X",
-                    true
+                    false
                 ],
                 [
                     "Y",
-                    null
+                    true
                 ],
                 [
                     "Z",
@@ -88,35 +88,35 @@
                 [
                     "Entrada",
                     {
-                        "id": "ni_16414770159105",
+                        "id": "dd",
                         "value": 0
                     }
                 ],
                 [
                     "Velocidade",
                     {
-                        "id": "ni_16414770159106",
-                        "value": 2500
+                        "id": "ni_16414902349636",
+                        "value": 10000
                     }
                 ],
                 [
                     "Saida",
                     {
-                        "id": "ni_16414770159107",
+                        "id": "aa",
                         "value": null
                     }
                 ],
                 [
-                    "X ",
+                    "Y ",
                     {
-                        "id": "ni_164147703486511",
-                        "value": -100
+                        "id": "ni_164149028897625",
+                        "value": 0
                     }
                 ]
             ],
             "position": {
-                "x": 453,
-                "y": 143
+                "x": 748,
+                "y": 75
             },
             "width": 245,
             "twoColumn": true,
@@ -124,16 +124,16 @@
         },
         {
             "type": "MoveNode",
-            "id": "node_164147704394712",
+            "id": "node_164149027056010",
             "name": "Movimento",
             "options": [
                 [
                     "Hardware",
-                    "Octopus V1.1"
+                    "Selecione uma Placa"
                 ],
                 [
                     "X",
-                    true
+                    null
                 ],
                 [
                     "Y",
@@ -141,7 +141,7 @@
                 ],
                 [
                     "Z",
-                    null
+                    true
                 ]
             ],
             "state": {},
@@ -149,35 +149,35 @@
                 [
                     "Entrada",
                     {
-                        "id": "ni_164147704394713",
+                        "id": "bb",
                         "value": 0
                     }
                 ],
                 [
                     "Velocidade",
                     {
-                        "id": "ni_164147704394714",
-                        "value": 2500
+                        "id": "ni_164149027056012",
+                        "value": 10000
                     }
                 ],
                 [
                     "Saida",
                     {
-                        "id": "ni_164147704394715",
+                        "id": "ni_164149027056013",
                         "value": null
                     }
                 ],
                 [
-                    "X ",
+                    "Z ",
                     {
-                        "id": "ni_164147708580719",
-                        "value": 300
+                        "id": "ni_164149028567923",
+                        "value": 0
                     }
                 ]
             ],
             "position": {
-                "x": 827,
-                "y": 147
+                "x": 1142,
+                "y": 82
             },
             "width": 245,
             "twoColumn": true,
@@ -186,19 +186,19 @@
     ],
     "connections": [
         {
-            "id": "16414770159109",
-            "from": "ni_16414770159093",
-            "to": "ni_16414770159105"
+            "id": "164149042710628",
+            "from": "aa",
+            "to": "bb"
         },
         {
-            "id": "164147704684718",
-            "from": "ni_16414770159107",
-            "to": "ni_164147704394713"
+            "id": "164149043506431",
+            "from": "cc",
+            "to": "dd"
         }
     ],
     "panning": {
         "x": 0,
-        "y": 0
+        "y": -19
     },
     "scaling": 1
 }

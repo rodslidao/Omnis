@@ -32,6 +32,9 @@ from omnis.structure_nodes import loop_process, loop, node
 sizorLift = lambda atualPos, variacao=0, hipotenusa=160, aberturaMinima=149.509 : aberturaMinima - (hipotenusa**2 - ((hipotenusa**2-(aberturaMinima - atualPos)**2)**0.5+variacao)**2)**0.5
 line = lambda: currentframe().f_back.f_lineno
 
+from python_utils.mongodb import *
+database = MongoDB("192.168.1.31", 27017, "Omnis")
+
 imports = globals().copy()
 
 #print(((stop.__init__).__dict__))

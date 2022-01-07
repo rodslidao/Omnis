@@ -1,6 +1,6 @@
 from pymongo import MongoClient, collection
 from pprint import pprint
-from common_classes import *
+from python_utils.common_classes import *
 class MongoDB(json):
     def __init__(self, host, port, initialDB="admin") -> None:
         self.port = port
@@ -29,14 +29,14 @@ class MongoDB(json):
     
     def find_many(self, collection, query):
         return self.database[collection].find(query)
-
-import os
-from os.path import isfile, join
-script_dir = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..'))
-mypath = fr"{script_dir}\data\json\config\editable\data"
-onlyfiles = [f.split(".")[0] for f in os.listdir(mypath) if isfile(join(mypath, f))]
-mongo = MongoDB("192.168.1.31", 27017, "Omnis")
-for name in onlyfiles:
-    if name not in mongo.get_collections():
-        json_file = json(fr"{mypath}\{name}.json")()
-        mongo.insert_many(name, json_file)
+if __name__ == '__main__':
+    import os
+    from os.path import isfile, join
+    script_dir = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..'))
+    mypath = fr"C:\Users\Henrycke\Documents\GitHub\Omnis-Interface\Docker\json_data_example"
+    onlyfiles = [f.split(".")[0] for f in os.listdir(mypath) if isfile(join(mypath, f))]
+    mongo = MongoDB("192.168.1.31", 27017, "Omnis")
+    for name in onlyfiles:
+        if name not in mongo.get_collections():
+            json_file = json(fr"{mypath}\{name}.json")()
+            mongo.insert_many(name, json_file)
