@@ -29,8 +29,8 @@ export class MoveNode extends Node {
 
         this.events.update.addListener(this, event => {
 
-            console.log(this.interfaces.entries()); 
-            console.log(this.options.entries()); 
+            // console.log(this.interfaces.entries()); 
+            // console.log(this.options.entries()); 
             const item = this.axisList.find(axis => axis == event.name)
         if (event.name === item) {
             if (this.getOptionValue(item)) {

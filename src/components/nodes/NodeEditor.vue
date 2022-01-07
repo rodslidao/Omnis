@@ -25,7 +25,8 @@ import ActionMenuForNodes from "@/components/nodes/ActionMenuForNodes.vue";
 export default {
   // mixins: [mixins],
   // name: "NodeEditor",
-  props: {},
+  props: {
+  },
 
   data: () => ({
     editor: new Editor(),
@@ -95,10 +96,8 @@ export default {
   },
 
   mounted() {
-    this.$nextTick(function () {
-      // put code here
-      this.$emit("name", "Raja Tamil");
-    });
+    this.$emit('nodeObject', this.editor.save());
+    console.log("mounted");
   },
 };
 </script>
@@ -114,8 +113,9 @@ export default {
 
 .action-buttons {
   bottom: 0;
+  right: 0;
   position: absolute;
-  margin: 0 0 32px 16px;
+  // margin: 0 0 32px 16px;
   z-index: 9999;
 }
 </style>

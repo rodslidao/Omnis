@@ -89,7 +89,6 @@ Vue.prototype.$workbox = wb;
 new Vue({
   vuetify,
   render: h => h(App),
-  
   router,
   store,
 }).$mount('#app')

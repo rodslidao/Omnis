@@ -2,25 +2,25 @@
   <div class="wrapper">
     <div class="menu">
       <div>
-        <v-card :loading="isLoading">
+        <v-card>
           <v-tabs
             v-model="tab"
-            background-color="primary"
+            background-color="grey darken-3"
             center-active
             show-arrows
             dark
           >
-            <v-tab v-for="(item, index) in items" :key="item.tab">
+            <v-tab v-for="(item, index) in tabList" :key="item.tab">
               <v-icon
                 small
                 dark
                 color="green accent-3"
-                v-if="tabNameRunning == item.tabName"
+                v-if="sketchNameRunning == item.sketchName"
               >
                 mdi-play
               </v-icon>
-              {{ +!item.saved ? item.tabName + "*" : item.tabName }}
-              <v-btn depressed icon @click="close(index)" small
+              {{ +!item.saved ? item.sketchName + "*" : item.sketchName }}
+              <v-btn v-if="tabList.length > 1" depressed icon @click="close(index)" small
                 ><v-icon small dark> mdi-close </v-icon></v-btn
               >
             </v-tab>
@@ -34,9 +34,9 @@
       </div>
     </div>
     <v-tabs-items v-model="tab">
-      <v-tab-item v-for="item in items" :key="item.tabName">
+      <v-tab-item v-for="item in tabList" :key="item.sketchName">
         <!-- {{ item.content }} -->
-        <NodeEditor @isLoading="getTabLoading" class="nodeEditor"></NodeEditor>
+        <NodeEditor class="nodeEditor"></NodeEditor>
       </v-tab-item>
     </v-tabs-items>
   </div>
@@ -44,55 +44,73 @@
 
 <script>
 import NodeEditor from "@/components/nodes/NodeEditor.vue";
+import { mapActions, mapState } from "vuex";
 
 export default {
   name: "TabMenuNodes",
-  
-  data() {
-    return {
-      tab: null,
-      isLoading: false,
-      length: 0,
-      more: ["News", "Maps", "Books", "Flights", "Apps"],
-      tabNameRunning: "Two",
-      items: [
-        { tabName: "adwa", content: "Tab 1 Content", saved: true },
-        { tabName: "Two", content: "Tab 2 Content", saved: true },
-        { tabName: "Three", content: "Tab 3 Content", saved: true },
-        { tabName: "Four", content: "Tab 4 Content", saved: true },
-      ],
-    };
-  },
+
   components: {
     NodeEditor,
   },
-  
+  data() {
+    return {
+      tab: null,
+      actualNode: null,
+      length: 0,
+      sketchNameRunning: "One",
+    };
+  },
+
+  computed: {
+    ...mapState("node", {
+      tabList: (state) => state.tabList,
+      selectedTabId: (state) => state.selectedTabId,
+    }),
+  },
+
   watch: {
-    length(val) {
-      this.tab = val - 1;
+     length (val) {
+        this.tab = val - 1
+    },
+
+    tab() {
+      this.selectTabByIndex(this.tab)
+      console.log("tab changed");
+      
     },
   },
 
   methods: {
+    ...mapActions("node", [
+      "addTab",
+      "removeTabById",
+      "selectTabByIndex",
+      'removeTabByIndex',
+    ]),
 
-    close(item) {
-      this.items.splice(item, 1);
-      this.tab = this.items.length - 1;
+    //functcion to gerate unique id based in timestamp
+    generateId() {
+      return new Date().getTime();
+    },
+
+    close(index) {
+      console.log(index);
+      this.removeTabByIndex(this.index);
     },
 
     add() {
-      this.items.push({
-        tabName: "Tab " + (this.items.length + 1),
-        content: "Tab " + (this.items.length + 1) + " Content",
+      let idGenerated = this.generateId();
+      let newTab = {
+        sketchName: "Tab " + (this.tabList.length + 1),
+        id: idGenerated,
         saved: false,
-      });
-      this.length = this.items.length;
-    },
+      };
+      this.lastSelectedTabId = idGenerated;
 
-    getTabLoading(value){
-            console.log(value); // Raja Tamil
-            this.isLoading = value;
-    }
+      this.addTab(newTab);
+
+      this.length = this.tabList.length;
+    },
   },
 };
 </script>
@@ -100,13 +118,11 @@ export default {
 <style lang="scss">
 .wrapper {
   display: flex;
-  // flex-direction: column;
   position: relative;
   width: 100%;
 
   .menu {
-    // justify-content: center;
-    // align-items: center;
+
     z-index: 2;
     position: absolute;
     width: 100%;

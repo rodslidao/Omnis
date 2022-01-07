@@ -4,6 +4,9 @@ import Vuex from "vuex";
 import serverJson from "../../engine/data/json/config/editable/server.json";
 Vue.use(Vuex);
 
+//import modules
+import node from './modules/node';
+
 //lista de coisas q eu posso pedir pro back
 export const actions = {
   STOP_REASONS_LIST_REQUEST: "stopReasonsListRequest",
@@ -39,7 +42,10 @@ export const actions = {
 
 const store = new Vuex.Store({
   //estado do dado
-  
+  modules:{
+    node
+  },
+
   state: {
     operation: {
       name: "",
