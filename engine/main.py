@@ -8,9 +8,7 @@ from python_utils.NodeInterpreter.nodeClasses import *
 
 import threading
 
-
-
-# print(database.find_one("node_sheets", {}))
+#! Isso deve mudar.
 node_config = Reader(database.find_one("node_sheets", {}), {"MoveNode":MoveNode})
 server_name = "Parallax"
 class Process():
@@ -83,8 +81,6 @@ if __name__ == '__main__':
             "start_process": start,
             "stop_process": stop,
         },
-        # cameras={
-        #     "camera0": cameras_objects["camera0"]
-        # }
+        cameras=camera_objects,
     )
     server_app.start()

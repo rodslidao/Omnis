@@ -24,11 +24,11 @@ class MongoDB(json):
         pprint(data)
         self.database[collection].insert_many(data)
     
-    def find_one(self, collection, query):
+    def find_one(self, collection, query={}):
         return self.database[collection].find_one(query)
     
-    def find_many(self, collection, query):
-        return self.database[collection].find(query)
+    def find_many(self, collection, query={}):
+        return list(self.database[collection].find(query))
 if __name__ == '__main__':
     import os
     from os.path import isfile, join
