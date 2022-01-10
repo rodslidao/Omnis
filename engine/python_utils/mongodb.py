@@ -29,6 +29,9 @@ class MongoDB(json):
     
     def find_many(self, collection, query={}):
         return list(self.database[collection].find(query))
+    
+    def list_all(self, collection):
+        return self.database[collection].find()
 if __name__ == '__main__':
     import os
     from os.path import isfile, join

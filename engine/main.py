@@ -5,82 +5,125 @@ from python_utils.server import Server
 # from python_utils.nodes import *
 from python_utils.NodeInterpreter.Node import *
 from python_utils.NodeInterpreter.nodeClasses import *
-
+from bson.objectid import ObjectId
 import threading
+from pprint import pprint
 
-#! Isso deve mudar.
-node_config = Reader(database.find_one("node_sheets", {}), {"MoveNode":MoveNode})
-server_name = "Parallax"
 class Process():
-    def __init__(self, filter_name):
-        self.inputs = {'start_movment_name':'catch', 'filter_name':filter_name, 'trigger_pin':11, 'actuator_name':'garra', 'speed':{'F':50}, 'mount_movment_name':'drop', 'None':None}
+    def __init__(self, filter_name, node_sheet_query):
+
 
         # Todo: Create a better way to define 'n' threading.Event()
-        self.resume_event = threading.Event()
-        self.start_event = threading.Event()
-        self.pause_event = threading.Event()
-        self.stop_event = threading.Event()
+        self.methods_name={func for func in dir(self) if callable(getattr(self, func)) and func.startswith("_") and not func.endswith("_")}
+        [setattr(self, method+"_event", threading.Event()) for method in self.methods_name]
 
-    def _start(self):
-        if not self.start_event.is_set():                                               # Se o processo não estiver em execução
-            self.start_event.set()                                                      # Marca o processo como em execução
-            self._resume()                                                              # limpa/Resume o processo
-            print ("Starting at: " + (datetime.now()).strftime('%m/%d/%Y, %H:%M:%S'))   # Imprime a data e hora de início do processo
-            while not self.stop_event.is_set():                                         # Enquanto o processo não for parado
-                node_config.reset()
-                for node_id in node_config.node_sequence:
-                    node = node_config.nodes[node_id]
-                    _input = node_config.in2out[node._input_id] if node_id != node_config.node_sequence[0] else "start"
-                    node.run(_input, node_config.output_dict)
-                    while self.pause_event.is_set():                                    # Enquanto o processo estiver pausado
-                        pass
+        self.enabled_node_classes = {"MoveNode": MoveNode}
+        self.node_config = self._update_node_sheet(node_sheet_query)
 
-            print ("Stopped at:" + (datetime.now()).strftime('%m/%d/%Y, %H:%M:%S'))     # Imprime a data e hora de parada do processo  
-
-    def _stop(self):
-        if not self.stop_event.is_set():                                                # Se o processo não estiver parado
-            self.stop_event.set()                                                       # Marca o processo como parado
-            [machine.stop() for machine in machine_objects.values()]                    # Para a máquina, e inibe novos movimentos
-            self.start_event.clear()                                                    # Limpa o evento de início. (Uma nova requisição de início pode ser feita)
-
-    def _pause(self):                    
-        if not self.pause_event.is_set():                                               # Se o processo não estiver pausado
-            self.pause_event.set()                                                      # Pausa o processo
-            [machine.pause() for machine in machine_objects.values()]                   # Pausa a máquina, e inibe novos movimentos.
-            
-
-    def _resume(self):
-        if not self.resume_event.is_set():                                              # Se uma requisição de resume não estiver em execução
-            self.resume_event.set()                                                     # Marca a requisição de resume como em execução
-            [machine.resume() for machine in machine_objects.values()]                  # Resume a máquina, e permite novos movimentos.      
-            self.stop_event.clear()                                                     # Limpa o evento de parada. (Uma nova requisição de parada pode ser feita)
-            self.pause_event.clear()                                                    # Limpa o evento de pausa. (Uma nova requisição de pausa pode ser feita)
-            self.resume_event.clear()                                                   # Limpa o evento de resume. (Uma nova requisição de resume pode ser feita)
+    def is_set(self, event_name):
+        print("Verificando evento:", event_name)
+        return getattr(self, event_name+"_event").is_set()
     
+    def set_now(self, event_name):
+        print("Setando evento:", event_name)
+        return getattr(self, event_name+"_event").set()
+    
+    def clear_now(self, event_name):
+        print("Limpando evento:", event_name)
+        return getattr(self, event_name+"_event").clear()
+
+    def change_events(event_name_list, mode):
+        def wrapper(function):
+            def wrapper2(self, *args, **kwargs):
+                print("Alternando eventos...")
+                for event_name in event_name_list:
+                    if mode == "set":
+                        self.set_now(event_name)
+                    else:
+                        self.clear_now(event_name)
+                return function(self, *args, **kwargs)
+            return wrapper2
+        return wrapper
+
+    def skip_if_is_running(event_name):
+        def wrapper(f):
+            def wrapper2(self, *args, **kwargs):
+                if self.is_set(event_name):
+                    print(f"Pulando chamada da função [{f.__name__}] pois o evento [{event_name}] está setado.")
+                    return
+                print(f"Executando chamada da função [{f.__name__}] pois o evento [{event_name}] está limpo.")
+                return f(self, *args, **kwargs)
+            return wrapper2
+        return wrapper
+
+    @skip_if_is_running("_start")
+    @change_events(["_start"], "set")
+    @change_events(["_resume"], "clear")
+    def _start(self, *args, **kwargs):
+        print("Dentro de _start")
+        self._resume()
+        # Imprime a data e hora de início do processo
+        print("Starting at: " + (datetime.now()
+                                    ).strftime('%m/%d/%Y, %H:%M:%S'))
+        # Enquanto o processo não for parado
+        while not self.is_set("_stop"):
+            self.node_config.reset()
+            for node_id in self.node_config.node_sequence:
+                node = self.node_config.nodes[node_id]
+                _input = self.node_config.in2out[node._input_id] if node_id != self.node_config.node_sequence[0] else "start"
+                node.run(_input, self.node_config.output_dict)
+                while self.is_set("_pause"):                                    # Enquanto o processo estiver pausado
+                    pass
+
+        # Imprime a data e hora de parada do processo
+        print("Stopped at:" + (datetime.now()).strftime('%m/%d/%Y, %H:%M:%S'))
+
+    @skip_if_is_running("_stop")
+    @change_events(["_stop"], "set")
+    @change_events(["_start"], "clear")
+    def _stop(self, *args, **kwargs):
+        # Para a máquina, e inibe novos movimentos
+        [machine.stop() for machine in machine_objects.values()]
+
+    @skip_if_is_running("_pause")
+    @change_events(["_pause"], "set")
+    @change_events(["_resume"], "clear")
+    def _pause(self, *args, **kwargs):
+        # Pausa a máquina, e inibe novos movimentos.
+        [machine.pause() for machine in machine_objects.values()]
+
+    @skip_if_is_running("_resume")
+    @change_events(["_resume"], "set")
+    @change_events(["_pause", "_stop"], "clear")
+    def _resume(self, *args, **kwargs):
+        [machine.resume() for machine in machine_objects.values()]
+
+    @skip_if_is_running("_start")
+    def _update_node_sheet(self, query, *args, **kwargs):
+        self.node_config = Reader(database.find_one(
+            "node_sheets", query), self.enabled_node_classes)
+        return self.node_config
+
 # ===========================================================================
 # ================================ Main Code ================================
 # ===========================================================================
 
 
 if __name__ == '__main__':
-    _process = Process(filter_name="small_blue")
-
-    def resume(*args, **kwargs): _process._resume()
-    def start(*args, **kwargs): _process._start()
-    def pause(*args, **kwargs): _process._pause()
-    def stop(*args, **kwargs): _process._stop()
-
-    server_app = Server(
-        report_time=server_objects[server_name]['updateTime'],
-        buildfolder=server_objects[server_name]['buildDir'],
-        app_port=server_objects[server_name]['port'],
-        app_ip=server_objects[server_name]['ip'],
-        functions={
-            "resume_process": resume,
-            "pause_process": pause,
-            "start_process": start,
-            "stop_process": stop,
-        },
-        cameras=camera_objects,
+    server_name = "Parallax"
+    _process = Process(
+        filter_name="small_blue",
+        node_sheet_query={
+            "_id": ObjectId("61d8678a612a89559c52e62e")
+        }
     )
+
+    _process_functions = {"process"+func: getattr(_process, func) for func in _process.methods_name}
+    _server_info = database.find_one("servers", {"name": server_name})
+    server_app = Server(
+        **_server_info,
+        app_functions=_process_functions,
+        app_cameras=camera_objects,
+    )
+
     server_app.start()
