@@ -10,7 +10,7 @@
             show-arrows
             dark
           >
-            <v-tab v-for="(item, index) in tabList" :key="item.tab">
+            <v-tab v-for="(item, index) in tabList" :key="item.sketchName">
               <v-icon
                 small
                 dark
@@ -58,6 +58,7 @@ export default {
       actualNode: null,
       length: 0,
       sketchNameRunning: "One",
+      newTabCount: 1,
     };
   },
 
@@ -94,17 +95,18 @@ export default {
     },
 
     close(index) {
-      console.log(index);
-      this.removeTabByIndex(this.index);
+      console.log("aba fechada, index: ", index);
+      this.removeTabByIndex(index);
     },
 
     add() {
       let idGenerated = this.generateId();
       let newTab = {
-        sketchName: "Tab " + (this.tabList.length + 1),
+        sketchName: "Tab " + (this.newTabCount + 1),
         id: idGenerated,
         saved: false,
       };
+      this.newTabCount += 1
       this.lastSelectedTabId = idGenerated;
 
       this.addTab(newTab);

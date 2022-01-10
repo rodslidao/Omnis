@@ -9,7 +9,7 @@ export class MoveNode extends Node {
     constructor() {
         super();
         this.type = "MoveNode";
-        this.name = "Movimento";
+        this.name = "Movimentar";
         this.addInputInterface("Entrada", "", 0, { type: "object" });
 
         this.addOption(

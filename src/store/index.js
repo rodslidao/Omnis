@@ -705,6 +705,11 @@ const store = new Vuex.Store({
     startStatusChage: (context) => context.commit("START"),
     restart: (context) => context.commit("RESTART"),
     stop: (context) => context.commit("STOP"),
+    
+    sendMessage: function ({ commit }, payload) {
+      commit('SEND_MESSAGE', payload)
+  },
+
   },
 });
 

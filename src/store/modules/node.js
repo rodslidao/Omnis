@@ -36,9 +36,19 @@ export default {
     mutations: {
         play: state => state.runningTabId = state.selectedTabId,
 
-        addTab: (state, tab) => state.tabList.push(tab),
+        addTab: (state, tab) => {
+            console.log(" antes ", state.tabList);
+            state.tabList.push(tab)
+            console.log(" depois ", state.tabList);
+        },
+
         removeTabById: (state, id) => state.tabList = state.tabList.filter(tab => tab.id !== id),
-        removeTabByIndex: (state, index) => state.tabList.splice(index, 1),
+
+        removeTabByIndex: (state, index) => {
+            console.log("exclusao antes ",state.tabList);
+            state.tabList.splice(index, 1)
+            console.log("exclusao depois ",state.tabList);
+        },
 
         updateTabById: (state, tab) => {
             const index = state.tabList.findIndex(t => t.id === tab.id);

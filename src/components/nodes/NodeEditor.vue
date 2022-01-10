@@ -1,10 +1,10 @@
 <template>
-  <div>
+  <div class="background">
+    <baklava-editor :plugin="viewPlugin" />
     <ActionMenuForNodes
       :editor="editor"
       class="action-buttons"
     ></ActionMenuForNodes>
-    <baklava-editor :plugin="viewPlugin" />
   </div>
 </template>
 
@@ -19,14 +19,15 @@ import { ViewPlugin } from "@baklavajs/plugin-renderer-vue";
 import { OptionPlugin } from "@baklavajs/plugin-options-vue";
 import { Engine } from "@baklavajs/plugin-engine";
 import { MoveNode } from "@/components/nodes/MoveNode";
+import { IdentifyNode } from "@/components/nodes/IdentifyNode";
 import { InterfaceTypePlugin } from "@baklavajs/plugin-interface-types";
 import ActionMenuForNodes from "@/components/nodes/ActionMenuForNodes.vue";
+import  VideoStreaming  from "@/components/nodes/options/VideoStreaming";
 
 export default {
   // mixins: [mixins],
   // name: "NodeEditor",
-  props: {
-  },
+  props: {},
 
   data: () => ({
     editor: new Editor(),
@@ -55,14 +56,19 @@ export default {
     // register the nodes we have defined, so they can be
     // added by the user as well as saved & loaded.
     this.editor.registerNodeType("MoveNode", MoveNode);
+    this.editor.registerNodeType("IdentifyNode", IdentifyNode);
+
+    this.viewPlugin.registerOption("VideoStreaming", VideoStreaming);
 
     // add some nodes so the screen is not empty on startup
     const node1 = this.addNodeWithCoordinates(MoveNode, 50, 140);
     const node2 = this.addNodeWithCoordinates(MoveNode, 300, 140);
+    const node3 = this.addNodeWithCoordinates(IdentifyNode, 50, 480);
 
     this.editor.addConnection(
       node1.getInterface("Saida"),
-      node2.getInterface("Entrada")
+      node2.getInterface("Entrada"),
+      node3.getInterface("Entrada")
     );
 
     // this.engine.calculate();
@@ -96,13 +102,13 @@ export default {
   },
 
   mounted() {
-    this.$emit('nodeObject', this.editor.save());
+    this.$emit("nodeObject", this.editor.save());
     console.log("mounted");
   },
 };
 </script>
 
-<style lang="scss" >
+<style lang="scss" scoped >
 .node.--type-MoveNode {
   // background-color: red;
 }
