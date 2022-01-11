@@ -1,7 +1,7 @@
 {
     "enable":["small_blue"],
-    "filters":{
-        "small_blue":{
+    "filters":[
+        {
             "name":"small_blue",
             "colors":{
                 "name":"deep_blue",
@@ -16,9 +16,8 @@
             },
             "mode":0,
             "methods":0
-
         }
-    },
+    ],
     "colors":{
         "red":{
             "hex": {

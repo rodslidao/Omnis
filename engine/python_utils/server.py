@@ -2,7 +2,7 @@ from threading import Thread
 from datetime import time
 
 from flask_socketio import SocketIO, emit, join_room, leave_room, close_room, rooms, disconnect
-from flask import Flask, Response, request, session,copy_current_request_context
+from flask import Flask, Response, request, session,copy_current_request_context, render_template
 from flask_cors import CORS
 
 from engineio.payload import Payload
@@ -11,6 +11,7 @@ from waitress import serve
 from time import sleep
 
 import concurrent.futures as cf
+import subprocess
 import logging
 import random
 import json
@@ -20,7 +21,7 @@ Payload.max_decode_packets = 500
 logging.getLogger('werkzeug').setLevel(logging.ERROR)
 
 class Server(object):
-    def __init__(self, app_ip, app_port, report_time, buildfolder,**kargs):
+    def __init__(self, app_ip, app_port, app_report_time, app_build_folder,**kargs):
         """
             ### Parameters
             @app_ip :\n
@@ -46,18 +47,18 @@ class Server(object):
                 - [description]
         """
 
-        self.report_time = report_time
-        self.buildfolder = buildfolder
+        self.report_time = app_report_time
+        self.buildfolder = app_build_folder
         self.thread_lock = Lock()
         self.port = app_port
         self.thread = None
         self.ip = app_ip
-        self.app = Flask(__name__, template_folder = self.buildfolder)
+        self.app = Flask(__name__, template_folder = self.buildfolder, static_folder = f"{self.buildfolder}/static")
         self.socketio = SocketIO(self.app, async_mode=None, async_handlers=True, cors_allowed_origins='*')
         CORS(self.app)
         self.process = {}
-        self.cameras = kargs.get("cameras")
-        self.functions = kargs.get("functions")
+        self.cameras = kargs.get("app_cameras")
+        self.functions = kargs.get("app_functions")
         self.app.config['SECRET_KEY'] = 'secret!'
         self.defineRoutes()
         self.last_ping = 0
@@ -115,15 +116,22 @@ class Server(object):
                            {'data': json.dumps(update, indent=2, ensure_ascii=False)})
                 socketio.sleep(self.report_time)
 
+        # @app.route('/')
+        # def index():
+        #     print('index:', self.buildfolder)
+        #     return render_template('index.html', async_mode=socketio.async_mode)
 
         @socketio.on('call_function')
         def call_function(message):
             _id = random.randint(0, 100000)
             print(f"Nova requisção [{_id}] recebida:")
-            with cf.ThreadPoolExecutor() as executor:
-                for r in cf.as_completed([executor.submit(self.functions.get(message.get("command")), message.get("args"))]):
-                    print('resultado: ', r.result())
-                    emit('RESPONSE_MESSAGE', {'data': message.get("command")+'_sucess'})
+            if self.functions.get(message.get("command")) is not None:
+                with cf.ThreadPoolExecutor() as executor:
+                    for r in cf.as_completed([executor.submit(self.functions.get(message.get("command")), message.get("args"))]):
+                        print('resultado: ', r.result())
+                        emit('RESPONSE_MESSAGE', {'data': message.get("command")+'_sucess'})
+            else:
+                print(message.get("command")+'_error')
             print(f"Requisição [{_id}] finalizada")
 
 

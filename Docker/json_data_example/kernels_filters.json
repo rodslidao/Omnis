@@ -1,0 +1,62 @@
+[
+    {
+        "name": "open",
+        "sizes": [
+            2,
+            2
+        ],
+        "type": "uint8",
+        "number": "ones",
+        "divisor": 1
+    },
+    {
+        "name": "close",
+        "sizes": [
+            20,
+            20
+        ],
+        "type": "uint8",
+        "number": "ones",
+        "divisor": 1
+    },
+    {
+        "name": "erode",
+        "sizes": [
+            3,
+            3
+        ],
+        "type": "float32",
+        "number": "ones",
+        "divisor": 1
+    },
+    {
+        "name": "dilate",
+        "sizes": [
+            3,
+            3
+        ],
+        "type": "float32",
+        "number": "ones",
+        "divisor": 1
+    },
+    {
+        "name": "sharpen",
+        "explicit": [
+            [
+                0,
+                -1,
+                0
+            ],
+            [
+                -1,
+                5,
+                -1
+            ],
+            [
+                0,
+                -1,
+                0
+            ]
+        ]
+    }
+]

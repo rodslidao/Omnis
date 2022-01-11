@@ -2,7 +2,7 @@
   <div>
     <v-btn rounded x-large @click="
     
-    SEND_MESSAGE({'command':'start_process', 'args':null});
+    SEND_MESSAGE({'command':'process_start', 'args':null});
     " color="warning" dark>
       <span
         ><v-icon left>{{ icon ? icon : "mdi-play" }}</v-icon></span
@@ -12,7 +12,7 @@
 
     <v-btn rounded x-large @click="
     
-    SEND_MESSAGE({'command':'resume_process', 'args':null});
+    SEND_MESSAGE({'command':'process_resume', 'args':null});
     " color="warning" dark>
       <span
         ><v-icon left>{{ icon ? icon : "mdi-play" }}</v-icon></span
@@ -22,7 +22,7 @@
 
      <v-btn rounded x-large @click="
     
-    SEND_MESSAGE({'command':'pause_process', 'args':null});
+    SEND_MESSAGE({'command':'process_pause', 'args':null});
     " color="warning" dark>
       <span
         ><v-icon left>{{ icon ? icon : "mdi-play" }}</v-icon></span
@@ -32,7 +32,7 @@
 
     <v-btn rounded x-large @click="
     
-    SEND_MESSAGE({'command':'stop_process', 'args':null});
+    SEND_MESSAGE({'command':'process_stop', 'args':null});
     " color="warning" dark>
       <span
         ><v-icon left>{{ icon ? icon : "mdi-play" }}</v-icon></span
