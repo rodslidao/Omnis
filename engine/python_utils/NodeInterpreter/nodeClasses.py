@@ -61,10 +61,10 @@ class IdentifyNode(Base_Node):
         cv2.waitKey(1)
 
 class FilterNode(Base_Node):
-    def __init__(self, data)
+    def __init__(self, data):
         super().__init__(data)
-        self._this = op[1] for op in self._options if "A" in op][0]
-        self._that = op[1] for op in self._options if "B" in op][0]
+        self._this = [op[1] for op in self._options if "A" in op][0]
+        self._that = [op[1] for op in self._options if "B" in op][0]
         self.image
     
     def run(self, _id, output_dict):
