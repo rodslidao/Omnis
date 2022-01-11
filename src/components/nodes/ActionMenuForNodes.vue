@@ -90,7 +90,7 @@ export default {
     ]),
 
     play(){
-      this.sendMessage({'command':'playCicle', 'args':this.editor.save()})
+      this.sendMessage({'command':'process_playCicle', 'args':this.editor.save()})
       },
 
     findFunction(name) {
