@@ -17,7 +17,7 @@ class Process():
         self.methods_name={func for func in dir(self) if callable(getattr(self, func)) and func.startswith("_") and not func.endswith("_")}
         [setattr(self, method+"_event", threading.Event()) for method in self.methods_name]
 
-        self.enabled_node_classes = {"MoveNode": MoveNode, "IdentifyNode": IdentifyNode}
+        self.enabled_node_classes = {"MoveNode": MoveNode, "IdentifyNode": IdentifyNode, "DelayNode": DelayNode, "IoNode": IoNode}
         self.node_config = self._update_node_sheet(node_sheet_query)
 
     def is_set(self, event_name):
