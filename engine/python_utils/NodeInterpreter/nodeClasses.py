@@ -9,6 +9,7 @@ class Base_Node():
         self._id = data['id']
         self._output_id = self.getInterface('Saida', 'id')
         self._input_id = self.getInterface('Entrada', 'id')
+        self.interfaces_id = {interface[1]["id"] for  interface in self._interfaces}
         self.output_dict = output_dict
         self.dependent_interface = dependent_interface
     
@@ -29,7 +30,7 @@ class Base_Node():
 #! Verificar se o nome "Octopus V1.1" foi trocado para "Octopus V1.1"
 class MoveNode(Base_Node):
     def __init__(self, data, output_dict, dependent_interface):
-        super().__init__(data)
+        super().__init__(data, output_dict, dependent_interface)
         axis = ['X ', 'Y ', 'Z ']
         self._controller = self.getOptions('Hardware')
         self._movment = [(op[0], op[1]["value"]) for op in self._interfaces if op[0] in axis]
@@ -37,7 +38,9 @@ class MoveNode(Base_Node):
         self._movment.append(('F', self._speed))
         self.move = [{"axis":mv[0], "coordinate":mv[1], "channel":0, "await":True} for mv in self._movment]
         self._output = None
-    
+
+
+        self.dependent_interface
     def run(self, _id):
         if self.output_dict[_id]:    #! Validar input
             print(f"Movendo com {self._controller} para {self.move}")
@@ -51,7 +54,7 @@ class MoveNode(Base_Node):
 
 class IdentifyNode(Base_Node):
     def __init__(self, data, output_dict, dependent_interface):
-        super().__init__(data)
+        super().__init__(data, output_dict, dependent_interface)
     
     def run(self, _id):
         self.output_dict[self._output_id] = Identifyer_objects["small_blue"].identify()
@@ -60,7 +63,7 @@ class IdentifyNode(Base_Node):
 
 class FilterNode(Base_Node):
     def __init__(self, data, output_dict, dependent_interface):
-        super().__init__(data)
+        super().__init__(data, output_dict, dependent_interface)
         self._this = self.getOptions("This")
         self._that = self.getOptions("That")
     
@@ -71,7 +74,7 @@ class FilterNode(Base_Node):
 
 class BlurNode(Base_Node):
     def __init__(self, data, output_dict, dependent_interface):
-        super().__init__(data)
+        super().__init__(data, output_dict, dependent_interface)
         self._intensity = self.getOptions("Intensity")
 
     def run(self, _id):
@@ -81,7 +84,7 @@ class BlurNode(Base_Node):
 
 class FindCountorNode(Base_Node):
     def __init__(self, data, output_dict, dependent_interface):
-        super().__init__(data)
+        super().__init__(data, output_dict, dependent_interface)
         self._method = self.getOptions("Method")
         self._mode = self.getOptions("Mode")
 
@@ -92,7 +95,7 @@ class FindCountorNode(Base_Node):
 
 class FilterCountorNode(Base_Node):
     def __init__(self, data, output_dict, dependent_interface):
-        super().__init__(data)
+        super().__init__(data, output_dict, dependent_interface)
         self._min_perimeter = self.getOptions("Perimetro Minimo")
         self._max_perimeter = self.getOptions("Perimetro Maximo")
         self._min_width = self.getOptions("Largura Minima")
@@ -155,7 +158,7 @@ class FilterCountorNode(Base_Node):
 
 class MathNode(Base_Node):
     def __init__(self, data, output_dict, dependent_interface):
-        super().__init__(data)
+        super().__init__(data, output_dict, dependent_interface)
         self._operation = self.getOptions("Operation")
         self._A = self.getOptions("A")
         self._B = self.getOptions("B")
@@ -180,36 +183,23 @@ class HsvMaskNode(Base_Node):
     def run(self, _id):
         if self.output_dict[_id]:
             cv2.inRange(cv2.cvtColor(self.output_dict[_id], cv2.COLOR_BGR2HSV_FULL), np.array(color_range['lower']), np.array(color_range['upper']))
-            self.output_dict[self._output_id] = cv2.cvtColor(, cv2.COLOR_BGR2HSV)
+            # self.output_dict[self._output_id] = cv2.cvtColor(, cv2.COLOR_BGR2HSV)
 
 
 class dimension_object:
     def __init__(self, **kwargs):
         self.__dict__.update(kwargs)
 
-import datetime
-from time import sleep
-class base(object):
-    def __init__(self, _output):
-        self.A = _dict
-        self.A["s"] = 1
 
-class teste(base):
-    def __init__(self, name, _dict, _dependences):
-        super().__init__(_dict)
-        self.A[name] = datetime.datetime.now().timestamp()
+lista de dependencias {"ids das interfaces que o valor depende de outro lugar"}
 
-class maker():
-    def __init__(self, _dict):
-        self.A = _dict
-        self.A["maker"] = -1
 
-        x = teste("x", self.A)
-        sleep(1)
-        y = teste("y", self.A)
+f = 1
+a = {'x':5, 'y':2}
+b = {'z': a.get('x')}
 
-outout = {"inicial":"teste"}
+a['x'] = 10
 
-f = maker(outout)
+print(b)
 
-print(outout)
+
