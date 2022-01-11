@@ -1,4 +1,5 @@
 from python_utils.setup_objects import *
+from time import sleep
 
 class Base_Node():
     def __init__(self, data):
@@ -60,6 +61,9 @@ class IdentifyNode(Base_Node):
         cv2.imshow("Identificador", Identifyer_objects["small_blue"].drawData())
         cv2.waitKey(1)
 
+    def reset(self):
+        self._output = None
+
 class FilterNode(Base_Node):
     def __init__(self, data):
         super().__init__(data)
@@ -70,3 +74,33 @@ class FilterNode(Base_Node):
     def run(self, _id, output_dict):
         if output_dict[_id]:
             output_dict[self._output] = cv2.cvtColor(getattr(cv2, f"COLOR_{self.this}2{self.that}"))
+
+    def reset(self):
+        self._output = None
+
+class DelayNode(Base_Node):
+    def __init__(self, data):
+        super().__init__(data)
+        self._delay = [op[1]["value"] for op in self._interfaces if "Tempo" in op][0]
+    
+    def run(self, _id, output_dict):
+        sleep(self._delay)
+        output_dict[self._output_id] = True
+    
+    def reset(self):
+        self._output = None
+
+class IoNode(Base_Node):
+    def __init__(self, data):
+        super().__init__(data)
+        self._input = [op[1]["id"] for op in self._interfaces if "Entrada" in op][0]
+        self._output = [op[1]["id"] for op in self._interfaces if "Saida" in op][0]
+        self._pin = [op[1] for op in self._options if "Pino" in op][0]
+        self._state = [op[1] for op in self._options if "Estado" in op][0]
+
+    def run(self, _id, output_dict):
+        machine_objects[self._controller].send(F"M42 P{self._pin} S{self._state}")
+        output_dict[self._output] = True
+    
+    def reset(self):
+        self._output = None
