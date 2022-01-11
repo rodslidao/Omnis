@@ -28,7 +28,7 @@ export class IdentifyNode extends Node {
                 items: ["Small Blue", "Small Red", "Small Green", "Small Yellow"],
             }
         );
-        this.addOption("VideoStreming", "VideoStreming", "VideoStreming");
+        this.addOption("VideoStreamingOption", "VideoStreamingOption");
         this.addOutputInterface("Saida", { type: "object" });
     }
 
@@ -86,6 +86,6 @@ export class IdentifyNode extends Node {
 
         //         ]
         // }
-        this.getInterface("Saida").value = this.getOptionValue("Hardware");
+        this.getInterface("Saida").value = 2;
     }
 }

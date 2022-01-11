@@ -85,9 +85,12 @@ export default {
       "updateTabById",
       "removeTabById",
     ]),
+    ...mapActions([
+      "sendMessage",
+    ]),
 
     play(){
-      this.$store.node.dispatch('play', this.$store.node.state.runningTabId)
+      this.sendMessage({'command':'playCicle', 'args':this.editor.save()})
       },
 
     findFunction(name) {

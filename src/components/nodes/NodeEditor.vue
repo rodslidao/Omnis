@@ -22,7 +22,7 @@ import { MoveNode } from "@/components/nodes/MoveNode";
 import { IdentifyNode } from "@/components/nodes/IdentifyNode";
 import { InterfaceTypePlugin } from "@baklavajs/plugin-interface-types";
 import ActionMenuForNodes from "@/components/nodes/ActionMenuForNodes.vue";
-import  VideoStreaming  from "@/components/nodes/options/VideoStreaming";
+import  VideoStreamingOption  from "@/components/nodes/options/VideoStreamingOption.vue";
 
 export default {
   // mixins: [mixins],
@@ -58,7 +58,7 @@ export default {
     this.editor.registerNodeType("MoveNode", MoveNode);
     this.editor.registerNodeType("IdentifyNode", IdentifyNode);
 
-    this.viewPlugin.registerOption("VideoStreaming", VideoStreaming);
+    this.viewPlugin.registerOption("VideoStreamingOption", VideoStreamingOption);
 
     // add some nodes so the screen is not empty on startup
     const node1 = this.addNodeWithCoordinates(MoveNode, 50, 140);
@@ -71,7 +71,7 @@ export default {
       node3.getInterface("Entrada")
     );
 
-    // this.engine.calculate();
+    this.engine.calculate();
 
     //tipos de interfaces
     this.editor.use(this.intfTypePlugin);
@@ -80,7 +80,7 @@ export default {
     this.intfTypePlugin.addType("object", "#ff6200");
     this.intfTypePlugin.addType("int", "#ff0055");
 
-    console.log(this.editor.save());
+    // console.log(this.editor.save());
   },
 
   computed: {
@@ -103,7 +103,7 @@ export default {
 
   mounted() {
     this.$emit("nodeObject", this.editor.save());
-    console.log("mounted");
+    // console.log("mounted");
   },
 };
 </script>

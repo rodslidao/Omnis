@@ -491,7 +491,7 @@ const store = new Vuex.Store({
       state.isConnecting = true;
       state.isConnected = true;
       state.connectionStatus = state.connectionStatusList.connected;
-      console.log(state.isConnected);
+      // console.log(state.isConnected);
     },
 
     SOCKET_reconnect_attempt: (state) => {

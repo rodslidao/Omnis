@@ -7,9 +7,14 @@ export default {
         ],
         runningTabId: 1641587087905,
         selectedTabId: 1641587087905,
+        // http://192.168.1.31:5000/video_feed/camera0
+        connection: {
+            ip: "192.168.1.31",
+            portStream: 5000,
+        },
     },
 
-    getters: {
+        getters: {
         /**
          * access counter in state from the paramater 
          */
@@ -37,17 +42,13 @@ export default {
         play: state => state.runningTabId = state.selectedTabId,
 
         addTab: (state, tab) => {
-            console.log(" antes ", state.tabList);
             state.tabList.push(tab)
-            console.log(" depois ", state.tabList);
         },
 
         removeTabById: (state, id) => state.tabList = state.tabList.filter(tab => tab.id !== id),
 
         removeTabByIndex: (state, index) => {
-            console.log("exclusao antes ",state.tabList);
             state.tabList.splice(index, 1)
-            console.log("exclusao depois ",state.tabList);
         },
 
         updateTabById: (state, tab) => {
@@ -59,7 +60,6 @@ export default {
             //find id of tab at index
             const tabId = state.tabList[index].id;
             state.selectedTabId = tabId
-            console.log("atualizou " + tabId);
         },
 
         asyncIncrement: function (state, incrementalObject) {

@@ -75,9 +75,7 @@ export default {
     },
 
     tab() {
-      this.selectTabByIndex(this.tab)
-      console.log("tab changed");
-      
+      this.selectTabByIndex(this.tab)  
     },
   },
 
