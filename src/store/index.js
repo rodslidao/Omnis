@@ -4,6 +4,9 @@ import Vuex from "vuex";
 import serverJson from "../../engine/data/json/config/editable/server.json";
 Vue.use(Vuex);
 
+//import modules
+import node from './modules/node';
+
 //lista de coisas q eu posso pedir pro back
 export const actions = {
   STOP_REASONS_LIST_REQUEST: "stopReasonsListRequest",
@@ -34,11 +37,15 @@ export const actions = {
   SEND_GCODE: "sendGcode",
   SHOW_POPUP: "showPopup",
   START_SCAN: "startScan",
+  SAVE_NODE: "saveNode",
 };
 
 const store = new Vuex.Store({
   //estado do dado
-  
+  modules:{
+    node
+  },
+
   state: {
     operation: {
       name: "",
@@ -484,7 +491,7 @@ const store = new Vuex.Store({
       state.isConnecting = true;
       state.isConnected = true;
       state.connectionStatus = state.connectionStatusList.connected;
-      console.log(state.isConnected);
+      // console.log(state.isConnected);
     },
 
     SOCKET_reconnect_attempt: (state) => {
@@ -548,6 +555,12 @@ const store = new Vuex.Store({
           console.log("STOP Process")
           // code block
           break;
+
+        // case actions.SAVE_NODE + "_success":
+        //   console.log("SAVE NODE"); 
+        //   success = true;
+        //   // code block
+        //   break;
 
         case "update":
           state = Object.assign(state, message.parameter);
@@ -692,6 +705,11 @@ const store = new Vuex.Store({
     startStatusChage: (context) => context.commit("START"),
     restart: (context) => context.commit("RESTART"),
     stop: (context) => context.commit("STOP"),
+    
+    sendMessage: function ({ commit }, payload) {
+      commit('SEND_MESSAGE', payload)
+  },
+
   },
 });
 

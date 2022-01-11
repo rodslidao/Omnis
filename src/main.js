@@ -8,6 +8,9 @@ import VueHaptic from 'vue-haptic';
 import JsonEditor from 'vue-json-edit'
 import VueApexCharts from 'vue-apexcharts'
 
+import { BaklavaVuePlugin } from '@baklavajs/plugin-renderer-vue'
+import '@baklavajs/plugin-renderer-vue/dist/styles.css'
+Vue.use(BaklavaVuePlugin)
 
 
 // import VueSocketIOExt from 'vue-socket.io-extended';
@@ -17,10 +20,6 @@ import VueApexCharts from 'vue-apexcharts'
 // const socket = io('http://192.168.1.31:5000');
 
 // Vue.use(VueSocketIOExt, socket, { store });
-
-
-
-
 
 //const SocketInstance = SocketIO(MY_URL);
 // -------
@@ -38,7 +37,7 @@ const options = {
 
 Vue.use(new VueSocketIO({
   debug: true,
-  connection: SocketIO('http://192.168.1.31:5000', options),
+  connection: SocketIO('http://192.168.1.35:5000', options),
   vuex:{
     store,
     mutationPrefix: 'SOCKET_',
@@ -77,7 +76,7 @@ Vue.use(VueHaptic, {
 
 
 //Vue.use(VueSocketIO, SocketInstance)
-Vue.use(VueTheMask, JsonEditor, VueApexCharts)
+Vue.use(VueTheMask, JsonEditor, VueApexCharts,BaklavaVuePlugin)
 
 Vue.config.productionTip = false
 import "@/assets/scss/main.scss";
@@ -90,7 +89,6 @@ Vue.prototype.$workbox = wb;
 new Vue({
   vuetify,
   render: h => h(App),
-  
   router,
   store,
 }).$mount('#app')
