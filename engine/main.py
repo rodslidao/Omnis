@@ -9,206 +9,6 @@ from bson.objectid import ObjectId
 import threading
 from pprint import pprint
 
-temp = {
-    "nodes": [
-        {
-            "type": "MoveNode",
-            "id": "node_16414770159090",
-            "name": "Movimento",
-            "options": [
-                [
-                    "Hardware",
-                    "Octopus V1.1"
-                ],
-                [
-                    "X",
-                    None
-                ],
-                [
-                    "Y",
-                    True
-                ],
-                [
-                    "Z",
-                    True
-                ]
-            ],
-            "state": {},
-            "interfaces": [
-                [
-                    "Entrada",
-                    {
-                        "id": "ni_16414770159091",
-                        "value": 0
-                    }
-                ],
-                [
-                    "Velocidade",
-                    {
-                        "id": "ni_16414770159092",
-                        "value": 2500
-                    }
-                ],
-                [
-                    "Saida",
-                    {
-                        "id": "ni_16414770159093",
-                        "value": None
-                    }
-                ],
-                [
-                    "Y ",
-                    {
-                        "id": "ni_164147702048110",
-                        "value": 100
-                    }
-                ],
-                [
-                    "Z ",
-                    {
-                        "id": "ni_164147702048120",
-                        "value": 100
-                    }
-                ]
-
-            ],
-            "position": {
-                "x": 50,
-                "y": 140
-            },
-            "width": 245,
-            "twoColumn": True,
-            "customClasses": ""
-        },
-        {
-            "type": "IdentifyNode",
-            "id": "node_16414770159104",
-            "name": "Identificação",
-            "options": [
-                [
-                    "Camera",
-                    "Camera_0"
-                ],
-                [
-                    "Filtro",
-                    "Small_Blue"
-                ],
-                [
-                    "Y",
-                    True
-                ],
-                [
-                    "Z",
-                    None
-                ]
-            ],
-            "state": {},
-            "interfaces": [
-                [
-                    "Entrada",
-                    {
-                        "id": "ni_16414770159105",
-                        "value": 0
-                    }
-                ],
-                [
-                    "Saida",
-                    {
-                        "id": "ni_16414770159107",
-                        "value": None
-                    }
-                ]
-            ],
-            "position": {
-                "x": 453,
-                "y": 143
-            },
-            "width": 245,
-            "twoColumn": True,
-            "customClasses": ""
-        },
-        {
-            "type": "MoveNode",
-            "id": "node_164147704394712",
-            "name": "Movimento",
-            "options": [
-                [
-                    "Hardware",
-                    "Octopus V1.1"
-                ],
-                [
-                    "X",
-                    None
-                ],
-                [
-                    "Y",
-                    True
-                ],
-                [
-                    "Z",
-                    True
-                ]
-            ],
-            "state": {},
-            "interfaces": [
-                [
-                    "Entrada",
-                    {
-                        "id": "ni_164147704394713",
-                        "value": 0
-                    }
-                ],
-                [
-                    "Velocidade",
-                    {
-                        "id": "ni_164147704394714",
-                        "value": 2500
-                    }
-                ],
-                [
-                    "Saida",
-                    {
-                        "id": "ni_164147704394715",
-                        "value": None
-                    }
-                ],
-                [
-                    "Y ",
-                    {
-                        "id": "ni_164147708580719",
-                        "value": 0
-                    }
-                ],
-                [
-                    "Z ",
-                    {
-                        "id": "ni_164147702048170",
-                        "value": 0
-                    }
-                ]
-            ],
-            "position": {
-                "x": 827,
-                "y": 147
-            },
-            "width": 245,
-            "twoColumn": True,
-            "customClasses": ""
-        }
-    ],
-    "connections": [
-        {
-            "id": "16414770159109",
-            "from": "ni_16414770159093",
-            "to": "ni_16414770159105"
-        },
-        {
-            "id": "164147704684718",
-            "from": "ni_16414770159107",
-            "to": "ni_164147704394713"
-        }
-    ]
-}
 class Process():
     def __init__(self, filter_name, node_sheet_query):
 
@@ -217,8 +17,9 @@ class Process():
         self.methods_name={func for func in dir(self) if callable(getattr(self, func)) and func.startswith("_") and not func.endswith("_")}
         [setattr(self, method+"_event", threading.Event()) for method in self.methods_name]
 
-        self.enabled_node_classes = {"MoveNode": MoveNode, "IdentifyNode": IdentifyNode}
+        self.enabled_node_classes = {"MoveNode": MoveNode, "IdentifyNode": IdentifyNode, "DelayNode": DelayNode, "IoNode": IoNode}
         self.node_config = self._update_node_sheet(node_sheet_query)
+        self.node_info = {}
 
     def is_set(self, event_name):
         print("Verificando evento:", event_name)
@@ -272,6 +73,7 @@ class Process():
                 node = self.node_config.nodes[node_id]
                 _input = self.node_config.in2out[node._input_id] if node_id != self.node_config.node_sequence[0] else "start"
                 node.run(_input, self.node_config.output_dict)
+                self.node_info = {node._id}
                 while self.is_set("_pause"):                                    # Enquanto o processo estiver pausado
                     pass
 
@@ -300,17 +102,18 @@ class Process():
 
     @skip_if_is_running("_start")
     def _update_node_sheet(self, query, *args, **kwargs):
-        # self.node_config = Reader(database.find_one(
-        #     "node_sheets", query), self.enabled_node_classes)
+        self.node_config = Reader(database.find_one(
+            "node_sheets", query), self.enabled_node_classes)
         # print(temp)
-        self.node_config = Reader(temp, self.enabled_node_classes)
+        # self.node_config = Reader(temp, self.enabled_node_classes)
         return self.node_config
 
-    def _play_node_sheet(self, node_sheet_obj):
-        pprint(node_sheet_obj)
-        # self._stop()
-        # self.node_config = Reader(obj, self.enabled_node_classes)
-        # self._start()
+    def _playCicle(self, node_sheet_obj):
+        
+        # pprint(node_sheet_obj)
+        self._stop()
+        self.node_config = Reader(node_sheet_obj, self.enabled_node_classes)
+        self._start()
 
 
 # ===========================================================================
@@ -329,8 +132,10 @@ if __name__ == '__main__':
 
     _process_functions = {"process"+func: getattr(_process, func) for func in _process.methods_name}
     _server_info = database.find_one("servers", {"name": server_name})
+    print(_process_functions)
     server_app = Server(
         **_server_info,
+        node_info=_process.node_info,
         app_functions=_process_functions,
         app_cameras=camera_objects,
     )

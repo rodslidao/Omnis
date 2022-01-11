@@ -1,4 +1,5 @@
 from python_utils.setup_objects import *
+from time import sleep
 
 class Base_Node():
     def __init__(self, data, output_dict, dependent_interface):
@@ -56,10 +57,15 @@ class IdentifyNode(Base_Node):
     def __init__(self, data, output_dict, dependent_interface):
         super().__init__(data, output_dict, dependent_interface)
     
-    def run(self, _id):
-        self.output_dict[self._output_id] = Identifyer_objects["small_blue"].identify()
+
+    def run(self, _id, output_dict):
+        print('\n'*2, "Identificando o objeto", '\n')
+        output_dict[self._output_id] = Identifyer_objects["small_blue"].identify()
         cv2.imshow("Identificador", Identifyer_objects["small_blue"].drawData())
         cv2.waitKey(1)
+
+    def reset(self):
+        self._output = None
 
 class FilterNode(Base_Node):
     def __init__(self, data, output_dict, dependent_interface):
@@ -70,6 +76,35 @@ class FilterNode(Base_Node):
     def run(self, _id):
         if self.output_dict[_id]:
             self.output_dict[self._output_id] = cv2.cvtColor(self.output_dict[_id], getattr(cv2, f"COLOR_{self.this}2{self.that}"))
+
+class DelayNode(Base_Node):
+    def __init__(self, data):
+        super().__init__(data)
+        self._delay = [op[1] for op in self._options if "Tempo(s)" in op][0]
+    
+    def run(self, _id, output_dict):
+        sleep(float(self._delay))
+        output_dict[self._output_id] = True
+    
+    def reset(self):
+        self._output = None
+
+class IoNode(Base_Node):
+    def __init__(self, data):
+        super().__init__(data)
+        self._input = [op[1]["id"] for op in self._interfaces if "Entrada" in op][0]
+        self._output = [op[1]["id"] for op in self._interfaces if "Saida" in op][0]
+        self._pin = [op[1] for op in self._options if "Pinos" in op][0]
+        self._state = [op[1] for op in self._options if "Ações" in op][0]
+        self._controller = [op[1] for op in self._options if "Hardware" in op][0]
+
+    def run(self, _id, output_dict):
+        machine_objects[self._controller].serial.send(F"M42 P{self._pin} S{1 if self._state =='Ligar' else 0}")
+        output_dict[self._output] = True
+    
+    def reset(self):
+        self._output = None
+    
 
 
 class BlurNode(Base_Node):
@@ -189,17 +224,3 @@ class HsvMaskNode(Base_Node):
 class dimension_object:
     def __init__(self, **kwargs):
         self.__dict__.update(kwargs)
-
-
-lista de dependencias {"ids das interfaces que o valor depende de outro lugar"}
-
-
-f = 1
-a = {'x':5, 'y':2}
-b = {'z': a.get('x')}
-
-a['x'] = 10
-
-print(b)
-
-

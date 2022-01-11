@@ -38,7 +38,7 @@
         alt="camera"
         :src="`http://${configuration.informations.ip}:${
           configuration.informations.portStream
-        }/${stringUrl}?${Math.floor(Math.random() * (1000 - 1 + 1)) + 1}`"
+        }/${stringUrl}?${Math.floor(Math.random() * (1000)) + 1}`"
       >
       </v-img>
     </div>
