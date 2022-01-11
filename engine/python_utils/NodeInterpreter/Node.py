@@ -9,15 +9,20 @@ class Reader():
         self.output_dict = self.reset_dicit = initial_output_dict
         self.out2in = {n["from"]:n["to"] for n in self.connections}
         self.in2out = {n["to"]:n["from"] for n in self.connections}
+
+        self.dependent_interfaces = {n["to"] for n in self.connections}
+
         self.input_connections = {cn["to"] for cn in self.connections}
         self.avaliable_nodes = avaliable_node_classes
         self.node_sequence = []
         self.node_sequence = self.make_nodes()
+
     def reset(self):
         print('\n', " -- Resetando Nodes -- ", '\n')
         self.output_dict = self.reset_dicit.copy()
         for node in self.nodes.values():
             node.reset()
+            
     def make_nodes(self):
         self.node_by_input_id = {}
         self.node_sequence = []
@@ -25,7 +30,7 @@ class Reader():
 
         for node in self.pre_nodes:
             if node["type"] in self.avaliable_nodes:
-                self.nodes[node["id"]] = self.avaliable_nodes[node["type"]](node)
+                self.nodes[node["id"]] = self.avaliable_nodes[node["type"]](node, self.output_dict, self.dependent_interfaces)
                 self.node_by_input_id[self.nodes[node["id"]]._input_id] = self.nodes[node["id"]]
                 if self.nodes[node["id"]]._input_id not in self.input_connections:
                     self.node_sequence.append(node["id"])
