@@ -108,10 +108,10 @@ class Process():
 
     def _playCicle(self, node_sheet_obj):
         
-        pprint(node_sheet_obj)
-        # self._stop()
-        # self.node_config = Reader(obj, self.enabled_node_classes)
-        # self._start()
+        # pprint(node_sheet_obj)
+        self._stop()
+        self.node_config = Reader(node_sheet_obj, self.enabled_node_classes)
+        self._start()
 
 
 # ===========================================================================
