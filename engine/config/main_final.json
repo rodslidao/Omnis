@@ -13,7 +13,7 @@
     ],
     "serial": [
         {
-            "name": "controller",
+            "name": "Octopus V1.1",
             "baudrate": 250000,
             "port": "COM6",
             "reconnect": false,
@@ -32,7 +32,7 @@
             "name": "DeviceFilter1",
             "filter": "small_blue",
             "camera_device": "camera0",
-            "machine": "controller"
+            "machine": "Octopus V1.1"
         }
     ]
 }

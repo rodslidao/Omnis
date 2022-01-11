@@ -7,7 +7,7 @@
             "options": [
                 [
                     "Hardware",
-                    "controller"
+                    "Octopus V1.1"
                 ],
                 [
                     "X",
@@ -62,17 +62,17 @@
             "customClasses": ""
         },
         {
-            "type": "MoveNode",
+            "type": "IdentifyNode",
             "id": "node_16414770159104",
-            "name": "Movimento",
+            "name": "Identificação",
             "options": [
                 [
-                    "Hardware",
-                    "controller"
+                    "Camera",
+                    "Camera_0"
                 ],
                 [
-                    "X",
-                    null
+                    "Filtro",
+                    "Small_Blue"
                 ],
                 [
                     "Y",
@@ -93,24 +93,10 @@
                     }
                 ],
                 [
-                    "Velocidade",
-                    {
-                        "id": "ni_16414770159106",
-                        "value": 2500
-                    }
-                ],
-                [
                     "Saida",
                     {
                         "id": "ni_16414770159107",
                         "value": null
-                    }
-                ],
-                [
-                    "Y ",
-                    {
-                        "id": "ni_164147703486511",
-                        "value": -100
                     }
                 ]
             ],
@@ -129,7 +115,7 @@
             "options": [
                 [
                     "Hardware",
-                    "controller"
+                    "Octopus V1.1"
                 ],
                 [
                     "X",

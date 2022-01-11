@@ -6,7 +6,7 @@
     ],
     "serial": [
         {
-            "name": "controller",
+            "name": "Octopus V1.1",
             "baudrate": 250000
         },
         {

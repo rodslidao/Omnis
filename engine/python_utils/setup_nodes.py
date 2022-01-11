@@ -30,7 +30,7 @@ nodes = {
 
 rules = [
     {'input': ['None'], 'node': 'startup_serials'},
-    {'define': {'machine': 'controller'}},
+    {'define': {'machine': "Octopus V1.1"}},
     # {'define':{'att_center':"rectangle"}},
     {'input': ['start_movment_name','speed', 'machine'], 'node': 'coordinates_movments'},
     # {'input': ['filter_name'], 'node': 'identify_by_name', 'output': 'obj_to_process'},

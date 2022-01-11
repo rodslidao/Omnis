@@ -31,5 +31,5 @@ Identifyer_objects = {
 #! Isso deve mudar.
 for c in camera_objects.values():
     c.start()
-serial_objects["controller"].start()
+serial_objects["Octopus V1.1"].start()
 
