@@ -20,6 +20,8 @@ import { OptionPlugin } from "@baklavajs/plugin-options-vue";
 import { Engine } from "@baklavajs/plugin-engine";
 import { MoveNode } from "@/components/nodes/MoveNode";
 import { IdentifyNode } from "@/components/nodes/IdentifyNode";
+import { DelayNode } from "@/components/nodes/DelayNode";
+import { IoNode } from "@/components/nodes/IoNode";
 import { InterfaceTypePlugin } from "@baklavajs/plugin-interface-types";
 import ActionMenuForNodes from "@/components/nodes/ActionMenuForNodes.vue";
 import  VideoStreamingOption  from "@/components/nodes/options/VideoStreamingOption.vue";
@@ -57,7 +59,8 @@ export default {
     // added by the user as well as saved & loaded.
     this.editor.registerNodeType("MoveNode", MoveNode);
     this.editor.registerNodeType("IdentifyNode", IdentifyNode);
-
+    this.editor.registerNodeType("IoNode", IoNode);
+    this.editor.registerNodeType("DelayNode", DelayNode);
     this.viewPlugin.registerOption("VideoStreamingOption", VideoStreamingOption);
 
     // add some nodes so the screen is not empty on startup

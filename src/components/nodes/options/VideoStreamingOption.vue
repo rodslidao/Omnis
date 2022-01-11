@@ -3,7 +3,7 @@
     <h4>{{ value }}</h4>
     <!-- <img src="https://zudesign.com.br/images/logo.svg" alt="alternative" /> -->
     <v-img
-      :lazy-src="require(`@/assets/img/estribo-pattern-low.jpg`)"
+      :lazy-src="require(`@/assets/img/lazy-load-parallax.jpg`)"
       class="cameraImg"
       alt="camera"
       :src="`http://${connection.ip}:${connection.portStream}/${stringUrl}?${
