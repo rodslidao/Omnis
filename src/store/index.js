@@ -609,6 +609,7 @@ const store = new Vuex.Store({
       state.ws_message.command = payload.command;
       state.ws_message.parameter = payload.args;
       this._vm.$socket.emit('call_function', payload);
+      this._vm.$socket.emit('start_updates', '');
       console.log("recebi:", this);
       console.log("%c Enviado:", 'color: #bada55');
       console.log(payload)

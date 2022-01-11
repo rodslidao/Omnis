@@ -3,6 +3,9 @@
     <v-btn class="button" color="primary" fab dark small @click="play">
       <v-icon> mdi-play </v-icon>
     </v-btn>
+    <v-btn class="button" color="primary" fab dark small @click="stop">
+      <v-icon> mdi-pause </v-icon>
+    </v-btn>
     <v-speed-dial
       v-model="fab"
       :top="top"
@@ -93,6 +96,15 @@ export default {
       this.sendMessage({'command':'process_playCicle', 'args':this.editor.save()})
       },
 
+    stop(){
+      this.sendMessage({'command':'process_stop', 'args':this.editor.save()})
+      },
+
+    pause(){
+      this.sendMessage({'command':'process_pause', 'args':this.editor.save()})
+      },
+
+
     findFunction(name) {
       this[name]();
     },
@@ -151,6 +163,7 @@ export default {
   .button {
     right: 25px;
     bottom: 16px;
+    margin-left: 10px;
   }
   .v-speed-dial--direction-top .v-speed-dial__list {
     flex-direction: column-reverse;

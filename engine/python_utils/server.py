@@ -21,7 +21,7 @@ Payload.max_decode_packets = 500
 logging.getLogger('werkzeug').setLevel(logging.ERROR)
 
 class Server(object):
-    def __init__(self, app_ip, app_port, app_report_time, app_build_folder,**kargs):
+    def __init__(self, app_ip, app_port, app_report_time, app_build_folder, node_info, **kargs):
         """
             ### Parameters
             @app_ip :\n
@@ -62,6 +62,7 @@ class Server(object):
         self.app.config['SECRET_KEY'] = 'secret!'
         self.defineRoutes()
         self.last_ping = 0
+        self.running_nodes = node_info
 
     def start(self):
         print("rodando....")
@@ -108,12 +109,12 @@ class Server(object):
         def background_thread():
             """Example of how to send server generated events to clients."""
             while True:
-                update = {}
-                for k, v in self.process.items():
-                    update[k] = {"alive": v.is_alive()}
+                # update = {}
+                # for k, v in self.process.items():
+                #     update[k] = {"alive": v.is_alive()}
                 print('Updating all clients')
-                socketio.emit('RESPONSE_MESSAGE',
-                           {'data': json.dumps(update, indent=2, ensure_ascii=False)})
+                socketio.emit('NODE_UPDATE',
+                           {'data': json.dumps(self.running_nodes, indent=2, ensure_ascii=False)})
                 socketio.sleep(self.report_time)
 
         # @app.route('/')
@@ -151,7 +152,7 @@ class Server(object):
                 if self.thread is None:
                     print("updating thread started")
                     thread = socketio.start_background_task(background_thread)
-            emit('RESPONSE_MESSAGE', {'data': 'Connected', 'count': 0})
+            #emit('RUNNING_NODES', {'data': 'Connected', 'count': 0})
 
 
         @socketio.on('connect')

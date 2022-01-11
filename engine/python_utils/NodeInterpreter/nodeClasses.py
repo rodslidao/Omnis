@@ -57,6 +57,7 @@ class IdentifyNode(Base_Node):
         super().__init__(data)
     
     def run(self, _id, output_dict):
+        print('\n'*2, "Identificando o objeto", '\n')
         output_dict[self._output_id] = Identifyer_objects["small_blue"].identify()
         cv2.imshow("Identificador", Identifyer_objects["small_blue"].drawData())
         cv2.waitKey(1)
@@ -81,10 +82,10 @@ class FilterNode(Base_Node):
 class DelayNode(Base_Node):
     def __init__(self, data):
         super().__init__(data)
-        self._delay = [op[1]["value"] for op in self._interfaces if "Tempo" in op][0]
+        self._delay = [op[1] for op in self._options if "Tempo(s)" in op][0]
     
     def run(self, _id, output_dict):
-        sleep(self._delay)
+        sleep(float(self._delay))
         output_dict[self._output_id] = True
     
     def reset(self):
@@ -95,11 +96,12 @@ class IoNode(Base_Node):
         super().__init__(data)
         self._input = [op[1]["id"] for op in self._interfaces if "Entrada" in op][0]
         self._output = [op[1]["id"] for op in self._interfaces if "Saida" in op][0]
-        self._pin = [op[1] for op in self._options if "Pino" in op][0]
-        self._state = [op[1] for op in self._options if "Estado" in op][0]
+        self._pin = [op[1] for op in self._options if "Pinos" in op][0]
+        self._state = [op[1] for op in self._options if "Ações" in op][0]
+        self._controller = [op[1] for op in self._options if "Hardware" in op][0]
 
     def run(self, _id, output_dict):
-        machine_objects[self._controller].send(F"M42 P{self._pin} S{self._state}")
+        machine_objects[self._controller].serial.send(F"M42 P{self._pin} S{1 if self._state =='Ligar' else 0}")
         output_dict[self._output] = True
     
     def reset(self):

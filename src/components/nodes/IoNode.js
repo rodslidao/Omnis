@@ -9,7 +9,15 @@ export class IoNode extends Node {
         this.type = "IoNode";
         this.name = "Acionar Pinos";
         this.addInputInterface("Entrada", "", 0, { type: "object" });
-
+        this.addOption(
+            "Hardware",
+            "SelectOption",
+            "Selecione uma Placa",
+            undefined,
+            {
+                items: ["Arduino Nano", "Octopus V1.1"]
+            }
+        );
         this.addOption(
             "Pinos",
             "SelectOption",
@@ -25,7 +33,7 @@ export class IoNode extends Node {
             "Selecione uma Ação",
             undefined,
             {
-                items: ["Ligar, Desligar"],
+                items: ["Ligar", "Desligar"]
             }
         );
         this.addOutputInterface("Saida", { type: "object" });

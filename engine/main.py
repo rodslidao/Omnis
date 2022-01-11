@@ -19,6 +19,7 @@ class Process():
 
         self.enabled_node_classes = {"MoveNode": MoveNode, "IdentifyNode": IdentifyNode, "DelayNode": DelayNode, "IoNode": IoNode}
         self.node_config = self._update_node_sheet(node_sheet_query)
+        self.node_info = {}
 
     def is_set(self, event_name):
         print("Verificando evento:", event_name)
@@ -72,6 +73,7 @@ class Process():
                 node = self.node_config.nodes[node_id]
                 _input = self.node_config.in2out[node._input_id] if node_id != self.node_config.node_sequence[0] else "start"
                 node.run(_input, self.node_config.output_dict)
+                self.node_info = {node._id}
                 while self.is_set("_pause"):                                    # Enquanto o processo estiver pausado
                     pass
 
@@ -133,6 +135,7 @@ if __name__ == '__main__':
     print(_process_functions)
     server_app = Server(
         **_server_info,
+        node_info=_process.node_info,
         app_functions=_process_functions,
         app_cameras=camera_objects,
     )
