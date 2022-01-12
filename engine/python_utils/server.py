@@ -112,7 +112,7 @@ class Server(object):
                 # update = {}
                 # for k, v in self.process.items():
                 #     update[k] = {"alive": v.is_alive()}
-                print('Updating all clients')
+                #print('Updating all clients')
                 socketio.emit('NODE_UPDATE',
                            {'data': json.dumps(self.running_nodes, indent=2, ensure_ascii=False)})
                 socketio.sleep(self.report_time)
@@ -145,12 +145,12 @@ class Server(object):
             
 
         @socketio.on('start_updates')
-        def start_updates():
+        def start_updates(*args):
             global thread
             with self.thread_lock:
-                print("Recive resquest to starting a threading uptade")
+#                print(f"Recive resquest to starting a threading uptade with args {args}")
                 if self.thread is None:
-                    print("updating thread started")
+                    #print("updating thread started")
                     thread = socketio.start_background_task(background_thread)
             #emit('RUNNING_NODES', {'data': 'Connected', 'count': 0})
 

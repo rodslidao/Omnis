@@ -23,7 +23,6 @@ export class MoveNode extends Node {
         );
         this.axisList.forEach(axis => { this.addOption(axis, "CheckboxOption") });
 
-
         // this.addOption("+ Opções", "ButtonOption", () => ({ testtext: "any" }), "MySidebarOption");
         // this.setOptionValue("+ Opções", "Arduino Nano");
 
@@ -39,18 +38,16 @@ export class MoveNode extends Node {
                     this.removeInterface(item + " ");
                 }
             }
-        });
-        this.addInputInterface("Velocidade", "NumberOption", 10000);
 
+        });
+
+        this.addInputInterface("Velocidade", "NumberOption", 10000);
         this.addOutputInterface("Saida", { type: "object" });
 
         // const value = {...this.getInterface("Velocidade").value}
     }
 
     calculate() {
-
-        console.log("entrouuuuuuuuuuuuuuuuuu");
-
         this.getInterface("Saida").value = {
             hardware: this.getOptionValue("Hardware").value,
             axisList: this.axisList.filter(axis => this.getOptionValue(axis)).map(axis => {
@@ -61,7 +58,6 @@ export class MoveNode extends Node {
                     await: false
                 }
             }),
-
         }
     }
 

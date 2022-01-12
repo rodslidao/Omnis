@@ -1,18 +1,15 @@
-
-
-
-
 class Reader():
     def __init__(self, node_sheet, avaliable_node_classes, initial_output_dict={"start":True}) -> None:
         self.pre_nodes = node_sheet["nodes"]
         self.connections = node_sheet["connections"]
         self.output_dict = self.reset_dicit = initial_output_dict
+       
         self.out2in = {n["from"]:n["to"] for n in self.connections}
         self.in2out = {n["to"]:n["from"] for n in self.connections}
 
-        self.dependent_interfaces = {n["to"] for n in self.connections}
-
         self.input_connections = {cn["to"] for cn in self.connections}
+        self.output_connections = {cn["from"] for cn in self.connections}
+
         self.avaliable_nodes = avaliable_node_classes
         self.node_sequence = []
         self.node_sequence = self.make_nodes()
@@ -20,6 +17,8 @@ class Reader():
     def reset(self):
         print('\n', " -- Resetando Nodes -- ", '\n')
         self.output_dict = self.reset_dicit.copy()
+        self.node_sequence = []
+        self.in2out = {}
         for node in self.nodes.values():
             node.reset()
             
@@ -30,12 +29,36 @@ class Reader():
 
         for node in self.pre_nodes:
             if node["type"] in self.avaliable_nodes:
-                self.nodes[node["id"]] = self.avaliable_nodes[node["type"]](node, self.output_dict, self.dependent_interfaces)
+                _node = self.avaliable_nodes[node["type"]](node, self.output_dict, self.in2out)
+                self.nodes[node["id"]] = _node
                 self.node_by_input_id[self.nodes[node["id"]]._input_id] = self.nodes[node["id"]]
-                if self.nodes[node["id"]]._input_id not in self.input_connections:
-                    self.node_sequence.append(node["id"])
-        
-        self.node_sequence = self.node_sequencer(self.node_sequence, self.node_sequence[0])
+                self.node_by_output_id[self.nodes[node["id"]]._output_id] = self.nodes[node["id"]]
+                if _node._output_id not in self.output_connections:
+                    self.lastnode = _node
+                # if self.nodes[node["id"]]._input_id not in self.input_connections:
+                #     self.node_sequence.append(node["id"])
+                #     for it_id, it in self.nodes["id"]._interfaces.items():
+                #         self.output_dict[it_id] = it.value
+        print("\n", " -- Sequenciando Nodes -- ", "\n")
+        for node in self.nodes.values():
+            print('\t', '--'*10)
+            print("\t Node:", node._name, " - ", node._id)
+            if node._input_id not in self.input_connections:
+                self.node_sequence.append(node._id)
+                print("\t Entrada: Sim")
+                for it in node._interfaces.values():
+                    if it.id in self.out2in.keys():
+                        print('\t', it.name,' - ', it.value, " - ", it.id)
+                        self.output_dict[it.id] = it.value
+            else:
+                print("\t Entrada: Não")
+            
+            
+        print("\n -- Nodes -- \n")
+        self.node_sequence = self.node_sequencer(self.node_sequence, self.node_sequence[-1])
+        for nn, n in enumerate(self.node_sequence):
+            print(self.nodes[n]._name, end=f' >>  ')
+        print("\n")
         return self.node_sequence
     def node_sequencer(self, lista, _ids, input=False):
         try:
@@ -45,6 +68,13 @@ class Reader():
         except KeyError:
             pass
         return lista
+
+    
+    def nds2(self, node):
+        for n in node._interfaces.values():
+            
+    
+        
 
 if __name__ == '__main__':
     from nodeClasses import *

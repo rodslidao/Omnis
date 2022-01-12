@@ -21,6 +21,7 @@ import { Engine } from "@baklavajs/plugin-engine";
 import { MoveNode } from "@/components/nodes/MoveNode";
 import { IdentifyNode } from "@/components/nodes/IdentifyNode";
 import { DelayNode } from "@/components/nodes/DelayNode";
+import { VariableNode } from "@/components/nodes/VariableNode";
 import { IoNode } from "@/components/nodes/IoNode";
 import { InterfaceTypePlugin } from "@baklavajs/plugin-interface-types";
 import ActionMenuForNodes from "@/components/nodes/ActionMenuForNodes.vue";
@@ -61,6 +62,7 @@ export default {
     this.editor.registerNodeType("IdentifyNode", IdentifyNode);
     this.editor.registerNodeType("IoNode", IoNode);
     this.editor.registerNodeType("DelayNode", DelayNode);
+    this.editor.registerNodeType("VariableNode", VariableNode);
     this.viewPlugin.registerOption("VideoStreamingOption", VideoStreamingOption);
 
     // add some nodes so the screen is not empty on startup

@@ -17,7 +17,7 @@ class Process():
         self.methods_name={func for func in dir(self) if callable(getattr(self, func)) and func.startswith("_") and not func.endswith("_")}
         [setattr(self, method+"_event", threading.Event()) for method in self.methods_name]
 
-        self.enabled_node_classes = {"MoveNode": MoveNode, "IdentifyNode": IdentifyNode, "DelayNode": DelayNode, "IoNode": IoNode}
+        self.enabled_node_classes = {"MoveNode": MoveNode, "IdentifyNode": IdentifyNode, "DelayNode": DelayNode, "IoNode": IoNode, "VariableNode":VariableNode}
         self.node_config = self._update_node_sheet(node_sheet_query)
         self.node_info = {}
 
@@ -111,9 +111,9 @@ class Process():
     def _playCicle(self, node_sheet_obj):
         
         # pprint(node_sheet_obj)
-        self._stop()
+        #self._stop()
         self.node_config = Reader(node_sheet_obj, self.enabled_node_classes)
-        self._start()
+        #self._start()
 
 
 # ===========================================================================
@@ -132,7 +132,6 @@ if __name__ == '__main__':
 
     _process_functions = {"process"+func: getattr(_process, func) for func in _process.methods_name}
     _server_info = database.find_one("servers", {"name": server_name})
-    print(_process_functions)
     server_app = Server(
         **_server_info,
         node_info=_process.node_info,

@@ -1,54 +1,86 @@
 from python_utils.setup_objects import *
 from time import sleep
 
+def settingUpInterfaces(fun):
+        def wrapper(self, *args, **kwargs):
+            for it_id, it in self._interfaces.items():
+                setattr(self, it.name, self.output_dict[self.in2out[it_id]])
+            return fun(self, *args, **kwargs)
+        return wrapper
 class Base_Node():
-    def __init__(self, data, output_dict, dependent_interface):
-        self._interfaces = data['interfaces']
-        self._options = data['options']
+    def __init__(self, data, output_dict, in2out):
+        self._interfaces = {it_list[1]['id']: interface(it_list[0], it_list[1]['id'], it_list[1]['value'] ) for it_list in data['interfaces']}
+        self._options = {op_list[0]:option(op_list[0], op_list[1]) for op_list in data['options']}
+        self.output_dict = output_dict
+
         self._type = data['type']
         self._name=data['name']
         self._id = data['id']
-        self._output_id = self.getInterface('Saida', 'id')
-        self._input_id = self.getInterface('Entrada', 'id')
-        self.interfaces_id = {interface[1]["id"] for  interface in self._interfaces}
-        self.output_dict = output_dict
-        self.dependent_interface = dependent_interface
-    
-    def getInterface(self, interface, value, idx=0):
-        [op[1][value] for op in self._interfaces if interface in op][idx]
-        
-    def getOptions(self, option, idx=0):
-        [op[1] for op in self._options if option in op][idx]
 
+        self.in2out = in2out
+        
+        self._output_id = self.getInterfaceValueByName('Saida', _id=True)
+        self._input_id = self.getInterfaceValueByName('Entrada', _id=True)
+
+        #self.interfaces_id = {interface[1]["id"] for  interface in self._interfaces}
+
+    
+    def getInterfaceValueByName(self, interface, _id=None):
+        for it in self._interfaces.values():
+            if it.name == interface:
+                print("Achei o interface: ", it.name, "")
+                if _id: return it.id
+                return self.getInterface(it.id)
+                
+    def getInterface(self, interface_id):
+        it = self._interfaces[interface_id]
+        if it.id in self.in2out.keys(): return self.output_dict[self.in2out[it.id]]
+        return it.value
+
+    def getOption(self, option):
+        return self._options[option].value
+    
     def function(self, *args, **kwargs):
         pass
+
+    #@settingUpInterfaces
     def run(*args, **kwargs):
         pass
+
     def reset(*args, **kwargs):
         pass
 
+class interface():
+    def __init__(self, name, id, value):
+        self.name = name
+        self.id = id
+        self.value = value
+
+class option():
+    def __init__(self, name, value):
+        self.name = name
+        self.value = value
 
 #! Verificar se o nome "Octopus V1.1" foi trocado para "Octopus V1.1"
 class MoveNode(Base_Node):
-    def __init__(self, data, output_dict, dependent_interface):
-        super().__init__(data, output_dict, dependent_interface)
-        axis = ['X ', 'Y ', 'Z ']
-        self._controller = self.getOptions('Hardware')
-        self._movment = [(op[0], op[1]["value"]) for op in self._interfaces if op[0] in axis]
-        self._speed = self._interfaces[1][1]["value"]
-        self._movment.append(('F', self._speed))
-        self.move = [{"axis":mv[0], "coordinate":mv[1], "channel":0, "await":True} for mv in self._movment]
+    def __init__(self, data, output_dict, in2out):
+        super().__init__(data, output_dict, in2out)
+        self.axis = ['X ', 'Y ', 'Z ', 'A ', 'B ', 'C ']
+        self._controller = self.getOption('Hardware')
         self._output = None
+        #self._movment = [(op[0], op[1]["value"]) for op in self._interfaces if op[0] in axis]
+        #self._speed = self._interfaces[1][1]["value"]
+        #self._movment.append(('F', self._speed))
+        #self.move = [{"axis":mv[0], "coordinate":mv[1], "channel":0, "await":True} for mv in self._movment]
 
-
-        self.dependent_interface
-    def run(self, _id):
-        if self.output_dict[_id]:    #! Validar input
-            print(f"Movendo com {self._controller} para {self.move}")
-            machine_objects[self._controller].M_G0(*self._movment, nonsync=None if isinstance(self.move[0], tuple) else True)
-            self._output = True
-            self.output_dict[self._output_id] = True
-        
+    #@settingUpInterfaces
+    def run(self, *args, **kwargs):
+        movment = [('F', self.getInterfaceValueByName("Velocidade"))]
+        for axis in self.axis:
+            axi_value = self.getInterfaceValueByName(axis)
+            if axi_value != None:
+                movment.append((axis, axi_value))
+        machine_objects[self._controller].M_G0(*movment, nonsync=True)
     def reset(self):
         self._output = None
 
@@ -78,8 +110,8 @@ class FilterNode(Base_Node):
             self.output_dict[self._output_id] = cv2.cvtColor(self.output_dict[_id], getattr(cv2, f"COLOR_{self.this}2{self.that}"))
 
 class DelayNode(Base_Node):
-    def __init__(self, data):
-        super().__init__(data)
+    def __init__(self, data, output_dict, in2out):
+        super().__init__(data, output_dict, in2out)
         self._delay = [op[1] for op in self._options if "Tempo(s)" in op][0]
     
     def run(self, _id, output_dict):
@@ -104,8 +136,6 @@ class IoNode(Base_Node):
     
     def reset(self):
         self._output = None
-    
-
 
 class BlurNode(Base_Node):
     def __init__(self, data, output_dict, dependent_interface):
@@ -210,6 +240,20 @@ class MathNode(Base_Node):
         self.output_dict[self._output_id] = self.math_operations[self._operation](self._A, self._B)
 
 
+class VariableNode(Base_Node):
+    def __init__(self, data, output_dict, dependent_interface):
+        super().__init__(data, output_dict, dependent_interface)
+        # self._value = self.getOptions("Value")
+        # self._variable = self.getOptions("Variable")
+        # self._type = self.getOptions("Type")
+        self.variable_types = {
+            'int': int,
+            'float': float,
+            'str': str,
+        }
+        
+    def run(self, _id):
+        self.output_dict[self._output_id] = self.variable_types[self._type](self._value)
 class HsvMaskNode(Base_Node):
     def __init__(self, data, output_dict, dependent_interface):
         self.color_a = this.getOptions("Cor A")
