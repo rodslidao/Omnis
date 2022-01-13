@@ -70,8 +70,8 @@ class Reader():
         return lista
 
     
-    def nds2(self, node):
-        for n in node._interfaces.values():
+    # def nds2(self, node):
+    #     for n in node._interfaces.values():
             
     
         

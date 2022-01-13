@@ -34,8 +34,12 @@ line = lambda: currentframe().f_back.f_lineno
 
 from python_utils.mongodb import *
 from dotenv import load_dotenv
-load_dotenv(r"C:\Users\Henrycke\Documents\GitHub\Omnis-Interface\.env")
-database = MongoDB(os.getenv("DB_IP"), os.getenv("DB_PORT"), os.getenv("DB_START_POINT"))
+os.chdir("../")
+path = os.getcwd()
+load_dotenv(path+r"\.env")
+print(os.getenv("DB_PORT"))
+
+database = MongoDB(os.getenv("DB_IP"), int(os.getenv("DB_PORT")), os.getenv("DB_START_POINT"))
 
 imports = globals().copy()
 
