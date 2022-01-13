@@ -1,13 +1,14 @@
 <template>
-  <section class="content d-flex justify-start align-start
-">
-      <v-expansion-panels multiple >
-        <Assembly />
-        <Controls />
-        <Statistics />
-        <Advanced-settings />
-        <Infos />
-        <router-link to="/dashboard">
+  <section class="content d-flex justify-start align-start">
+    <!-- <section class="content d-flex justify-start align-start
+"> -->
+    <v-expansion-panels multiple>
+      <Assembly />
+      <Controls />
+      <Statistics />
+      <Advanced-settings />
+      <Infos />
+      <router-link to="/dashboard">
         <v-btn
           class="ma-3 mt-10"
           outlined
@@ -19,8 +20,7 @@
           Dashboard
         </v-btn>
       </router-link>
-      </v-expansion-panels>
-       
+    </v-expansion-panels>
   </section>
 </template>
 
@@ -56,23 +56,24 @@ export default {
 };
 </script>
 
-<style>
-#app{
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  /* text-align: center; */
-  color: #2c3e50;
-  width: 100vw;
-  height: 100%;
-  /* padding: 1em 1em; */
+<style lang="scss" scoped>
+// #app{
+//   font-family: Avenir, Helvetica, Arial, sans-serif;
+//   -webkit-font-smoothing: antialiased;
+//   -moz-osx-font-smoothing: grayscale;
+//   /* text-align: center; */
+//   color: #2c3e50;
+//   width: 100vw;
+//   height: 100%;
+//   /* padding: 1em 1em; */
+// }
+
+.content {
+  // width: 90%;
+  // height: 100vh;
+  // padding: 20px;
 }
 
-.content{
-  width: 100%;
-  height: 100vh;
-  }
-  
 .v-expansion-panels {
   padding: 1em;
   max-width: 800px;

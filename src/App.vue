@@ -1,7 +1,7 @@
 <template>
-  <v-app>
-    <div class="mx-auto"><Snack-bar v-if="!isConnected"></Snack-bar></div>
-    <DialogAlert />
+  <v-app class="d-flex">
+    <!-- <div class="mx-auto"><Snack-bar v-if="!isConnected"></Snack-bar></div>
+    <DialogAlert /> -->
     <NavBar class="NavBar" v-if="$route.name != 'intro'" />
 
     <transition>
@@ -53,6 +53,8 @@ body {
   margin: 0;
   padding: 0;
   .NavBar {
+    display: block;
+    position: absolute;
     z-index: 999;
   }
 }
