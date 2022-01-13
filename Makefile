@@ -10,3 +10,8 @@ down:
 .PHONY: logs
 logs:
 	docker-compose logs -f
+
+.PHONY: restart
+restart:
+	docker-compose down && docker-compose up -d
+	

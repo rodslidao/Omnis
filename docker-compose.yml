@@ -14,7 +14,7 @@ services:
     networks:
         - mongo-compose-network
     volumes: 
-      - ./data:/data/db
+      - ./Docker/data:/data/db
 
   mongo-express:
     image: mongo-express:latest
@@ -37,7 +37,7 @@ services:
     depends_on:
       - mongo
     volumes: 
-      - ./data:/data/db
+      - ./Docker/data:/data/db
       
 
   # api:

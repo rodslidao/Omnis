@@ -33,8 +33,11 @@ sizorLift = lambda atualPos, variacao=0, hipotenusa=160, aberturaMinima=149.509 
 line = lambda: currentframe().f_back.f_lineno
 
 from python_utils.mongodb import *
-database = MongoDB("192.168.1.31", 27017, "Omnis")
+from dotenv import load_dotenv
+load_dotenv(r"C:\Users\Henrycke\Documents\GitHub\Omnis-Interface\.env")
+database = MongoDB(os.getenv("DB_IP"), os.getenv("DB_PORT"), os.getenv("DB_START_POINT"))
 
 imports = globals().copy()
+
 
 #print(((stop.__init__).__dict__))

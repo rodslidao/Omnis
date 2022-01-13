@@ -6,5 +6,4 @@ node_modules
 .vscode/*
 DataBase/*
 dist/*
-*.env
 Docker/data/*
