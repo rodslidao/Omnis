@@ -53,6 +53,8 @@ class Server(object):
         self.port = app_port
         self.thread = None
         self.ip = app_ip
+        print(self.ip)
+        # exit()
         self.app = Flask(__name__, template_folder = self.buildfolder, static_folder = f"{self.buildfolder}/static")
         self.socketio = SocketIO(self.app, async_mode=None, async_handlers=True, cors_allowed_origins='*')
         CORS(self.app)

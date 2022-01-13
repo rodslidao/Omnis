@@ -24,6 +24,7 @@ class Reader():
             
     def make_nodes(self):
         self.node_by_input_id = {}
+        self.node_by_output_id = {}
         self.node_sequence = []
         self.nodes = {}
 

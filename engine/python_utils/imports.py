@@ -34,12 +34,13 @@ line = lambda: currentframe().f_back.f_lineno
 
 from python_utils.mongodb import *
 from dotenv import load_dotenv
-os.chdir("../")
-path = os.getcwd()
-load_dotenv(path+r"\.env")
-print(os.getenv("DB_PORT"))
+# os.chdir("../")
+# path = os.getcwd()
+# path = path+r"/.env"
+# load_dotenv(path)
 
-database = MongoDB(os.getenv("DB_IP"), int(os.getenv("DB_PORT")), os.getenv("DB_START_POINT"))
+database = MongoDB(os.getenv("DB_HOST"), int(os.getenv("DB_PORT")), os.getenv("DB_NAME"))
+print(database.get_collections())
 
 imports = globals().copy()
 
