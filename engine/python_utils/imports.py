@@ -33,7 +33,7 @@ sizorLift = lambda atualPos, variacao=0, hipotenusa=160, aberturaMinima=149.509 
 line = lambda: currentframe().f_back.f_lineno
 
 from python_utils.mongodb import *
-database = MongoDB("192.168.1.31", 27017, "Omnis")
+database = MongoDB("192.168.1.41", 27017, "Omnis")
 
 imports = globals().copy()
 

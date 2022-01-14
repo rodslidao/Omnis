@@ -9,7 +9,7 @@ export default {
         selectedTabId: 1641587087905,
         // http://192.168.1.31:5000/video_feed/camera0
         connection: {
-            ip: "192.168.1.31",
+            ip: "192.168.1.41",
             portStream: 5000,
         },
     },

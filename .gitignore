@@ -8,3 +8,4 @@ DataBase/*
 dist/*
 *.env
 Docker/data/*
+omnis-lib/*
