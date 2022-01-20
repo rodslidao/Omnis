@@ -43,11 +43,11 @@
 </template>
 
 <script>
-import NodeEditor from "@/components/nodes/NodeEditor.vue";
-import { mapActions, mapState } from "vuex";
+import NodeEditor from '@/components/nodes/NodeEditor.vue';
+import { mapActions, mapState } from 'vuex';
 
 export default {
-  name: "TabMenuNodes",
+  name: 'TabMenuNodes',
 
   components: {
     NodeEditor,
@@ -57,54 +57,54 @@ export default {
       tab: null,
       actualNode: null,
       length: 0,
-      sketchNameRunning: "One",
+      sketchNameRunning: 'One',
       newTabCount: 1,
     };
   },
 
   computed: {
-    ...mapState("node", {
+    ...mapState('node', {
       tabList: (state) => state.tabList,
       selectedTabId: (state) => state.selectedTabId,
     }),
   },
 
   watch: {
-     length (val) {
-        this.tab = val - 1
+    length(val) {
+      this.tab = val - 1;
     },
 
     tab() {
-      this.selectTabByIndex(this.tab)  
+      this.selectTabByIndex(this.tab);
     },
   },
 
   methods: {
-    ...mapActions("node", [
-      "addTab",
-      "removeTabById",
-      "selectTabByIndex",
+    ...mapActions('node', [
+      'addTab',
+      'removeTabById',
+      'selectTabByIndex',
       'removeTabByIndex',
     ]),
 
-    //functcion to gerate unique id based in timestamp
+    // functcion to gerate unique id based in timestamp
     generateId() {
       return new Date().getTime();
     },
 
     close(index) {
-      console.log("aba fechada, index: ", index);
+      console.log('aba fechada, index: ', index);
       this.removeTabByIndex(index);
     },
 
     add() {
-      let idGenerated = this.generateId();
-      let newTab = {
-        sketchName: "Tab " + (this.newTabCount + 1),
+      const idGenerated = this.generateId();
+      const newTab = {
+        sketchName: `Tab ${this.newTabCount + 1}`,
         id: idGenerated,
         saved: false,
       };
-      this.newTabCount += 1
+      this.newTabCount += 1;
       this.lastSelectedTabId = idGenerated;
 
       this.addTab(newTab);

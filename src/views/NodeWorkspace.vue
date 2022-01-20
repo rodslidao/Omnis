@@ -5,14 +5,13 @@
 </template>
 
 <script>
-import TabMenuNodes from "@/components/nodes/TabMenuNodes.vue";
+import TabMenuNodes from '@/components/nodes/TabMenuNodes.vue';
 
 export default {
-  name: "ActionMenuForNodes",
+  name: 'ActionMenuForNodes',
   components: {
     TabMenuNodes,
   },
-
   data: () => ({
   }),
 };
