@@ -1,4 +1,5 @@
 export default {
+
     namespaced: true,
     state: {
         counter: 0,
@@ -39,6 +40,13 @@ export default {
     },
 
     mutations: {
+
+        SOCKET_RESPONSE_MESSAGE : (state, message) => {
+            console.log("%c Recebido:", 'color: #51a4f7')
+            console.log(message)
+            // state.commit('TOGGLE_LOADING', null, { root: true })
+        },
+
         play: state => state.runningTabId = state.selectedTabId,
 
         addTab: (state, tab) => {
@@ -73,10 +81,12 @@ export default {
          * destruct the context, get the commit and call on the appropriate mutation
          */
         play: function ({ commit }) {
+            this._vm.$socket.emit('node', 'play');
             commit('play')
         },
 
         addTab: function ({ commit }, payload) {
+            this._vm.$socket.emit('node', payload);
             commit('addTab', payload)
         },
 
