@@ -708,7 +708,6 @@ const store = new Vuex.Store({
     stop: (context) => context.commit("STOP"),
     
     sendMessage: function ({ commit }, payload) {
-
       commit('SEND_MESSAGE', payload)
   },
 

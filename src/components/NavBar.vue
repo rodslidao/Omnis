@@ -1,7 +1,6 @@
 <template>
   <v-app-bar style="-webkit-app-region: drag" app dense dark>
     <router-link to="/">
-      <p> baghghghghghghghgh </p>
       <v-btn
         icon
         class="hidden-xs-only"
