@@ -1,0 +1,64 @@
+scalar JSON
+
+schema {
+  mutation: Mutation
+  query: Query
+}
+
+type Mutation {
+  createNodeSheet(input: NodeSheetInput): NodeSheetResult
+  updateNodeSheet(id: ID!, input:NodeSheetInput): NodeSheetResult
+  deleteNodeSheet(id: ID!): NodeSheetResult
+}
+
+type Query {
+  getNodeSheet(id: ID!): NodeSheetResult!
+}
+
+
+type NodeSheetResult {
+  success: Boolean
+  data: NodeSheet
+  errors: [String]
+}
+
+input NodeSheetInput {
+  name: String!
+}
+
+type NodeSheet {
+  _id: ID!
+  connections: [connection]
+  nodes: [node]
+  panning: JSON
+  scaling: Int
+}
+
+type connection {
+  id: String!
+  from: String!
+  to: String!
+}
+
+type node {
+  id: String!
+  name: String!
+  type: String!
+  options: [option]
+  state: JSON
+  interfaces: [interface]
+  position: JSON
+  width: Int
+  twoColumn: Boolean
+}
+
+type option {
+  name: String!
+  value: JSON
+}
+
+type interface {
+  name: String!
+  id: String!
+  value: JSON!
+}

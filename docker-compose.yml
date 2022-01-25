@@ -1,0 +1,61 @@
+
+version: "3.1"
+services:
+  mongo:
+    image: mongo:latest
+    container_name: mongo_c
+    restart: always
+    ports:
+      - ${DB_PORT}:27017
+    environment:
+      MONGO_INITDB_DATABASE: ${DB_NAME}
+      # MONGO_INITDB_ROOT_USERNAME: ${DB_USER}
+      # MONGO_INITDB_ROOT_PASSWORD: ${DB_PASS}
+    networks:
+        - mongo-compose-network
+    volumes: 
+      - ./mongodb:/data/db
+
+  mongo-express:
+    image: mongo-express:latest
+    restart: always
+    ports:
+      - 8888:8081
+    environment:
+      ME_CONFIG_MONGODB_SERVER: mongo_c
+      ME_CONFIG_MONGODB_PORT: ${DB_PORT}
+      ME_CONFIG_BASICAUTH_USERNAME: ${EXPRESS_USER}
+      ME_CONFIG_BASICAUTH_PASSWORD: ${EXPRESS_PASSWORD}
+    links:
+      - mongo
+    networks:
+      - mongo-compose-network
+    depends_on:
+      - mongo
+    volumes: 
+      - ./mongodb:/data/db
+
+  backend:
+      container_name: backend
+      image: backend:latest
+      build: ./backend
+      restart: always
+      ports:
+        - ${STREAMING_PORT}:${STREAMING_PORT}
+        - ${SERVER_PORT}:${SERVER_PORT}
+      environment:
+        ENV_MODE: ${ENV_MODE}
+        STREAMING_PORT: ${STREAMING_PORT}
+        SERVER_PORT: ${SERVER_PORT}
+      volumes:
+        - ./backend:/app
+      command: python main.py
+      depends_on:
+        - mongo-express
+      networks:
+        - mongo-compose-network
+
+      
+networks: 
+  mongo-compose-network:
+    driver: bridge
