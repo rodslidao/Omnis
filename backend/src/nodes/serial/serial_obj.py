@@ -1,7 +1,7 @@
 import threading
 import serial
 import time
-import serial_exp as ex
+from .serial_exp import serialException, serialclosed, serialnotrespond
 
 
 class ColorPrint:
@@ -45,10 +45,10 @@ class SerialOBJ(object):
         try:
             self.open(self.port, self.baudrate, 3)
             return True
-        except ex.serialclosed:
+        except serialclosed:
             self.reopen()
         if not self.isAlive():
-            raise ex.serialclosed
+            raise serialclosed
 
     def reopen(self, limit=5, timer=2.5):
         self.reconnect += 1
@@ -72,8 +72,8 @@ class SerialOBJ(object):
             )
 
             try:
-                self.open(self.port, self.baudrate, 3)
-            except ex.serialclosed:
+                self.open(self.port, self.baudrate, 0.3)
+            except serialclosed:
                 t0 = time.monotonic() + timer
                 while time.monotonic() < t0:
                     pass
@@ -81,7 +81,7 @@ class SerialOBJ(object):
         return self.isAlive()
 
     def open(self, port, baudrate, timeout):
-        print(color(f"{self.name} está conectando...", "I"))
+        print(color(f"{self.name} está conectando...", "INFO"))
         try:
             self.serial = serial.Serial(port, baudrate, timeout=timeout)
         except serial.serialutil.SerialException as exp:
@@ -90,14 +90,14 @@ class SerialOBJ(object):
             elif "Acesso negado." in str(exp):
                 self.code = -1
         else:
-            print(color(f"{self.name} está confirmando a conexão...", "I"))
+            print(color(f"{self.name} está confirmando a conexão...", "INFO"))
             t0 = time.monotonic() + timeout
             while time.monotonic() < t0 and not self.isAlive():
                 pass
             self.code = 0
         self.codePrint(self.code)
         if self.code != 0:
-            raise ex.serialclosed
+            raise serialclosed
         else:
             self.reconnect = 0
 
@@ -182,8 +182,8 @@ class SerialOBJ(object):
                 return True
             except (
                 serial.serialutil.SerialException,
-                ex.serialnotrespond,
-                ex.serialclosed,
+                serialnotrespond,
+                serialclosed,
             ):
                 if self.kwargs.get("reconnect"):
                     if not self.reopen():
@@ -198,5 +198,5 @@ class SerialOBJ(object):
         else:
             if self.kwargs.get("reconnect"):
                 if not self.reopen():
-                    raise ex.serialclosed  # (self.name, port=self.port, baudrate=self.baudrate, code=self.code)
+                    raise serialclosed  # (self.name, port=self.port, baudrate=self.baudrate, code=self.code)
             return False

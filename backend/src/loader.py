@@ -1,19 +1,18 @@
-if __package__ is None:
-    import sys
-    from os import path
+# if __package__ is None:
+#     import sys
+#     from os import path
 
-    sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
+#     sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
 from enum import Enum
 from datetime import datetime
 
-from nodes.node_manager import NodeManager
-from nodes.node_registry import NodeRegistry
+from .nodes.node_manager import NodeManager
+from .nodes.node_registry import NodeRegistry
 from src.manager.mongo_manager import getDb
 from flask_socketio import emit
 
-
-class LodingMode(Enum):
+class LoadingMode(Enum):
     STARTUP = "STARTUP"
     RUNNING = "RUNNING"
 
@@ -37,12 +36,16 @@ class NodeChange(object):
 
 
 def getNodeByInterfaceId(nodeConfig, interfaceId):
-    a = next(
-        n
-        for n in nodeConfig.get("nodes")
-        if any([i[1]["id"] == interfaceId for i in n.get("interfaces")])
-    )
-    return a
+    for n in nodeConfig.get("nodes"):
+        for i in n.get("interfaces"):
+            if i[1]["id"] == interfaceId:
+                return n
+    # a = next(
+    #     n
+    #     for n in nodeConfig.get("nodes")
+    #     if any([i[1]["id"] == interfaceId for i in n.get("interfaces")])
+    # )
+    # return a
 
 
 def getInterfaceByInterfaceId(nodeConfig, interfaceId):
@@ -129,17 +132,18 @@ def cleanNodeManager(nodeConfigs):
     return len(deleted)
 
 
-def loadConfig(dbo, mode=LodingMode):
+def loadConfig(NodeSheet, mode=LoadingMode):
     print("loading config")
     numberOfNodesTotal = 0
     numberOfNodesChanged = 0
     numberOfNodesInit = 0
     nodesChanged = []
 
-    nodeConfigs = list(dbo.get_collection("node-configs").find({}))
+    nodeConfigs = [NodeSheet] #list(dbo.get_collection("node-configs").find({}))
 
     for nodeConfig in nodeConfigs:
-        connectionList = extractConnections(nodeConfig)
+        connectionList = list(extractConnections(nodeConfig))
+        # print("connectionList: {}".format(list(connectionList)))
         for node in nodeConfig.get("nodes"):
 
             try:
@@ -153,9 +157,8 @@ def loadConfig(dbo, mode=LodingMode):
             # outputConnections is a list of connections that has same node.id in value from.id
             outputConnections = list(
                 filter(
-                    lambda connection: connection.get("from").get("nodeId")
-                    == node.get("id"),
-                    connectionList,
+                    lambda connection: connection.get("from").get("nodeId") == node.get("id"),
+                    connectionList
                 )
             )
             inputConnections = list(
@@ -176,7 +179,7 @@ def loadConfig(dbo, mode=LodingMode):
                 )
                 numberOfNodesInit += 1
 
-                if mode == LodingMode.RUNNING:
+                if mode == LoadingMode.RUNNING:
                     saveNodeChange(
                         NodeChange(
                             node.get("id"),
@@ -187,18 +190,18 @@ def loadConfig(dbo, mode=LodingMode):
                         )
                     )
             else:
-                nodeSettingsChanged = existingNode.get("options").get(
+                nodeSettingsChanged = existingNode.options.get(
                     "settings"
                 ) != options.get("settings")
                 outputChanged = (
-                    existingNode.get("outputConnections") != outputConnections
+                    existingNode.outputConnections != outputConnections
                 )
-                nameChanged = existingNode.get("name") != node.get("name")
+                nameChanged = existingNode.name != node.get("name")
 
                 # Input only relevant for existing nodes with inputConnections !== undefined
                 inputChanged = (
-                    existingNode.get("inputConnections") is not None
-                    and existingNode.get("inputConnections") != inputConnections
+                    existingNode.inputConnections is not None
+                    and existingNode.inputConnections != inputConnections
                 )
 
                 if existingNode and (
@@ -213,7 +216,7 @@ def loadConfig(dbo, mode=LodingMode):
                                 node.get("id"),
                                 node.get("name"),
                                 NodeChangeType.MODIFY,
-                                existingNode.get("options").get("settings"),
+                                existingNode.options.get("settings"),
                                 options.get("settings"),
                             )
                         )

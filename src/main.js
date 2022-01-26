@@ -38,7 +38,7 @@ const options = {
 
 Vue.use(new VueSocketIO({
   debug: true,
-  connection: SocketIO('http://192.168.1.31:5000', options),
+  connection: SocketIO('http://192.168.1.30:5000', options),
   vuex:{
     store,
     mutationPrefix: 'SOCKET_',

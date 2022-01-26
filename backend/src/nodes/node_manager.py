@@ -10,6 +10,7 @@ nodes = []
 class NodeManager:
     def getNodeById(nodeId):
         for node in nodes:
+            # print(node.id, 'vs', nodeId, [nodes])
             if node.id == nodeId:
                 return node
         return None
@@ -25,10 +26,17 @@ class NodeManager:
 
     def reset():
         global nodes
-        if len(nodes) > 0:
-            for node in nodes:
-                node.stop()
-            nodes = []
+        for node in nodes:
+            node.stop()
+        nodes = []
+    
+    def pause():
+        for node in nodes:
+            node.pause()
+    
+    def resume():
+        for node in nodes:
+            node.resume()
 
     def resetNode(nodeId):
         global nodes

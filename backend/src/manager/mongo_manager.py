@@ -1,28 +1,28 @@
 from pymongo import MongoClient
-import os
+from os import environ
 
 # get environment variable "NODE_ENV"
-environment = os.environ.get("NODE_ENV", "DEV")
+#environment = os.environ.get("NODE_ENV", "DEV")
 
-url = "mongodb://192.168.1.41:27017/"
-if environment == "DEV":
-    url = "mongodb://localhost:27017/"
-print("url", url)
+
+db_port = environ.get("DB_PORT", "27017")
+db_ip = environ.get("SERVER_IP", "192.168.1.30")
+url = f"mongodb://{db_ip}:{db_port}/"
+
 _db = None
 requiredCollections = ["node-configs", "node-templates", "last-values", "node-history"]
 
 
-def connectToServer(callback):
+def connectToMongo(database="Teste"):
     global _db
     if _db is None:
         client = MongoClient(url)
-        _db = client.get_database("Omnis")
+        _db = client.get_database(database)
 
     for collectionName in requiredCollections:
         if collectionName not in _db.list_collection_names():
             _db.create_collection(collectionName)
             print("Collection {} created".format(collectionName))
-    callback()
 
 
 def getDb():

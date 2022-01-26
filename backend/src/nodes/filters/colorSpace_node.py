@@ -5,8 +5,8 @@ if __package__ is None:
     sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
 import cv2
-from nodes.node_manager import NodeManager
-from nodes.base_node import BaseNode
+from src.nodes.node_manager import NodeManager
+from src.nodes.base_node import BaseNode
 
 
 NODE_TYPE = "COLORSPACE"

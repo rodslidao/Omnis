@@ -3,7 +3,7 @@ from python_utils.imports import *
 # from python_utils.nodes import *
 
 # from imports import *
-# from nodes import *
+# from .nodes import *
 
 script_dir = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'data'))
 

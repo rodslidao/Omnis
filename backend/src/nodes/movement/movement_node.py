@@ -4,8 +4,9 @@ if __package__ is None:
 
     sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
-from nodes.node_manager import NodeManager
-from nodes.base_node import BaseNode
+from time import sleep
+from src.nodes.node_manager import NodeManager
+from src.nodes.base_node import BaseNode
 
 NODE_TYPE = "MOVEMENT"
 
@@ -15,29 +16,34 @@ class MovementNode(BaseNode):
         super().__init__(name, NODE_TYPE, id, options, outputConnections)
         self.inputConnections = inputConnections
         self.serial = False
-        self.axis = list(map(lambda x: x.lower(), options["axis"]))
-        self.coordinates = {k: v for k, v in options if k in self.axis}
+        self.axis = list(map(lambda x: x.lower(), options["axis"]["list_of_axis"]))
+        self.coordinates = {k.lower(): v for k, v in options["axis"]["axis_values"].items() if k.lower() in self.axis}
         NodeManager.addNode(self)
 
     def execute(self, message):
-        action = message["targetName"].lower()
+        action = message.targetName.lower()
+        print(f"MovementNode [{self.id}]:")
         if action in self.axis:
-            self.coordinates[action] = message["payload"][action]
+            self.coordinates[action] = message.payload[action]
         else:
             try:
-                getattr(self, action)(message["payload"])
+                getattr(self, action+'_f')(message.payload)
             except Exception as e:
+                print(e)
                 self.onFailure("Cant execute action", pulse=True, errorMessage=str(e))
 
-    def serial(self, payload):
-        self.serial = payload["serial"]
+    def serial_f(self, payload):
+        print(f"MovmentNode [{self.id}][Serial]:", payload)
+        self.serial = payload
 
-    def coordinates(self, payload):
+    def coordinates_f(self, payload):
         for k, v in payload["coordinates"].items():
             self.coordinates[k] = v
         self.coordinates = payload["coordinates"]
 
-    def trigger(self, payload=None):
+    def trigger_f(self, payload=None):
+        print(f"MovmentNode [{self.id}][Trigger]")
+        sleep(0.2)
         if self.serial is not None and self.serial.isAlive():
             movement = [
                 (k, v)
@@ -45,13 +51,17 @@ class MovementNode(BaseNode):
                 if (k in self.axis and v is not None)
             ]
             try:
-                self.serial.MG0(*movement, nonsync=None)
-                self.onSuccess({"serial": self.serial})
+                self.serial.M_G0(*movement, nonsync=None)
+                print("Passou")
+                self.onSuccess(self.serial)
             except Exception as e:
+                print(e)
                 self.onFailure("Cant execute movement", pulse=True, errorMessage=str(e))
         else:
             if not self.serial.isAlive():
+                print("Serial not running")
                 self.onFailure("Serial not running", pulse=True)
 
             if self.serial is None:
+                print("Serial not connected")
                 self.onFailure("Serial not connected", pulse=True)

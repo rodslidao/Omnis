@@ -1,16 +1,9 @@
-if __package__ is None:
-    import sys
-    from os import path
-
-    sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
-
+from src.manager.socketio_manager import emit
 from src.message import Message
-from nodes.node_manager import NodeManager
-from src.exec_info import ExecutionCounter
-from flask_socketio import emit
+from src.nodes.node_manager import NodeManager
+#from src.exec_info import ExecutionCounter
 
 NODE_TYPE = "BASE_NODE"
-
 
 class BaseNode:
     def __init__(self, name, type, id, options, outputConnections) -> None:
@@ -20,16 +13,17 @@ class BaseNode:
         self.options = options
         self.outputConnections = outputConnections
         self.running = True
+        print(self.id, outputConnections)
 
     def onSuccess(self, payload, additional=None):
-        ExecutionCounter.incrCountType(self.id, "success")
+        #ExecutionCounter.incrCountType(self.id, "success")
         self.on("onSuccess", payload, additional)
 
     def onSignal(self, signal=True):
         self.on("Sinal", signal)
 
     def onFailure(self, payload, additional=None, pulse=True, errorMessage=""):
-        ExecutionCounter.incrCountType(self.id, "failure")
+        #ExecutionCounter.incrCountType(self.id, "failure")
         self.on("onFailure", payload, additional, pulse)
 
     def on(self, trigger, payload, additional=None, pulse=False, errorMessage=""):
@@ -42,8 +36,8 @@ class BaseNode:
         )
         if pulse:
             self.sendErrorMessage(self.id, errorMessage)
-        if trigger == "onFailure":
-            ExecutionCounter.incrCountType(self.id, "failure")
+        #if trigger == "onFailure":
+            #ExecutionCounter.incrCountType(self.id, "failure")
         for target in targets:
             self.sendConnectionExec(
                 target.get("from").get("id"), target.get("to").get("id")
@@ -58,7 +52,18 @@ class BaseNode:
                 payload,
                 additional,
             )
-            NodeManager.getNodeById(target.get("to").get("nodeId")).execute(message)
+            while not self.running:
+                pass
+            try:
+                NodeManager.getNodeById(target.get("to").get("nodeId")).execute(message)
+            except AttributeError:
+                print("to:",target.get("to"), "to_id:",target.get("to").get("nodeId"))
+
+    def pause(self):
+        self.running = False
+    
+    def resume(self):
+        self.running = True
 
     def stop(self):
         pass

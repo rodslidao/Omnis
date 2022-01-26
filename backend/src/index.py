@@ -4,9 +4,9 @@ if __package__ is None:
 
     sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
-from src.loader import loadConfig, LodingMode
+from src.loader import loadConfig, LoadingMode
 
-# from nodes.node_manager import NodeManager
+# from .nodes.node_manager import NodeManager
 from src.manager.mongo_manager import getDb, connectToServer
 from src.exec_info import ExecutionCounter
 import os
@@ -34,7 +34,7 @@ connectedClients = 0
 def call():
     global io, app, dbo
     dbo = getDb()
-    loadConfig(dbo, LodingMode.STARTUP)
+    loadConfig(dbo, LoadingMode.STARTUP)
     app = Flask(__name__)
     io = SocketIO(app, async_mode=None, async_handlers=True, cors_allowed_origins="*")
     CORS(app)

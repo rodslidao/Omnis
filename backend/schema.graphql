@@ -1,4 +1,5 @@
 scalar JSON
+scalar DateTime
 
 schema {
   mutation: Mutation
@@ -9,19 +10,29 @@ type Mutation {
   createNodeSheet(input: NodeSheetInput): NodeSheetResult
   updateNodeSheet(id: ID!, input:NodeSheetInput): NodeSheetResult
   deleteNodeSheet(id: ID!): NodeSheetResult
+
+  startProcess: ProcessResult!
+  stopProcess: ProcessResult!
+  resumeProcess: ProcessResult!
+  pauseProcess: ProcessResult!
 }
 
 type Query {
   getNodeSheet(id: ID!): NodeSheetResult!
 }
 
-
+# NodeSheet CRUD #
 type NodeSheetResult {
   success: Boolean
   data: NodeSheet
   errors: [String]
 }
 
+type ProcessResult {
+  success: Boolean
+  data: Process
+  errors: [String]
+}
 input NodeSheetInput {
   name: String!
 }
@@ -61,4 +72,13 @@ type interface {
   name: String!
   id: String!
   value: JSON!
+}
+
+type Process {
+  _id: ID!
+  startTime: Float
+  runningTime: Float
+  endTime: Float
+  status: String!
+  error: String
 }

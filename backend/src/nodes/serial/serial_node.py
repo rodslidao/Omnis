@@ -4,11 +4,11 @@ if __package__ is None:
 
     sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
-from nodes.node_manager import NodeManager
-from nodes.base_node import BaseNode
-from serial_obj import SerialOBJ
-from gcode_obj import SerialGcodeOBJ
-from nodes.timer.task_time import setInterval
+from src.nodes.node_manager import NodeManager
+from src.nodes.base_node import BaseNode
+from .serial_obj import SerialOBJ
+from .gcode_obj import SerialGcodeOBJ
+from src.nodes.timer.task_time import setInterval
 
 
 NODE_TYPE = "SERIAL"
@@ -20,9 +20,9 @@ class SerialNode(BaseNode):
         self.inputConnections = inputConnections
         self.serial_name = options["hardware"]["serial_name"]
         self.serial_port = options["porta"]["serial_port"]
-        self.serial_bandrate = options["velocidade"]["serial_bandrate"]
-        self.reconnect = options["reconectar"]["reconnect"]
-        if options["tipo"] == "gcode":
+        self.serial_bandrate = options["velocidade"]["serial_baudrate"]
+        self.reconnect = options["reconectar"]["serial_reconnect"]
+        if options["connection_type"]["serial_connection_type"] == "gcode":
             serial_class = SerialGcodeOBJ
         else:
             serial_class = SerialOBJ
@@ -32,20 +32,26 @@ class SerialNode(BaseNode):
             self.serial_bandrate,
             reconnect=self.reconnect,
         )
+        print("SerialNode:", self.serial_name, self.serial_port, self.serial_bandrate)
         self.running = self.serial.isAlive
         self.stop_event = self.execute()
         NodeManager.addNode(self)
 
-    @setInterval(0.5)
+    @setInterval(1)
     def execute(self, message=""):
-        if not self.running():
+        print("Executing SerialNode")
+        if not self.serial.isAlive():
+            print("Abrindo Serial")
             try:
-                self.serial.iniciar()
+                self.serial.start()
             except Exception as e:
+                print(e)
                 self.onFailure("Cant start serial", pulse=True, errorMessage=str(e))
                 return
-        if self.running():
-            self.onSuccess({"serial": self.serial})
+        if self.serial.isAlive():
+            print("Serial aberto")
+            self.onSuccess(self.serial)
+        # self.stop()
 
     def stop(self):
         self.stop_event.set()

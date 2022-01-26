@@ -1,13 +1,14 @@
-if __package__ is None:
-    import sys
-    from os import path
+# if __package__ is None:
+#     import sys
+#     from os import path
 
-    sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
+#     sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
-from nodes.node_manager import NodeManager
-from src.Redis import RedisClient
+from .nodes.node_manager import NodeManager
+from .Redis import RedisClient
 from datetime import datetime
 from flask_socketio import emit
+from time import sleep
 
 
 class NodeExecutionCount(object):
@@ -44,7 +45,7 @@ class ExecutionCounter(object):
         RedisClient.set(execInfoTime, datetime.now().strftime("%H:%M:%S"))
 
         RedisClient.incrby(execInfoString, incrWidth)
-        ExecutionCounter.sendExecutionCountWithoutInfo(nodeId)
+        #ExecutionCounter.sendExecutionCountWithoutInfo(nodeId)
 
     @staticmethod
     def setCountType(nodeId, type, value):
@@ -56,14 +57,15 @@ class ExecutionCounter(object):
         RedisClient.set(execInfoTime, datetime.now().strftime("%H:%M:%S"))
         RedisClient.set(execInfoString, value)
 
-        ExecutionCounter.sendExecutionCountWithoutInfo(nodeId)
+        #ExecutionCounter.sendExecutionCountWithoutInfo(nodeId)
 
     @staticmethod
     def initialEmitAllCounts():
         activeNodes = NodeManager.getActiveNodes()
         for node in activeNodes:
-            ExecutionCounter.sendExecutionCountWithoutInfo(node.id)
-            print("Send here to front 'sendExecutionCountWithoutInfo(node.id)' ")
+            sleep(2)
+            #ExecutionCounter.sendExecutionCountWithoutInfo(node.id)
+            #print("Send here to front 'sendExecutionCountWithoutInfo(node.id)' ")
 
     @staticmethod
     def resetCount(nodeId):

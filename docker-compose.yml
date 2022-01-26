@@ -36,25 +36,32 @@ services:
       - ./mongodb:/data/db
 
   backend:
-      container_name: backend
-      image: backend:latest
-      build: ./backend
-      restart: always
-      ports:
-        - ${STREAMING_PORT}:${STREAMING_PORT}
-        - ${SERVER_PORT}:${SERVER_PORT}
-      environment:
-        ENV_MODE: ${ENV_MODE}
-        STREAMING_PORT: ${STREAMING_PORT}
-        SERVER_PORT: ${SERVER_PORT}
-      volumes:
-        - ./backend:/app
-      command: python main.py
-      depends_on:
-        - mongo-express
-      networks:
-        - mongo-compose-network
+    container_name: backend
+    image: backend:latest
+    build: ./backend
+    restart: always
+    ports:
+      - ${STREAMING_PORT}:${STREAMING_PORT}
+      - ${SERVER_PORT}:${SERVER_PORT}
+    environment:
+      ENV_MODE: ${ENV_MODE}
+      STREAMING_PORT: ${STREAMING_PORT}
+      SERVER_PORT: ${SERVER_PORT}
+    volumes:
+      - ./backend:/app
+    command: python main.py
+    depends_on:
+      - mongo-express
+    networks:
+      - mongo-compose-network
 
+  # redis:
+  #   container_name: redis
+  #   image: redis:latest
+  #   ports:
+  #     - "6379:6379"
+  #   networks:
+  #     - mongo-compose-network
       
 networks: 
   mongo-compose-network:

@@ -4,19 +4,19 @@ if __package__ is None:
 
     sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
-# import all nodes from nodes folder
-from nodes.button.button_node import ButtonNode
-from nodes.define.variable_node import VariableNode
-from nodes.display.printer_node import PrinterNode
-from nodes.movement.movement_node import MovementNode
-from nodes.serial.camera_node import CameraNode
-from nodes.serial.serial_node import SerialNode
+# import all nodes from .nodes folder
+from .button.button_node import ButtonNode
+from .define.variable_node import VariableNode
+from .display.printer_node import PrinterNode
+from .movement.movement_node import MovementNode
+from .serial.camera_node import CameraNode
+from .serial.serial_node import SerialNode
 
 # Copilot suggestion for new nodes:
-# from nodes.display.display_node import DisplayNode
-# from nodes.led.led_node import LEDNode
-# from nodes.motor.motor_node import MotorNode
-# from nodes.sensor.sensor_node import SensorNode
+# from src.nodes.display.display_node import DisplayNode
+# from src.nodes.led.led_node import LEDNode
+# from src.nodes.motor.motor_node import MotorNode
+# from src.nodes.sensor.sensor_node import SensorNode
 
 
 class RegEntry:

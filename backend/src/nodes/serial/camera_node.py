@@ -1,13 +1,7 @@
-if __package__ is None:
-    import sys
-    from os import path
-
-    sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
-
-from nodes.node_manager import NodeManager
-from nodes.base_node import BaseNode
-from camera_object import CameraOBJ
-from nodes.timer.task_time import setInterval
+from src.nodes.node_manager import NodeManager
+from src.nodes.base_node import BaseNode
+from .camera_object import CameraOBJ
+from src.nodes.timer.task_time import setInterval
 
 NODE_TYPE = "CAMERA"
 
