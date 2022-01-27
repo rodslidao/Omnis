@@ -14,7 +14,11 @@ def defaultException(function):
         try:
             return function(*args, **kwargs)
         except Exception as error:
-            payload = {"success": False, "errors": [str(error)]}
+            payload = {
+                "status":{
+                    "success": False,
+                    "errors": [str(error)]
+                }}
             return payload
 
     return wrapper
@@ -90,7 +94,24 @@ class NodeSheet:
         """Format the NodeSheet object"""
         return self.NodeSheet
 
+class LastValue:
 
+    NodeSheet = {"query": "lastLoadedNoneSheet"}
+
+    def loadConfig(node_id):
+        """Load the last value of a node"""
+        LastValue.setLastValue(LastValue.NodeSheet, {"NodeSheetID": node_id})
+
+    def getLoadedConfig():
+        return LastValue.getLastValue(LastValue.NodeSheet)["NodeSheetID"]
+
+    def getLastValue(query):
+        """Get the last value of a node"""
+        return dbo["last-values"].find_one(query)
+
+    def setLastValue(query, value):
+        """Set the last value of a node"""
+        dbo["last-values"].update_one(query, {"$set": value})
 class ProcessManager(Process):
     def __init__(self, differ=None) -> None:
         super().__init__()

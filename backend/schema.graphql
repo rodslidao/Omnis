@@ -15,28 +15,38 @@ type Mutation {
   stopProcess: ProcessResult!
   resumeProcess: ProcessResult!
   pauseProcess: ProcessResult!
+
+  loadConfig(_id: ID!): Boolean!
+  getLoadedConfig: ID!
 }
 
 type Query {
   getNodeSheet(id: ID!): NodeSheetResult!
 }
 
-# NodeSheet CRUD #
-type NodeSheetResult {
-  success: Boolean
-  data: NodeSheet
-  errors: [String]
+# Interfaces
+type DefaultStatus{
+  success: Boolean!
+  error: [String]
 }
 
-type ProcessResult {
-  success: Boolean
-  data: Process
-  errors: [String]
+# Results
+type NodeSheetResult{
+  status: DefaultStatus!
+  data: NodeSheet
 }
+
+type ProcessResult{
+  status: DefaultStatus!
+  data: Process
+}
+
+# Inputs
 input NodeSheetInput {
   name: String!
 }
 
+# Types
 type NodeSheet {
   _id: ID!
   connections: [connection]
