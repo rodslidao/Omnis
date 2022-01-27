@@ -2,9 +2,10 @@ from enum import Enum
 from api import dbo
 from bson.objectid import ObjectId
 from datetime import datetime
+from src.nodes.timer.task_time import setInterval
 from src.loader import loadConfig, LoadingMode
 from src.nodes.node_manager import NodeManager
-from src.nodes.timer.task_time import setInterval
+from src.nodes.timer.timer import Chronometer
 
 def defaultException(function):
     """Decorator to catch exceptions and return a payload with success=False and errors=exception message"""
@@ -28,33 +29,38 @@ class Process:
 
     def __init__(self) -> None:
         self._id = ObjectId()
-        self.startTime = datetime.now()
-        self.endTime = datetime.now()
-        self.calculateRunningTime()
         self.status = Process.StatusCode.STOPPED
         self.errors = []
         self.format = "%m/%d/%y %H:%M:%S"
+        self.endTiming , self.startTiming = 0.0, 0.0
 
     def start(self):
-        self.startTime = datetime.now()
+        print("Starting process")
         self.status = Process.StatusCode.RUNNING
+        self.Chronometer = Chronometer()
+        self.startTiming = self.Chronometer.start().timestamp()
+    
+    def runningTime(self):
+        return float(self.Chronometer.trigger().total_seconds())
 
     def stop(self):
-        self.endTime = datetime.now()
+        print("Stopping process")
         self.status = Process.StatusCode.STOPPED
-        self.calculateRunningTime()
-        self.calculateRunningTime.stop()
+        self.Chronometer.stop()
+        self.endTiming = self.Chronometer.cron_End.timestamp()
+
+    def resume(self):
+        print("Resuming process")
+        self.status = Process.StatusCode.RUNNING
+        self.Chronometer.resume()
 
     def pause(self):
-        self.status = Process.ProcessStatus.PAUSED
-
-    def calculateRunningTime(self):
-        #st = #datetime.strptime(self.startTime.strftime(self.format), self.format)
-        #ed = #datetime.strptime(self.endTime.strftime(self.format), self.format)
-        self.runningTime = (self.endTime - self.startTime).total_seconds()
+        print("Pausing process")
+        self.status = Process.StatusCode.PAUSED
+        self.Chronometer.pause()
 
     def __call__(self):
-        return self.__dict__
+        return {"_id": str(self._id), "running_seconds": self.runningTime(), "end_at": float(self.endTiming), "start_at": float(self.startTiming)}
 
 
 class NodeSheet:
@@ -91,26 +97,27 @@ class ProcessManager(Process):
         self.lt = None
 
     def startProcess(self):
-        self.verifyChange()
-        loadConfig(self.NodeSheet, LoadingMode.STARTUP)
+        loadConfig(self.verifyChange(), LoadingMode.STARTUP)
         super().start()
 
     def stopProcess(self):
-        NodeManager().stop()
+        NodeManager.stop()
         super().stop()
 
     def pauseProcess(self):
-        NodeManager().pause()
+        NodeManager.pause()
         super().pause()
 
+    def resumeProcess(self):
+        NodeManager.resume()
+        super().resume()
+    
     def verifyChange(self):
         lt = dbo["last-values"].find_one({"query": "lastLoadedNoneSheet"})
         if lt["NodeSheetID"] != self.lt:
             print(lt["NodeSheetID"])
-            self.NodeSheet = NodeSheet().getNodeSheetById(lt["NodeSheetID"])
             self.lt = lt["NodeSheetID"]
-            return True
-        return False
+        return NodeSheet().getNodeSheetById(self.lt)
     
     def dict(self):
         return super().__call__()

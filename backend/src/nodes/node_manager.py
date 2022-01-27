@@ -30,6 +30,9 @@ class NodeManager:
             node.stop()
         nodes = []
     
+    def stop():
+        NodeManager.reset()
+
     def pause():
         for node in nodes:
             node.pause()

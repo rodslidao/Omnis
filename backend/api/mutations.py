@@ -3,7 +3,7 @@ from .models import NodeSheet, defaultException, ProcessManager
 from ariadne import MutationType
 
 mutation = MutationType()
-
+process = ProcessManager()
 
 @defaultException
 @mutation.field("createNodeSheet")
@@ -33,8 +33,44 @@ def deleteNodeSheet_resolver(obj, info, id):
 def startProcess_resolver(obj, info):
     """Start a process by id and return it like a payload"""
     # try:
-    ProcessManager().startProcess()
-    returns = ProcessManager().dict()
+    process.startProcess()
+    returns = process.dict()
+    print(returns)
+    # except AttributeError:
+    #     raise AttributeError("Id in last-values colletions does not match with any process")
+    return {"success": True, "data": returns}
+
+@defaultException
+@mutation.field("stopProcess")
+def stopProcess_resolver(obj, info):
+    """Stop a process by id and return it like a payload"""
+    # try:
+    process.stopProcess()
+    returns = process.dict()
+    print(returns)
+    # except AttributeError:
+    #     raise AttributeError("Id in last-values colletions does not match with any process")
+    return {"success": True, "data": returns}
+
+@defaultException
+@mutation.field("pauseProcess")
+def pauseProcess_resolver(obj, info):
+    """Pause a process by id and return it like a payload"""
+    # try:
+    process.pauseProcess()
+    returns = process.dict()
+    print(returns)
+    # except AttributeError:
+    #     raise AttributeError("Id in last-values colletions does not match with any process")
+    return {"success": True, "data": returns}
+
+@defaultException
+@mutation.field("resumeProcess")
+def resumeProcess_resolver(obj, info):
+    """Resume a process by id and return it like a payload"""
+    # try:
+    process.resumeProcess()
+    returns = process.dict()
     print(returns)
     # except AttributeError:
     #     raise AttributeError("Id in last-values colletions does not match with any process")

@@ -152,22 +152,22 @@ class SerialOBJ(object):
                         )
 
                 strr = []
-                if command.startswith("G0"):
-                    print(
-                        "\n" * 2,
-                        "-" * 5,
-                        "Comando de movimentação recebido",
-                        "-" * 5,
-                        "\n" * 2,
-                    )
-                elif command.startswith("M41"):
-                    print(
-                        "\n" * 2,
-                        "-" * 5,
-                        "Comando de parada recebido",
-                        "-" * 5,
-                        "\n" * 2,
-                    )
+                # if command.startswith("G0"):
+                #     # print(
+                #     #     "\n" * 2,
+                #     #     "-" * 5,
+                #     #     "Comando de movimentação recebido",
+                #     #     "-" * 5,
+                #     #     "\n" * 2,
+                #     # )
+                # elif command.startswith("M41"):
+                #     print(
+                #         "\n" * 2,
+                #         "-" * 5,
+                #         "Comando de parada recebido",
+                #         "-" * 5,
+                #         "\n" * 2,
+                #     )
                 # Lê, decodifica e processa enquanto houver informação no buffer de entrada.
                 while True:
                     b = self.serial.readline()

@@ -32,16 +32,16 @@ class SerialNode(BaseNode):
             self.serial_bandrate,
             reconnect=self.reconnect,
         )
-        print("SerialNode:", self.serial_name, self.serial_port, self.serial_bandrate)
+        #print("SerialNode:", self.serial_name, self.serial_port, self.serial_bandrate)
         self.running = self.serial.isAlive
         self.stop_event = self.execute()
         NodeManager.addNode(self)
 
     @setInterval(1)
     def execute(self, message=""):
-        print("Executing SerialNode")
+        #print("Executing SerialNode")
         if not self.serial.isAlive():
-            print("Abrindo Serial")
+            #print("Abrindo Serial")
             try:
                 self.serial.start()
             except Exception as e:
@@ -49,7 +49,7 @@ class SerialNode(BaseNode):
                 self.onFailure("Cant start serial", pulse=True, errorMessage=str(e))
                 return
         if self.serial.isAlive():
-            print("Serial aberto")
+            #print("Serial aberto")
             self.onSuccess(self.serial)
         # self.stop()
 

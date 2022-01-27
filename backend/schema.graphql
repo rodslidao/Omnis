@@ -1,5 +1,5 @@
 scalar JSON
-scalar DateTime
+scalar Decimal
 
 schema {
   mutation: Mutation
@@ -76,9 +76,9 @@ type interface {
 
 type Process {
   _id: ID!
-  startTime: Float
-  runningTime: Float
-  endTime: Float
+  start_at: Float!
+  end_at: Float!
+  running_seconds: Float!
   status: String!
   error: String
 }

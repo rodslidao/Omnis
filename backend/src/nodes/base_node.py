@@ -13,7 +13,6 @@ class BaseNode:
         self.options = options
         self.outputConnections = outputConnections
         self.running = True
-        print(self.id, outputConnections)
 
     def onSuccess(self, payload, additional=None):
         #ExecutionCounter.incrCountType(self.id, "success")
@@ -61,12 +60,15 @@ class BaseNode:
 
     def pause(self):
         self.running = False
-    
+        return True
+
     def resume(self):
         self.running = True
+        return True
 
     def stop(self):
-        pass
+        print("stop method not implemented for node type", self.type)
+        return False
 
     def reset(self):
         print("reset method not implemented for node type", self.type)
