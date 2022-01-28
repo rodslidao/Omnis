@@ -511,6 +511,9 @@ const store = new Vuex.Store({
       console.log(state.isConnected);
     },
     
+    SOCKET_teste: (state, payload) => {
+      console.log("teste recebido");
+    },
     
     SOCKET_RESPONSE_MESSAGE : (state, message) => {
       console.log("%c Recebido:", 'color: #51a4f7')

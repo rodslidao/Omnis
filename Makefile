@@ -13,5 +13,12 @@ logs:
 
 .PHONY: restart
 restart:
-	docker-compose down && docker-compose up -d && docker exec -it python_c bash
-	
+ docker-compose restart
+
+.PHONY: restart-force
+restart-force:
+	docker-compose down && docker-compose up -d
+
+.PHONY: build
+build:
+	docker-compose build
