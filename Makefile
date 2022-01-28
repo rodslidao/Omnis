@@ -13,7 +13,7 @@ logs:
 
 .PHONY: restart
 restart:
-	docker-compose restart
+ docker-compose restart
 
 .PHONY: restart-force
 restart-force:

@@ -15,7 +15,7 @@ services:
         - mongo-compose-network
     volumes: 
       - ./mongodb:/data/db
-
+ 
   mongo-express:
     image: mongo-express:latest
     restart: always
@@ -24,8 +24,10 @@ services:
     environment:
       ME_CONFIG_MONGODB_SERVER: mongo_c
       ME_CONFIG_MONGODB_PORT: ${DB_PORT}
+
       ME_CONFIG_BASICAUTH_USERNAME: ${EXPRESS_USER}
       ME_CONFIG_BASICAUTH_PASSWORD: ${EXPRESS_PASSWORD}
+
     links:
       - mongo
     networks:

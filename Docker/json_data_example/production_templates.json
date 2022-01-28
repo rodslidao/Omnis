@@ -1,0 +1,51 @@
+[
+    {
+        "name": "default_template",
+        "info": {
+            "name": null,
+            "partNumber": null,
+            "date": "2021-11-10 10:11:11",
+            "avarage_size": 7,
+            "date_format": "%m/%d/%Y, %H:%M:%S"
+        },
+        "today": {
+            "total": 0,
+            "rigth": 0,
+            "wrong": 0
+        },
+        "total": {
+            "total": 0,
+            "rigth": 0,
+            "wrong": 0
+        },
+        "avarage": {
+            "avarage_total": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0
+            ],
+            "avarage_rigth": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0
+            ],
+            "avarage_wrong": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0
+            ]
+        }
+    }
+]

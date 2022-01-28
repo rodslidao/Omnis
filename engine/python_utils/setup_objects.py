@@ -1,4 +1,6 @@
-
+from numpy import e
+from omnis.serial.gcodes import gcode, gcode_exp
+from omnis.serial.connections import serial, serial_exp
 from python_utils.imports import *
 # from python_utils.nodes import *
 
@@ -180,34 +182,35 @@ class identificador:
         # converte a amosta de cor dominante pra hsv
         hsv_bkg = cv2.cvtColor(rgb_base_img, cv2.COLOR_BGR2HSV_FULL)
 
-        #acha os valores correspondentes em hsv tirando uma média de toda a imagem (como é feita de uma cor só, a média é a conversão direta)
-        hsv_bkg_median = np.mean(np.array(hsv_bkg), axis=(1,0)).tolist()
-        
-        # cria um range minimo  máximo usando a média - n% ('n%' é definido pelo objeto)
-        hsv_bkg_median_max = list(map(lambda x: x+(x*0.3), hsv_bkg_median))
-        hsv_bkg_median_min = list(map(lambda x: x-(x*0.3), hsv_bkg_median))
+from python_utils.Identificators.I_class import *
 
 
-        return hsv_bkg_median_min, hsv_bkg_median_max
+camera_objects = {camera_config.get("name"):USB_Camera(camera_config) for camera_config in database.find_many("cameras", {})}
+serial_objects = {serial_config.get("name"):serial.new(**serial_config) for serial_config in database.find_many("serials", {})}
+server_objects = {server_config.get("name"): server_config for server_config in database.find_many("servers", {"name":"Parallax"})}
+machine_objects = {serial_name:gcode.gcode(serial_objects[serial_name]) for serial_name in serial_objects if serial_objects[serial_name].kwargs.get("gcode")}
 
-    def rgbDominantColor(self, a):
-        a2D = a.reshape(-1,a.shape[-1])
-        col_range = (256, 256, 256) # generically : a2D.max(0)+1
-        eval_params = {'a0':a2D[:,0],'a1':a2D[:,1],'a2':a2D[:,2],
-                    's0':col_range[0],'s1':col_range[1]}
-        a1D = ne.evaluate('a0*s0*s1+a1*s0+a2',eval_params)
-        return np.unravel_index(np.bincount(a1D).argmax(), col_range)
+devicefilter_list = [dv for dv in database.find_many("devices_filters", {})]
 
-    def __str__(self) -> str:
-        return f"{self.__class__.__name__}({self.__dict__})"
+model_objects = {dv["filter"]:database.find_one("filters_config", {"name": dv["filter"]}) for dv in devicefilter_list}
 
+filter_objects = {
+                    dv["filter"]:Filter(
+                        dv["filter"],
+                        [database.find_one("colors_filters",  n) for n in model_objects[dv["filter"]]["colors"]],
+                        [database.find_one("areas_filters",   n) for n in model_objects[dv["filter"]]["areas"]],
+                        [database.find_one("kernels_filters", n) for n in model_objects[dv["filter"]]["kernels"]],
+                        [database.find_one("retrieval_algorithm_filters", n) for n in model_objects[dv["filter"]]["mode"]],
+                        [database.find_one("approximation_methods", n) for n in model_objects[dv["filter"]]["methods"]]
+                    ) for dv in devicefilter_list
+                }
 
-identificator_objects = {}
-for config in devicefilter_json.value:
-    identificator_objects[config.get('filter')] = identificador(
-        name=config.get('filter'),
-        cam=cameras_objects.get(config.get('camera_device')),
-        machine=machine_objects.get(config.get('machine')),
-        filter_data=filters_json.value
-        )
-objects = {k:v for k, v in _all.items() if k.endswith("_objects")}
+Identifyer_objects = {
+        dv["filter"]:Identifyer(dv["name"], camera_objects[dv["camera_device"]], machine_objects[dv["machine"]], filter_objects[dv["filter"]] ) for dv in devicefilter_list
+}
+
+#! Isso deve mudar.
+for c in camera_objects.values():
+    c.start()
+serial_objects["Octopus V1.1"].start()
+

@@ -1,0 +1,204 @@
+{
+    "nodes": [
+        {
+            "type": "MoveNode",
+            "id": "node_16414902349610",
+            "name": "Movimento",
+            "options": [
+                [
+                    "Hardware",
+                    "Selecione uma Placa"
+                ],
+                [
+                    "X",
+                    true
+                ],
+                [
+                    "Y",
+                    false
+                ],
+                [
+                    "Z",
+                    null
+                ]
+            ],
+            "state": {},
+            "interfaces": [
+                [
+                    "Entrada",
+                    {
+                        "id": "ni_16414902349611",
+                        "value": 0
+                    }
+                ],
+                [
+                    "Velocidade",
+                    {
+                        "id": "ni_16414902349612",
+                        "value": 10000
+                    }
+                ],
+                [
+                    "Saida",
+                    {
+                        "id": "cc",
+                        "value": null
+                    }
+                ],
+                [
+                    "X ",
+                    {
+                        "id": "ni_164149028723524",
+                        "value": 0
+                    }
+                ]
+            ],
+            "position": {
+                "x": 365,
+                "y": 63
+            },
+            "width": 245,
+            "twoColumn": true,
+            "customClasses": ""
+        },
+        {
+            "type": "MoveNode",
+            "id": "node_16414902349634",
+            "name": "Movimento",
+            "options": [
+                [
+                    "Hardware",
+                    "Selecione uma Placa"
+                ],
+                [
+                    "X",
+                    false
+                ],
+                [
+                    "Y",
+                    true
+                ],
+                [
+                    "Z",
+                    null
+                ]
+            ],
+            "state": {},
+            "interfaces": [
+                [
+                    "Entrada",
+                    {
+                        "id": "dd",
+                        "value": 0
+                    }
+                ],
+                [
+                    "Velocidade",
+                    {
+                        "id": "ni_16414902349636",
+                        "value": 10000
+                    }
+                ],
+                [
+                    "Saida",
+                    {
+                        "id": "aa",
+                        "value": null
+                    }
+                ],
+                [
+                    "Y ",
+                    {
+                        "id": "ni_164149028897625",
+                        "value": 0
+                    }
+                ]
+            ],
+            "position": {
+                "x": 748,
+                "y": 75
+            },
+            "width": 245,
+            "twoColumn": true,
+            "customClasses": ""
+        },
+        {
+            "type": "MoveNode",
+            "id": "node_164149027056010",
+            "name": "Movimento",
+            "options": [
+                [
+                    "Hardware",
+                    "Selecione uma Placa"
+                ],
+                [
+                    "X",
+                    null
+                ],
+                [
+                    "Y",
+                    null
+                ],
+                [
+                    "Z",
+                    true
+                ]
+            ],
+            "state": {},
+            "interfaces": [
+                [
+                    "Entrada",
+                    {
+                        "id": "bb",
+                        "value": 0
+                    }
+                ],
+                [
+                    "Velocidade",
+                    {
+                        "id": "ni_164149027056012",
+                        "value": 10000
+                    }
+                ],
+                [
+                    "Saida",
+                    {
+                        "id": "ni_164149027056013",
+                        "value": null
+                    }
+                ],
+                [
+                    "Z ",
+                    {
+                        "id": "ni_164149028567923",
+                        "value": 0
+                    }
+                ]
+            ],
+            "position": {
+                "x": 1142,
+                "y": 82
+            },
+            "width": 245,
+            "twoColumn": true,
+            "customClasses": ""
+        }
+    ],
+    "connections": [
+        {
+            "id": "164149042710628",
+            "from": "aa",
+            "to": "bb"
+        },
+        {
+            "id": "164149043506431",
+            "from": "cc",
+            "to": "dd"
+        }
+    ],
+    "panning": {
+        "x": 0,
+        "y": -19
+    },
+    "scaling": 1
+}

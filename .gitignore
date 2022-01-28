@@ -9,3 +9,5 @@ DataBase/*
 dist/*
 Docker/*
 mongodb/*
+DataBase/*
+Docker/data/*
