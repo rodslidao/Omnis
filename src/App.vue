@@ -1,13 +1,12 @@
 <template>
-  <v-app>
-    <div class="mx-auto"><Snack-bar v-if="!isConnected"></Snack-bar></div>
-    <DialogAlert />
-    <NavBar v-if="$route.name != 'intro'" />
-    <v-main>
-      <transition>
-        <router-view></router-view>
-      </transition>
-    </v-main>
+  <v-app class="d-flex">
+    <!-- <div class="mx-auto"><Snack-bar v-if="!isConnected"></Snack-bar></div>
+    <DialogAlert /> -->
+    <NavBar class="NavBar" v-if="$route.name != 'intro'" />
+
+    <transition>
+      <router-view></router-view>
+    </transition>
   </v-app>
 </template>
 
@@ -43,7 +42,6 @@ export default {
 </script>
 
 <style lang="scss">
-
 ::-webkit-scrollbar {
   display: none;
 }
@@ -54,5 +52,10 @@ body {
   height: 100%;
   margin: 0;
   padding: 0;
+  .NavBar {
+    display: block;
+    position: absolute;
+    z-index: 999;
+  }
 }
 </style>

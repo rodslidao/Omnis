@@ -69,7 +69,7 @@ def startup_serials(*args):
 def isTrigged(trigger):
      return stopreasons_objects[trigger].isStopped()
 
-def Mover(movment_name, replace, controller_name, _id=f"{__name__}:{line()}", *args, **kwargs):
+def nammed_movment(movment_name, replace, controller_name, _id=f"{__name__}:{line()}", *args, **kwargs):
     for steps in positions_json.value[movment_name]:
         ordem = move.setPositon(
             steps,
@@ -78,7 +78,9 @@ def Mover(movment_name, replace, controller_name, _id=f"{__name__}:{line()}", *a
         )
         for pos in ordem:
             machine_objects[controller_name].M_G0(*pos, nonsync=None if isinstance(pos[0], tuple) else True)
-       
+
+def movment(controller_name, group_of_axis):
+    machine_objects[controller_name].M_G0(*group_of_axis, nonsync=None if isinstance(group_of_axis[0], tuple) else True)
 
 
 

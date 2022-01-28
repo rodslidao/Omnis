@@ -4,3 +4,7 @@ engine/externallibs/*
 *.pyc
 node_modules
 .vscode/*
+DataBase/*
+dist/*
+Docker/data/*
+omnis-lib/*

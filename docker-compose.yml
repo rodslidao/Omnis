@@ -1,0 +1,83 @@
+
+version: "3.1"
+services:
+  mongo:
+    image: mongo:latest
+    container_name: mongo_c
+    restart: always
+    ports:
+      - ${DB_PORT}:27017
+    environment:
+      MONGO_INITDB_DATABASE: ${DB_NAME}
+      # MONGO_INITDB_ROOT_USERNAME: ${DB_USER}
+      # MONGO_INITDB_ROOT_PASSWORD: ${DB_PASS}
+    networks:
+        - mongo-compose-network
+    volumes: 
+      - ./Docker/data:/data/db
+
+  mongo-express:
+    image: mongo-express:latest
+    restart: always
+    ports:
+      - 8888:8081
+    environment:
+      ME_CONFIG_MONGODB_SERVER: mongo_c
+      ME_CONFIG_MONGODB_PORT: ${DB_PORT}
+      ME_CONFIG_BASICAUTH_USERNAME: user
+      ME_CONFIG_BASICAUTH_PASSWORD: senha
+      # ME_CONFIG_MONGODB_ENABLE_ADMIN: false
+      # ME_CONFIG_MONGODB_AUTH_DATABASE: admin
+      # ME_CONFIG_MONGODB_AUTH_USERNAME: ${DB_USER}
+      # ME_CONFIG_MONGODB_AUTH_PASSWORD: ${DB_PASS}
+    links:
+      - mongo
+    networks:
+      - mongo-compose-network
+    depends_on:
+      - mongo
+    volumes: 
+      - ./Docker/data:/data/db
+  
+  # node-modules:
+  #   image: sherensberk/omnis_node_modules:latest
+  #   container_name: node_c
+  #   restart: always
+  #   stdin_open: true
+  #   tty: true
+  #   environment:
+  #     - CHOKIDAR_USEPOLLING=true
+  #   ports:
+  #     - 80:80
+  #   volumes:
+  #     - .:/usr/src/app
+  #   command: bash -c "export NODE_OPTIONS=--openssl-legacy-provider && npm run serve"
+  #   networks:
+  #     - front-back-network
+
+  python-engine:
+    image: sherensberk/omnis_python_modules:latest
+    privileged: true
+    container_name: python_c
+    environment:
+      DB_PORT: ${DB_PORT}
+      DB_HOST: ${DB_IP}
+      DB_NAME: ${DB_START_POINT}
+    ports:
+      - 5000:5000
+    restart: always
+    command: bash -c "cd /usr/src/app/engine && python main.py"
+    depends_on:
+      - mongo
+      # - node-modules
+    volumes:
+      - .:/usr/src/app
+    networks:
+      - mongo-compose-network
+      # - front-back-network
+
+networks: 
+  mongo-compose-network:
+    driver: bridge
+  # front-back-network:
+  #   driver: bridge
