@@ -1,7 +1,7 @@
 // import { constants } from "fs";
 import Vue from "vue";
 import Vuex from "vuex";
-import serverJson from "../../engine/data/json/config/editable/server.json";
+// import serverJson from "@/engine/data/json/config/editable/server.json";
 Vue.use(Vuex);
 
 //import modules
@@ -335,9 +335,9 @@ const store = new Vuex.Store({
       },
 
       informations: {
-        ip: serverJson.ip,
+        // ip: serverJson.ip,
         connectionId: 123456,
-        port: serverJson.port,
+        // port: serverJson.port,
         //portStream: serverJson.configuration.informations.portStream,
         users: {
           logged: false,

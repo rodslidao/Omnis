@@ -1,3 +1,20 @@
+const dotenv = require("dotenv");
+const path = require("path");
+
+let envfile = ".env";
+// if (process.env.NODE_ENV) {
+//     envfile += "." + process.env.NODE_ENV;
+// }
+
+const result = dotenv.config({ 
+    path: path.resolve(`../`, envfile)
+});
+
+// optional: check for errors
+if (result.error) {
+    throw result.error;
+}
+
 module.exports = {
   pwa: {
     name: 'Parallax',

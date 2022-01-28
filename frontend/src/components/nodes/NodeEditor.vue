@@ -25,7 +25,7 @@ import { VariableNode } from "@/components/nodes/VariableNode";
 import { IoNode } from "@/components/nodes/IoNode";
 import { InterfaceTypePlugin } from "@baklavajs/plugin-interface-types";
 import ActionMenuForNodes from "@/components/nodes/ActionMenuForNodes.vue";
-import  VideoStreamingOption  from "@/components/nodes/options/VideoStreamingOption.vue";
+import VideoStreamingOption from "@/components/nodes/options/VideoStreamingOption.vue";
 
 export default {
   // mixins: [mixins],
@@ -63,7 +63,10 @@ export default {
     this.editor.registerNodeType("IoNode", IoNode);
     this.editor.registerNodeType("DelayNode", DelayNode);
     this.editor.registerNodeType("VariableNode", VariableNode);
-    this.viewPlugin.registerOption("VideoStreamingOption", VideoStreamingOption);
+    this.viewPlugin.registerOption(
+      "VideoStreamingOption",
+      VideoStreamingOption
+    );
 
     // add some nodes so the screen is not empty on startup
     const node1 = this.addNodeWithCoordinates(MoveNode, 50, 140);

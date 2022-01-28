@@ -8,6 +8,7 @@ import VueHaptic from 'vue-haptic';
 import JsonEditor from 'vue-json-edit'
 import VueApexCharts from 'vue-apexcharts'
 
+
 import { BaklavaVuePlugin } from '@baklavajs/plugin-renderer-vue'
 import '@baklavajs/plugin-renderer-vue/dist/styles.css'
 Vue.use(BaklavaVuePlugin)
@@ -37,7 +38,8 @@ const options = {
 
 Vue.use(new VueSocketIO({
   debug: true,
-  connection: SocketIO('http://192.168.1.30:5000', options),
+  // connection: SocketIO('http://' + process.env.VUE_APP_URL_API_IP +':'+ process.env.VUE_APP_URL_API_PORT, options),
+  connection: SocketIO(`http://${process.env.VUE_APP_URL_API_IP}:${process.env.VUE_APP_URL_API_PORT}`, options),
   vuex:{
     store,
     mutationPrefix: 'SOCKET_',

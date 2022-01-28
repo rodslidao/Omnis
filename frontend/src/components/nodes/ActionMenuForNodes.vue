@@ -1,11 +1,15 @@
 <template>
   <div class="menuList">
+          
+
     <v-btn class="button" color="primary" fab dark small @click="play">
       <v-icon> mdi-play </v-icon>
     </v-btn>
     <v-btn class="button" color="primary" fab dark small @click="stop">
       <v-icon> mdi-pause </v-icon>
     </v-btn>
+       <p></p>
+
     <v-speed-dial
       v-model="fab"
       :top="top"
@@ -142,6 +146,7 @@ export default {
 
     upload() {
       console.log("upload");
+      console.log(process.env);
     },
 
     // play() {
