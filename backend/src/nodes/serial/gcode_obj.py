@@ -110,7 +110,6 @@ class SerialGcodeOBJ(SerialOBJ):
             # print(a, b)
 
         real = self.M114("R")
-        print(real, future)
 
     @verify
     def pause(self):
@@ -155,3 +154,6 @@ class SerialGcodeOBJ(SerialOBJ):
         ).replace("_state_", str(json[name][state]))
         print(value)
         self.send(value)
+
+    def __str__(self) -> str:
+        return f"[[SerialGcodeOBJ] {self.name}, {self.port}, {self.baudrate}]"

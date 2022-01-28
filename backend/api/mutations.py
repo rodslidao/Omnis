@@ -3,7 +3,6 @@ from .models import *
 from ariadne import MutationType
 
 mutation = MutationType()
-process = ProcessManager()
 
 @defaultException
 @mutation.field("createNodeSheet")
@@ -68,12 +67,10 @@ def pauseProcess_resolver(obj, info):
 @mutation.field("resumeProcess")
 def resumeProcess_resolver(obj, info):
     """Resume a process by id and return it like a payload"""
-    # try:
+
     process.resumeProcess()
     returns = process.dict()
-    print(returns)
-    # except AttributeError:
-    #     raise AttributeError("Id in last-values colletions does not match with any process")
+
     return {"status":{"success": True },"data": returns}
 
 @defaultException

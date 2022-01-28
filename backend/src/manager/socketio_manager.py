@@ -14,7 +14,7 @@ def connect_to_socketio():
         CORS(app)
 
     if io is None:
-        io = SocketIO(app, async_mode=None, async_handlers=True, cors_allowed_origins="*")
+        io = SocketIO(app, cors_allowed_origins="*", cors_allowed_headers="*", cors_allowed_methods="*")
 
     io.emit("connected", {"data": "connected"})
     @app.route("/")

@@ -1,6 +1,7 @@
 from pymongo import MongoClient
+from pymongo.errors import ConnectionFailure
 from os import environ
-
+from src.manager import logger
 # get environment variable "NODE_ENV"
 #environment = os.environ.get("NODE_ENV", "DEV")
 
@@ -16,13 +17,23 @@ requiredCollections = ["node-configs", "node-templates", "last-values", "node-hi
 def connectToMongo(database="Teste"):
     global _db
     if _db is None:
-        client = MongoClient(url)
+        try:
+            logger.debug(f"Connecting to MongoDB using url: {url}")
+            client = MongoClient(url)
+            client.admin.command("ismaster")
+        except ConnectionFailure:
+            logger.critical(f"Could not connect to MongoDB using url: {url}")
+            raise
+        else:
+            logger.info("Connected to MongoDB")
+
+            
         _db = client.get_database(database)
 
     for collectionName in requiredCollections:
         if collectionName not in _db.list_collection_names():
             _db.create_collection(collectionName)
-            print("Collection {} created".format(collectionName))
+            logger.debug(f"Created collection {collectionName}")
 
 
 def getDb():

@@ -25,3 +25,5 @@ class Message:
         self.targetNodeId = targetNodeId
         self.payload = payload
         self.additional = additional
+    def __str__(self) -> str:
+        return f"[{self.sourceName}] -> [{self.targetNodeId}|{self.targetName}] : {self.payload}"

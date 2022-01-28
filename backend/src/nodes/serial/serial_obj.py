@@ -1,7 +1,7 @@
 import threading
 import serial
 import time
-from .serial_exp import serialException, serialclosed, serialnotrespond
+from .serial_exp import serialclosed, serialnotrespond
 
 
 class ColorPrint:
@@ -11,10 +11,10 @@ class ColorPrint:
     C = "\033[96m"
     Y = "\033[93m"
 
-    WARNING = "\033[93m" + "[Aviso]: " + "\033[0m"
-    ERROR = "\033[91m" + "[Erro]:  " + "\033[0m"
-    INFO = "\033[96m" + "[Info]:  " + "\033[0m"
-    SUCCESS = "\033[92m" + "[Success]:  " + "\033[0m"
+    WARNING = "\033[93m" + "[⚠ ]: " + "\033[0m"
+    ERROR = "\033[91m" + "[⚠ ]:  " + "\033[0m"
+    INFO = "\033[96m" + "[🛈 ]:  " + "\033[0m"
+    SUCCESS = "\033[92m" + "[✓ ]:  " + "\033[0m"
     U = "\033[4m"
     B = "\033[1m"
 
@@ -51,13 +51,6 @@ class SerialOBJ(object):
             raise serialclosed
 
     def reopen(self, limit=5, timer=2.5):
-        self.reconnect += 1
-        print(
-            color(
-                f"{self.name} não conseguiu estabeler conexão, tentanto pela [{self.reconnect}º] vez..",
-                "WARNING",
-            )
-        )
         if self.reconnect <= limit:
             try:
                 self.close()
@@ -70,7 +63,7 @@ class SerialOBJ(object):
                     "WARNING",
                 )
             )
-
+            self.reconnect += 1
             try:
                 self.open(self.port, self.baudrate, 0.3)
             except serialclosed:
@@ -152,23 +145,6 @@ class SerialOBJ(object):
                         )
 
                 strr = []
-                # if command.startswith("G0"):
-                #     # print(
-                #     #     "\n" * 2,
-                #     #     "-" * 5,
-                #     #     "Comando de movimentação recebido",
-                #     #     "-" * 5,
-                #     #     "\n" * 2,
-                #     # )
-                # elif command.startswith("M41"):
-                #     print(
-                #         "\n" * 2,
-                #         "-" * 5,
-                #         "Comando de parada recebido",
-                #         "-" * 5,
-                #         "\n" * 2,
-                #     )
-                # Lê, decodifica e processa enquanto houver informação no buffer de entrada.
                 while True:
                     b = self.serial.readline()
                     string_n = b.decode()

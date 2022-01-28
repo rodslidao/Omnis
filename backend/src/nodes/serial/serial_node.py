@@ -22,10 +22,12 @@ class SerialNode(BaseNode):
         self.serial_port = options["porta"]["serial_port"]
         self.serial_bandrate = options["velocidade"]["serial_baudrate"]
         self.reconnect = options["reconectar"]["serial_reconnect"]
+
         if options["connection_type"]["serial_connection_type"] == "gcode":
             serial_class = SerialGcodeOBJ
         else:
             serial_class = SerialOBJ
+
         self.serial = serial_class(
             self.serial_name,
             self.serial_port,
@@ -33,7 +35,6 @@ class SerialNode(BaseNode):
             reconnect=self.reconnect,
         )
         #print("SerialNode:", self.serial_name, self.serial_port, self.serial_bandrate)
-        self.running = self.serial.isAlive
         self.stop_event = self.execute()
         NodeManager.addNode(self)
 
@@ -41,17 +42,15 @@ class SerialNode(BaseNode):
     def execute(self, message=""):
         #print("Executing SerialNode")
         if not self.serial.isAlive():
-            #print("Abrindo Serial")
             try:
                 self.serial.start()
-            except Exception as e:
-                print(e)
-                self.onFailure("Cant start serial", pulse=True, errorMessage=str(e))
+                self.onSuccess(self.serial)
+                self.on("serial", self.serial)
                 return
-        if self.serial.isAlive():
-            #print("Serial aberto")
+            except Exception as e:
+                self.onFailure("Cant start serial", pulse=True, errorMessage=str(e))
+        else:
             self.onSuccess(self.serial)
-        # self.stop()
 
     def stop(self):
         self.stop_event.set()

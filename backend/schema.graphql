@@ -4,6 +4,7 @@ scalar Decimal
 schema {
   mutation: Mutation
   query: Query
+  subscription: Subscription
 }
 
 type Mutation {
@@ -20,8 +21,21 @@ type Mutation {
   getLoadedConfig: ID!
 }
 
+type Subscription {
+  alerts: AlertResult
+}
+
+type AlertResult {
+  level: String
+  title: String
+  date: Float
+  description: String
+  how2solve: String
+}
+
 type Query {
   getNodeSheet(id: ID!): NodeSheetResult!
+  getProcess: ProcessResult!
 }
 
 # Interfaces
