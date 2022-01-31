@@ -49,6 +49,7 @@ services:
       ENV_MODE: ${ENV_MODE}
       STREAMING_PORT: ${STREAMING_PORT}
       SERVER_PORT: ${SERVER_PORT}
+      PYTHON_RUN: ${PYTHON_RUN}
     volumes:
       - ./backend:/app
     command: python main.py
