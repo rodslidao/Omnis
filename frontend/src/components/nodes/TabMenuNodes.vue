@@ -1,6 +1,11 @@
 <template>
   <div class="wrapper">
     <div class="menu">
+      <p style="color: white">{{ lixo }}</p>
+      <v-btn fab small dark color="primary" @click="apollo()">
+        <v-icon dark>mdi-home</v-icon>
+      </v-btn>
+
       <div>
         <v-card>
           <v-tabs
@@ -20,7 +25,12 @@
                 mdi-play
               </v-icon>
               {{ +!item.saved ? item.sketchName + "*" : item.sketchName }}
-              <v-btn v-if="tabList.length > 1" depressed icon @click="close(index)" small
+              <v-btn
+                v-if="tabList.length > 1"
+                depressed
+                icon
+                @click="close(index)"
+                small
                 ><v-icon small dark> mdi-close </v-icon></v-btn
               >
             </v-tab>
@@ -43,11 +53,12 @@
 </template>
 
 <script>
-import NodeEditor from '@/components/nodes/NodeEditor.vue';
-import { mapActions, mapState } from 'vuex';
+import NodeEditor from "@/components/nodes/NodeEditor.vue";
+import { mapActions, mapState } from "vuex";
+import gql from "graphql-tag";
 
 export default {
-  name: 'TabMenuNodes',
+  name: "TabMenuNodes",
 
   components: {
     NodeEditor,
@@ -57,13 +68,15 @@ export default {
       tab: null,
       actualNode: null,
       length: 0,
-      sketchNameRunning: 'One',
+      sketchNameRunning: "One",
       newTabCount: 1,
+
+      lixo: null,
     };
   },
 
   computed: {
-    ...mapState('node', {
+    ...mapState("node", {
       tabList: (state) => state.tabList,
       selectedTabId: (state) => state.selectedTabId,
     }),
@@ -80,12 +93,30 @@ export default {
   },
 
   methods: {
-    ...mapActions('node', [
-      'addTab',
-      'removeTabById',
-      'selectTabByIndex',
-      'removeTabByIndex',
+    ...mapActions("node", [
+      "addTab",
+      "removeTabById",
+      "selectTabByIndex",
+      "removeTabByIndex",
     ]),
+
+    async apollo() {
+      console.time("apollo");
+      const response = await this.$apollo.query({
+        query: gql`
+          query getN {
+            getNodeSheet(id: "61f17ea5ad22560bae87c944") {
+              data {
+                _id
+              }
+            }
+          }
+        `,
+      });
+      console.log(this.$apollo.store);
+      this.lixo = response.data.getNodeSheet.data._id;
+      console.timeEnd("apollo");
+    },
 
     // functcion to gerate unique id based in timestamp
     generateId() {
@@ -93,7 +124,7 @@ export default {
     },
 
     close(index) {
-      console.log('aba fechada, index: ', index);
+      console.log("aba fechada, index: ", index);
       this.removeTabByIndex(index);
     },
 
@@ -122,7 +153,6 @@ export default {
   width: 100%;
 
   .menu {
-
     z-index: 2;
     position: absolute;
     width: 100%;
