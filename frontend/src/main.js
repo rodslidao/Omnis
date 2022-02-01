@@ -1,18 +1,13 @@
-import Vue from 'vue'
-import App from './App.vue'
-import vuetify from './plugins/vuetify'
-import router from '@/router'
-import {store} from './store/index'
-import VueTheMask from 'vue-the-mask'
+import Vue from 'vue';
+import App from './App.vue';
+import router from '@/router';
+import VueTheMask from 'vue-the-mask';
 import VueHaptic from 'vue-haptic';
-import JsonEditor from 'vue-json-edit'
-import VueApexCharts from 'vue-apexcharts'
+import JsonEditor from 'vue-json-edit';
+import VueApexCharts from 'vue-apexcharts';
 
-
-import { BaklavaVuePlugin } from '@baklavajs/plugin-renderer-vue'
-import '@baklavajs/plugin-renderer-vue/dist/styles.css'
-Vue.use(BaklavaVuePlugin)
-
+import { BaklavaVuePlugin } from '@baklavajs/plugin-renderer-vue';
+import '@baklavajs/plugin-renderer-vue/dist/styles.css';
 
 // import VueSocketIOExt from 'vue-socket.io-extended';
 // import { io } from 'socket.io-client';
@@ -22,46 +17,57 @@ Vue.use(BaklavaVuePlugin)
 
 // Vue.use(VueSocketIOExt, socket, { store });
 
-//const SocketInstance = SocketIO(MY_URL);
+// const SocketInstance = SocketIO(MY_URL);
 // -------
 
+import VueSocketIO from 'vue-socket.io';
+import SocketIO from 'socket.io-client';
+import { store } from './store/index';
+import vuetify from './plugins/vuetify';
+import '@/assets/scss/main.scss';
+import '@/assets/scss/_variables.scss';
 
-import VueSocketIO from 'vue-socket.io'
-import SocketIO from 'socket.io-client'
+// import './registerServiceWorker'
+import wb from './registerServiceWorker';
+
+// apollo 
+import { createProvider } from './vue-apollo';
+
+
+Vue.use(BaklavaVuePlugin);
 
 const options = {
   // reconnectionAttempts: 3,
-  reconnection: true, 
+  reconnection: true,
   // reconnectionDelay: 10,
   // timeout: 30,
-}
+};
 
 Vue.use(new VueSocketIO({
   debug: true,
   // connection: SocketIO('http://' + process.env.VUE_APP_URL_API_IP +':'+ process.env.VUE_APP_URL_API_PORT, options),
   connection: SocketIO(`http://${process.env.VUE_APP_URL_API_IP}:${process.env.VUE_APP_URL_API_PORT}`, options),
-  vuex:{
+  vuex: {
     store,
     mutationPrefix: 'SOCKET_',
-    actionsPrefix: 'SOCKET_'
+    actionsPrefix: 'SOCKET_',
   },
 
 }));
 
 // -------
 
+// Vue.use(VueApexCharts)
 
-//Vue.use(VueApexCharts)
+Vue.component('apexchart', VueApexCharts);
 
-Vue.component('apexchart', VueApexCharts)
-
-//Vue.use(JsonEditor)
+// Vue.use(JsonEditor)
 
 Vue.use(VueHaptic, {
   // Required. vue-haptic does not provide
   // any out-of-the-box patterns
   defaultHapticTrigger: 'touchstart',
-  
+
   patterns: {
     success: [10, 100, 30],
     failure: [10, 50, 10, 50, 50, 100, 10],
@@ -70,28 +76,22 @@ Vue.use(VueHaptic, {
   },
 });
 
-//Vue.use(VueTheMask)
-//soket.io instance creat
+// Vue.use(VueTheMask)
+// soket.io instance creat
 // import socketio from 'socket.io';
 // import VueSocketIO from 'vue-socket.io';
 // Vue.use(VueSocketIO, SocketInstance, store)
 
+// Vue.use(VueSocketIO, SocketInstance)
+Vue.use(VueTheMask, JsonEditor, VueApexCharts, BaklavaVuePlugin);
 
-//Vue.use(VueSocketIO, SocketInstance)
-Vue.use(VueTheMask, JsonEditor, VueApexCharts,BaklavaVuePlugin)
-
-Vue.config.productionTip = false
-import "@/assets/scss/main.scss";
-import "@/assets/scss/_variables.scss";
-// import './registerServiceWorker'
-import wb from "./registerServiceWorker";
+Vue.config.productionTip = false;
 Vue.prototype.$workbox = wb;
-
 
 new Vue({
   vuetify,
-  render: h => h(App),
+  render: (h) => h(App),
   router,
+  apolloProvider: createProvider(),
   store,
-}).$mount('#app')
-
+}).$mount('#app');
