@@ -33,10 +33,8 @@ try:
     print("Starting server on port:", port)
     if __name__ == "__main__":
         uvicorn.run("main:app", host="0.0.0.0", port=int(port), log_level="info")
-    # io.run(app, host="0.0.0.0", port=port)
 
 except KeyboardInterrupt:
-    # io.stop()
     logger.debug("Server stopped manually")
     exit(0)
 except Exception as e:

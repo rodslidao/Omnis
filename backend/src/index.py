@@ -63,14 +63,14 @@ connectToServer(call)
 def getNodeConfig(id):
     query = {"_id": ObjectId(id)}
     data = dbo.get_collection("node-configs").find_one(query)
-    io.emit("INDEX-RESPONSE", data)
+    #io.emit("INDEX-RESPONSE", data)
     return Response(data)
 
 
 @app.route("/node-config/all", methods=["GET"])
 def getAllNodeConfigs():
     data = dbo.get_collection("node-configs").find()
-    io.emit("INDEX-RESPONSE", data)
+    #io.emit("INDEX-RESPONSE", data)
     return Response(data)
 
 
@@ -78,7 +78,7 @@ def getAllNodeConfigs():
 def deleteNodeConfig(id):
     query = {"_id": ObjectId(id)}
     obj = dbo.get_collection("node-configs").delete_one(query)
-    io.emit("INDEX-RESPONSE", {"num_deleted": obj["result"]["n"]})
+    #io.emit("INDEX-RESPONSE", {"num_deleted": obj["result"]["n"]})
     return Response("")
 
 
@@ -86,7 +86,7 @@ def deleteNodeConfig(id):
 def updateNodeConfig(id):
     query = {"_id": ObjectId(id)}
     obj = dbo.get_collection("node-configs").update_one(query, request.json)
-    io.emit("INDEX-RESPONSE", {"num_updated": obj["result"]["n"]})
+    #io.emit("INDEX-RESPONSE", {"num_updated": obj["result"]["n"]})
     return Response("")
 
 

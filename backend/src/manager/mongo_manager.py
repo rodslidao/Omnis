@@ -2,6 +2,7 @@ from pymongo import MongoClient
 from pymongo.errors import ConnectionFailure
 from os import environ
 from src.manager import logger
+from pandas import DataFrame
 # get environment variable "NODE_ENV"
 #environment = os.environ.get("NODE_ENV", "DEV")
 
@@ -71,11 +72,11 @@ class MongoOBJ():
         return self.dbo[collection_name].insert_many(data)
     
     @log_error
-    def find_one(self, collection_name, query):
+    def find_one(self, collection_name, query={}):
         return self.dbo[collection_name].find_one(query)
     
     @log_error
-    def find_many(self, collection_name, query):
+    def find_many(self, collection_name, query={}):
         return self.dbo[collection_name].find(query)
     
     @log_error
@@ -87,11 +88,11 @@ class MongoOBJ():
         return self.dbo[collection_name].update_many(query, data)
     
     @log_error
-    def delete_one(self, collection_name, query):
+    def delete_one(self, collection_name, query={}):
         return self.dbo[collection_name].delete_one(query)
 
     @log_error
-    def delete_many(self, collection_name, query):
+    def delete_many(self, collection_name, query={}):
         return self.dbo[collection_name].delete_many(query)
 
     @log_error
@@ -99,9 +100,16 @@ class MongoOBJ():
         return self.dbo[collection_name].find_one_and_update(query, data)
     
     @log_error
-    def find_one_and_delete(self, collection_name, query):
+    def find_one_and_delete(self, collection_name, query={}):
         return self.dbo[collection_name].find_one_and_delete(query)
     
     @log_error
     def find_one_and_replace(self, collection_name, query, data):
         return self.dbo[collection_name].find_one_and_replace(query, data)
+    
+    @log_error
+    def collection2csv(self, collection):
+        arr = self.find_many(collection)
+        variables = arr[0].keys()
+        df = DataFrame([[i.get(j) for j in variables] for i in arr], columns = variables)
+        return df.to_csv(index=False)
