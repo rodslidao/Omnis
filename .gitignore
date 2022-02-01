@@ -12,3 +12,5 @@ mongodb/*
 DataBase/*
 Docker/data/*
 *.env
+.env
+.env
