@@ -11,11 +11,11 @@ const AUTH_TOKEN = 'apollo-token';
 
 // Http endpoint
 
-function urlMaker(protocol, port, finalText) {
-  return `${protocol}://${process.env.VUE_APP_URL_API_IP}:${port}${finalText}`;
+function urlMaker(protocol, port) {
+  return `${protocol}://${process.env.VUE_APP_URL_API_IP}:${port}`;
 }
 
-const httpEndpoint = urlMaker('http', process.env.VUE_APP_URL_API_PORT, '/graphql') || 'http://localhost:5000/graphql';
+const httpEndpoint = urlMaker('http', process.env.VUE_APP_URL_API_PORT) || 'http://localhost:5000';
 
 // Config
 const defaultOptions = {
@@ -24,8 +24,8 @@ const defaultOptions = {
   // You can use `wss` for secure connection (recommended in production)
   // Use `null` to disable subscriptions
   wsEndpoint:
-    urlMaker('wss', process.env.VUE_APP_URL_API_STREAMING_PORT, '/graphql')
-    || 'ws://localhost:4000/graphql',
+    urlMaker('ws', process.env.VUE_APP_URL_API_STREAMING_PORT)
+    || 'ws://localhost:4000/',
   // LocalStorage token
   tokenName: AUTH_TOKEN,
   // Enable Automatic Query persisting with Apollo Engine
