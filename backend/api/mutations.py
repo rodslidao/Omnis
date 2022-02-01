@@ -1,7 +1,6 @@
-from inspect import Attribute
 from .models import *
 from ariadne import MutationType
-
+from src.nodes.alerts.alert_obj import Alert, AlertLevel
 mutation = MutationType()
 
 @defaultException
@@ -92,3 +91,10 @@ def getLoadedConfig_resolver(obj, info):
     except Exception as e:
         print(e)
         return False
+
+@mutation.field("createAlert")
+async def createAlert_resolver(obj, info, input):
+    """Create a new Alert object and return it like a payload"""
+    returns = Alert(**input)
+    #await returns.add()
+    return {"status":{"success": True },"data": returns}

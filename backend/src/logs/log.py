@@ -25,7 +25,7 @@ def logSetup(name, **kwargs):
         logger.setLevel(getattr(logging, LVL.upper()))
         formatter = logging.Formatter(fmt=f'%(asctime)s %(path)s %(class)-12s %(levelname)-6s %(id)-14s %(message)s',
                                         datefmt='%d-%m-%y %H:%M:%S')
-        fh = TimedRotatingFileHandler(fr'{path}\{name}.log', when='midnight', interval=1, backupCount=7)
+        fh = TimedRotatingFileHandler(fr'{path}/{name}.log', when='midnight', interval=1, backupCount=7)
         fh.setFormatter(formatter)
         fh.namer = lambda name: name.replace(".log", "") + ".log"
         logger.addHandler(fh)

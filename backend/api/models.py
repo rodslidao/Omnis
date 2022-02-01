@@ -78,23 +78,23 @@ class NodeSheet:
     def createNodeSheet(self, **kwargs):
         """Create a new NodeSheet object"""
         _id = ObjectId()
-        dbo.NodeSheets.insert_one({"_id": _id, **kwargs})
+        dbo.insert_one("NodeSheets", {"_id": _id, **kwargs})
         return self.getNodeSheetById(_id)
 
     def getNodeSheetById(self, id):
         """Get a NodeSheet by id"""
-        self.NodeSheet = dbo.NodeSheets.find_one({"_id": ObjectId(id)})
+        self.NodeSheet = dbo.find_one("NodeSheets", {"_id": ObjectId(id)})
         return self._format()
 
     def updateNodeSheet(self, id, **kwargs):
         """Update a NodeSheet by id"""
-        dbo.NodeSheets.update_one({"_id": ObjectId(id)}, {"$set": kwargs})
+        dbo.update_one("NodeSheets", {"_id": ObjectId(id)}, {"$set": kwargs})
         return self.getNodeSheetById(id)
 
     def deleteNodeSheet(self, id):
         """Delete a NodeSheet by id"""
         deleted_sheet = self.getNodeSheetById(id)
-        dbo.NodeSheets.delete_one({"_id": ObjectId(id)})
+        dbo.delete_one("NodeSheets", {"_id": ObjectId(id)})
         return deleted_sheet
 
     def _format(self):
