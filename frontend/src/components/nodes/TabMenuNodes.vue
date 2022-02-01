@@ -108,13 +108,14 @@ export default {
             getNodeSheet(id: "61f17ea5ad22560bae87c944") {
               data {
                 _id
+                scaling
               }
             }
           }
         `,
       });
       console.log(this.$apollo.store);
-      this.lixo = response.data.getNodeSheet.data._id;
+      this.lixo = response.data.getNodeSheet.data.scaling;
       console.timeEnd("apollo");
     },
 
