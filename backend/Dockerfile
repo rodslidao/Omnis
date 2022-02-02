@@ -1,4 +1,6 @@
 FROM python:latest as builder
+RUN apt-get update -y && apt-get upgrade -y
+RUN apt-get install ffmpeg libsm6 libxext6  -y
 COPY requirements.txt .
 RUN pip install --user -r requirements.txt
 
