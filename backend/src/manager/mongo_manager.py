@@ -63,6 +63,9 @@ class MongoOBJ():
     @log_error
     def get_collection(self, collectionName):
         return self.dbo.get_collection(collectionName)
+    @log_error
+    def create_collection(self, collectionName):
+        return self.dbo.create_collection(collectionName)
 
     @log_error
     def insert_one(self, collection_name, data):
