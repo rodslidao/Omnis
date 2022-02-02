@@ -8,7 +8,8 @@ from pandas import DataFrame
 
 
 db_port = environ.get("DB_PORT", "27017")
-db_ip = environ.get("SERVER_IP", "192.168.1.30")
+db_ip = environ.get("SERVER_IP", "localhost")
+
 url = f"mongodb://{db_ip}:{db_port}/"
 
 _db = None
