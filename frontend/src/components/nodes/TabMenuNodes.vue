@@ -2,8 +2,12 @@
   <div class="wrapper">
     <div class="menu">
       <p style="color: white">{{ lixo }}</p>
+      <p style="color: white">{{ tagAdded }}</p>
       <v-btn fab small dark color="primary" @click="apollo()">
         <v-icon dark>mdi-home</v-icon>
+      </v-btn>
+      <v-btn fab small dark color="primary" @click="startProcess()">
+        <v-icon dark>mdi-show</v-icon>
       </v-btn>
 
       <div>
@@ -24,7 +28,7 @@
               >
                 mdi-play
               </v-icon>
-              {{ +!item.saved ? item.sketchName + "*" : item.sketchName }}
+              {{ +!item.saved ? item.sketchName + '*' : item.sketchName }}
               <v-btn
                 v-if="tabList.length > 1"
                 depressed
@@ -53,12 +57,12 @@
 </template>
 
 <script>
-import NodeEditor from "@/components/nodes/NodeEditor.vue";
-import { mapActions, mapState } from "vuex";
-import gql from "graphql-tag";
+import NodeEditor from '@/components/nodes/NodeEditor.vue';
+import { mapActions, mapState } from 'vuex';
+import gql from 'graphql-tag';
 
 export default {
-  name: "TabMenuNodes",
+  name: 'TabMenuNodes',
 
   components: {
     NodeEditor,
@@ -68,15 +72,38 @@ export default {
       tab: null,
       actualNode: null,
       length: 0,
-      sketchNameRunning: "One",
+      sketchNameRunning: 'One',
       newTabCount: 1,
 
       lixo: null,
+      tagAdded: {},
     };
   },
 
+  apollo: {
+    // Subscriptions
+    $subscribe: {
+      // When a tag is added
+      tagAdded: {
+        query: gql`
+          subscription {
+            alerts {
+              title
+            }
+          }
+        `,
+        // Result hook
+        // Don't forget to destructure `data`
+        result({ data }) {
+          console.log(data.alerts);
+          this.tagAdded = data.alerts;
+        },
+      },
+    },
+  },
+
   computed: {
-    ...mapState("node", {
+    ...mapState('node', {
       tabList: (state) => state.tabList,
       selectedTabId: (state) => state.selectedTabId,
     }),
@@ -93,30 +120,34 @@ export default {
   },
 
   methods: {
-    ...mapActions("node", [
-      "addTab",
-      "removeTabById",
-      "selectTabByIndex",
-      "removeTabByIndex",
+    ...mapActions('node', [
+      'addTab',
+      'removeTabById',
+      'selectTabByIndex',
+      'removeTabByIndex',
+      'play',
     ]),
 
+    async startProcess() {
+      this.play();
+    },
+
     async apollo() {
-      console.time("apollo");
+      console.time('apollo');
       const response = await this.$apollo.query({
         query: gql`
-          query getN {
-            getNodeSheet(id: "61f17ea5ad22560bae87c944") {
+          query {
+            getProcess {
               data {
-                _id
-                scaling
+                status
               }
             }
           }
         `,
       });
       console.log(this.$apollo.store);
-      this.lixo = response.data.getNodeSheet.data.scaling;
-      console.timeEnd("apollo");
+      this.lixo = response.data.getProcess.data.status;
+      console.timeEnd('apollo');
     },
 
     // functcion to gerate unique id based in timestamp
@@ -125,7 +156,7 @@ export default {
     },
 
     close(index) {
-      console.log("aba fechada, index: ", index);
+      console.log('aba fechada, index: ', index);
       this.removeTabByIndex(index);
     },
 
