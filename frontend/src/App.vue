@@ -52,29 +52,29 @@ export default {
   },
 
   apollo: {
-    // Subscriptions
-    $subscribe: {
-      // When a tag is added
-      tagAdded: {
-        query: gql`
-          subscription {
-            alerts {
-              level
-              title
-              description
-              how2solve
-              buttonText
-            }
-          }
-        `,
-        // Result hook
-        // Don't forget to destructure `data`
-        result({ data }) {
-          this.alertList.push(data.alerts);
-          console.log(this.alertList);
-        },
-      },
-    },
+    // // Subscriptions
+    // $subscribe: {
+    //   // When a tag is added
+    //   tagAdded: {
+    //     query: gql`
+    //       subscription {
+    //         alerts {
+    //           level
+    //           title
+    //           description
+    //           how2solve
+    //           buttonText
+    //         }
+    //       }
+    //     `,
+    //     // Result hook
+    //     // Don't forget to destructure `data`
+    //     result({ data }) {
+    //       this.alertList.push(data.alerts);
+    //       console.log(this.alertList);
+    //     },
+    //   },
+    // },
   },
 
   computed: {
