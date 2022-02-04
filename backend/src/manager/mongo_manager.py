@@ -8,7 +8,8 @@ from pandas import DataFrame
 
 
 db_port = environ.get("DB_PORT", "27017")
-db_ip = environ.get("SERVER_IP", "192.168.1.30")
+db_ip = environ.get("SERVER_IP", "localhost")
+
 url = f"mongodb://{db_ip}:{db_port}/"
 
 _db = None
@@ -62,6 +63,9 @@ class MongoOBJ():
     @log_error
     def get_collection(self, collectionName):
         return self.dbo.get_collection(collectionName)
+    @log_error
+    def create_collection(self, collectionName):
+        return self.dbo.create_collection(collectionName)
 
     @log_error
     def insert_one(self, collection_name, data):

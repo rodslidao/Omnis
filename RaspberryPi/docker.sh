@@ -7,4 +7,10 @@ add-apt-repository "deb [arch=arm64] https://download.docker.com/linux/ubuntu $(
 apt-get update -y
 apt-cache policy docker-ce
 apt-get -y install docker-ce
-usermod -aG docker ${USER}
+exit
+sudo usermod -aG docker ${USER}
+sudo su
+apt install python3-pip -y
+pip3 install docker-compose
+apt install linux-modules-extra-raspi
+exit
