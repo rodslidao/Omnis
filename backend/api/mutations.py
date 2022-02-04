@@ -98,3 +98,9 @@ async def createAlert_resolver(obj, info, input):
     returns = Alert(**input)
     #await returns.add()
     return {"status":{"success": True },"data": returns}
+
+@mutation.field("uploadFile")
+async def uploadFile_resolver(obj, info, file):
+    """Upload a file and return it like a payload"""
+    print(file)
+    return {"status":{"success": True },"data": file}

@@ -1,5 +1,6 @@
 scalar JSON
 scalar Decimal
+scalar Upload
 
 schema {
   mutation: Mutation
@@ -20,6 +21,7 @@ type Mutation {
   loadConfig(_id: ID!): Boolean!
   getLoadedConfig: ID!
   createAlert(input: AlertInput!): AlertResult!
+  uploadFile(file: Upload!): FileResult!
 }
 
 type Query {
@@ -40,6 +42,10 @@ type DefaultStatus{
 }
 
 # Results
+type FileResult {
+  status: DefaultStatus!
+}
+
 type NodeSheetResult{
   status: DefaultStatus!
   data: NodeSheet
