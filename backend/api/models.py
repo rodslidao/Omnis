@@ -115,11 +115,11 @@ class LastValue:
 
     def getLastValue(query):
         """Get the last value of a node"""
-        return dbo["last-values"].find_one(query)
+        return dbo.find_one("last-values", query)
 
     def setLastValue(query, value):
         """Set the last value of a node"""
-        dbo["last-values"].update_one(query, {"$set": value})
+        dbo.update_one("last-values", query, {"$set": value})
 
 
 class ProcessManager(Process):
@@ -159,7 +159,7 @@ class ProcessManager(Process):
         return False
 
     def verifyChange(self):
-        lt = dbo["last-values"].find_one({"query": "lastLoadedNoneSheet"})
+        lt = dbo.find_one("last-values", {"query": "lastLoadedNoneSheet"})
         if lt["NodeSheetID"] != self.lt:
             print(lt["NodeSheetID"])
             self.lt = lt["NodeSheetID"]

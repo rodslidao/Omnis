@@ -6,7 +6,6 @@ if __package__ is None:
 
 nodes = []
 
-
 class NodeManager:
     def getNodeById(nodeId):
         for node in nodes:

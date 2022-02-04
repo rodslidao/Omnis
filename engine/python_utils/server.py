@@ -115,7 +115,7 @@ class Server(object):
                 # for k, v in self.process.items():
                 #     update[k] = {"alive": v.is_alive()}
                 #print('Updating all clients')
-                socketio.emit('NODE_UPDATE',
+                socket#io.emit('NODE_UPDATE',
                            {'data': json.dumps(self.running_nodes, indent=2, ensure_ascii=False)})
                 socketio.sleep(self.report_time)
 

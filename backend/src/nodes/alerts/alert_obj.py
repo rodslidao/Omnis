@@ -23,12 +23,14 @@ class AlertManager():
 
 
 class Alert():
-    def __init__(self, level, title, description, solve=""):
+    def __init__(self, level, title, description, how2solve="", buttonText="Ok", buttonAction="Ok"):
         self.level = level
         self.date = float(datetime.now().timestamp())
         self.title = title
         self.description = description
-        self.how2solve = solve
+        self.how2solve = how2solve
+        self.buttonText = buttonText
+        self.buttonAction = buttonAction
         AlertManager.put(self)
         #await AlertManager.add(self)
         
