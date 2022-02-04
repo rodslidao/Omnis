@@ -1,6 +1,11 @@
+from starlette.applications import Starlette
+from starlette.routing import Route, Mount
+from starlette.responses import JSONResponse
 import uvicorn
 from api import *
+from src.imageStream import imgRoute, videoRoute
 from starlette.middleware.cors import CORSMiddleware
+from starlette.middleware import Middleware
 from src.logs.log import logSetup
 logger = logSetup("Api")
 try:
@@ -12,8 +17,7 @@ try:
         make_executable_schema,
         snake_case_fallback_resolvers,
     )
-    from ariadne.constants import PLAYGROUND_HTML
-    from flask import request, jsonify
+
     from api.queries import query
     from api.mutations import mutation
     from api.subscriptions import subscription
@@ -25,13 +29,27 @@ try:
         type_defs, query, mutation, subscription, snake_case_fallback_resolvers
     )
 
-    app = CORSMiddleware(GraphQL(schema, debug=True), allow_origins=['*'], allow_methods=['*'], allow_headers=['*'])
+    middleware = [
+        Middleware(CORSMiddleware, allow_origins=['*'], allow_methods=['*'], allow_headers=['*'])
+    ]
+
+    async def user(request):
+        print(request.path_params["username"])
+        return JSONResponse({"hello": "world"})
+
+    routes = [
+        Route("/", GraphQL(schema, middleware=middleware)),
+        Mount('/imgs', routes=imgRoute),
+        Mount('/videos', routes=videoRoute),
+    ]
+
+    app = Starlette(debug=True, middleware=middleware, routes=routes)
+    # app.mount("/", GraphQL(schema, debug=True))
 
 
     port = environ["SERVER_PORT"] if environ.get("SERVER_PORT") else 5000
-    print("Starting server on port:", port)
     if __name__ == "__main__":
-        uvicorn.run("main:app", host="0.0.0.0", port=int(port), log_level="info")
+        uvicorn.run("main:app", host="192.168.1.30", port=int(port), log_level="info")
 
 except KeyboardInterrupt:
     logger.debug("Server stopped manually")
