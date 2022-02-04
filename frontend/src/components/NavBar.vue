@@ -1,21 +1,14 @@
 <template>
-  <v-app-bar style="-webkit-app-region: drag" app dense dark>
+  <v-app-bar style="-webkit-app-region: drag" app dense>
     <router-link to="/">
-      <v-btn
-        icon
-        class="hidden-xs-only"
-        v-on:click="$router.go(-1)"
-        alt
-        v-if="$route.name == 'settings'"
-      >
+      <v-btn icon @click="$router.go(-1)" alt v-if="$route.name == 'settings'">
         <v-icon>mdi-arrow-left</v-icon>
       </v-btn>
       <!-- isso foi nojento -->
       <router-link to="/config">
         <v-btn
           icon
-          class="hidden-xs-only"
-          v-on:click="$router.go(-1)"
+          @click="$router.go(-1)"
           alt
           v-if="$route.name == 'dashboard'"
         >
@@ -24,14 +17,16 @@
       </router-link>
       <img
         class="logo"
-        src="../assets/img/parallax-logo-06.svg"
+        src="../assets/img/parallax-logo-06-black.svg"
         alt
         v-if="$route.name != 'settings'"
         v-show="$route.name != 'dashboard'"
       />
     </router-link>
     <v-spacer>
-      <h3 v-if="$route.name == 'settings'">Configurações</h3>
+      <h3 class="grey--text text--darken-2" v-if="$route.name == 'settings'">
+        Configurações
+      </h3>
       <h3 v-if="$route.name == 'dashboard'">Dashboard</h3>
       <!-- <h3 v-if="online">Online </h3> -->
       <!-- <h3 v-if="!online">Offline </h3> -->
@@ -64,26 +59,26 @@
 <script>
 // import SnackBar from "../components/SnackBar";
 // import { mapMutations } from "vuex"; Remove mapMutations -HB
-import { mapState, mapMutations } from "vuex";
-import { actions } from "../../src/store/index";
-import RestartButton from "./navbar/RestarButton.vue";
+import { mapState, mapMutations } from 'vuex';
+import { actions } from '../../src/store/index';
+import RestartButton from './navbar/RestarButton.vue';
 
 export default {
-  name: "NavBar",
+  name: 'NavBar',
   data: () => ({
     actions,
     restartDialog: false,
     online: false,
     showOnlineMsg: false,
     alert: true,
-    url: "http://192.168.1.100:8080/exit",
+    url: 'http://192.168.1.100:8080/exit',
   }),
 
   //checa se existe conexão tem a ver com o pwa
   mounted() {
     this.online = navigator.onLine;
-    window.addEventListener("online", () => (this.online = true));
-    window.addEventListener("offline", () => {
+    window.addEventListener('online', () => (this.online = true));
+    window.addEventListener('offline', () => {
       this.online = false;
       this.showOnlineMsg = true;
     });
@@ -94,9 +89,9 @@ export default {
     // SnackBar,
   },
   methods: {
-    ...mapMutations(["SEND_MESSAGE"]),
+    ...mapMutations(['SEND_MESSAGE']),
     close() {
-      const remote = require("electron").remote;
+      const remote = require('electron').remote;
       var window = remote.getCurrentWindow();
       window.close();
     },
@@ -104,22 +99,23 @@ export default {
     //pwa app
     async accept() {
       this.showUpdateUI = false;
-      await this.$workbox.messageSW({ type: "SKIP_WAITING" });
+      await this.$workbox.messageSW({ type: 'SKIP_WAITING' });
     },
   },
 
   computed: {
-    ...mapState(["isConnected", "configuration"]),
+    ...mapState(['isConnected', 'configuration']),
   },
 };
 </script>
 
 <style scoped lang="scss">
 .logo {
+  filter: brightness(0) invert(0.6);
   height: 1.4em;
   margin-top: 0.5em;
 }
-v-app-bar{
+v-app-bar {
   z-index: 999;
 }
 

@@ -3,31 +3,34 @@
     <v-row justify="center">
       <!-- <v-dialog v-model="state.dialogAlert.show" persistent max-width="300"> -->
 
-      <v-overlay v-model="state.dialogAlert.show">
+      <!-- <v-overlay v-model="state.dialogAlert.show"> -->
+      <v-overlay>
         <v-alert
           class="alert"
-          border="right"
-          dense
+          border="top"
           colored-border
-          :type="state.dialogAlert.type"
-          elevation="2"
+          :type="info.level"
+          elevation="3"
         >
-          <h2>{{ state.dialogAlert.description }}</h2>
+          <div class="text-h4 font-weight-thin text-capitalize">
+            {{ info.description }}
+          </div>
 
+          <div>
+            <p class="mt-2">Como Solucionar</p>
+            <v-divider></v-divider>
+            <p>{{ info.how2solve }}</p>
+
+            <v-divider></v-divider>
+          </div>
           <v-row justify="center">
             <v-btn
               x-large
               class="mt-4 mb-3"
-              color="darken-1"
-              @click="
-                state.dialogAlert.show = false;
-                SEND_MESSAGE({
-                  command: actions.POPUP_TRIGGER,
-                  parameter: state.dialogAlert.button_action,
-                });
-              "
+              @click="okButtonClick"
             >
-              {{ state.dialogAlert.button_text }}
+              Entendi
+              <!-- {{ info.buttonText }} -->
             </v-btn>
           </v-row>
         </v-alert>
@@ -36,33 +39,28 @@
   </div>
 </template>
 
-
 <script>
-import { mapGetters, mapMutations } from "vuex";
-import { actions } from "../store/index.js";
 export default {
-  name: "DialogAlert",
+  name: 'DialogAlert',
+  props: {
+    info: {
+      type: Object,
+      default: () => ({}),
+    },
+  },
+
   data() {
-    return {
-      actions,
-      typeDictionary: {
-        error: "Algo deu Errado",
-        info: "Informação",
-        warning: "Atenção",
-      },
-      icons: {
-        error: "Algo deu Errado",
-        info: "Informação",
-        warning: "Atenção",
-      },
-    };
+    return {};
   },
+
   methods: {
-    ...mapMutations(["SEND_MESSAGE"]),
+    okButtonClick() {
+      this.$emit('dismiss', true);
+      console.log('okButtonClick');
+    },
   },
-  computed: {
-    ...mapGetters(["state"]),
-  },
+
+  computed: {},
 };
 </script>
 
