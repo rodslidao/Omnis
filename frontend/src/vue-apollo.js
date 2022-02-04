@@ -24,7 +24,7 @@ const defaultOptions = {
   // You can use `wss` for secure connection (recommended in production)
   // Use `null` to disable subscriptions
   wsEndpoint:
-    urlMaker('ws', process.env.VUE_APP_URL_API_STREAMING_PORT)
+    urlMaker('ws', process.env.VUE_APP_URL_API_PORT)
     || 'ws://localhost:4000/',
   // LocalStorage token
   tokenName: AUTH_TOKEN,

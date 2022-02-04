@@ -1,57 +1,19 @@
 <template>
   <div>
-    <v-btn rounded x-large @click="
-    
-    SEND_MESSAGE({'command':'process_start', 'args':null});
-    " color="warning" dark>
+    <!-- <v-img src="http://192.168.1.30:5000" height="250" class="text-right pa-2"> -->
+    </v-img>
+    <v-btn rounded x-large @click="startProcess()" color="warning" dark>
       <span
-        ><v-icon left>{{ icon ? icon : "mdi-play" }}</v-icon></span
+        ><v-icon left>{{ icon ? icon : 'mdi-play' }}</v-icon></span
       >
-      {{ text ? text : "start" }}
-    </v-btn>
-
-    <v-btn rounded x-large @click="
-    
-    SEND_MESSAGE({'command':'process_resume', 'args':null});
-    " color="warning" dark>
-      <span
-        ><v-icon left>{{ icon ? icon : "mdi-play" }}</v-icon></span
-      >
-      {{ text ? text : "resume" }}
-    </v-btn>
-
-     <v-btn rounded x-large @click="
-    
-    SEND_MESSAGE({'command':'process_pause', 'args':null});
-    " color="warning" dark>
-      <span
-        ><v-icon left>{{ icon ? icon : "mdi-play" }}</v-icon></span
-      >
-      {{ text ? text : "pause" }}
-    </v-btn>
-
-    <v-btn rounded x-large @click="
-    
-    SEND_MESSAGE({'command':'process_stop', 'args':null});
-    " color="warning" dark>
-      <span
-        ><v-icon left>{{ icon ? icon : "mdi-play" }}</v-icon></span
-      >
-      {{ text ? text : "stop" }}
-    </v-btn>
-    <v-btn rounded x-large @click="() => {
-                    SEND_MESSAGE({'command':'custom_click', 'parameter':'aaaaaaaaa'})}" color="warning" dark>
-      <span
-        ><v-icon left>{{ icon ? icon : "mdi-play" }}</v-icon></span
-      >
-      {{ text ? text : "iniciar" }}
+      {{ text ? text : 'iniciar' }}
     </v-btn>
 
     <v-row justify="center">
       <v-dialog v-model="dialog" :max-width="step1 ? '600' : '450'">
         <v-card>
           <v-card-title class="text-h5 pt-6 pb-8" v-if="step1"
-            >Escolha o tamanho da peça!</v-card-title
+            >Escolha o modelo da peça!</v-card-title
           >
           <v-card-title class="text-h5 pt-6 pb-8" v-else
             ><v-btn class="mr-2" text icon small @click="step1 = true"
@@ -83,6 +45,10 @@
                       </v-card>
                       <v-card-title class="text-h6 d-flex justify-center mt-n4"
                         >{{ item.partName }}
+                        v-row
+                        <span class="font-weight-regular"
+                          >|{{ item.partNumber }}</span
+                        >
                       </v-card-title>
                     </div>
                   </v-item>
@@ -108,11 +74,12 @@
                       command: actions.START_PROCESS,
                       parameter: {
                         total: 99999,
-                        onlyCorrectParts: state.operation.onlyCorrectParts ? state.operation.onlyCorrectParts : false,
+                        onlyCorrectParts: state.operation.onlyCorrectParts
+                          ? state.operation.onlyCorrectParts
+                          : false,
                         partId: selectedPart,
-                      }
-                    },
-                    );
+                      },
+                    });
                     //startStatusChage
                     dialog = false;
                     state.operation.total = 0;
@@ -177,7 +144,9 @@
                           command: actions.START_PROCESS,
                           parameter: {
                             total: state.operation.total,
-                            onlyCorrectParts: state.operation.onlyCorrectParts ? state.operation.onlyCorrectParts : false ,
+                            onlyCorrectParts: state.operation.onlyCorrectParts
+                              ? state.operation.onlyCorrectParts
+                              : false,
                             partId: selectedPart,
                           }, // Change selection -> state.operation.total -HB
                         });
@@ -219,16 +188,13 @@
 </template>
 
 <script>
-//import ProgressStatus from "../components/ProgressStatus";
-import { mapGetters, mapMutations, mapActions } from "vuex";
-import { actions } from "../store/index";
-// import {socket_events, socket_actions } from "../socket/socketio";
-// import {socket_events, socket_actions } from "../store/index";
-// import VideoProgress from "../components/VideoProgress"; Remove VideoProgress
+import { mapGetters, mapMutations, mapActions } from 'vuex';
+import { actions } from '../store/index';
+import gql from 'graphql-tag';
 
 export default {
   // mixins: [mixins],
-  name: "StartButton",
+  name: 'StartButton',
 
   props: {
     text: String,
@@ -240,57 +206,56 @@ export default {
     // onlyCorrectParts: true,
     selection: false,
     actions,
-    socket_actions,
     dialog: false,
-    buttomDisable: false,
+    buttonDisable: false,
     step1: true,
-    socketMessage: 'ALI?',
     ListOfPartsToMount: [
       {
         partNumber: 0,
-        partName: "Menor",
-        src: "estribo-quadrado.png",
+        partName: 'Menor',
+        src: 'estribo-quadrado.png',
       },
       {
         partNumber: 1,
-        partName: "Maior",
-        src: "estribo-retangular.png",
+        partName: 'Maior',
+        src: 'estribo-retangular.png',
       },
     ],
   }),
 
-  components: {
-    //ProgressStatus,
-    //VideoProgress, // Remove VideoProgress -HB
-  },
+  components: {},
+
+  apollo: {},
 
   computed: {
-    ...mapGetters(["state"]),
+    ...mapGetters(['state']),
     ...mapActions(['socket_userMessage']),
-    },
-
-  // sockets:{
-  //   customEmit: function(){
-  //     console.log("this method alguma coisa");
-  //   },
-
-  //   my_response(data) {
-  //     this.socketMessage = data
-  //     console.log(data);
-  //   }
-  // },
-
-  // sockets:socket_events,
-    
-
-  
+  },
 
   methods: {
-    ...mapMutations(["SEND_MESSAGE", 'NEW_MESSAGE']),
-    // ...socket_actions,
+    ...mapMutations(['SEND_MESSAGE', 'NEW_MESSAGE']),
+
+    async startProcess() {
+      this.dialog = true;
+      console.log('startProcess');
+      const response = await this.$apollo.query({
+        query: gql`
+          query {
+            getProcess {
+              data {
+                status
+              }
+            }
+          }
+        `,
+      });
+      console.log(this.$apollo.store);
+      this.lixo = response.data.getProcess.data.status;
+    },
+
     toPage(page) {
       if (this.$route.name != page) {
-        this.$router.push("/" + page);
+        this.$router.push('/' + page);
       }
     },
 

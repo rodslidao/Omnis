@@ -1,14 +1,12 @@
 <template>
   <div class="menuList">
-          
-
     <v-btn class="button" color="primary" fab dark small @click="play">
       <v-icon> mdi-play </v-icon>
     </v-btn>
     <v-btn class="button" color="primary" fab dark small @click="stop">
       <v-icon> mdi-pause </v-icon>
     </v-btn>
-       <p></p>
+    <p></p>
 
     <v-speed-dial
       v-model="fab"
@@ -37,22 +35,31 @@
       >
         <v-icon left dark>{{ item.icon }} </v-icon>{{ item.title }}
       </v-btn>
+      <v-btn color="primary" class="" dark @onChange="uploadPhoto">
+        <v-file-input
+          hide-input
+          truncate-length="15"
+          ref="myfile"
+          v-model="files"
+        ></v-file-input>
+      </v-btn>
     </v-speed-dial>
   </div>
 </template>
 
 <script>
-import { mapState, mapActions, mapMutations,mapGetters } from "vuex";
+import { mapState, mapActions, mapMutations, mapGetters } from 'vuex';
+import UPLOAD_PHOTO from '@/graphql/UploadPhoto';
 
 export default {
-  name: "ActionMenuForNodes",
+  name: 'ActionMenuForNodes',
   props: {
     editor: Object,
   },
 
   data() {
     return {
-      direction: "top",
+      direction: 'top',
       fab: false,
       fling: false,
       hover: false,
@@ -61,100 +68,97 @@ export default {
       right: true,
       bottom: true,
       left: false,
+      files: null,
 
-      transition: "slide-y-reverse-transition",
+      transition: 'slide-y-reverse-transition',
       items: [
         {
-          title: "Salvar",
-          icon: "mdi-content-save",
-          method: "save",
+          title: 'Salvar',
+          icon: 'mdi-content-save',
+          method: 'save',
         },
-        { title: "Download", icon: "mdi-file-download", method: "download" },
-        { title: "Upload", icon: "mdi-file-upload", method: "upload" },
+        { title: 'Download', icon: 'mdi-file-download', method: 'download' },
+        // { title: 'Upload', icon: 'mdi-file-upload', method: 'upload' },
       ],
     };
   },
 
   computed: {
-    ...mapState("node", {
+    ...mapState('node', {
       tabList: (state) => state.tabList,
       selectedTabId: (state) => state.selectedTabId,
     }),
-     ...mapGetters('node', [
-    'selectedTabName',
-    'selectedTabObject' // -> this.getTabName
-  ])
-},
+    ...mapGetters('node', [
+      'selectedTabName',
+      'selectedTabObject', // -> this.getTabName
+    ]),
+  },
 
   methods: {
-    ...mapMutations(["SEND_MESSAGE"]),
-    ...mapActions("node", [
-      "updateTabById",
-      "removeTabById",
-    ]),
-    ...mapActions([
-      "sendMessage",
-    ]),
+    ...mapActions('node', ['play']),
 
-    play(){
-      this.sendMessage({'command':'process_playCicle', 'args':this.editor.save()})
-      },
+    stop() {
+      this.sendMessage({ command: 'process_stop', args: this.editor.save() });
+    },
 
-    stop(){
-      this.sendMessage({'command':'process_stop', 'args':this.editor.save()})
-      },
-
-    pause(){
-      this.sendMessage({'command':'process_pause', 'args':this.editor.save()})
-      },
-
+    pause() {
+      this.sendMessage({ command: 'process_pause', args: this.editor.save() });
+    },
 
     findFunction(name) {
       this[name]();
     },
 
     save() {
-      let editedNode = this.editor.save();
-            console.log(this.selectedTabId);
-            console.log(this.getSelectedTabName);
+      const editedNode = this.editor.save();
+      console.log(this.selectedTabId);
+      console.log(this.getSelectedTabName);
 
-      editedNode["id"] = this.selectedTabId;
+      editedNode.id = this.selectedTabId;
 
-      editedNode["sketchName"] = this.getSelectedTabName;
-      editedNode["saved"] = false;
+      editedNode.sketchName = this.getSelectedTabName;
+      editedNode.saved = false;
 
       this.updateTabById(editedNode);
 
       console.log(" :salvo com sucesso!'");
       console.log(this.editor.save());
       this.SEND_MESSAGE({
-        type: "SAVE_NODE",
+        type: 'SAVE_NODE',
         payload: editedNode,
       });
     },
 
     download() {
       function download(content, fileName, contentType) {
-        var a = document.createElement("a");
-        var file = new Blob([content], { type: contentType });
+        const a = document.createElement('a');
+        const file = new Blob([content], { type: contentType });
         a.href = URL.createObjectURL(file);
         a.download = fileName;
         a.click();
       }
-      download(JSON.stringify(this.editor.save()), "nodes.json", "text/plain");
+      download(JSON.stringify(this.editor.save()), 'nodes.json', 'text/plain');
     },
 
-    upload() {
-      console.log("upload");
-      console.log(process.env);
+    out() {
+      console.log(this);
     },
 
-    // play() {
-    //   this.$store.dispatch("play");
-    // },
-  },
-  out() {
-    console.log(this);
+    async uploadPhoto({ target }) {
+      await this.$apollo.mutate({
+        mutation: UPLOAD_PHOTO,
+        variables: {
+          photo: target.files[0],
+        },
+        update: (store, { data: { uploadPhoto } }) => {
+          const data = store.readQuery({ query: ALL_PHOTOS });
+
+          data.allPhotos.push(uploadPhoto);
+
+          store.writeQuery({ query: ALL_PHOTOS, data });
+        },
+      });
+    },
   },
 };
 </script>

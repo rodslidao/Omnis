@@ -20,8 +20,8 @@ import '@baklavajs/plugin-renderer-vue/dist/styles.css';
 // const SocketInstance = SocketIO(MY_URL);
 // -------
 
-import VueSocketIO from 'vue-socket.io';
-import SocketIO from 'socket.io-client';
+// import VueSocketIO from 'vue-socket.io';
+// import SocketIO from 'socket.io-client';
 import { store } from './store/index';
 import vuetify from './plugins/vuetify';
 import '@/assets/scss/main.scss';
@@ -43,17 +43,17 @@ const options = {
   // timeout: 30,
 };
 
-Vue.use(new VueSocketIO({
-  debug: true,
-  // connection: SocketIO('http://' + process.env.VUE_APP_URL_API_IP +':'+ process.env.VUE_APP_URL_API_PORT, options),
-  connection: SocketIO(`http://${process.env.VUE_APP_URL_API_IP}:${process.env.VUE_APP_URL_API_PORT}`, options),
-  vuex: {
-    store,
-    mutationPrefix: 'SOCKET_',
-    actionsPrefix: 'SOCKET_',
-  },
+// Vue.use(new VueSocketIO({
+//   debug: true,
+//   // connection: SocketIO('http://' + process.env.VUE_APP_URL_API_IP +':'+ process.env.VUE_APP_URL_API_PORT, options),
+//   connection: SocketIO(`http://${process.env.VUE_APP_URL_API_IP}:${process.env.VUE_APP_URL_API_PORT}`, options),
+//   vuex: {
+//     store,
+//     mutationPrefix: 'SOCKET_',
+//     actionsPrefix: 'SOCKET_',
+//   },
 
-}));
+// }));
 
 // -------
 

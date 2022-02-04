@@ -15,7 +15,7 @@ export default {
 
   getters: {
     /**
-     * access counter in state from the paramater
+     * access counter in state from the parameter
      */
 
     // eslint-disable-next-line max-len
@@ -72,7 +72,6 @@ export default {
      * destruct the context, get the commit and call on the appropriate mutation
      */
     play({ commit }) {
-      this._vm.$socket.emit('node', 'play');
       commit('play');
     },
 
