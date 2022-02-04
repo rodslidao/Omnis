@@ -77,6 +77,7 @@ class SerialOBJ(object):
         print(color(f"{self.name} está conectando...", "INFO"))
         try:
             self.serial = serial.Serial(port, baudrate, timeout=timeout)
+            print(self.serial)
         except serial.serialutil.SerialException as exp:
             if "FileNotFoundError" in str(exp):
                 self.code = -2

@@ -7,7 +7,7 @@ from omnis.opencv.macrofilter import cor, colorRange, areaRange, Kernel
 
 class dimension():
     def __init__(self, center, dots, area, rects, rectangle):
-        self.id = datetime.now()
+        self._id = datetime.now()
         self.area = area
         self.rectangle = rectangle
         self.dots = dots

@@ -13,27 +13,27 @@ class BaseNode:
     def __init__(self, name, type, id, options, outputConnections) -> None:
         self.name = name
         self.type = type
-        self.id = id
+        self._id = id
         self.options = options
         self.outputConnections = outputConnections
         self.running = True
-        self.logger = logSetup(__class__.__name__, alias=self.name, id=self.id, path=__name__)
+        self.logger = logSetup(__class__.__name__, alias=self.name, id=self._id, path=__name__)
         self.log("Created")
     def log(self, message, level="debug", prefix="", suffix=""):
         #if not prefix:
-            #prefix = f"{self.type} {self.name} {self.id} \t"
+            #prefix = f"{self.type} {self.name} {self._id} \t"
 
         getattr(self.logger, level.lower())(f"{prefix}{message}{suffix}")
 
     def onSuccess(self, payload, additional=None):
-        #ExecutionCounter.incrCountType(self.id, "success")
+        #ExecutionCounter.incrCountType(self._id, "success")
         self.on("onSuccess", payload, additional)
 
     def onSignal(self, signal=True):
         self.on("Sinal", signal)
 
     def onFailure(self, payload, additional=None, pulse=True, errorMessage=""):
-        #ExecutionCounter.incrCountType(self.id, "failure")
+        #ExecutionCounter.incrCountType(self._id, "failure")
         self.log(f"onFailure: {payload}", level="warning")
         self.on("onFailure", payload, additional, pulse)
 
@@ -47,9 +47,9 @@ class BaseNode:
             )
         )
         if pulse:
-            self.sendErrorMessage(self.id, errorMessage)
+            self.sendErrorMessage(self._id, errorMessage)
         #if trigger == "onFailure":
-            #ExecutionCounter.incrCountType(self.id, "failure")
+            #ExecutionCounter.incrCountType(self._id, "failure")
         for target in targets:
 
             self.sendConnectionExec(
@@ -96,7 +96,7 @@ class BaseNode:
         return False
 
     def pulse(self, color):
-        message = {"NodeId": self.id, "color": color}
+        message = {"NodeId": self._id, "color": color}
         emit("NODE_PULSE", message)
 
     def sendConnectionExec(self, fromId, toId):

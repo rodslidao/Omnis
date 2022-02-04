@@ -8,7 +8,7 @@ class CameraOBJ:
     def __init__(self, src, name=None, resetOnFail=True, **kwargs) -> None:
         self.src = src
         self.name = name if name else "cam_" + str(src)
-        self.id = ObjectId()
+        self._id = ObjectId()
         self.resetOnFail = resetOnFail
         self.stopped = threading.Event()
         self.running = threading.Event()

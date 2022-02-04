@@ -23,7 +23,7 @@ class ForLoopNode(BaseNode):
             self.backup = self.iterator.copy()
         elif target == "Trigger":
             try:
-                self.id, self.item = next(self.iterator)
+                self._id, self.item = next(self.iterator)
                 self.on("item", self.item)
             except StopIteration:
                 self.on("Fim")

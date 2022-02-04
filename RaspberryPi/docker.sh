@@ -11,6 +11,7 @@ exit
 sudo usermod -aG docker ${USER}
 sudo su
 apt install python3-pip -y
+apt install python3.9-venv
 pip3 install docker-compose
 apt install linux-modules-extra-raspi
 exit

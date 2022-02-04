@@ -21,5 +21,5 @@ class ButtonNode(BaseNode):
         self.on("onClick", datetime.now())
 
     def reset(self):
-        #ExecutionCounter.resetCountType(self.id)
+        #ExecutionCounter.resetCountType(self._id)
         return True

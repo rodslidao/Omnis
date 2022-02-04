@@ -1,5 +1,5 @@
 import uvicorn
-from api import dbo
+from api import *
 from starlette.middleware.cors import CORSMiddleware
 from src.logs.log import logSetup
 logger = logSetup("Api")
@@ -10,7 +10,6 @@ try:
     from ariadne import (
         load_schema_from_path,
         make_executable_schema,
-        graphql_sync,
         snake_case_fallback_resolvers,
     )
     from ariadne.constants import PLAYGROUND_HTML

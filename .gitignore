@@ -13,3 +13,4 @@ DataBase/*
 Docker/data/*
 *.env
 *.csv
+*.save
