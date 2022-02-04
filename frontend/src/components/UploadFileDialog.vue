@@ -1,142 +1,53 @@
 <template>
-  <v-row justify="center">
-    <v-btn
-      color="primary"
-      dark
-      @click.stop="dialog = true"
-    >
-      Open Dialog
-    </v-btn>
+  <section class="uk-section">
+    <div class="uk-container uk-container-small">
+      <h2>Photo Album</h2>
 
-    <v-dialog
-      v-model="dialog"
-      max-width="290"
-    >
-      <v-card>
-        <v-card-title class="text-h5">
-          Use Google's location service?
-        </v-card-title>
+      <div class="uk-margin">
+        <input type="file" accept="image/*" @change="uploadPhoto" />
+      </div>
 
-        <v-card-text>
-          Let Google help apps determine location. This means sending anonymous location data to Google, even when no apps are running.
-        </v-card-text>
-
-        <v-card-actions>
-          <v-spacer></v-spacer>
-
-          <v-btn
-            color="green darken-1"
-            text
-            @click="dialog = false"
-          >
-            Disagree
-          </v-btn>
-
-          <v-btn
-            color="green darken-1"
-            text
-            @click="dialog = false"
-          >
-            Agree
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-  </v-row>
+      <div class="uk-grid uk-child-width-1-3@m">
+        <div class="uk-margin" v-for="(photo, index) in allPhotos" :key="index">
+          <div class="uk-card uk-card-default">
+            <div class="uk-card-media-top">
+              <img :src="photo.path" />
+            </div>
+            <div class="uk-card-body">{{ photo.filename }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 </template>
 
 <script>
-import { mapGetters, mapMutations, mapActions } from 'vuex';
-import { actions } from '../store/index';
-import gql from 'graphql-tag';
+import ALL_PHOTOS from '../graphql/AllPhotos';
+import UPLOAD_PHOTO from '../graphql/UploadPhoto';
 
 export default {
-  // mixins: [mixins],
   name: 'UploadFileDialog',
-
-  props: {
-    text: String,
-    icon: String,
-  },
-
-  data: () => ({
-    selectedPart: 1,
-    // onlyCorrectParts: true,
-    selection: false,
-    actions,
-    dialog: false,
-    buttonDisable: false,
-    step1: true,
-    ListOfPartsToMount: [
-      {
-        partNumber: 0,
-        partName: 'Menor',
-        src: 'estribo-quadrado.png',
-      },
-      {
-        partNumber: 1,
-        partName: 'Maior',
-        src: 'estribo-retangular.png',
-      },
-    ],
-  }),
-
-  components: {},
-
-  apollo: {},
-
-  computed: {
-    ...mapGetters(['state']),
+  apollo: {
+    allPhotos: ALL_PHOTOS,
   },
 
   methods: {
-    ...mapMutations(['SEND_MESSAGE', 'NEW_MESSAGE']),
+    async uploadPhoto({ target }) {
+      console.log(target.files);
+      await this.$apollo.mutate({
+        mutation: UPLOAD_PHOTO,
+        variables: {
+          photo: target.files[0],
+        },
+        update: (store, { data: { uploadPhoto } }) => {
+          const data = store.readQuery({ query: ALL_PHOTOS });
 
-    async startProcess() {
-      this.dialog = true;
-      console.log('startProcess');
-      const response = await this.$apollo.query({
-        query: gql`
-          query {
-            getProcess {
-              data {
-                status
-              }
-            }
-          }
-        `,
+          data.allPhotos.push(uploadPhoto);
+
+          store.writeQuery({ query: ALL_PHOTOS, data });
+        },
       });
-      console.log(this.$apollo.store);
-      this.lixo = response.data.getProcess.data.status;
-    },
-
-    toPage(page) {
-      if (this.$route.name != page) {
-        this.$router.push('/' + page);
-      }
-    },
-
-    less() {
-      if (this.state.operation.total >= 2) {
-        this.state.operation.total--;
-      } else {
-        this.buttomDisable = true;
-      }
     },
   },
 };
 </script>
-
-<style lang="scss">
-.quantityToProduce {
-  width: 100px;
-}
-
-.partItem {
-  height: 320px;
-  width: 250px;
-}
-.v-card--link:focus:before {
-  opacity: 0;
-}
-</style>

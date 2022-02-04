@@ -1,60 +1,68 @@
 <template>
-  <div class="menuList">
-    <v-btn class="button" color="primary" fab dark small @click="play">
-      <v-icon> mdi-play </v-icon>
-    </v-btn>
-    <v-btn class="button" color="primary" fab dark small @click="stop">
-      <v-icon> mdi-pause </v-icon>
-    </v-btn>
-    <p></p>
+  <div>
+    <UploadFileDialog></UploadFileDialog>
+    <div class="menuList">
+      <v-btn class="button" color="primary" fab dark small @click="play">
+        <v-icon> mdi-play </v-icon>
+      </v-btn>
+      <v-btn class="button" color="primary" fab dark small @click="stop">
+        <v-icon> mdi-pause </v-icon>
+      </v-btn>
+      <p></p>
 
-    <v-speed-dial
-      v-model="fab"
-      :top="top"
-      :bottom="bottom"
-      :right="right"
-      :left="left"
-      :direction="direction"
-      :open-on-hover="hover"
-      :transition="transition"
-      class="d-flex flex-end"
-    >
-      <template v-slot:activator>
-        <v-btn color="primary" fab dark>
-          <v-icon v-if="fab"> mdi-close </v-icon>
-          <v-icon dark v-else> mdi-dots-vertical </v-icon>
-        </v-btn>
-      </template>
-      <v-btn
-        color="primary"
-        class=""
-        dark
-        v-for="(item, index) in items"
-        :key="index"
-        @click="findFunction(item.method)"
+      <v-speed-dial
+        v-model="fab"
+        :top="top"
+        :bottom="bottom"
+        :right="right"
+        :left="left"
+        :direction="direction"
+        :open-on-hover="hover"
+        :transition="transition"
+        class="d-flex flex-end"
       >
-        <v-icon left dark>{{ item.icon }} </v-icon>{{ item.title }}
-      </v-btn>
-      <v-btn color="primary" class="" dark @onChange="uploadPhoto">
-        <v-file-input
-          hide-input
-          truncate-length="15"
-          ref="myfile"
-          v-model="files"
-        ></v-file-input>
-      </v-btn>
-    </v-speed-dial>
+        <template v-slot:activator>
+          <v-btn color="primary" fab dark>
+            <v-icon v-if="fab"> mdi-close </v-icon>
+            <v-icon dark v-else> mdi-dots-vertical </v-icon>
+          </v-btn>
+        </template>
+        <v-btn
+          color="primary"
+          class=""
+          dark
+          v-for="(item, index) in items"
+          :key="index"
+          @click="findFunction(item.method)"
+        >
+          <v-icon left dark>{{ item.icon }} </v-icon>{{ item.title }}
+        </v-btn>
+        <v-btn color="primary" class="" dark @change="upload">
+          <v-file-input
+            hide-input
+            truncate-length="15"
+            ref="myfile"
+            v-model="files"
+          ></v-file-input>
+        </v-btn>
+      </v-speed-dial>
+    </div>
   </div>
 </template>
 
 <script>
 import { mapState, mapActions, mapMutations, mapGetters } from 'vuex';
 import UPLOAD_PHOTO from '@/graphql/UploadPhoto';
+import UploadFileDialog from '@/components/UploadFileDialog.vue';
+import gql from 'graphql-tag';
 
 export default {
   name: 'ActionMenuForNodes',
   props: {
     editor: Object,
+  },
+  components: {
+    UploadFileDialog,
   },
 
   data() {
@@ -69,7 +77,7 @@ export default {
       bottom: true,
       left: false,
       files: null,
-
+      result_: 'Teste',
       transition: 'slide-y-reverse-transition',
       items: [
         {
@@ -144,19 +152,47 @@ export default {
       console.log(this);
     },
 
-    async uploadPhoto({ target }) {
-      await this.$apollo.mutate({
-        mutation: UPLOAD_PHOTO,
-        variables: {
-          photo: target.files[0],
-        },
-        update: (store, { data: { uploadPhoto } }) => {
-          const data = store.readQuery({ query: ALL_PHOTOS });
+    async upload({ target }) {
+      console.log(target.files[0]);
+      let files = target.files;
+      let fr = new FileReader();
+      console.log(files);
+      if (files.length <= 0) {
+        return false;
+      }
 
-          data.allPhotos.push(uploadPhoto);
+      var json;
 
-          store.writeQuery({ query: ALL_PHOTOS, data });
-        },
+      async function loadFile(callback) {
+        console.log(callback);
+        fr.onload = async (e) => {
+          json = JSON.parse(e.target.result);
+          await callback();
+        };
+      }
+
+      // Use time out to wait for the file to be read
+      fr.readAsText(files[0]);
+
+      loadFile(async () => {
+        await this.$apollo.mutate({
+          mutation: gql`
+            mutation createNodeSheet($input: JSON!) {
+              createNodeSheet(input: $input) {
+                data {
+                  _id
+                }
+              }
+            }
+          `,
+          variables: {
+            input: json,
+          },
+          update: (store, { data: { createNodeSheet } }) => {
+            console.log(createNodeSheet.data._id);
+          },
+        });
+        console.log(json);
       });
     },
   },
