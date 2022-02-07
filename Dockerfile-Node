@@ -1,8 +1,0 @@
-FROM node:latest
-WORKDIR /usr/src/app
-COPY package*.json ./
-RUN npm install
-# COPY webpack.config.js ./
-# COPY vue.config.js ./
-# COPY babel.config.js ./
-# COPY ./src ./src

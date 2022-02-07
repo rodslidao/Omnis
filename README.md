@@ -5,13 +5,20 @@
 -Docker
 
 ## Run from Docker
-In doker folder run 
 ```
 make up
 ```
 for disable
 ```
 make down
+```
+for restart
+```
+make restart or make restart-force
+```
+for re-build back and front end images run
+```
+make build 
 ```
 
 ## Project setup without Docker
@@ -23,7 +30,7 @@ pip install -r requirements.txt
 ### Compiles and hot-reloads for development
 ```
 npm run serve
-python .\engine\main.py
+python .\backend\main.py
 ```
 
 ### Compiles and minifies for production

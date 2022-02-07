@@ -2,7 +2,7 @@
 version: "3.1"
 services:
   mongo:
-    image: mongo:latest
+    image: mongo:4.2
     container_name: mongo_c
     restart: always
     ports:
@@ -14,8 +14,8 @@ services:
     networks:
         - mongo-compose-network
     volumes: 
-      - ./Docker/data:/data/db
-
+      - ./mongodb:/data/db
+ 
   mongo-express:
     image: mongo-express:latest
     restart: always
@@ -24,12 +24,10 @@ services:
     environment:
       ME_CONFIG_MONGODB_SERVER: mongo_c
       ME_CONFIG_MONGODB_PORT: ${DB_PORT}
-      ME_CONFIG_BASICAUTH_USERNAME: user
-      ME_CONFIG_BASICAUTH_PASSWORD: senha
-      # ME_CONFIG_MONGODB_ENABLE_ADMIN: false
-      # ME_CONFIG_MONGODB_AUTH_DATABASE: admin
-      # ME_CONFIG_MONGODB_AUTH_USERNAME: ${DB_USER}
-      # ME_CONFIG_MONGODB_AUTH_PASSWORD: ${DB_PASS}
+
+      ME_CONFIG_BASICAUTH_USERNAME: ${EXPRESS_USER}
+      ME_CONFIG_BASICAUTH_PASSWORD: ${EXPRESS_PASSWORD}
+
     links:
       - mongo
     networks:
@@ -37,47 +35,40 @@ services:
     depends_on:
       - mongo
     volumes: 
-      - ./Docker/data:/data/db
-  
-  # node-modules:
-  #   image: sherensberk/omnis_node_modules:latest
-  #   container_name: node_c
-  #   restart: always
-  #   stdin_open: true
-  #   tty: true
-  #   environment:
-  #     - CHOKIDAR_USEPOLLING=true
-  #   ports:
-  #     - 80:80
-  #   volumes:
-  #     - .:/usr/src/app
-  #   command: bash -c "export NODE_OPTIONS=--openssl-legacy-provider && npm run serve"
-  #   networks:
-  #     - front-back-network
+      - ./mongodb:/data/db
 
-  python-engine:
-    image: sherensberk/omnis_python_modules:latest
-    privileged: true
-    container_name: python_c
-    environment:
-      DB_PORT: ${DB_PORT}
-      DB_HOST: ${DB_IP}
-      DB_NAME: ${DB_START_POINT}
-    ports:
-      - 5000:5000
+  backend:
+    container_name: backend
+    image: backend:latest
+    build: ./backend
     restart: always
-    command: bash -c "cd /usr/src/app/engine && python main.py"
-    depends_on:
-      - mongo
-      # - node-modules
+    ports:
+      - ${STREAMING_PORT}:${STREAMING_PORT}
+      - ${SERVER_PORT}:${SERVER_PORT}
+    environment:
+      ENV_MODE: ${ENV_MODE}
+      STREAMING_PORT: ${STREAMING_PORT}
+      SERVER_PORT: ${SERVER_PORT}
+      PYTHON_RUN: ${PYTHON_RUN}
+      SERVER_IP: ${SERVER_IP}
+    devices:
+      - "/dev/ttyACM0:/dev/ttyACM0"
     volumes:
-      - .:/usr/src/app
+      - ./backend:/app
+    command: python main.py
+    depends_on:
+      - mongo-express
     networks:
       - mongo-compose-network
-      # - front-back-network
 
+  # redis:
+  #   container_name: redis
+  #   image: redis:latest
+  #   ports:
+  #     - "6379:6379"
+  #   networks:
+  #     - mongo-compose-network
+      
 networks: 
   mongo-compose-network:
     driver: bridge
-  # front-back-network:
-  #   driver: bridge

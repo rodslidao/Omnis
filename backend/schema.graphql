@@ -1,0 +1,205 @@
+scalar JSON
+scalar Decimal
+scalar Upload
+
+schema {
+  mutation: Mutation
+  query: Query
+  subscription: Subscription
+}
+
+type Mutation {
+  createNodeSheet(input: JSON!): NodeSheetResult!
+  updateNodeSheet(id: ID!, input:NodeSheetInput): NodeSheetResult
+  deleteNodeSheet(id: ID!): NodeSheetResult
+
+  startProcess: ProcessResult!
+  stopProcess: ProcessResult!
+  resumeProcess: ProcessResult!
+  pauseProcess: ProcessResult!
+
+  loadConfig(_id: ID!): Boolean!
+  getLoadedConfig: ID!
+
+  createAlert(input: AlertInput!): AlertResult!
+
+  uploadFile(file: Upload!): FileResult!
+  uploadPhoto(photo: Upload!): Photo!
+
+  createCamera(input: CameraInput!): CameraResult!
+  startCamera(_id: ID!): CameraResult!
+  stopCamera(_id: ID!): CameraResult!
+  resetCamera(_id: ID!): CameraResult!
+
+  createSerial(input: JSON): SerialResult!
+  startSerial(_id: ID!): SerialResult!
+  stopSerial(_id: ID!): SerialResult!
+  resetSerial(_id: ID!): SerialResult!
+}
+
+type Query {
+  getNodeSheet(id: ID!): NodeSheetResult!
+  getCamera(id: ID!): CameraResult!
+  getSerial(id: ID!): SerialResult!
+  getProcess: ProcessResult!
+  updateAlerts: DefaultStatus
+  allPhotos: [Photo]
+}
+
+type Subscription {
+  alerts: AlertResult
+  cameras: Camera
+  serials: Serial
+}
+
+
+# Interfaces
+type DefaultStatus{
+  success: Boolean!
+  error: [String]
+}
+
+# Results
+type CameraResult{
+  status: DefaultStatus!
+  data: Camera
+}
+
+type SerialResult{
+  status: DefaultStatus!
+  data: Serial
+}
+
+type FileResult {
+  status: DefaultStatus!
+}
+
+type NodeSheetResult{
+  status: DefaultStatus!
+  data: NodeSheet
+}
+
+type ProcessResult{
+  status: DefaultStatus!
+  data: Process
+}
+
+type AlertResult {
+  level: String
+  title: String
+  date: Float
+  description: String
+  how2solve: String
+  buttonText: String
+  buttonAction: String
+}
+
+# Inputs
+input NodeSheetInput {
+  name: String!
+}
+
+input CameraInput {
+  src: Int!
+  name: String
+}
+
+input SerialInput{
+  baudrate:Int
+  bytesize:Int
+  description:Int
+  device:Int
+  dsrdtr:Boolean
+  is_gcode:Boolean
+  manufacturer:Int
+  parity:String
+  pid:Int
+  port:String
+  rtscts:Boolean
+  serial_number:Int
+  stopbits:Int
+  subsystem:Int
+  timeout:Int
+  vid:Int
+  xonxoff:Boolean
+}
+
+input AlertInput {
+  level: String!
+  title: String!
+  description: String!
+  how2solve: String
+  buttonText: String
+  buttonAction: String
+}
+
+# Types
+type NodeSheet {
+  _id: ID!
+  connections: [connection]
+  nodes: [node]
+  panning: JSON
+  scaling: Float
+}
+
+type Camera{
+  _id: ID!
+  src: Int!
+  name: String!
+  properties: JSON!
+  running: Boolean!
+}
+
+type Serial {
+  port: String!
+  baudrate: Int!
+  is_open: Boolean!
+  is_gcode: Boolean!
+  last_value_send: String!
+  last_value_received: String!
+}
+
+
+type connection {
+  id: String!
+  from: String!
+  to: String!
+}
+
+type node {
+  id: String!
+  name: String!
+  type: String!
+  options: [option]
+  state: JSON
+  interfaces: [interface]
+  position: JSON
+  width: Int
+  twoColumn: Boolean
+}
+
+type option {
+  name: String!
+  value: JSON
+}
+
+type interface {
+  name: String!
+  id: String!
+  value: JSON!
+}
+
+type Process {
+  _id: ID!
+  start_at: Float!
+  end_at: Float!
+  running_seconds: Float!
+  status: String!
+  error: String
+}
+
+
+type Photo {
+    filename: String!
+    path: String!
+  }

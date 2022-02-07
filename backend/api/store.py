@@ -1,0 +1,1 @@
+cameras, serials, queues, alerts = [], [], [], []
