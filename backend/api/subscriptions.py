@@ -8,13 +8,10 @@ subscription = SubscriptionType()
 async def alerts_source(obj, info):
     queue = asyncio.Queue()
     alerts.append(queue)
-    # queue = queues[0]
-    # print("queues:", queues)
     try:
         while True:
             print("waiting for queue...")
-            alert =  await queue.get() #{"level":"info2"}
-            # print(alert.level)
+            alert =  await queue.get()
             yield alert
     except asyncio.CancelledError:
         alerts.remove(queue)

@@ -1,9 +1,3 @@
-# if __package__ is None:
-#     import sys
-#     from os import path
-
-#     sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
-
 from .nodes.node_manager import NodeManager
 from .Redis import RedisClient
 from datetime import datetime
@@ -12,7 +6,6 @@ from time import sleep
 
 
 class NodeExecutionCount(object):
-    # type, nodeId, triggerCount, succesCount, failureCount, bytesCount, time, date
     def __init__(
         self,
         type,
@@ -45,19 +38,15 @@ class ExecutionCounter(object):
         RedisClient.set(execInfoTime, datetime.now().strftime("%H:%M:%S"))
 
         RedisClient.incrby(execInfoString, incrWidth)
-        #ExecutionCounter.sendExecutionCountWithoutInfo(nodeId)
 
     @staticmethod
     def setCountType(nodeId, type, value):
         execInfoString = f"exex_info_{type}_{nodeId}"
         execInfoTime = f"exex_info_time_{nodeId}"
         execInfoDate = f"exex_info_date_{nodeId}"
-
         RedisClient.set(execInfoDate, datetime.now().strftime("%m.%d.%Y"))
         RedisClient.set(execInfoTime, datetime.now().strftime("%H:%M:%S"))
         RedisClient.set(execInfoString, value)
-
-        #ExecutionCounter.sendExecutionCountWithoutInfo(nodeId)
 
     @staticmethod
     def initialEmitAllCounts():

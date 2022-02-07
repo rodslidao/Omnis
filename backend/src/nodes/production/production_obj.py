@@ -27,18 +27,5 @@ class productionOBJ():
             "status": self.status,
             "process_seconds": (datetime.utcnow()-self.st).total_seconds(),
         }
-    
-    # def fake_data(self):
-    #     date = faker.date_time_between(start_date="-1y", end_date="now")
-    
-    #     return {
-    #         "_id":self._id,
-    #         "createAt": date,
-    #         "expireAt": datetime.utcnow()+timedelta(**self.delay),
-    #         "model": choice(["A", "B", "C", "E", "F", "G", "H", "I", "J", "K", "L"]),
-    #         "status": faker.boolean(),
-    #         "process_seconds": faker.random_number(digits=2),
-    #     }
-
 
 

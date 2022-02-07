@@ -1,6 +1,5 @@
 from starlette.applications import Starlette
 from starlette.routing import Route, Mount
-from starlette.responses import JSONResponse
 import uvicorn
 from api import dbo
 from src.imageStream import imgRoute, videoRoute
@@ -10,8 +9,6 @@ from src.logs.log import logSetup
 logger = logSetup("Api")
 try:
 
-    # from api import app, io
-    from sys import exit
     from ariadne import (
         load_schema_from_path,
         make_executable_schema,
@@ -33,22 +30,17 @@ try:
         Middleware(CORSMiddleware, allow_origins=['*'], allow_methods=['*'], allow_headers=['*'])
     ]
 
-    async def user(request):
-        print(request.path_params["username"])
-        return JSONResponse({"hello": "world"})
 
     routes = [
-        # Route("/", GraphQL(schema)),
         Mount('/imgs', routes=imgRoute),
         Mount('/videos', routes=videoRoute),
     ]
 
     app = Starlette(debug=True, routes=routes)
-
     ls = CORSMiddleware(GraphQL(schema, debug=True), allow_origins=['*'], allow_methods=['*'], allow_headers=['*'])
-    
+
+
     app.mount("/", ls)
-    # app.mount("/",)
 
 
     port = environ["SERVER_PORT"] if environ.get("SERVER_PORT") else 5000

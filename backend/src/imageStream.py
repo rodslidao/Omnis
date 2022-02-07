@@ -3,13 +3,12 @@ from starlette.routing import Route
 from os.path import abspath, isfile
 import simplejpeg, asyncio
 from cv2 import imread
-
 cameraManger = None
-failpath = abspath("./src/img/no_image.jpg")
+failpath = abspath("./src/imgs/no_image.jpg")
 
 async def frameReader(request):
     if request:
-        path = abspath(f"./src/img/{request.path_params['img_name']}")
+        path = abspath(f"./src/imgs/{request.path_params['img_name']}")
     else:
         path = ".s"
     if isfile(path):
@@ -19,10 +18,6 @@ async def frameReader(request):
         img = open(failpath, 'rb')
         status_code = 404
     return StreamingResponse(img, status_code, media_type="image/jpeg")
-
-    # img = imread(path)
-    # return StreamingResponse(BytesIO(imencode('.jpg', img)[1].tobytes()), media_type=f"image/png")
-
 
 async def frameGenerator(cam_id):
     cam = cameraManger.get_by_id(cam_id)

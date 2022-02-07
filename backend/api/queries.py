@@ -5,7 +5,6 @@ query = QueryType()
 
 payload = {"success": False, "errors": None}
 
-# Alert("info", "Info - 1", "This is an info alert", "You can solve this alert by doing something")
 @defaultException
 @query.field("getNodeSheet")
 def getNodeSheet_resolver(obj, info, **kwargs):
@@ -19,3 +18,9 @@ def getNodeSheet_resolver(obj, info, **kwargs):
 @query.field("getProcess")
 def getProcess_resolver(obj, info):
     return {"status":{"success": True },"data": process.dict()}
+
+@query.field("allPhotos")
+def resolve_allPhotos(obj, info, **kwargs):
+    """Get all photos from the database"""
+    payload = [{"filename": "a.png", "path":"imgs/a.png"}]
+    return payload

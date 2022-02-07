@@ -9,7 +9,7 @@ schema {
 }
 
 type Mutation {
-  createNodeSheet(input: NodeSheetInput): NodeSheetResult
+  createNodeSheet(input: String!): NodeSheetResult!
   updateNodeSheet(id: ID!, input:NodeSheetInput): NodeSheetResult
   deleteNodeSheet(id: ID!): NodeSheetResult
 
@@ -22,12 +22,14 @@ type Mutation {
   getLoadedConfig: ID!
   createAlert(input: AlertInput!): AlertResult!
   uploadFile(file: Upload!): FileResult!
+  uploadPhoto(photo: Upload!): Photo!
 }
 
 type Query {
   getNodeSheet(id: ID!): NodeSheetResult!
   getProcess: ProcessResult!
   updateAlerts: DefaultStatus
+  allPhotos: [Photo]
 }
 
 type Subscription {
@@ -126,3 +128,9 @@ type Process {
   status: String!
   error: String
 }
+
+
+type Photo {
+    filename: String!
+    path: String!
+  }
