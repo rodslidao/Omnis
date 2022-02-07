@@ -9,7 +9,7 @@ schema {
 }
 
 type Mutation {
-  createNodeSheet(input: String!): NodeSheetResult!
+  createNodeSheet(input: JSON!): NodeSheetResult!
   updateNodeSheet(id: ID!, input:NodeSheetInput): NodeSheetResult
   deleteNodeSheet(id: ID!): NodeSheetResult
 
@@ -20,13 +20,27 @@ type Mutation {
 
   loadConfig(_id: ID!): Boolean!
   getLoadedConfig: ID!
+
   createAlert(input: AlertInput!): AlertResult!
+
   uploadFile(file: Upload!): FileResult!
   uploadPhoto(photo: Upload!): Photo!
+
+  createCamera(input: CameraInput!): CameraResult!
+  startCamera(_id: ID!): CameraResult!
+  stopCamera(_id: ID!): CameraResult!
+  resetCamera(_id: ID!): CameraResult!
+
+  createSerial(input: JSON): SerialResult!
+  startSerial(_id: ID!): SerialResult!
+  stopSerial(_id: ID!): SerialResult!
+  resetSerial(_id: ID!): SerialResult!
 }
 
 type Query {
   getNodeSheet(id: ID!): NodeSheetResult!
+  getCamera(id: ID!): CameraResult!
+  getSerial(id: ID!): SerialResult!
   getProcess: ProcessResult!
   updateAlerts: DefaultStatus
   allPhotos: [Photo]
@@ -34,6 +48,8 @@ type Query {
 
 type Subscription {
   alerts: AlertResult
+  cameras: Camera
+  serials: Serial
 }
 
 
@@ -44,6 +60,16 @@ type DefaultStatus{
 }
 
 # Results
+type CameraResult{
+  status: DefaultStatus!
+  data: Camera
+}
+
+type SerialResult{
+  status: DefaultStatus!
+  data: Serial
+}
+
 type FileResult {
   status: DefaultStatus!
 }
@@ -73,6 +99,31 @@ input NodeSheetInput {
   name: String!
 }
 
+input CameraInput {
+  src: Int!
+  name: String
+}
+
+input SerialInput{
+  baudrate:Int
+  bytesize:Int
+  description:Int
+  device:Int
+  dsrdtr:Boolean
+  is_gcode:Boolean
+  manufacturer:Int
+  parity:String
+  pid:Int
+  port:String
+  rtscts:Boolean
+  serial_number:Int
+  stopbits:Int
+  subsystem:Int
+  timeout:Int
+  vid:Int
+  xonxoff:Boolean
+}
+
 input AlertInput {
   level: String!
   title: String!
@@ -90,6 +141,24 @@ type NodeSheet {
   panning: JSON
   scaling: Float
 }
+
+type Camera{
+  _id: ID!
+  src: Int!
+  name: String!
+  properties: JSON!
+  running: Boolean!
+}
+
+type Serial {
+  port: String!
+  baudrate: Int!
+  is_open: Boolean!
+  is_gcode: Boolean!
+  last_value_send: String!
+  last_value_received: String!
+}
+
 
 type connection {
   id: String!

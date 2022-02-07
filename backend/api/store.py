@@ -1,1 +1,1 @@
-users, messages, queues, alerts = [], [], [], []
+cameras, serials, queues, alerts = [], [], [], []
