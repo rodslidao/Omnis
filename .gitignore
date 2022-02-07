@@ -11,6 +11,6 @@ Docker/*
 mongodb/*
 DataBase/*
 Docker/data/*
-*.env
 *.csv
 *.save
+.env
