@@ -1,9 +1,16 @@
+from email.policy import default
 from .models import *
 from ariadne import MutationType
 from src.nodes.alerts.alert_obj import Alert
 from numpy import uint8, frombuffer
 from cv2 import imdecode, imwrite
 from os.path import abspath
+
+from src.nodes.camera.custom_camera import camera
+from src.nodes.serial.custom_serial import CustomSerial
+
+from src.manager.camera_manager import CameraManager
+from src.manager.serial_manager import SerialManager
 
 mutation = MutationType()
 
@@ -86,12 +93,14 @@ def getLoadedConfig_resolver(obj, info):
         print(e)
         return False
 
+@defaultException
 @mutation.field("createAlert")
 async def createAlert_resolver(obj, info, input):
     """Create a new Alert object and return it like a payload"""
     returns = Alert(**input)
     return {"status":{"success": True },"data": returns}
 
+@defaultException
 @mutation.field("uploadFile")
 async def uploadFile_resolver(obj, info, file):
     """Upload a file and return it like a payload"""
@@ -110,7 +119,7 @@ class Picutre():
         imwrite(path, img)
         return self.__dict__
         
-
+@defaultException
 @mutation.field("uploadPhoto")
 async def uploadPhoto_resolver(obj, info, **kwargs):
     name = kwargs.get('photo').filename
@@ -119,4 +128,68 @@ async def uploadPhoto_resolver(obj, info, **kwargs):
     img = imdecode(frombuffer(kwargs.get('photo').file.read(), uint8), 1)
     print(p.export(path, img))
     return {"filename": p.id, "path":p.path}
-    
+
+# @mutation.field("createNode") #? Como criar novos nodes de forma dinamica e individual?
+
+# *  ----------- Cameras ----------- * #
+@defaultException
+@mutation.field("createCamera")
+def createCamera_resolver(obj, info, **kwargs):
+    """Create a new Camera object and return it like a payload"""
+    returns = camera(**kwargs.get("input", {})).to_dict()
+    print("Returning:", returns)
+    return {"status":{"success": True },"data": returns}
+
+@defaultException
+@mutation.field("startCamera")
+def startCamera_resolver(obj, info, _id):
+    """Start a camera by id and return it like a payload"""
+    camera = (CameraManager.get_by_id(_id)).start()
+    returns = camera.to_dict()
+    print(returns)
+    return {"status":{"success": True },"data": returns}
+
+@defaultException
+@mutation.field("stopCamera")
+def stopCamera_resolver(obj, info, _id):
+    """Stop a camera by id and return it like a payload"""
+    camera = (CameraManager.get_by_id(_id)).stop()
+    returns = camera.to_dict()
+    print(returns)
+    return {"status":{"success": True },"data": returns}
+
+@defaultException
+@mutation.field("resetCamera")
+def resetCamera_resolver(obj, info, _id):
+    """Reset a camera by id and return it like a payload"""
+    camera = (CameraManager.get_by_id(_id)).reset()
+    returns = camera.to_dict()
+    print(returns)
+    return {"status":{"success": True },"data": returns}
+
+# *  ----------- Serial ----------- * #
+@defaultException
+@mutation.field("createSerial")
+def createSerial_resolver(obj, info, **kwargs):
+    """Create a new Serial object and return it like a payload"""
+    returns = CustomSerial(**kwargs.get("input", {})).to_dict()
+    print("Returning:", returns)
+    return {"status":{"success": True },"data": returns}
+
+@defaultException
+@mutation.field("startSerial")
+def startSerial_resolver(obj, info, _id):
+    """Start a serial by id and return it like a payload"""
+    serial = SerialManager.get_by_id(_id).start()
+    returns = serial.to_dict()
+    print(returns)
+    return {"status":{"success": True },"data": returns}
+
+@defaultException
+@mutation.field("stopSerial")
+def stopSerial_resolver(obj, info, _id):
+    """Stop a serial by id and return it like a payload"""
+    serial = SerialManager.get_by_id(_id).stop()
+    returns = serial.to_dict()
+    print(returns)
+    return {"status":{"success": True },"data": returns}
