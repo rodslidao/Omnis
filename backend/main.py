@@ -6,9 +6,8 @@ from src.imageStream import imgRoute, videoRoute
 from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware import Middleware
 from src.logs.log import logSetup
-from socket import gethostname, gethostbyname
+import socket
 logger = logSetup("Api")
-
 
 try:
 
@@ -47,7 +46,14 @@ try:
 
 
     port = environ["SERVER_PORT"] if environ.get("SERVER_PORT") else 5000
-    host = "0.0.0.0" if environ.get("ENV_MODE") == "production" else gethostbyname(gethostname())
+    if environ.get("ENV_MODE") == "production":
+        host = "0.0.0.0"
+    else:
+        socketI = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        socketI.connect(("8.8.8.8", 80))
+        host = socketI.getsockname()[0]
+        socketI.close()
+
     if __name__ == "__main__":
         uvicorn.run("main:app", host=host, port=int(port), log_level="info")
 
