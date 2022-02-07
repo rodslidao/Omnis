@@ -25,7 +25,6 @@ from omnis.camera.device import USB_Camera
 import omnis.data.manipulator.new as new
 import omnis.opencv.utility as my_cv2
 
-import omnis.server.app as flask_app
 import omnis.util.stop as stop
 
 from omnis.structure_nodes import loop_process, loop, node

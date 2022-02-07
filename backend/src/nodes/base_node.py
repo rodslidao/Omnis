@@ -1,6 +1,6 @@
 from math import fabs
 from cv2 import log
-from src.manager.socketio_manager import emit
+# from src.manager.socketio_manager import emit
 from src.message import Message
 from src.nodes.node_manager import NodeManager
 from src.logs.log import logSetup
@@ -97,15 +97,15 @@ class BaseNode:
 
     def pulse(self, color):
         message = {"NodeId": self._id, "color": color}
-        emit("NODE_PULSE", message)
+        # emit("NODE_PULSE", message)
 
     def sendConnectionExec(self, fromId, toId):
         message = {"type": "CONNECTION_EXEC", "data": {"from": fromId, "to": toId}}
-        emit("CONNECTION_EXEC", message)
+        # emit("CONNECTION_EXEC", message)
 
     def sendErrorMessage(self, nodeId, errorMessage):
         message = {
             "type": "NODE_EXEC_ERROR",
             "data": {"nodeId": nodeId, "errorMessage": errorMessage},
         }
-        emit("NODE_EXEC_ERROR", message)
+        # emit("NODE_EXEC_ERROR", message)

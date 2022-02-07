@@ -1,7 +1,6 @@
 from .nodes.node_manager import NodeManager
 from .Redis import RedisClient
 from datetime import datetime
-from flask_socketio import emit
 from time import sleep
 
 
@@ -73,7 +72,7 @@ class ExecutionCounter(object):
         RedisClient.set(execInfoTime, "-")
 
         payload = NodeExecutionCount("ExecutionCount", nodeId, 0, 0, 0, 0, "-", "-")
-        emit("EXEC_COUNT", payload)
+        # emit("EXEC_COUNT", payload)
 
     @staticmethod
     def sendExecutionCountWithoutInfo(nodeId):

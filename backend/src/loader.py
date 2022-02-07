@@ -1,16 +1,9 @@
-# if __package__ is None:
-#     import sys
-#     from os import path
-
-#     sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
-
 from enum import Enum
 from datetime import datetime
 
 from .nodes.node_manager import NodeManager
 from .nodes.node_registry import NodeRegistry
 from src.manager.mongo_manager import getDb
-from flask_socketio import emit
 
 class LoadingMode(Enum):
     STARTUP = "STARTUP"
@@ -230,6 +223,5 @@ def saveNodeChange(nodeChange):
     # try insert nodeChange in node-history collection of dbo, if can't insert, by any reason, inform
     try:
         dbo.get_collection("node-history").insert_one(nodeChange)
-        emit("node-change", nodeChange)
     except Exception as e:
         print("Can't save node change: {}".format(e))
