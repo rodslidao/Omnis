@@ -7,6 +7,8 @@ from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware import Middleware
 from src.logs.log import logSetup
 logger = logSetup("Api")
+
+
 try:
 
     from ariadne import (
@@ -44,8 +46,9 @@ try:
 
 
     port = environ["SERVER_PORT"] if environ.get("SERVER_PORT") else 5000
+    host = "0.0.0.0" if environ.get("ENV_MODE") == "production" else "localhost"
     if __name__ == "__main__":
-        uvicorn.run("main:app", host="192.168.1.30", port=int(port), log_level="info")
+        uvicorn.run("main:app", host=host, port=int(port), log_level="info")
 
 except KeyboardInterrupt:
     logger.debug("Server stopped manually")
