@@ -53,7 +53,7 @@ class Base_Node():
 class interface():
     def __init__(self, name, id, value):
         self.name = name
-        self.id = id
+        self._id = id
         self.value = value
 
 class option():

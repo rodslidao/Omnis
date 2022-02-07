@@ -51,6 +51,8 @@ services:
       SERVER_PORT: ${SERVER_PORT}
       PYTHON_RUN: ${PYTHON_RUN}
       SERVER_IP: ${SERVER_IP}
+    devices:
+      - "/dev/ttyACM0:/dev/ttyACM0"
     volumes:
       - ./backend:/app
     command: python main.py

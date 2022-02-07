@@ -29,7 +29,7 @@ class MovementNode(BaseNode):
                 self.onFailure("Cant execute action", pulse=True, errorMessage=str(e))
 
     def serial_f(self, payload):
-        #print(f"MovmentNode [{self.id}][Serial]:", payload)
+        #print(f"MovmentNode [{self._id}][Serial]:", payload)
         self.serial = payload
 
     def coordinates_f(self, payload):

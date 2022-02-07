@@ -1,7 +1,7 @@
 from starlette.applications import Starlette
 from starlette.routing import Route, Mount
 import uvicorn
-from api import dbo
+from api import *
 from src.imageStream import imgRoute, videoRoute
 from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware import Middleware
