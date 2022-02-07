@@ -11,6 +11,8 @@ class CustomSerial(Serial):
         self.baudrate = baudrate
         self.is_open = False
         self.is_gcode = is_gcode
+        self.last_value_send = None
+        self.last_value_received = None
 
         self.device=device
         self.description=description
@@ -30,7 +32,7 @@ class CustomSerial(Serial):
             "subsystem": self.subsystem
         }
 
-    def open(self):
+    def start(self):
         try:
             if self.port is None:
                 compatible = self.findMostCompatiblePort()
@@ -40,22 +42,32 @@ class CustomSerial(Serial):
                     self.port = self.device
             assert self.port is not None, "Port is not set and no compatible filter found!"
             super().open()
+            self.is_open = True
             SerialManager.add(self)
+
         except serialutil.SerialException as e:
             if "No such file or directory" in str(e):
                 print(f"Porta não encontrada! [{self.port}]")
             raise e
+        return self
 
     def close(self):
         SerialManager.remove(self)
         super().close()
+        self.is_open = False
+        return self
+    
+    def reset(self):
+        self.close()
+        self.start()
+        return self
 
     def send(self, message, echo=False):
         try:
             _ = self.write(message)
             if echo: return _
         except serialutil.PortNotOpenError:
-            self.open()
+            self.start()
             return self.send(message, echo)
         except Exception as e:
             self.close()
@@ -64,6 +76,7 @@ class CustomSerial(Serial):
 
     def write(self, payload):
         super().write((f"{payload}\n").encode("ascii"))
+        self.last_value_send = payload
         return self.echo()
 
     def echo(self):
@@ -73,6 +86,7 @@ class CustomSerial(Serial):
             lines.append(_b.decode("ascii").rstrip())
             _b = self.readline()
         lines.append(_b.decode("ascii").rstrip())
+        self.last_value_received = lines
         return lines
 
 
@@ -88,6 +102,16 @@ class CustomSerial(Serial):
                 ports[port_id] = match
         if ports:
             return port_list.get(max(ports, key=ports.get))
+
+    def to_dict(self):
+        return {
+            "port": self.port,
+            "baudrate": self.baudrate,
+            "is_open": self.is_open,
+            "is_gcode": self.is_gcode,
+            "last_value_send": self.last_value_send,
+            "last_value_received": self.last_value_received
+        }
 
 def checker():
     a = CustomSerial(device="/dev/ttyACM0", baudrate=250000)

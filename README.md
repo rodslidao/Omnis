@@ -20,6 +20,7 @@ for re-build back and front end images run
 ```
 make build 
 ```
+
 ## Project setup without Docker
 ```
 npm install
