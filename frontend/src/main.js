@@ -6,6 +6,8 @@ import VueHaptic from 'vue-haptic';
 import JsonEditor from 'vue-json-edit';
 import VueApexCharts from 'vue-apexcharts';
 
+import AlertFeedback from '@/plugins/alertFeedback';
+
 import { BaklavaVuePlugin } from '@baklavajs/plugin-renderer-vue';
 import '@baklavajs/plugin-renderer-vue/dist/styles.css';
 
@@ -30,9 +32,8 @@ import '@/assets/scss/_variables.scss';
 // import './registerServiceWorker'
 import wb from './registerServiceWorker';
 
-// apollo 
+// apollo
 import { createProvider } from './vue-apollo';
-
 
 Vue.use(BaklavaVuePlugin);
 
@@ -85,7 +86,10 @@ Vue.use(VueHaptic, {
 // Vue.use(VueSocketIO, SocketInstance)
 Vue.use(VueTheMask, JsonEditor, VueApexCharts, BaklavaVuePlugin);
 
-Vue.config.productionTip = false;
+Vue.use(AlertFeedback, {
+  store,
+});
+
 Vue.prototype.$workbox = wb;
 
 new Vue({

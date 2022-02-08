@@ -1,16 +1,13 @@
 <template>
   <v-app class="d-flex">
     <!-- <div class="mx-auto"><Snack-bar v-if="!isConnected"></Snack-bar></div> -->
-    <DialogAlert
-      v-if="alertList.length"
-      @dismiss="closeDialog()"
-      :info="alertList[alertList.length - 1]"
-    />
+    <AlertFeedback />
+    <DialogAlert />
     <NavBar class="NavBar" v-if="$route.name != 'intro'" />
     <div>
-    <transition>
-      <router-view></router-view>
-    </transition>
+      <transition>
+        <router-view></router-view>
+      </transition>
     </div>
   </v-app>
 </template>
@@ -19,6 +16,7 @@
 import { mapState } from 'vuex';
 import NavBar from '@/components/NavBar.vue';
 import DialogAlert from '@/components/DialogAlert.vue';
+import AlertFeedback from '@/plugins/alertFeedback/AlertFeedback.vue';
 import gql from 'graphql-tag';
 
 export default {
@@ -27,19 +25,11 @@ export default {
   components: {
     NavBar,
     DialogAlert,
+    AlertFeedback,
   },
 
   data() {
-    return {
-      alertList: [],
-      alert: {
-        level: 'warning',
-        title: 'Deu Ruin',
-        description: 'the program not started',
-        how2solve: 'press restart button',
-        buttonText: 'Ok',
-      },
-    };
+    return {};
   },
 
   created() {
@@ -48,7 +38,6 @@ export default {
         this.showUpdateUI = true;
       });
     }
-    this.alertList.push(this.alert);
   },
 
   apollo: {
@@ -80,12 +69,7 @@ export default {
   computed: {
     ...mapState(['isConnected']),
   },
-  methods: {
-    closeDialog() {
-      console.log('foi');
-      this.alertList.pop();
-    },
-  },
+  methods: {},
 };
 </script>
 

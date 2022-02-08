@@ -8,6 +8,7 @@ Vue.use(Vuex);
 
 //import modules
 import node from './modules/node';
+import main from './modules/main';
 
 //lista de coisas q eu posso pedir pro back
 export const actions = {
@@ -45,8 +46,13 @@ export const actions = {
 const store = new Vuex.Store({
   //estado do dado
   modules:{
-    node
+    node,
+    main,
   },
+
+  alertList: [
+    { description: 'Meteu essa pai?' ,type: 'success' },
+  ],
 
   state: {
     operation: {
