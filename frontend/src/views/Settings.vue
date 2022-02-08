@@ -1,7 +1,5 @@
 <template>
   <section class="content d-flex justify-start align-start">
-    <!-- <section class="content d-flex justify-start align-start
-"> -->
     <v-expansion-panels multiple>
       <Assembly />
       <Controls />
@@ -20,58 +18,40 @@
           Dashboard
         </v-btn>
       </router-link>
+      <router-link to="/node">
+        <v-btn
+          class="ma-3 mt-10"
+          outlined
+          rounded
+          color="warning"
+          v-if="$route.name != 'dashboard'"
+        >
+          <v-icon class="ma-2" small dark>mdi-code-tags</v-icon>
+          Editor node
+        </v-btn>
+      </router-link>
     </v-expansion-panels>
   </section>
 </template>
 
-
 <script>
-import Infos from "../components/settings/Infos";
-import AdvancedSettings from "../components/settings/AdvancedSettings";
-import Statistics from "../components/settings/Statistics.vue";
-import Controls from "../components/settings/controls/Controls.vue";
-import Assembly from "../components/settings/assembly/Assembly.vue";
+import Infos from '@/components/settings/Infos.vue';
+import AdvancedSettings from '@/components/settings/AdvancedSettings.vue';
+import Statistics from '@/components/settings/Statistics.vue';
+import Controls from '@/components/settings/controls/Controls.vue';
+import Assembly from '@/components/settings/assembly/Assembly.vue';
 
 export default {
   components: { AdvancedSettings, Infos, Statistics, Controls, Assembly },
-  name: "settings",
-  methods: {
-    sendMessage: function (message) {
-      // console.log(message)
-      console.log(this.connection);
-      this.connection.send(message);
-    },
-  },
-  created: function () {
-    // console.log("Starting connection to WebSocket Server");
-    // this.connection = new WebSocket("ws://localhost:8765");
-    // this.connection.onmessage = function (event) {
-    //   console.log("mensagem: " + event.data);
-    // };
-    // this.connection.onopen = function () {
-    //   console.log("conecxão aberta");
-    //   console.log("Successfully connected to the echo websocket server...");
-    // };
-  },
+  name: 'settings',
+  methods: {},
+  created: function () {},
 };
 </script>
 
 <style lang="scss" scoped>
-// #app{
-//   font-family: Avenir, Helvetica, Arial, sans-serif;
-//   -webkit-font-smoothing: antialiased;
-//   -moz-osx-font-smoothing: grayscale;
-//   /* text-align: center; */
-//   color: #2c3e50;
-//   width: 100vw;
-//   height: 100%;
-//   /* padding: 1em 1em; */
-// }
-
 .content {
-  // width: 90%;
-  // height: 100vh;
-  // padding: 20px;
+  // margin-top: 48px;
 }
 
 .v-expansion-panels {

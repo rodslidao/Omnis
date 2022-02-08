@@ -1,27 +1,52 @@
 <template>
-  <div>
-    <v-tabs align-with-title>
-      <v-tab v-for="(item, index) in tabList" :key="item.sketchName">
-        <v-icon
-          small
-          dark
-          color="green accent-3"
-          v-if="sketchNameRunning == item.sketchName"
-        >
-          mdi-play
-        </v-icon>
-        {{ +!item.saved ? item.sketchName + '*' : item.sketchName }}
-        <v-btn
-          v-if="tabList.length > 1"
-          depressed
-          icon
-          @click="close(index)"
-          small
-          ><v-icon small dark> mdi-close </v-icon></v-btn
-        >
-      </v-tab>
-    </v-tabs>
+  <div class="wrapper">
+    <div class="menu">
+      <p style="color: white">{{ lixo }}</p>
+      <p style="color: white">{{ tagAdded }}</p>
+      <v-btn fab small dark color="primary" @click="apollo()">
+        <v-icon dark>mdi-home</v-icon>
+      </v-btn>
+      <v-btn fab small dark color="primary" @click="startProcess()">
+        <v-icon dark>mdi-show</v-icon>
+      </v-btn>
 
+      <div>
+        <v-card>
+          <v-tabs
+            v-model="tab"
+            background-color="grey darken-3"
+            center-active
+            show-arrows
+            dark
+          >
+            <v-tab v-for="(item, index) in tabList" :key="item.sketchName">
+              <v-icon
+                small
+                dark
+                color="green accent-3"
+                v-if="sketchNameRunning == item.sketchName"
+              >
+                mdi-play
+              </v-icon>
+              {{ +!item.saved ? item.sketchName + '*' : item.sketchName }}
+              <v-btn
+                v-if="tabList.length > 1"
+                depressed
+                icon
+                @click="close(index)"
+                small
+                ><v-icon small dark> mdi-close </v-icon></v-btn
+              >
+            </v-tab>
+          </v-tabs>
+        </v-card>
+        <div class="moreButton">
+          <v-btn fab small dark color="primary" @click="add()">
+            <v-icon dark>mdi-plus</v-icon>
+          </v-btn>
+        </div>
+      </div>
+    </div>
     <v-tabs-items v-model="tab">
       <v-tab-item v-for="item in tabList" :key="item.sketchName">
         <!-- {{ item.content }} -->
@@ -55,6 +80,28 @@ export default {
     };
   },
 
+  apollo: {
+    // Subscriptions
+    $subscribe: {
+      // When a tag is added
+      tagAdded: {
+        query: gql`
+          subscription {
+            alerts {
+              title
+            }
+          }
+        `,
+        // Result hook
+        // Don't forget to destructure `data`
+        result({ data }) {
+          console.log(data.alerts);
+          this.tagAdded = data.alerts;
+        },
+      },
+    },
+  },
+
   computed: {
     ...mapState('node', {
       tabList: (state) => state.tabList,
@@ -69,8 +116,6 @@ export default {
 
     tab() {
       this.selectTabByIndex(this.tab);
-      this.updateSelectedTab(this.tab);
-      console.log('tab changed:', this.tab);
     },
   },
 
@@ -81,7 +126,6 @@ export default {
       'selectTabByIndex',
       'removeTabByIndex',
       'play',
-      'updateSelectedTab',
     ]),
 
     async startProcess() {

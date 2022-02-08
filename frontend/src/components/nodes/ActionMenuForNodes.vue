@@ -212,6 +212,7 @@ export default {
           .then((data) => {
             // Result
             console.log(data);
+            this.$$alertFeedback('Arquivo salvo com sucesso', 'success');
           })
           .catch((error) => {
             // Error
@@ -219,6 +220,7 @@ export default {
               'Não foi possivel fazer o UPLOAD do arquivo \n',
               error
             );
+            this.$alertFeedback('Não foi possível fazer o upload do arquivo', 'error');
 
             // We restore the initial user input
           });

@@ -4,7 +4,6 @@
     <AlertFeedback />
     <DialogAlert />
     <NavBar class="NavBar" v-if="$route.name != 'intro'" />
-    <div>
       <transition>
         <router-view></router-view>
       </transition>
@@ -40,32 +39,6 @@ export default {
     }
   },
 
-  apollo: {
-    // // Subscriptions
-    // $subscribe: {
-    //   // When a tag is added
-    //   tagAdded: {
-    //     query: gql`
-    //       subscription {
-    //         alerts {
-    //           level
-    //           title
-    //           description
-    //           how2solve
-    //           buttonText
-    //         }
-    //       }
-    //     `,
-    //     // Result hook
-    //     // Don't forget to destructure `data`
-    //     result({ data }) {
-    //       this.alertList.push(data.alerts);
-    //       console.log(this.alertList);
-    //     },
-    //   },
-    // },
-  },
-
   computed: {
     ...mapState(['isConnected']),
   },
@@ -78,6 +51,10 @@ export default {
   display: none;
 }
 
+.v-toolbar__extension {
+  padding: 0;
+}
+
 html,
 body {
   width: 100%;
@@ -86,7 +63,7 @@ body {
   padding: 0;
   .NavBar {
     display: block;
-    position: absolute;
+    // position: absolute;
     z-index: 999;
   }
 }

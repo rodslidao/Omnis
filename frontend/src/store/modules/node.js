@@ -3,7 +3,11 @@ export default {
   namespaced: true,
   state: {
     counter: 0,
-    tabList: [{ sketchName: 'One', id: 1641587087905, saved: true }],
+    tabList: [
+      { sketchName: 'One', id: 1641587087905, saved: true },
+      { sketchName: 'two', id: 1641587087905, saved: true },
+      { sketchName: 'tree', id: 1641587087905, saved: true },
+    ],
     runningTabId: 1641587087905,
     selectedTabId: 1641587087905,
     // http://192.168.1.31:5000/video_feed/camera0
@@ -11,6 +15,7 @@ export default {
       ip: '192.168.1.31',
       portStream: 5000,
     },
+    selectedTab: null,
   },
 
   getters: {
@@ -61,6 +66,10 @@ export default {
       state.selectedTabId = tabId;
     },
 
+    updateSelectedTab: (state, tab) => {
+      state.selectedTab = tab;
+    },
+
     asyncIncrement: (state, incrementalObject) => {
       const { incrementalValue } = incrementalObject;
       state.counter += incrementalValue;
@@ -94,6 +103,10 @@ export default {
 
     updateTabById({ commit }, payload) {
       commit('updateTabById', payload);
+    },
+
+    updateSelectedTab({ commit }, payload) {
+      commit('updateSelectedTab', payload);
     },
 
     /**
