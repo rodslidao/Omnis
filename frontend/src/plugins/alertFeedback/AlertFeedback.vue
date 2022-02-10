@@ -71,7 +71,7 @@ export default {
       const timeout = words * 600;
       // console.log('timeout', timeout);
       if (timeout < this.defaultTimeout) {
-        console.log('timeout defalut', this.defaultTimeout);
+        // console.log('timeout defalut', this.defaultTimeout);
         return this.defaultTimeout;
       }
       // console.log('timeout returned', timeout);

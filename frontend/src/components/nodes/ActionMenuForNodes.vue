@@ -22,7 +22,7 @@
         class="d-flex flex-end"
       >
         <template v-slot:activator>
-          <v-btn color="primary" fab dark>
+          <v-btn :loading="isLoading" color="primary" fab dark>
             <v-icon v-if="fab"> mdi-close </v-icon>
             <v-icon dark v-else> mdi-dots-vertical </v-icon>
           </v-btn>
@@ -91,6 +91,7 @@ export default {
         { title: 'Download', icon: 'mdi-file-download', method: 'download' },
         // { title: 'Upload', icon: 'mdi-file-upload', method: 'upload' },
       ],
+      isLoading: false,
     };
   },
 
@@ -183,6 +184,8 @@ export default {
         };
       }
 
+      this.isLoading = true;
+
       // Use time out to wait for the file to be read
       fr.readAsText(files[0]);
 
@@ -213,14 +216,19 @@ export default {
             // Result
             console.log(data);
             this.$$alertFeedback('Arquivo salvo com sucesso', 'success');
+            this.isLoading = false;
           })
           .catch((error) => {
             // Error
+            this.isLoading = false;
             console.error(
               'Não foi possivel fazer o UPLOAD do arquivo \n',
               error
             );
-            this.$alertFeedback('Não foi possível fazer o upload do arquivo', 'error');
+            this.$alertFeedback(
+              'Não foi possível fazer o upload do arquivo',
+              'error'
+            );
 
             // We restore the initial user input
           });

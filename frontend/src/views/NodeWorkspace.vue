@@ -1,12 +1,14 @@
 <template>
   <div class="containerNode">
-    <div>{{selectedTab}}</div>
-    <v-tabs-items v-model="selectedTab">
-      <v-tab-item v-for="item in tabList" :key="item.sketchName">
-        <!-- {{ item.content }} -->
-        <NodeEditor class="nodeEditor"></NodeEditor>
-      </v-tab-item>
-    </v-tabs-items><!-- <NodeEditor class="nodeEditor" ></NodeEditor> -->
+    <!-- <v-tabs-items v-model="selectedTab">
+      <v-tab-item v-for="item in tabList" :key="item.sketchName"> </v-tab-item>
+    </v-tabs-items> -->
+
+    <NodeEditor
+      class="nodeEditor"
+    ></NodeEditor>
+
+    <!-- <NodeEditor class="nodeEditor" ></NodeEditor> -->
   </div>
 </template>
 
@@ -26,7 +28,7 @@ export default {
   computed: {
     ...mapState('node', {
       tabList: (state) => state.tabList,
-      selectedTab: (state) => state.selectedTab,
+      selectedTabIndex: (state) => state.selectedTabIndex,
     }),
   },
 };
@@ -35,9 +37,10 @@ export default {
 <style lang="scss" scoped>
 .containerNode {
   height: 100%;
+  position: relative;
 }
 .nodeEditor {
-    width: 100vw;
-    height: 100%;
-  }
+  width: 100vw;
+  height: 100%;
+}
 </style>

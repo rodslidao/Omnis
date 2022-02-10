@@ -85,7 +85,6 @@ Vue.use(VueHaptic, {
 
 // Vue.use(VueSocketIO, SocketInstance)
 Vue.use(VueTheMask, JsonEditor, VueApexCharts, BaklavaVuePlugin);
-
 Vue.use(AlertFeedback, {
   store,
 });

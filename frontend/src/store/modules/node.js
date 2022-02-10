@@ -1,12 +1,23 @@
 /* eslint-disable no-underscore-dangle */
+import { Editor } from '@baklavajs/core';
+
 export default {
   namespaced: true,
   state: {
     counter: 0,
     tabList: [
-      { sketchName: 'One', id: 1641587087905, saved: true },
-      { sketchName: 'two', id: 1641587087905, saved: true },
-      { sketchName: 'tree', id: 1641587087905, saved: true },
+      // {
+      //   sketchName: 'two',
+      //   id: 1641587087910,
+      //   saved: true,
+      //   content: {},
+      // },
+      // {
+      //   sketchName: 'tree',
+      //   id: 1641587087911,
+      //   saved: true,
+      //   content: {},
+      // },
     ],
     runningTabId: 1641587087905,
     selectedTabId: 1641587087905,
@@ -15,7 +26,14 @@ export default {
       ip: '192.168.1.31',
       portStream: 5000,
     },
-    selectedTab: null,
+    selectedTabIndex: 0,
+    contentDefault: {},
+    duplicatedTab: {
+      isDuplicated: false,
+      contextTabEditor: {},
+      contextTabIndex: 0,
+      newTabIndex: 0,
+    },
   },
 
   getters: {
@@ -28,8 +46,6 @@ export default {
       state.tabList.find(((tab) => tab.id === state.selectedTabId).sketchName);
     },
     selectedTabObject: (state) => state.tabList.find((tab) => tab.id === state.selectedTabId),
-    addCurrencyToCounter: (state) => `$ ${state.counter} (dollars)`,
-    incrementCounterByTen: (state) => state.counter + 10,
   },
 
   mutations: {
@@ -45,6 +61,27 @@ export default {
 
     addTab: (state, tab) => {
       state.tabList.push(tab);
+    },
+
+    duplicateTab: (state, payload) => {
+      console.log('%c Duplicado INICIO', 'color: #51a4f7');
+      state.duplicatedTab.isDuplicated = true;
+
+      const indexOfNewTab = payload.indexContextMenu + 1;
+      state.duplicatedTab.newTabIndex = indexOfNewTab;
+
+      const contextTab = state.tabList[payload.indexContextMenu];
+      state.duplicatedTab.contextTabIndex = contextTab;
+
+      state.tabList.splice(indexOfNewTab, 0, payload.tab);
+      const newTab = state.tabList[indexOfNewTab];
+      newTab.sketchName = `${contextTab.sketchName} - Cópia`;
+      // newTab.baklavaEditor = contextTab.baklavaEditor;
+      console.log('%c Duplicado INICIO2', 'color: #51a4f7');
+
+      state.contextTabEditor = contextTab.baklavaEditor;
+      // newTab.baklavaEditor.load(contextTab.baklavaEditor.save());
+      console.log('%c Duplicado FINAL', 'color: #51a4f7');
     },
 
     removeTabById: (state, id) => {
@@ -67,7 +104,16 @@ export default {
     },
 
     updateSelectedTab: (state, tab) => {
-      state.selectedTab = tab;
+      state.selectedTabIndex = tab;
+    },
+
+    updateNodeContent: (state, payload) => {
+      console.log('updateNodeContent');
+      state.tabList[payload.index].content = payload.content;
+    },
+
+    updateContentDefault: (state, content) => {
+      state.contentDefault = content;
     },
 
     asyncIncrement: (state, incrementalObject) => {
@@ -85,8 +131,11 @@ export default {
     },
 
     addTab({ commit }, payload) {
-      this._vm.$socket.emit('node', payload);
       commit('addTab', payload);
+    },
+
+    duplicateTab({ commit }, payload) {
+      commit('duplicateTab', payload);
     },
 
     removeTabById({ commit }, payload) {
@@ -107,6 +156,14 @@ export default {
 
     updateSelectedTab({ commit }, payload) {
       commit('updateSelectedTab', payload);
+    },
+
+    updateNodeContent({ commit }, payload) {
+      commit('updateNodeContent', payload);
+    },
+
+    updateContentDefault({ commit }, payload) {
+      commit('updateContentDefault', payload);
     },
 
     /**
