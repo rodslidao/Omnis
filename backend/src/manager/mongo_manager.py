@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 db_port = environ.get("DB_PORT", "27017")
-db_ip = environ.get("SERVER_IP", "localhost")
+db_ip = environ.get("DB_IP", "localhost")
 
 url = (
     f"mongodb://{db_ip}:{db_port}/"

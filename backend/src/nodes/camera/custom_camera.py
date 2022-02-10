@@ -4,10 +4,37 @@ from threading import Thread
 from time import sleep
 from src.manager.camera_manager import CameraManager
 from time import sleep
+
+import datetime
+class FPS:
+    def __init__(self):
+        self._start = None
+        self._end = None
+        self._numFrames = 0
+
+    def start(self):
+        self._start = datetime.datetime.now()
+        return self
+
+    def update(self):    
+        self._numFrames += 1
+        if self._numFrames >= 1000: 
+            self._numFrames = 0
+            self.start()
+
+
+    def elapsed(self):
+        return (datetime.datetime.now() - self._start).total_seconds()
+
+    def fps(self):
+        return self._numFrames / self.elapsed()
+
 class camera:
     def __init__(self, src=0, name="WebcamVideoStream"):
         self.src = src
         self.stream = cv2.VideoCapture(src)
+        if not self.stream.isOpened():
+            raise ValueError("Camera not found")
         (self.grabbed, self.frame) = self.stream.read()
         self.name = name
         self._id = ObjectId()
@@ -32,6 +59,7 @@ class camera:
 
     def start(self):
         print("Starting camera...")
+        self.fps = FPS().start()
         self.stopped = False
         self.t = Thread(target=self.updateFrame, name=self.name, args=(), daemon = True)
         self.t.start()
@@ -41,12 +69,15 @@ class camera:
     def updateFrame(self):
         while not self.stopped:
             (self.grabbed, self.frame) = self.stream.read()
+            cv2.putText(self.frame, "FPS: {:.2f}".format(self.fps.fps()), (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+            self.fps.update()
 
     def read(self):
         return self.frame
 
     def stop(self):
         print("Stopping camera...")
+        self.fps.stop()
         self.stopped = True
         try:
             self.t.join()
