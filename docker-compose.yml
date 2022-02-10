@@ -53,6 +53,7 @@ services:
       SERVER_IP: ${SERVER_IP}
     devices:
       - "/dev/ttyACM0:/dev/ttyACM0"
+      - "/dev/video2:/dev/video2"
     volumes:
       - ./backend:/app
     command: python main.py
