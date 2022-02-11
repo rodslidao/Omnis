@@ -9,10 +9,10 @@ FROM python:latest
 COPY --from=builder /root/.local /root/.local
 WORKDIR /app
 
-COPY ./src .
-COPY ./api .
 COPY ./main.py .
-COPY ./schema.graphql .
+COPY ./api .
+COPY ./src .
+# COPY ./schema.graphql .
 
 EXPOSE 3000 3001
 EXPOSE 4000 4001

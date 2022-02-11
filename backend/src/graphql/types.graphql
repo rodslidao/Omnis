@@ -1,0 +1,74 @@
+type NodeSheet {
+  _id: ID!
+  connections: [connection]
+  nodes: [node]
+  panning: JSON
+  scaling: Float
+}
+
+type Camera{
+  _id: ID!
+  src: Int!
+  name: String!
+  properties: JSON!
+  running: Boolean!
+}
+
+type Serial {
+  _id: ID!
+  port: String!
+  name: String!
+  baudrate: Int!
+  is_open: Boolean!
+  is_gcode: Boolean!
+  last_value_send: String!
+  last_value_received: [String!]!
+}
+
+type connection {
+  id: String!
+  from: String!
+  to: String!
+}
+
+type node {
+  id: String!
+  name: String!
+  type: String!
+  options: [option]
+  state: JSON
+  interfaces: [interface]
+  position: JSON
+  width: Int
+  twoColumn: Boolean
+}
+
+type option {
+  name: String!
+  value: JSON
+}
+
+type interface {
+  name: String!
+  id: String!
+  value: JSON!
+}
+
+type Process {
+  _id: ID!
+  start_at: Float!
+  end_at: Float!
+  running_seconds: Float!
+  status: String!
+  error: String
+}
+
+type Photo {
+    filename: String!
+    path: String!
+  }
+
+type DefaultStatus{
+  status: Boolean
+  error: [String]
+}

@@ -51,10 +51,17 @@ services:
       SERVER_PORT: ${SERVER_PORT}
       PYTHON_RUN: ${PYTHON_RUN}
       SERVER_IP: ${SERVER_IP}
-    devices:
-      - "/dev/ttyACM0:/dev/ttyACM0"
-      - "/dev/video2:/dev/video2"
+      DB_IP: ${DB_IP}
+    # Enable access to the camera and serial devices (if the device is connected, otherwise it will fail)
+    # devices:
+      # - "/dev/ttyACM0:/dev/ttyACM0"
+      # - "/dev/video0:/dev/video0"
+      # - "/dev/video2:/dev/video2"
+      # - "/dev/video4:/dev/video4"
+    privileged: true
     volumes:
+      # Share /dev is insecure but is required for the camera and serial devices that not has connected to the host. ( disable this if all devices are connected to the host )
+      - /dev:/dev
       - ./backend:/app
     command: python main.py
     depends_on:

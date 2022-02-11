@@ -9,7 +9,7 @@ from .button.button_node import ButtonNode
 from .define.variable_node import VariableNode
 from .display.printer_node import PrinterNode
 from .movement.movement_node import MovementNode
-from .serial.camera_node import CameraNode
+from .camera.camera_node import CameraNode
 from .serial.serial_node import SerialNode
 
 # Copilot suggestion for new nodes:

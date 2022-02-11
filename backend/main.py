@@ -17,13 +17,17 @@ try:
         snake_case_fallback_resolvers,
     )
 
+
     from api.queries import query
     from api.mutations import mutation
     from api.subscriptions import subscription
     from os import environ
     from ariadne.asgi import GraphQL
 
-    type_defs = load_schema_from_path("schema.graphql")
+    type_defs = ""
+    for _file in ["schema", "inputs", "types", "results"]:
+        type_defs += load_schema_from_path(f"./src/graphql/{_file}.graphql")+('\n'*2)
+
     schema = make_executable_schema(
         type_defs, query, mutation, subscription, snake_case_fallback_resolvers
     )
@@ -62,4 +66,5 @@ except KeyboardInterrupt:
     exit(0)
 except Exception as e:
     logger.critical(e)
+    print(e)
     exit(1)

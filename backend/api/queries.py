@@ -24,3 +24,13 @@ def resolve_allPhotos(obj, info, **kwargs):
     """Get all photos from the database"""
     payload = [{"filename": "a.png", "path":"imgs/a.png"}]
     return payload
+
+from src.manager.camera_manager import CameraManager
+from src.manager.serial_manager import SerialManager 
+@query.field("getSerials")
+def resolve_getSerials(obj, info, **kwargs):
+    return {"satatus": True,  "data": SerialManager.get()}
+
+@query.field("getCameras")
+def resolve_getCameras(obj, info, **kwargs):
+    return {"satatus": True,  "data": CameraManager.get()}

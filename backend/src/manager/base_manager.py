@@ -18,10 +18,9 @@ class BaseManager():
         self.update()
 
     def get(self):
-        return self.store
+        return list(map(lambda x: x.to_dict(), self.store.values()))
     
     def get_by_id(self, id):
-        print("Keys:", self.store)
         return self.store.get(ObjectId(id))            
 
     def __str__(self) -> str:

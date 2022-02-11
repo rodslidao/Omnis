@@ -4,9 +4,9 @@ from bson import ObjectId
 from src.manager.serial_manager import SerialManager
 
 class CustomSerial(Serial):
-    def __init__(self, port=None, baudrate=9600, device=-1, description=-1,vid=-1,pid=-1,serial_number=-1,manufacturer=-1,subsystem=-1, bytesize=8, parity='N', stopbits=1, timeout=0.01, xonxoff=False, rtscts=False, dsrdtr=False, is_gcode=False) -> None:
-        super().__init__(port, baudrate, bytesize, parity, stopbits, timeout, xonxoff, rtscts, dsrdtr)
+    def __init__(self, port=None, name=None, baudrate=9600, device=-1, description=-1,vid=-1,pid=-1,serial_number=-1,manufacturer=-1,subsystem=-1, bytesize=8, parity='N', stopbits=1, timeout=0.01, xonxoff=False, rtscts=False, dsrdtr=False, is_gcode=False) -> None:
         self._id = ObjectId()
+        super().__init__(port, baudrate, bytesize, parity, stopbits, timeout, xonxoff, rtscts, dsrdtr)
         self.port = port
         self.baudrate = baudrate
         self.is_open = False
@@ -22,6 +22,11 @@ class CustomSerial(Serial):
         self.manufacturer=manufacturer
         self.subsystem=subsystem
 
+        if name is None:
+            self.name = self.vid+self.pid+'_'+self.device
+        else:
+            self.name = name
+
         self.filters = {
             "device": self.device,
             "description": self.description,
@@ -31,6 +36,7 @@ class CustomSerial(Serial):
             "manufacturer": self.manufacturer,
             "subsystem": self.subsystem
         }
+        SerialManager.add(self)
 
     def start(self):
         try:
@@ -43,7 +49,6 @@ class CustomSerial(Serial):
             assert self.port is not None, "Port is not set and no compatible filter found!"
             super().open()
             self.is_open = True
-            SerialManager.add(self)
 
         except serialutil.SerialException as e:
             if "No such file or directory" in str(e):
@@ -86,7 +91,7 @@ class CustomSerial(Serial):
             lines.append(_b.decode("ascii").rstrip())
             _b = self.readline()
         lines.append(_b.decode("ascii").rstrip())
-        self.last_value_received = lines
+        self.last_value_received = lines 
         return lines
 
 
@@ -105,7 +110,9 @@ class CustomSerial(Serial):
 
     def to_dict(self):
         return {
+            "_id": self._id,
             "port": self.port,
+            "name":self.name,
             "baudrate": self.baudrate,
             "is_open": self.is_open,
             "is_gcode": self.is_gcode,

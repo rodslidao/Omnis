@@ -33,7 +33,6 @@ async def frameGenerator(cam_id):
         await asyncio.sleep(0.001)
 
 async def videoFeed(request):
-    print(request.path_params)
     return StreamingResponse(frameGenerator(request.path_params['video_id']), media_type="multipart/x-mixed-replace; boundary=frame")
 
 imgRoute = [

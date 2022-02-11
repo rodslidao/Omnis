@@ -35,13 +35,21 @@ type Mutation {
   startSerial(_id: ID!): SerialResult!
   stopSerial(_id: ID!): SerialResult!
   resetSerial(_id: ID!): SerialResult!
+
+  setCameraProperty(_id: ID!, input: JSON): CameraResult!
 }
 
 type Query {
   getNodeSheet(id: ID!): NodeSheetResult!
+  
   getCamera(id: ID!): CameraResult!
+  getCameras: [Camera]!
+  
   getSerial(id: ID!): SerialResult!
+  getSerials: [SerialResult!]!
+
   getProcess: ProcessResult!
+  
   updateAlerts: DefaultStatus
   allPhotos: [Photo]
 }
@@ -61,26 +69,31 @@ type DefaultStatus{
 
 # Results
 type CameraResult{
-  status: DefaultStatus!
+  status:Boolean!
+  error:[String]
   data: Camera
 }
 
 type SerialResult{
-  status: DefaultStatus!
+  status:Boolean!
+  error:[String]
   data: Serial
 }
 
 type FileResult {
-  status: DefaultStatus!
+  status:Boolean!
+  error:[String]
 }
 
 type NodeSheetResult{
-  status: DefaultStatus!
+  status:Boolean!
+  error:[String]
   data: NodeSheet
 }
 
 type ProcessResult{
-  status: DefaultStatus!
+  status:Boolean!
+  error:[String]
   data: Process
 }
 

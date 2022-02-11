@@ -6,6 +6,8 @@ from src.manager.camera_manager import CameraManager
 from time import sleep
 
 import datetime
+from collections import deque
+
 class FPS:
     def __init__(self):
         self._start = None
@@ -16,12 +18,11 @@ class FPS:
         self._start = datetime.datetime.now()
         return self
 
-    def update(self):    
-        self._numFrames += 1
-        if self._numFrames >= 1000: 
+    def update(self):
+        if self.elapsed() >= 5:
             self._numFrames = 0
             self.start()
-
+        self._numFrames += 1
 
     def elapsed(self):
         return (datetime.datetime.now() - self._start).total_seconds()
@@ -29,25 +30,26 @@ class FPS:
     def fps(self):
         return self._numFrames / self.elapsed()
 
+
 class camera:
     def __init__(self, src=0, name="WebcamVideoStream"):
         self.src = src
-        self.stream = cv2.VideoCapture(src)
-        if not self.stream.isOpened():
-            raise ValueError("Camera not found")
-        (self.grabbed, self.frame) = self.stream.read()
+        self.stream = cv2.VideoCapture(src, cv2.CAP_V4L2)
+        self.stream.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M','J','P','G'))
         self.name = name
         self._id = ObjectId()
         self.stopped = True
         self.properties = {}
-        CameraManager.add(self)
+        if self.stream.isOpened():
+            (self.grabbed, self.frame) = self.stream.read()
+            CameraManager.add(self)
 
-    def setPropertie(self, name, value):
-        self.stream.set(getattr(cv2, name), value)
-    
-    def setProperties(self, properties):
+    def set_property(self, name, value):
+        self.stream.set(getattr(cv2, name) if isinstance(name, str) else name, value)
+
+    def set_properties(self, properties):
         for name, value in properties.items():
-            self.setPropertie(name, value)
+            self.set_property(name, value)
 
     def reset(self):
         print("Resetting camera...")
@@ -55,13 +57,12 @@ class camera:
         CameraManager.update()
         self.start()
         return self
-        
 
     def start(self):
         print("Starting camera...")
         self.fps = FPS().start()
         self.stopped = False
-        self.t = Thread(target=self.updateFrame, name=self.name, args=(), daemon = True)
+        self.t = Thread(target=self.updateFrame, name=self.name, args=(), daemon=True)
         self.t.start()
         CameraManager.update()
         return self
@@ -69,7 +70,15 @@ class camera:
     def updateFrame(self):
         while not self.stopped:
             (self.grabbed, self.frame) = self.stream.read()
-            cv2.putText(self.frame, "FPS: {:.2f}".format(self.fps.fps()), (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+            cv2.putText(
+                self.frame,
+                "FPS: {:.2f}".format(self.fps.fps()),
+                (10, 30),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                0.7,
+                (0, 0, 255),
+                2,
+            )
             self.fps.update()
 
     def read(self):
@@ -77,7 +86,7 @@ class camera:
 
     def stop(self):
         print("Stopping camera...")
-        self.fps.stop()
+        # self.fps.stop()
         self.stopped = True
         try:
             self.t.join()
@@ -85,19 +94,20 @@ class camera:
             pass
         CameraManager.remove(self)
         return self
-    
+
     def __del__(self):
-        if not self.stopped: self.stop()
+        if not self.stopped:
+            self.stop()
         self.stream.release()
-    
+
     def to_dict(self):
         return {
             "_id": self._id,
             "src": self.src,
             "name": self.name,
             "properties": self.properties,
-            "running": not self.stopped
-        }                
+            "running": not self.stopped,
+        }
 
 
 def checker():
