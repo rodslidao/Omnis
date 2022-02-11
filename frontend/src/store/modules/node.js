@@ -28,6 +28,7 @@ export default {
     },
     selectedTabIndex: 0,
     contentDefault: {},
+    renamingIndex: null,
     duplicatedTab: {
       isDuplicated: false,
       contextTabEditor: {},
@@ -70,18 +71,17 @@ export default {
       const indexOfNewTab = payload.indexContextMenu + 1;
       state.duplicatedTab.newTabIndex = indexOfNewTab;
 
+      console.log('selected tab',state.selectedTabByIndex);
+
       const contextTab = state.tabList[payload.indexContextMenu];
       state.duplicatedTab.contextTabIndex = contextTab;
-
+      console.log('antes do editor', state.tabList);
       state.tabList.splice(indexOfNewTab, 0, payload.tab);
+      console.log('antes do editor', state.tabList);
       const newTab = state.tabList[indexOfNewTab];
       newTab.sketchName = `${contextTab.sketchName} - Cópia`;
       // newTab.baklavaEditor = contextTab.baklavaEditor;
       console.log('%c Duplicado INICIO2', 'color: #51a4f7');
-
-      state.contextTabEditor = contextTab.baklavaEditor;
-      // newTab.baklavaEditor.load(contextTab.baklavaEditor.save());
-      console.log('%c Duplicado FINAL', 'color: #51a4f7');
     },
 
     removeTabById: (state, id) => {
@@ -108,12 +108,22 @@ export default {
     },
 
     updateNodeContent: (state, payload) => {
-      console.log('updateNodeContent');
-      state.tabList[payload.index].content = payload.content;
+      console.log('updateNodeContent', payload.index);
+      if (payload.index < state.tabList.length) {
+        state.tabList[payload.index].content = payload.content;
+      }
     },
 
     updateContentDefault: (state, content) => {
       state.contentDefault = content;
+    },
+
+    setRenamingIndex: (state, index) => {
+      state.renamingIndex = index;
+    },
+
+    setSketchName: (state, payload) => {
+      state.tabList[payload.index].sketchName = payload.sketchName;
     },
 
     asyncIncrement: (state, incrementalObject) => {
@@ -164,6 +174,12 @@ export default {
 
     updateContentDefault({ commit }, payload) {
       commit('updateContentDefault', payload);
+    },
+    setRenamingIndex({ commit }, payload) {
+      commit('setRenamingIndex', payload);
+    },
+    setSketchName({ commit }, payload) {
+      commit('setSketchName', payload);
     },
 
     /**

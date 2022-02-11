@@ -5,7 +5,7 @@
         class="tab-item d-flex justify-space-between"
         @contextmenu="show"
         v-for="(item, index) in tabList"
-        :key="item.sketchName"
+        :key="index"
         @click="selectTab(index)"
         @click.middle="close(index)"
         @click.right="contextMenuSelectedTabIndex = index"
@@ -19,7 +19,23 @@
           >
             mdi-play
           </v-icon>
-          {{ +!item.saved ? item.sketchName + '*' : item.sketchName }}
+          <div class="mb-n5" v-if="renamingIndex === index">
+            <v-text-field
+              :append-outer-icon="sketchName ? 'mdi-check' : null"
+              @click:append-outer="rename(index)"
+              autofocus
+              :value="tabList[index].sketchName"
+              v-model="sketchName"
+              @keyup.enter="
+                sketchName != '' ? rename(index) : tabList[index].sketchName
+              "
+              single-line
+              full-width
+            ></v-text-field>
+          </div>
+          <span v-else>{{
+            +!item.saved ? item.sketchName + '*' : item.sketchName
+          }}</span>
         </div>
 
         <!-- dropdown -->
@@ -33,10 +49,11 @@
         >
           <v-list>
             <v-list-item v-for="(item, index) in items" :key="index" link>
-              <v-list-item-title @click="item.function"
+              <v-list-item-title
+                @click="item.function(contextMenuSelectedTabIndex)"
                 ><v-icon class="mr-5">mdi-{{ item.btnIcon }}</v-icon
-                >{{ item.title }}</v-list-item-title
-              >
+                >{{ item.title }}
+              </v-list-item-title>
             </v-list-item>
           </v-list>
         </v-menu>
@@ -73,8 +90,9 @@ export default {
       tab: null,
       actualNode: null,
       length: 0,
+      sketchName: '',
       sketchNameRunning: 'One',
-      newTabCount: 0,
+      newTabCount: 1,
       lixo: null,
       tagAdded: {},
       contextMenuSelectedTabIndex: null,
@@ -88,7 +106,11 @@ export default {
           btnIcon: 'content-duplicate',
           function: this.duplicate,
         },
-        { title: 'Renomear', btnIcon: 'form-textbox', function: this.add },
+        {
+          title: 'Renomear',
+          btnIcon: 'form-textbox',
+          function: this.setRenamingIndex,
+        },
         { title: 'Remove', btnIcon: 'delete-outline', function: this.add },
       ],
     };
@@ -98,20 +120,20 @@ export default {
     ...mapState('node', {
       tabList: (state) => state.tabList,
       selectedTabId: (state) => state.selectedTabId,
+      selectedTabIndex: (state) => state.selectedTabIndex,
       contentDefault: (state) => state.contentDefault,
+      renamingIndex: (state) => state.renamingIndex,
     }),
   },
 
   watch: {
-    length(val) {
-      this.tab = val - 1;
-    },
-
-    tab() {
-      this.selectTabByIndex(this.tab);
-      this.updateSelectedTab(this.tab);
-      console.log('tab changed:', this.tab);
-    },
+    // length(val) {
+    //   this.tab = val - 1;
+    // },
+    // tab() {
+    //   this.selectTabByIndex(this.tab);
+    //   console.log('tab changed:', this.tab);
+    // },
   },
 
   methods: {
@@ -123,6 +145,8 @@ export default {
       'play',
       'updateSelectedTab',
       'duplicateTab',
+      'setRenamingIndex',
+      'setSketchName',
     ]),
 
     show(e) {
@@ -170,13 +194,19 @@ export default {
       if (this.tabList.length > 1) {
         console.log('aba fechada, index: ', index);
         this.removeTabByIndex(index);
+        console.log('index: ', this.selectedTabIndex);
+        if (index <= this.selectedTabIndex) {
+          // this.tabList.length(0);
+          this.updateSelectedTab(this.selectedTabIndex - 1);
+          console.log('index22: ', this.selectedTabIndex);
+        }
       }
     },
 
-    add() {
+    add(index) {
       const tabLength = this.tabList.length;
       let tabSketchName = `Aba ${this.newTabCount}`;
-      if (tabLength === 0 ) tabSketchName = 'Aba 1';
+      if (tabLength === 0) tabSketchName = 'Aba 1';
       const idGenerated = this.generateId();
       this.newTabCount += 1;
       const newTab = {
@@ -186,31 +216,34 @@ export default {
         content: this.contentDefault,
       };
 
-      this.lastSelectedTabId = idGenerated;
-
       this.addTab(newTab);
+      console.log('tab length: ', tabLength);
       this.updateSelectedTab(tabLength);
-      this.tab = tabLength - 1;
-      this.length = tabLength;
+      this.tab = tabLength;
     },
 
-    duplicate(index, sketchName) {
+    duplicate(index) {
       const idGenerated = this.generateId();
 
       const newTab = {
-        sketchName: `${sketchName} - Cópia`,
         id: idGenerated,
         saved: false,
+        duplicated: true,
       };
-
-      this.lastSelectedTabId = idGenerated;
-
       this.duplicateTab({
         tab: newTab,
         indexContextMenu: this.contextMenuSelectedTabIndex,
       });
+      console.log('selected indexxxxxxxxxxxxxxxx: ', this.selectedTabIndex);
+      console.log('CONTEEEEEEEEEEEEEEEEEE',this.contextMenuSelectedTabIndex)
 
-      this.length = this.tabList.length;
+      this.updateSelectedTab(this.contextMenuSelectedTabIndex);
+    },
+
+    rename(index) {
+      this.setRenamingIndex(null);
+      this.setSketchName({ sketchName: this.sketchName, index: index });
+      this.sketchName = '';
     },
   },
 

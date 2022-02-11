@@ -76,11 +76,12 @@ export default {
     // const node2 = this.addNodeWithCoordinates(MoveNode, 300, 140);
     // const node3 = this.addNodeWithCoordinates(IdentifyNode, 50, 480);
 
-    this.editor.addConnection(
+    this.editor
+      .addConnection
       // node1.getInterface('Saida'),
       // node2.getInterface('Entrada'),
       // node3.getInterface('Entrada')
-    );
+      ();
 
     this.engine.calculate();
 
@@ -115,22 +116,23 @@ export default {
           content: this.editor.save(),
           index: oldValue,
         });
+
         console.log('newValue', newValue);
         console.log('oldValue', oldValue);
-        console.log('this.tabList[newValue]', this.tabList[newValue]);
+        console.log('this.tabList[newValue]', this.tabList);
+
+        if (this.tabList[newValue].duplicated) {
+          console.log('duplicated load');
+
+          this.updateNodeContent({
+            content: JSON.parse(JSON.stringify(this.editor.save())),
+            index: newValue,
+            duplicated: false,
+          });
+        }
         this.editor.load(this.tabList[newValue].content);
       },
     },
-    // selectedTabIndex: (a, val) => {
-    //   console.log('selectedTabIndex');
-    //   console.log(val, a, this.tablist2);
-    // if (
-    //   Object.values(this.tabList[val].content).length !== 0
-    // ) {
-    //   console.log('entrou');
-    //   this.editor.load(this.tabList[val].content);
-    // }
-    // },
   },
 
   methods: {
