@@ -1,9 +1,3 @@
-if __package__ is None:
-    import sys
-    from os import path
-
-    sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
-
 from src.nodes.node_manager import NodeManager
 from src.nodes.base_node import BaseNode
 from src.nodes.timer.task_time import setInterval

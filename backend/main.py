@@ -1,27 +1,27 @@
-from starlette.applications import Starlette
-from starlette.routing import Route, Mount
-import uvicorn
-from api import *
-from src.imageStream import imgRoute, videoRoute
-from starlette.middleware.cors import CORSMiddleware
-from starlette.middleware import Middleware
 from src.logs.log import logSetup
-import socket
 logger = logSetup("Api")
 try:
+    from api import *
+    from api.queries import query
+    from api.mutations import mutation
+    from api.subscriptions import subscription
+    from src.imageStream import imgRoute, videoRoute
+    
+    from os import environ
+    import uvicorn
+    import socket
 
     from ariadne import (
         load_schema_from_path,
         make_executable_schema,
         snake_case_fallback_resolvers,
     )
-
-
-    from api.queries import query
-    from api.mutations import mutation
-    from api.subscriptions import subscription
-    from os import environ
     from ariadne.asgi import GraphQL
+
+    from starlette.middleware.cors import CORSMiddleware
+    from starlette.middleware import Middleware
+    from starlette.applications import Starlette
+    from starlette.routing import Mount
 
     type_defs = ""
     for _file in ["schema", "inputs", "types", "results"]:
@@ -35,18 +35,13 @@ try:
         Middleware(CORSMiddleware, allow_origins=['*'], allow_methods=['*'], allow_headers=['*'])
     ]
 
-
     routes = [
         Mount('/imgs', routes=imgRoute),
         Mount('/videos', routes=videoRoute),
     ]
 
     app = Starlette(debug=True, routes=routes)
-    ls = CORSMiddleware(GraphQL(schema, debug=True), allow_origins=['*'], allow_methods=['*'], allow_headers=['*'])
-
-
-    app.mount("/", ls)
-
+    app.mount("/", CORSMiddleware(GraphQL(schema, debug=True), allow_origins=['*'], allow_methods=['*'], allow_headers=['*']))
 
     port = environ["SERVER_PORT"] if environ.get("SERVER_PORT") else 5000
     if environ.get("ENV_MODE") == "production":
@@ -62,8 +57,6 @@ try:
 
 except KeyboardInterrupt:
     logger.debug("Server stopped manually")
-    exit(0)
 except Exception as e:
     logger.critical(e)
     print(e)
-    exit(1)

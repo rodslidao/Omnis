@@ -9,17 +9,16 @@ failpath = abspath("./src/imgs/no_image.jpg")
 from src.manager.camera_manager import CameraManager
 
 async def frameReader(request):
+    path = None
     if request:
         path = abspath(f"./src/imgs/{request.path_params['img_name']}")
+
+    if not isfile(path):
+        path, status_code = failpath, 400
     else:
-        path = ".s"
-    if isfile(path):
-        img = open(path, 'rb')
         status_code = 200
-    else:
-        img = open(failpath, 'rb')
-        status_code = 404
-    return StreamingResponse(img, status_code, media_type="image/jpeg")
+        
+    return StreamingResponse(open(path, 'rb'), status_code, media_type="image/jpeg")
 
 async def frameGenerator(cam_id):
     cam = CameraManager.get_by_id(cam_id)
