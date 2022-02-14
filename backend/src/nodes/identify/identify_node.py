@@ -1,18 +1,19 @@
-if __package__ is None:
-    import sys
-    from os import path
-
-    sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
-
 from src.nodes.node_manager import NodeManager
 from src.nodes.base_node import BaseNode
 
-from identify_functions import identifyObjects
+from .identify_functions import identifyObjects
 
 NODE_TYPE = "IDENTIFY"
 
 
 class IdentifyNode(BaseNode):
+    """
+    Find a list of countours in an image that match a giver filters.
+
+    Signals ->
+        "onSuccess" -> returns a list of dimensional countour data.
+    """
+
     def __init__(self, name, id, options, outputConnections, inputConnections) -> None:
         super().__init__(name, type, id, options, outputConnections)
         self.inputConnections = inputConnections

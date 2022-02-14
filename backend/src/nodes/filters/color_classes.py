@@ -4,47 +4,61 @@ import colorsys
 
 class Cor:
     """
-    Class to convert color formats
+    A class to convert color to hex, rgb, hsv and cv2_hsv formats.
     """
 
     def __init__(self, value, mode):
-        self.mode = mode
-        if self.mode == "hex":
-            self.hex = value
-            self.rgb = self.hex2int(value)
-            self.hsv = self.rgb2hsv(*self.rgb)
-            self.cv2_hsv = [
-                self.hsv[0],
-                (self.hsv[1] * 255) / 100,
-                (self.hsv[2] * 255) / 100,
-            ]
-        elif self.mode == "rgb":
-            self.rgb = value
-            self.hex = self.any2hex(value)
-            self.hsv = self.rgb2hsv(*self.rgb)
-            self.cv2_hsv = [
-                self.hsv[0],
-                (self.hsv[1] * 255) / 100,
-                (self.hsv[2] * 255) / 100,
-            ]
-        elif self.mode == "hsv":
-            self.hsv = value
-            self.rgb = self.hsv2rgb(*self.hsv)
-            self.hex = self.any2hex(self.rgb)
-            self.cv2_hsv = [
-                self.hsv[0],
-                (self.hsv[1] * 255) / 100,
-                (self.hsv[2] * 255) / 100,
-            ]
-        elif self.mode == "cv2_hsv":
-            self.cv2_hsv = value
-            self.hsv = [
-                self.cv2_hsv[0],
-                (self.cv2_hsv[1] * 100) / 255,
-                (self.cv2_hsv[2] * 100) / 255,
-            ]
-            self.rgb = self.hsv2rgb(*self.hsv)
-            self.hex = self.any2hex(self.rgb)
+        """
+        :value: color value -> i.eg. (255, 255, 255) or #ffffff\n
+        :mode: color mode   -> i.eg. 'rgb' or 'hex'\n
+        \n
+        :methods: ->\n
+            get_color(mode) returns the color in the specified mode.\n
+            \n
+            -- when a instance is created, the color is automatically converted to all other modes, the following methods does need be called --\n
+            \n
+            rgb2hsv(r, g, b) returns the hsv value of the rgb value.\n
+            any2hex(hsv_) returns the hex value of the hsv value.\n
+            hex2int(hex_) returns the int value of the hex value.\n
+
+        """
+        match mode:
+            case "hex":
+                self.hex = value
+                self.rgb = self.hex2int(value)
+                self.hsv = self.rgb2hsv(*self.rgb)
+                self.cv2_hsv = [
+                    self.hsv[0],
+                    (self.hsv[1] * 255) / 100,
+                    (self.hsv[2] * 255) / 100,
+                ]
+            case "rgb":
+                self.rgb = value
+                self.hex = self.any2hex(value)
+                self.hsv = self.rgb2hsv(*self.rgb)
+                self.cv2_hsv = [
+                    self.hsv[0],
+                    (self.hsv[1] * 255) / 100,
+                    (self.hsv[2] * 255) / 100,
+                ]
+            case "hsv":
+                self.hsv = value
+                self.rgb = self.hsv2rgb(*self.hsv)
+                self.hex = self.any2hex(self.rgb)
+                self.cv2_hsv = [
+                    self.hsv[0],
+                    (self.hsv[1] * 255) / 100,
+                    (self.hsv[2] * 255) / 100,
+                ]
+            case "cv2_hsv":
+                self.cv2_hsv = value
+                self.hsv = [
+                    self.cv2_hsv[0],
+                    (self.cv2_hsv[1] * 100) / 255,
+                    (self.cv2_hsv[2] * 100) / 255,
+                ]
+                self.rgb = self.hsv2rgb(*self.hsv)
+                self.hex = self.any2hex(self.rgb)
 
     def get_color(self, mode):
         return getattr(self, mode)
@@ -70,27 +84,17 @@ class Cor:
         return (int((r + m) * 255), int((g + m) * 255), int((b + m) * 255))
 
     def rgb2hsv(self, r, g, b):
-        # rgb normal: range (0-255, 0-255, 0.255)
-        red = r
-        green = g
-        blue = b
-        # get rgb percentage: range (0-1, 0-1, 0-1 )
-        red_percentage = red / 255
-        green_percentage = green / 255
-        blue_percentage = blue / 255
-
-        # print(red_percentage, green_percentage, blue_percentage)
-        # get hsv percentage: range (0-1, 0-1, 0-1)
+        red_percentage = r / 255
+        green_percentage = g / 255
+        blue_percentage = b / 255
         color_hsv_percentage = colorsys.rgb_to_hsv(
             red_percentage, green_percentage, blue_percentage
         )
-        # print('color_hsv_percentage: ', color_hsv_percentage)
 
-        # get normal hsv: range (0-360, 0-255, 0-255)
         color_h = round(360 * color_hsv_percentage[0])
         color_s = round(100 * color_hsv_percentage[1])
         color_v = round(100 * color_hsv_percentage[2])
-        # print(color_hsv)
+        
         color_hsv = (color_h, color_s, color_v)
         print("hsv:", color_hsv)
         return color_hsv
@@ -104,7 +108,17 @@ class Cor:
 
 class ColorRange:
     """
-    Class for color ranges
+    A class to convert 2 color ranges to another color range format.\n
+    \n
+    :name: name of the color range\n
+    :mode: color mode   -> i.eg. 'rgb' or 'hex'\n
+    :lower: lower color value -> i.eg. (0, 0, 0) or #000000\n
+    :upper: upper color value -> i.eg. (255, 255, 255) or #ffffff\n
+    \n
+    :methods: ->\n
+        get_color(mode) returns the color in the specified mode.\n
+        \n
+        get_full() returns all converted color ranges.\n
     """
 
     def __init__(self, name, mode, lower, upper):

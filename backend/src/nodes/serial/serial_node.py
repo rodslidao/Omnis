@@ -6,7 +6,7 @@ if __package__ is None:
 
 from src.nodes.node_manager import NodeManager
 from src.nodes.base_node import BaseNode
-from .serial_obj import SerialOBJ
+from .custom_serial import CustomSerial
 from .gcode_obj import SerialGcodeOBJ
 from src.nodes.timer.task_time import setInterval
 
@@ -26,7 +26,7 @@ class SerialNode(BaseNode):
         if options["connection_type"]["serial_connection_type"] == "gcode":
             serial_class = SerialGcodeOBJ
         else:
-            serial_class = SerialOBJ
+            serial_class = CustomSerial
 
         self.serial = serial_class(
             self.serial_name,

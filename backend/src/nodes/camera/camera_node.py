@@ -7,6 +7,13 @@ NODE_TYPE = "CAMERA"
 
 
 class CameraNode(BaseNode):
+    """
+    Trigger it self every 'n' seconds.\n
+    \n
+    Signals -> \n
+    \t:onSuccess: - Send last frame read.\n
+    """
+
     def __init__(self, name, id, options, outputConnections, inputConnections) -> None:
         super().__init__(name, NODE_TYPE, id, options, outputConnections)
         self.inputConnections = inputConnections

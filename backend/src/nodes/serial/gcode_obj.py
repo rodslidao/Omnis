@@ -1,9 +1,9 @@
-from .serial_obj import SerialOBJ
+from .custom_serial import CustomSerial
 
 
-class SerialGcodeOBJ(SerialOBJ):
-    def __init__(self, name, port, baudrate, **kwargs):
-        super().__init__(name, port, baudrate, **kwargs)
+class SerialGcodeOBJ(CustomSerial):
+    def __init__(self, port=None, name=None, baudrate=9600, filters={}, bytesize=8, parity='N', stopbits=1, timeout=0.01, xonxoff=False, rtscts=False, dsrdtr=False):
+        super().__init__(port, baudrate, filters, bytesize, parity, stopbits, timeout, xonxoff, rtscts, dsrdtr, is_gcode=True)
         self.pause = False
         self.pause_permission = ["stop", "kill", "quick_stop", "resume"]
 

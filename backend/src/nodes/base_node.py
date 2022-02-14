@@ -1,15 +1,38 @@
-from math import fabs
-from cv2 import log
-# from src.manager.socketio_manager import emit
 from src.message import Message
 from src.nodes.node_manager import NodeManager
 from src.logs.log import logSetup
-import logging
-#from src.exec_info import ExecutionCounter
 
 NODE_TYPE = "BASE_NODE"
 
 class BaseNode:
+    """
+    A class that represents a node, and its properties.
+
+    Attributes:
+        name (str): The name of the node.
+        type (str): The type of the node.
+        id (str): The id of the node.
+        options (dict): The options of the node.
+        outputConnections (list): The output connections of the node.
+    
+    Methods:
+        onSuccess(payload, additional): Sends a success message to the node.
+        onSignal(signal): Sends a signal message to the node.
+        onFailure(payload, additional): Sends a failure message to the node.
+        on(trigger, payload, additional): Sends a message to the node.
+        pause(): Pauses the node.
+        resume(): Resumes the node.
+        stop(): Stops the node.
+        reset(): Resets the node.
+        pulse(color): Pulses the node.
+        sendConnectionExec(fromId, toId): Sends a connection execution message to the node.
+        sendErrorMessage(nodeId, errorMessage): Sends an error message to the node.
+
+        log(message, level="debug", prefix="", suffix=""): Logs a message.
+
+
+    """
+
     def __init__(self, name, type, id, options, outputConnections) -> None:
         self.name = name
         self.type = type
@@ -20,26 +43,20 @@ class BaseNode:
         self.logger = logSetup(__class__.__name__, alias=self.name, id=self._id, path=__name__)
         self.log("Created")
     def log(self, message, level="debug", prefix="", suffix=""):
-        #if not prefix:
-            #prefix = f"{self.type} {self.name} {self._id} \t"
 
         getattr(self.logger, level.lower())(f"{prefix}{message}{suffix}")
 
     def onSuccess(self, payload, additional=None):
-        #ExecutionCounter.incrCountType(self._id, "success")
         self.on("onSuccess", payload, additional)
 
     def onSignal(self, signal=True):
         self.on("Sinal", signal)
 
     def onFailure(self, payload, additional=None, pulse=True, errorMessage=""):
-        #ExecutionCounter.incrCountType(self._id, "failure")
         self.log(f"onFailure: {payload}", level="warning")
         self.on("onFailure", payload, additional, pulse)
 
     def on(self, trigger, payload, additional=None, pulse=False, errorMessage=""):
-        # filter targets from outputConnections using intrf.from.name == trigger
-
         targets = list(
             filter(
                 lambda connection: connection.get("from").get("name") == trigger,
@@ -48,8 +65,6 @@ class BaseNode:
         )
         if pulse:
             self.sendErrorMessage(self._id, errorMessage)
-        #if trigger == "onFailure":
-            #ExecutionCounter.incrCountType(self._id, "failure")
         for target in targets:
 
             self.sendConnectionExec(
@@ -75,7 +90,6 @@ class BaseNode:
                 self.log(f"Node {target.get('to').get('nodeId')} not found", level="warning")
                 self.log(f"{e}", level="fatal")
                 raise
-                # print("to:",target.get("to"), "to_id:",target.get("to").get("nodeId"))
 
     def pause(self):
         self.log(f"Paused", level="debug")
@@ -97,15 +111,12 @@ class BaseNode:
 
     def pulse(self, color):
         message = {"NodeId": self._id, "color": color}
-        # emit("NODE_PULSE", message)
 
     def sendConnectionExec(self, fromId, toId):
         message = {"type": "CONNECTION_EXEC", "data": {"from": fromId, "to": toId}}
-        # emit("CONNECTION_EXEC", message)
 
     def sendErrorMessage(self, nodeId, errorMessage):
         message = {
             "type": "NODE_EXEC_ERROR",
             "data": {"nodeId": nodeId, "errorMessage": errorMessage},
         }
-        # emit("NODE_EXEC_ERROR", message)

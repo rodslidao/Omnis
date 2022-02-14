@@ -9,6 +9,10 @@ from src.nodes.node_manager import NodeManager
 from src.nodes.base_node import BaseNode
 NODE_TYPE = "MOVEMENT"
 class MovementNode(BaseNode):
+    """
+    A class to send movement commands GCODES trough an serial instace.
+
+    """
     def __init__(self, name, id, options, outputConnections, inputConnections) -> None:
         super().__init__(name, NODE_TYPE, id, options, outputConnections)
         self.inputConnections = inputConnections
@@ -25,11 +29,9 @@ class MovementNode(BaseNode):
             try:
                 getattr(self, action+'_f')(message.payload)
             except Exception as e:
-                #print(e)
                 self.onFailure("Cant execute action", pulse=True, errorMessage=str(e))
 
     def serial_f(self, payload):
-        #print(f"MovmentNode [{self._id}][Serial]:", payload)
         self.serial = payload
 
     def coordinates_f(self, payload):

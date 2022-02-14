@@ -4,7 +4,34 @@ from bson import ObjectId
 from src.manager.serial_manager import SerialManager
 
 class CustomSerial(Serial):
-    def __init__(self, port=None, name=None, baudrate=9600, device=-1, description=-1,vid=-1,pid=-1,serial_number=-1,manufacturer=-1,subsystem=-1, bytesize=8, parity='N', stopbits=1, timeout=0.01, xonxoff=False, rtscts=False, dsrdtr=False, is_gcode=False) -> None:
+    """
+    Class to comunicate with serial port.
+
+    Attributes:
+        port (str): Port to comunicate.
+        baudrate (int): Baudrate to comunicate.
+        is_open (bool): True if port is open.
+        is_gcode (bool): True if port is gcode.
+        last_value_send (str): Last value send.
+        last_value_received (str): Last value received.
+    
+    Methods:
+        start: Open port.
+        close: Close port.
+        reset: Close and open port.
+        send: Send message to port.
+        echo: Read message from port.
+        findMostCompatiblePort: Find most compatible port.
+        to_dict: Return a dictionary representation of this class instance.
+
+    Notes:
+        when a serial port is opened, it is added to the SerialManager.
+        when a serial port is closed, it is removed from the SerialManager.
+
+        findMostCompatiblePort: 
+
+    """
+    def __init__(self, port=None, name=None, baudrate=9600, filters={}, bytesize=8, parity='N', stopbits=1, timeout=0.01, xonxoff=False, rtscts=False, dsrdtr=False, is_gcode=False) -> None:
         self._id = ObjectId()
         super().__init__(port, baudrate, bytesize, parity, stopbits, timeout, xonxoff, rtscts, dsrdtr)
         self.port = port
@@ -14,28 +41,29 @@ class CustomSerial(Serial):
         self.last_value_send = None
         self.last_value_received = None
 
-        self.device=device
-        self.description=description
-        self.vid=vid
-        self.pid=pid
-        self.serial_number=serial_number
-        self.manufacturer=manufacturer
-        self.subsystem=subsystem
+        # self.device=device
+        # self.description=description
+        # self.vid=vid
+        # self.pid=pid
+        # self.serial_number=serial_number
+        # self.manufacturer=manufacturer
+        # self.subsystem=subsystem
 
         if name is None:
             self.name = self.vid+self.pid+'_'+self.device
         else:
             self.name = name
-
-        self.filters = {
-            "device": self.device,
-            "description": self.description,
-            "vid": self.vid,
-            "pid": self.pid,
-            "serial_number": self.serial_number,
-            "manufacturer": self.manufacturer,
-            "subsystem": self.subsystem
-        }
+        
+        self.filters = filters
+        # self.filters = {
+        #     "device": self.device,
+        #     "description": self.description,
+        #     "vid": self.vid,
+        #     "pid": self.pid,
+        #     "serial_number": self.serial_number,
+        #     "manufacturer": self.manufacturer,
+        #     "subsystem": self.subsystem
+        # }
         SerialManager.add(self)
 
     def start(self):

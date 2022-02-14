@@ -8,7 +8,6 @@ from starlette.middleware import Middleware
 from src.logs.log import logSetup
 import socket
 logger = logSetup("Api")
-
 try:
 
     from ariadne import (

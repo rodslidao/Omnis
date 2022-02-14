@@ -9,6 +9,15 @@ import datetime
 from collections import deque
 
 class FPS:
+    """
+    FPS class for calculating frames per second. \n
+
+    Usage: \n
+    \tFPS().start():\t-> returns FPS() itself and start the counter \n
+    \tFPS().update():\t returns None and updates the counter \n
+    \tFPS().fps():\t\t returns the current FPS
+
+    """
     def __init__(self):
         self._start = None
         self._end = None
@@ -32,6 +41,42 @@ class FPS:
 
 
 class camera:
+    """
+    Complex api for USB cameras.
+    When a new camera is started, it will be added to the CameraManager using camera._id as key.
+    When a camera is stopped, it will be removed from the CameraManager.
+    
+    :set_property(name, value):
+        Set a property of the camera.
+        a list of properties can be found here: https://docs.opencv.org/4.x/d4/d15/group__videoio__flags__base.html
+
+    :get_property(name):
+        Get a property of the camera.
+    
+    :get_properties():
+        Get all properties of the camera.
+    
+    :start():
+        Start the camera.
+        returns self.
+    
+    :stop():
+        Stop the camera.
+        returns self.
+    
+    :reset():
+        Reset the camera.
+        returns self.
+    
+    :read():
+        Read the current frame.
+        returns the current frame.
+    
+    :to_dict():
+        Returns a dictionary representation of the camera.
+
+
+    """
     def __init__(self, src=0, name="WebcamVideoStream"):
         self.src = src
         self.stream = cv2.VideoCapture(src, cv2.CAP_V4L2)
@@ -59,7 +104,10 @@ class camera:
         return self
 
     def start(self):
-        print("Starting camera...")
+        """
+        Start the camera.
+        returns self.
+        """
         self.fps = FPS().start()
         self.stopped = False
         self.t = Thread(target=self.updateFrame, name=self.name, args=(), daemon=True)
@@ -68,6 +116,10 @@ class camera:
         return self
 
     def updateFrame(self):
+        """
+        Update the frame of the camera.
+        returns None.
+        """
         while not self.stopped:
             (self.grabbed, self.frame) = self.stream.read()
             cv2.putText(
@@ -82,11 +134,17 @@ class camera:
             self.fps.update()
 
     def read(self):
+        """
+        Read the current frame.
+        returns the current frame.
+        """
         return self.frame
 
     def stop(self):
-        print("Stopping camera...")
-        # self.fps.stop()
+        """
+        Stop the camera.
+        returns self.
+        """
         self.stopped = True
         try:
             self.t.join()
@@ -101,6 +159,9 @@ class camera:
         self.stream.release()
 
     def to_dict(self):
+        """
+        Returns a dictionary representation of the camera.
+        """
         return {
             "_id": self._id,
             "src": self.src,
@@ -110,8 +171,11 @@ class camera:
         }
 
 
-def checker():
-    cam = camera(2)
+def checker(src=2):
+    """
+    Checks if the camera is running.
+    """
+    cam = camera(src)
     cam.start()
-    sleep(2)
+    sleep(src)
     cam.stop()

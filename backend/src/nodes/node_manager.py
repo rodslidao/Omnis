@@ -1,15 +1,8 @@
-if __package__ is None:
-    import sys
-    from os import path
-
-    sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
-
 nodes = []
 
 class NodeManager:
     def getNodeById(nodeId):
         for node in nodes:
-            # print(node.id, 'vs', nodeId, [nodes])
             if node.id == nodeId:
                 return node
         return None

@@ -1,6 +1,21 @@
 import threading
 
 def setInterval(interval):
+    """
+    Decorator to set a function to be called at every interval seconds.
+
+    Usage:
+        @setInterval(n)\n
+        def my_function():
+            print("Hello")
+        
+        stop_event_setter = my_function() 
+
+    - start the function, and get the returned stop event
+    - After 'n' seconds, the function will be called again.
+    - Use stop_event_setter.set() to stop the function.
+
+    """
     def decorator(function):
         def wrapper(*args, **kwargs):
             stopped = threading.Event()

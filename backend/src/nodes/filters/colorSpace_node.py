@@ -1,9 +1,3 @@
-if __package__ is None:
-    import sys
-    from os import path
-
-    sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
-
 import cv2
 from src.nodes.node_manager import NodeManager
 from src.nodes.base_node import BaseNode
@@ -13,6 +7,12 @@ NODE_TYPE = "COLORSPACE"
 
 
 class ColorSpaceNode(BaseNode):
+    """
+    Convert an image color format to another.
+    More info about color conversion methods can be found here: https://docs.opencv.org/4.5.5/de/d25/imgproc_color_conversions.html
+    More info about color conversion codes can be found here:    https://docs.opencv.org/4.5.5/d8/d01/group__imgproc__color__conversions.html
+    """
+
     def __init__(self, name, id, options, outputConnections, inputConnections) -> None:
         super().__init__(name, NODE_TYPE, id, options, outputConnections)
         self.inputConnections = inputConnections

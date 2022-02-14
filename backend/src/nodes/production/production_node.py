@@ -4,7 +4,7 @@ from src.nodes.base_node import BaseNode
 from .production_obj import ProductionOBJ
 
 NODE_TYPE = "PRODUCTION"
-class MovementNode(BaseNode):
+class ProductionNode(BaseNode):
     def __init__(self, name, id, options, outputConnections, inputConnections) -> None:
         super().__init__(name, NODE_TYPE, id, options, outputConnections)
         self.model = options["model"]["value"]
