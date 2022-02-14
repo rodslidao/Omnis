@@ -41,29 +41,12 @@ class CustomSerial(Serial):
         self.last_value_send = None
         self.last_value_received = None
 
-        # self.device=device
-        # self.description=description
-        # self.vid=vid
-        # self.pid=pid
-        # self.serial_number=serial_number
-        # self.manufacturer=manufacturer
-        # self.subsystem=subsystem
-
         if name is None:
             self.name = self.vid+self.pid+'_'+self.device
         else:
             self.name = name
         
         self.filters = filters
-        # self.filters = {
-        #     "device": self.device,
-        #     "description": self.description,
-        #     "vid": self.vid,
-        #     "pid": self.pid,
-        #     "serial_number": self.serial_number,
-        #     "manufacturer": self.manufacturer,
-        #     "subsystem": self.subsystem
-        # }
         SerialManager.add(self)
 
     def start(self):

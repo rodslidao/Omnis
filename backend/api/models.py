@@ -156,7 +156,8 @@ class ProcessManager(Process):
             NodeManager.resume()
             super().resume()
             return True
-        return False
+        return 
+        
 
     def verifyChange(self):
         lt = dbo.find_one("last-values", {"query": "lastLoadedNoneSheet"})

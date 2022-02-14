@@ -3,7 +3,7 @@ nodes = []
 class NodeManager:
     def getNodeById(nodeId):
         for node in nodes:
-            if node.id == nodeId:
+            if node._id == nodeId:
                 return node
         return None
 
