@@ -14,12 +14,13 @@ from src.manager.serial_manager import SerialManager
 
 mutation = MutationType()
 
+
 @defaultException
 @mutation.field("createNodeSheet")
 def createNodeSheet_resolver(obj, info, **kwargs):
     """Create a new NodeSheet object and return it like a payload"""
     print(kwargs)
-    returns = NodeSheet().createNodeSheet(**kwargs.get("input", {}))
+    returns = NodeSheet().createNodeSheet(**kwargs)
     return {"data": returns}
 
 
@@ -38,6 +39,7 @@ def deleteNodeSheet_resolver(obj, info, id):
     returns = NodeSheet().deleteNodeSheet(id)
     return {"data": returns}
 
+
 @defaultException
 @mutation.field("startProcess")
 def startProcess_resolver(obj, info):
@@ -45,6 +47,7 @@ def startProcess_resolver(obj, info):
     process.startProcess()
     returns = process.dict()
     return {"data": returns}
+
 
 @defaultException
 @mutation.field("stopProcess")
@@ -54,6 +57,7 @@ def stopProcess_resolver(obj, info):
     returns = process.dict()
     return {"data": returns}
 
+
 @defaultException
 @mutation.field("pauseProcess")
 def pauseProcess_resolver(obj, info):
@@ -62,6 +66,7 @@ def pauseProcess_resolver(obj, info):
     returns = process.dict()
     return {"data": returns}
 
+
 @defaultException
 @mutation.field("resumeProcess")
 def resumeProcess_resolver(obj, info):
@@ -69,6 +74,7 @@ def resumeProcess_resolver(obj, info):
     process.resumeProcess()
     returns = process.dict()
     return {"data": returns}
+
 
 @defaultException
 @mutation.field("loadConfig")
@@ -80,6 +86,7 @@ def loadConfig_resolver(obj, info, _id):
         print(e)
         return False
 
+
 @defaultException
 @mutation.field("getLoadedConfig")
 def getLoadedConfig_resolver(obj, info):
@@ -89,12 +96,14 @@ def getLoadedConfig_resolver(obj, info):
         print(e)
         return False
 
+
 @defaultException
 @mutation.field("createAlert")
 async def createAlert_resolver(obj, info, input):
     """Create a new Alert object and return it like a payload"""
     returns = Alert(**input)
     return {"data": returns}
+
 
 @defaultException
 @mutation.field("uploadFile")
@@ -103,27 +112,30 @@ async def uploadFile_resolver(obj, info, file):
     print(file)
     return {"data": file}
 
-class Picutre():
+
+class Picutre:
     def __init__(self, name, _id=ObjectId()):
         self._id = _id
         self.name = name[:-3]
         self.extension = name[-3:]
-        self.path =  f"/imgs/{self._id}"
+        self.path = f"/imgs/{self._id}"
 
     def export(self, path, img):
         """Export the picture to the path"""
         imwrite(path, img)
         return self.__dict__
-        
+
+
 @defaultException
 @mutation.field("uploadPhoto")
 async def uploadPhoto_resolver(obj, info, **kwargs):
-    name = kwargs.get('photo').filename
+    name = kwargs.get("photo").filename
     p = Picutre(name)
     path = f"{abspath('./src')}/{p.path}"
-    img = imdecode(frombuffer(kwargs.get('photo').file.read(), uint8), 1)
+    img = imdecode(frombuffer(kwargs.get("photo").file.read(), uint8), 1)
     print(p.export(path, img))
-    return {"filename": p.id, "path":p.path}
+    return {"filename": p.id, "path": p.path}
+
 
 # @mutation.field("createNode") #? Como criar novos nodes de forma dinamica e individual?
 
@@ -135,6 +147,7 @@ def createCamera_resolver(obj, info, **kwargs):
     returns = camera(**kwargs.get("input", {})).to_dict()
     return {"data": returns}
 
+
 @defaultException
 @mutation.field("startCamera")
 def startCamera_resolver(obj, info, _id):
@@ -142,6 +155,7 @@ def startCamera_resolver(obj, info, _id):
     camera = (CameraManager.get_by_id(_id)).start()
     returns = camera.to_dict()
     return {"data": returns}
+
 
 @defaultException
 @mutation.field("stopCamera")
@@ -151,6 +165,7 @@ def stopCamera_resolver(obj, info, _id):
     returns = camera.to_dict()
     return {"data": returns}
 
+
 @defaultException
 @mutation.field("resetCamera")
 def resetCamera_resolver(obj, info, _id):
@@ -159,13 +174,15 @@ def resetCamera_resolver(obj, info, _id):
     returns = camera.to_dict()
     return {"data": returns}
 
+
 @defaultException
 @mutation.field("setCameraProperty")
 def setCameraProperty_resolver(obj, info, _id, **kwargs):
     """Set a camera property by id and return it like a payload"""
-    camera = (CameraManager.get_by_id(_id))
+    camera = CameraManager.get_by_id(_id)
     returns = camera.set_properties(kwargs.get("input", {}))
     return {"data": returns}
+
 
 # *  ----------- Serial ----------- * #
 @defaultException
@@ -175,6 +192,7 @@ def createSerial_resolver(obj, info, **kwargs):
     returns = CustomSerial(**kwargs.get("input", {})).to_dict()
     return {"data": returns}
 
+
 @defaultException
 @mutation.field("startSerial")
 def startSerial_resolver(obj, info, _id):
@@ -182,6 +200,7 @@ def startSerial_resolver(obj, info, _id):
     serial = SerialManager.get_by_id(_id).start()
     returns = serial.to_dict()
     return {"data": returns}
+
 
 @defaultException
 @mutation.field("stopSerial")
@@ -191,6 +210,7 @@ def stopSerial_resolver(obj, info, _id):
     returns = serial.to_dict()
     return {"data": returns}
 
+
 @defaultException
 @mutation.field("communicateSerial")
 def communicateSerial_resolver(obj, info, _id, payload):
@@ -198,4 +218,4 @@ def communicateSerial_resolver(obj, info, _id, payload):
     serial = SerialManager.get_by_id(_id)
     serial.send(payload)
     print("ok")
-    return {"status":True, "data": serial.to_dict()}
+    return {"status": True, "data": serial.to_dict()}

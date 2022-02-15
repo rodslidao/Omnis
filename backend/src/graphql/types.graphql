@@ -1,5 +1,11 @@
 type NodeSheet {
-  _id: ID!
+  sketchName: String,
+  saved: Boolean,
+  duplicated:Boolean,
+  content: NDS
+}
+
+type NDS {
   connections: [connection]
   nodes: [node]
   panning: JSON
