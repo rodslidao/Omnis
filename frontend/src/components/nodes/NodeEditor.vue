@@ -115,6 +115,7 @@ export default {
         this.updateNodeContent({
           content: this.editor.save(),
           index: oldValue,
+
         });
 
         console.log('newValue', newValue);
@@ -122,13 +123,14 @@ export default {
         console.log('this.tabList[newValue]', this.tabList);
 
         if (this.tabList[newValue].duplicated) {
-          console.log('duplicated load');
+          console.log('duplicated load', this.tabList[newValue].duplicated);
 
           this.updateNodeContent({
             content: JSON.parse(JSON.stringify(this.editor.save())),
             index: newValue,
-            duplicated: false,
           });
+
+          console.log('duplicated load2', this.tabList[newValue].duplicated);
         }
         this.editor.load(this.tabList[newValue].content);
       },

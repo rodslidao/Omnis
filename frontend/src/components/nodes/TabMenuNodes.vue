@@ -213,6 +213,7 @@ export default {
         sketchName: tabSketchName,
         id: idGenerated,
         saved: false,
+        duplicated: false,
         content: this.contentDefault,
       };
 
@@ -234,8 +235,8 @@ export default {
         tab: newTab,
         indexContextMenu: this.contextMenuSelectedTabIndex,
       });
-      console.log('selected indexxxxxxxxxxxxxxxx: ', this.selectedTabIndex);
-      console.log('CONTEEEEEEEEEEEEEEEEEE',this.contextMenuSelectedTabIndex)
+      // console.log('selected indexxxxxxxxxxxxxxxx: ', this.selectedTabIndex);
+      // console.log('CONTEEEEEEEEEEEEEEEEEE',this.contextMenuSelectedTabIndex)
 
       this.updateSelectedTab(this.contextMenuSelectedTabIndex);
     },

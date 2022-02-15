@@ -29,12 +29,6 @@ export default {
     selectedTabIndex: 0,
     contentDefault: {},
     renamingIndex: null,
-    duplicatedTab: {
-      isDuplicated: false,
-      contextTabEditor: {},
-      contextTabIndex: 0,
-      newTabIndex: 0,
-    },
   },
 
   getters: {
@@ -65,23 +59,16 @@ export default {
     },
 
     duplicateTab: (state, payload) => {
-      console.log('%c Duplicado INICIO', 'color: #51a4f7');
-      state.duplicatedTab.isDuplicated = true;
+      // state.duplicatedTab.isDuplicated = true;
 
       const indexOfNewTab = payload.indexContextMenu + 1;
-      state.duplicatedTab.newTabIndex = indexOfNewTab;
-
-      console.log('selected tab',state.selectedTabByIndex);
-
+      // state.duplicatedTab.newTabIndex = indexOfNewTab;
       const contextTab = state.tabList[payload.indexContextMenu];
-      state.duplicatedTab.contextTabIndex = contextTab;
-      console.log('antes do editor', state.tabList);
+      // state.duplicatedTab.contextTabIndex = contextTab;
       state.tabList.splice(indexOfNewTab, 0, payload.tab);
-      console.log('antes do editor', state.tabList);
       const newTab = state.tabList[indexOfNewTab];
       newTab.sketchName = `${contextTab.sketchName} - Cópia`;
       // newTab.baklavaEditor = contextTab.baklavaEditor;
-      console.log('%c Duplicado INICIO2', 'color: #51a4f7');
     },
 
     removeTabById: (state, id) => {
@@ -108,9 +95,15 @@ export default {
     },
 
     updateNodeContent: (state, payload) => {
-      console.log('updateNodeContent', payload.index);
-      if (payload.index < state.tabList.length) {
-        state.tabList[payload.index].content = payload.content;
+      const itemSelected = state.tabList[payload.index];
+      if (itemSelected) {
+        if (payload.index < state.tabList.length) {
+          itemSelected.content = payload.content;
+        }
+        console.log(payload);
+        if (itemSelected.duplicated) {
+          itemSelected.duplicated = payload.duplicated;
+        }
       }
     },
 
