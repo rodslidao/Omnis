@@ -1,6 +1,5 @@
 <template>
   <div>
-    <UploadFileDialog></UploadFileDialog>
     <div class="menuList">
       <v-btn class="button" color="primary" fab dark small @click="play">
         <v-icon> mdi-play </v-icon>
@@ -22,7 +21,7 @@
         class="d-flex flex-end"
       >
         <template v-slot:activator>
-          <v-btn color="primary" fab dark>
+          <v-btn :loading="isLoading" color="primary" fab dark>
             <v-icon v-if="fab"> mdi-close </v-icon>
             <v-icon dark v-else> mdi-dots-vertical </v-icon>
           </v-btn>
@@ -37,13 +36,16 @@
         >
           <v-icon left dark>{{ item.icon }} </v-icon>{{ item.title }}
         </v-btn>
-        <v-btn color="primary" class="" dark @change="upload">
-          <v-file-input
+        <!-- <v-btn color="primary" class="" dark @change="upload"> -->
+          <input id="fileUpload" type="file" hidden @change="upload"  accept=".oms," />
+          <v-btn color="primary" class="" dark @click="chooseFiles()">
+            <v-icon left dark>mdi-upload</v-icon>Upload
+          </v-btn>
+          <!-- <v-file-input
             hide-input
             truncate-length="15"
-            ref="myfile"
             v-model="files"
-          ></v-file-input>
+          ></v-file-input> -->
         </v-btn>
       </v-speed-dial>
     </div>
@@ -51,9 +53,7 @@
 </template>
 
 <script>
-import { mapState, mapActions, mapMutations, mapGetters } from 'vuex';
-import UPLOAD_PHOTO from '@/graphql/UploadPhoto';
-import UploadFileDialog from '@/components/UploadFileDialog.vue';
+import { mapState, mapActions, mapGetters } from 'vuex';
 import gql from 'graphql-tag';
 
 export default {
@@ -61,9 +61,7 @@ export default {
   props: {
     editor: Object,
   },
-  components: {
-    UploadFileDialog,
-  },
+  components: {},
 
   data() {
     return {
@@ -88,11 +86,13 @@ export default {
         { title: 'Download', icon: 'mdi-file-download', method: 'download' },
         // { title: 'Upload', icon: 'mdi-file-upload', method: 'upload' },
       ],
+      isLoading: false,
     };
   },
 
   computed: {
     ...mapState('node', {
+      selectedTabIndex: (state) => state.selectedTabIndex,
       tabList: (state) => state.tabList,
       selectedTabId: (state) => state.selectedTabId,
     }),
@@ -104,6 +104,13 @@ export default {
 
   methods: {
     ...mapActions('node', ['play']),
+
+    chooseFiles() {
+      document.getElementById('fileUpload').click();
+      // console.log(this.$alertFeedback);
+      // this.$alertFeedback('Uploading...', 'info');
+      // this.$alertFeedback('George', 'info');
+    },
 
     stop() {
       this.sendMessage({ command: 'process_stop', args: this.editor.save() });
@@ -145,7 +152,12 @@ export default {
         a.download = fileName;
         a.click();
       }
-      download(JSON.stringify(this.editor.save()), 'nodes.json', 'text/plain');
+      const fileName = this.tabList[this.selectedTabIndex].sketchName;
+      download(
+        JSON.stringify(this.editor.save()),
+        `${fileName}.oms`,
+        'text/plain',
+      );
     },
 
     out() {
@@ -153,15 +165,29 @@ export default {
     },
 
     async upload({ target }) {
-      console.log(target.files[0]);
-      let files = target.files;
-      let fr = new FileReader();
+      this.fab = false;
+
+      if (
+        target.files[0].name.split('.').pop() !== 'oms' ||
+        target.files[0].name.split('.').pop() !== 'json'
+      ) {
+        this.$alertFeedback(
+          'Arquivo inválido, seu arquivo deve ser um .oms',
+          'error'
+        );
+
+        return;
+      }
+
+      // console.log(target.files[0].name.split('.').pop());
+      const { files } = target;
+      const fr = new FileReader();
       console.log(files);
       if (files.length <= 0) {
         return false;
       }
 
-      var json;
+      let json;
 
       async function loadFile(callback) {
         console.log(callback);
@@ -171,27 +197,50 @@ export default {
         };
       }
 
+      this.isLoading = true;
+
       // Use time out to wait for the file to be read
       fr.readAsText(files[0]);
 
       loadFile(async () => {
-        await this.$apollo.mutate({
-          mutation: gql`
-            mutation createNodeSheet($input: JSON!) {
-              createNodeSheet(input: $input) {
-                data {
-                  _id
+        await this.$apollo
+          .mutate({
+            mutation: gql`
+              mutation createNodeSheet($input: JSON!) {
+                createNodeSheet(input: $input) {
+                  data {
+                    _id
+                  }
                 }
               }
-            }
-          `,
-          variables: {
-            input: json,
-          },
-          update: (store, { data: { createNodeSheet } }) => {
-            console.log(createNodeSheet.data._id);
-          },
-        });
+            `,
+            variables: {
+              input: json,
+            },
+            update: (store, { data: { createNodeSheet } }) => {
+              console.log(createNodeSheet.data._id);
+            },
+          })
+          .then((data) => {
+            // Result
+            console.log(data);
+            this.$alertFeedback('Arquivo salvo com sucesso', 'success');
+            this.isLoading = false;
+          })
+          .catch((error) => {
+            // Error
+            this.isLoading = false;
+            console.error(
+              'Não foi possível fazer o UPLOAD do arquivo \n',
+              error
+            );
+            this.$alertFeedback(
+              'Não foi possível fazer o upload do arquivo',
+              'error'
+            );
+
+            // We restore the initial user input
+          });
         console.log(json);
       });
     },

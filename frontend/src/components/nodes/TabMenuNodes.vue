@@ -1,122 +1,139 @@
 <template>
-  <div class="wrapper">
-    <div class="menu">
-      <p style="color: white">{{ lixo }}</p>
-      <p style="color: white">{{ tagAdded }}</p>
-      <v-btn fab small dark color="primary" @click="apollo()">
-        <v-icon dark>mdi-home</v-icon>
-      </v-btn>
-      <v-btn fab small dark color="primary" @click="startProcess()">
-        <v-icon dark>mdi-show</v-icon>
-      </v-btn>
-
-      <div>
-        <v-card>
-          <v-tabs
-            v-model="tab"
-            background-color="grey darken-3"
-            center-active
-            show-arrows
+  <div class="content">
+    <v-tabs align-with-title grow v-model="tab">
+      <v-tab
+        class="tab-item d-flex justify-space-between"
+        @contextmenu="show"
+        v-for="(item, index) in tabList"
+        :key="index"
+        @click="selectTab(index)"
+        @click.middle="close(index)"
+        @click.right="contextMenuSelectedTabIndex = index"
+      >
+        <div>
+          <v-icon
+            small
             dark
+            color="green accent-3"
+            v-if="sketchNameRunning == item.sketchName"
           >
-            <v-tab v-for="(item, index) in tabList" :key="item.sketchName">
-              <v-icon
-                small
-                dark
-                color="green accent-3"
-                v-if="sketchNameRunning == item.sketchName"
-              >
-                mdi-play
-              </v-icon>
-              {{ +!item.saved ? item.sketchName + '*' : item.sketchName }}
-              <v-btn
-                v-if="tabList.length > 1"
-                depressed
-                icon
-                @click="close(index)"
-                small
-                ><v-icon small dark> mdi-close </v-icon></v-btn
-              >
-            </v-tab>
-          </v-tabs>
-        </v-card>
-        <div class="moreButton">
-          <v-btn fab small dark color="primary" @click="add()">
-            <v-icon dark>mdi-plus</v-icon>
-          </v-btn>
+            mdi-play
+          </v-icon>
+          <div class="mb-n5" v-if="renamingIndex === index">
+            <v-text-field
+              :append-outer-icon="sketchName ? 'mdi-check' : null"
+              @click:append-outer="rename(index)"
+              autofocus
+              :value="tabList[index].sketchName"
+              v-model="sketchName"
+              @keyup.enter="
+                sketchName != '' ? rename(index) : tabList[index].sketchName
+              "
+              single-line
+              full-width
+            ></v-text-field>
+          </div>
+          <span v-else>{{
+            +!item.saved ? item.sketchName + '*' : item.sketchName
+          }}</span>
         </div>
-      </div>
-    </div>
-    <v-tabs-items v-model="tab">
-      <v-tab-item v-for="item in tabList" :key="item.sketchName">
-        <!-- {{ item.content }} -->
-        <NodeEditor class="nodeEditor"></NodeEditor>
-      </v-tab-item>
-    </v-tabs-items>
+
+        <!-- dropdown -->
+        <v-menu
+          transition="slide-x-transition"
+          v-model="showMenu"
+          bottom
+          right
+          :position-y="y"
+          :position-x="x"
+        >
+          <v-list>
+            <v-list-item v-for="(item, index) in items" :key="index" link>
+              <v-list-item-title
+                @click="item.function(contextMenuSelectedTabIndex)"
+                ><v-icon class="mr-5">mdi-{{ item.btnIcon }}</v-icon
+                >{{ item.title }}
+              </v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+
+        <v-btn depressed icon small class="context-menu-btn">
+          <v-icon small dark> mdi-dots-vertical </v-icon></v-btn
+        >
+        <v-btn
+          v-if="tabList.length > 1"
+          depressed
+          icon
+          @click="close(index)"
+          small
+        >
+          <v-icon class="align-self-end" small dark> mdi-close </v-icon></v-btn
+        >
+      </v-tab>
+      <v-btn class="add-tab" depressed icon @click="add()" small
+        ><v-icon small dark> mdi-plus </v-icon></v-btn
+      >
+    </v-tabs>
   </div>
 </template>
 
 <script>
-import NodeEditor from '@/components/nodes/NodeEditor.vue';
 import { mapActions, mapState } from 'vuex';
 import gql from 'graphql-tag';
 
 export default {
   name: 'TabMenuNodes',
 
-  components: {
-    NodeEditor,
-  },
   data() {
     return {
       tab: null,
       actualNode: null,
       length: 0,
+      sketchName: '',
       sketchNameRunning: 'One',
       newTabCount: 1,
-
       lixo: null,
       tagAdded: {},
-    };
-  },
+      contextMenuSelectedTabIndex: null,
 
-  apollo: {
-    // Subscriptions
-    $subscribe: {
-      // When a tag is added
-      tagAdded: {
-        query: gql`
-          subscription {
-            alerts {
-              title
-            }
-          }
-        `,
-        // Result hook
-        // Don't forget to destructure `data`
-        result({ data }) {
-          console.log(data.alerts);
-          this.tagAdded = data.alerts;
+      showMenu: false,
+      x: 0,
+      y: 0,
+      items: [
+        {
+          title: 'Duplicar',
+          btnIcon: 'content-duplicate',
+          function: this.duplicate,
         },
-      },
-    },
+        {
+          title: 'Renomear',
+          btnIcon: 'form-textbox',
+          function: this.setRenamingIndex,
+        },
+        { title: 'Remove', btnIcon: 'delete-outline', function: this.add },
+      ],
+    };
   },
 
   computed: {
     ...mapState('node', {
       tabList: (state) => state.tabList,
       selectedTabId: (state) => state.selectedTabId,
+      selectedTabIndex: (state) => state.selectedTabIndex,
+      contentDefault: (state) => state.contentDefault,
+      renamingIndex: (state) => state.renamingIndex,
     }),
   },
 
   watch: {
-    length(val) {
-      this.tab = val - 1;
-    },
-
-    tab() {
-      this.selectTabByIndex(this.tab);
-    },
+    // length(val) {
+    //   this.tab = val - 1;
+    // },
+    // tab() {
+    //   this.selectTabByIndex(this.tab);
+    //   console.log('tab changed:', this.tab);
+    // },
   },
 
   methods: {
@@ -126,7 +143,21 @@ export default {
       'selectTabByIndex',
       'removeTabByIndex',
       'play',
+      'updateSelectedTab',
+      'duplicateTab',
+      'setRenamingIndex',
+      'setSketchName',
     ]),
+
+    show(e) {
+      e.preventDefault();
+      this.showMenu = false;
+      this.x = e.clientX;
+      this.y = e.clientY;
+      this.$nextTick(() => {
+        this.showMenu = true;
+      });
+    },
 
     async startProcess() {
       this.play();
@@ -150,61 +181,95 @@ export default {
       console.timeEnd('apollo');
     },
 
+    selectTab(index) {
+      this.updateSelectedTab(index);
+    },
+
     // functcion to gerate unique id based in timestamp
     generateId() {
       return new Date().getTime();
     },
 
     close(index) {
-      console.log('aba fechada, index: ', index);
-      this.removeTabByIndex(index);
+      if (this.tabList.length > 1) {
+        console.log('aba fechada, index: ', index);
+        this.removeTabByIndex(index);
+        console.log('index: ', this.selectedTabIndex);
+        if (index <= this.selectedTabIndex) {
+          // this.tabList.length(0);
+          this.updateSelectedTab(this.selectedTabIndex - 1);
+          console.log('index22: ', this.selectedTabIndex);
+        }
+      }
     },
 
-    add() {
+    add(index) {
+      const tabLength = this.tabList.length;
+      let tabSketchName = `Aba ${this.newTabCount}`;
+      if (tabLength === 0) tabSketchName = 'Aba 1';
       const idGenerated = this.generateId();
+      this.newTabCount += 1;
       const newTab = {
-        sketchName: `Tab ${this.newTabCount + 1}`,
+        sketchName: tabSketchName,
         id: idGenerated,
         saved: false,
+        duplicated: false,
+        content: this.contentDefault,
       };
-      this.newTabCount += 1;
-      this.lastSelectedTabId = idGenerated;
 
       this.addTab(newTab);
-
-      this.length = this.tabList.length;
+      console.log('tab length: ', tabLength);
+      this.updateSelectedTab(tabLength);
+      this.tab = tabLength;
     },
+
+    duplicate(index) {
+      const idGenerated = this.generateId();
+
+      const newTab = {
+        id: idGenerated,
+        saved: false,
+        duplicated: true,
+      };
+      this.duplicateTab({
+        tab: newTab,
+        indexContextMenu: this.contextMenuSelectedTabIndex,
+      });
+      // console.log('selected indexxxxxxxxxxxxxxxx: ', this.selectedTabIndex);
+      // console.log('CONTEEEEEEEEEEEEEEEEEE',this.contextMenuSelectedTabIndex)
+
+      this.updateSelectedTab(this.contextMenuSelectedTabIndex);
+    },
+
+    rename(index) {
+      this.setRenamingIndex(null);
+      this.setSketchName({ sketchName: this.sketchName, index: index });
+      this.sketchName = '';
+    },
+  },
+
+  mounted() {
+    if (this.tabList.length === 0) {
+      this.add();
+    }
   },
 };
 </script>
 
-<style lang="scss">
-.wrapper {
-  display: flex;
-  position: relative;
+<style scoped>
+.content {
   width: 100%;
+}
+.add-tab {
+  align-self: center;
+  margin: 9px;
+}
 
-  .menu {
-    z-index: 2;
-    position: absolute;
-    width: 100%;
-    margin-top: 3em;
+.context-menu-btn {
+  display: none;
+}
 
-    > div {
-      margin: 1em 1em 0 3em;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .moreButton {
-      padding: 0 2em 0 1em;
-    }
-  }
-
-  .nodeEditor {
-    width: 100vw;
-    height: 100vh;
-    position: absolute;
-  }
+.tab-item:hover + .context-menu-btn {
+  display: block;
 }
 </style>
