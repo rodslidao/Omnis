@@ -33,7 +33,7 @@ export default {
   name: 'AlertFeedback',
   data() {
     return {
-      defaultTimeout: 4000,
+      defaultTimeout: 5000,
       snackbar: true,
     };
   },

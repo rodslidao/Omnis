@@ -1,6 +1,5 @@
 <template>
   <div>
-    <!-- <UploadFileDialog></UploadFileDialog> -->
     <div class="menuList">
       <v-btn class="button" color="primary" fab dark small @click="play">
         <v-icon> mdi-play </v-icon>
@@ -38,7 +37,7 @@
           <v-icon left dark>{{ item.icon }} </v-icon>{{ item.title }}
         </v-btn>
         <!-- <v-btn color="primary" class="" dark @change="upload"> -->
-          <input id="fileUpload" type="file" hidden @change="upload" />
+          <input id="fileUpload" type="file" hidden @change="upload"  accept=".oms," />
           <v-btn color="primary" class="" dark @click="chooseFiles()">
             <v-icon left dark>mdi-upload</v-icon>Upload
           </v-btn>
@@ -54,9 +53,7 @@
 </template>
 
 <script>
-import { mapState, mapActions, mapMutations, mapGetters } from 'vuex';
-import UPLOAD_PHOTO from '@/graphql/UploadPhoto';
-import UploadFileDialog from '@/components/UploadFileDialog.vue';
+import { mapState, mapActions, mapGetters } from 'vuex';
 import gql from 'graphql-tag';
 
 export default {
@@ -64,9 +61,7 @@ export default {
   props: {
     editor: Object,
   },
-  components: {
-    UploadFileDialog,
-  },
+  components: {},
 
   data() {
     return {
@@ -97,6 +92,7 @@ export default {
 
   computed: {
     ...mapState('node', {
+      selectedTabIndex: (state) => state.selectedTabIndex,
       tabList: (state) => state.tabList,
       selectedTabId: (state) => state.selectedTabId,
     }),
@@ -156,7 +152,12 @@ export default {
         a.download = fileName;
         a.click();
       }
-      download(JSON.stringify(this.editor.save()), 'nodes.json', 'text/plain');
+      const fileName = this.tabList[this.selectedTabIndex].sketchName;
+      download(
+        JSON.stringify(this.editor.save()),
+        `${fileName}.oms`,
+        'text/plain',
+      );
     },
 
     out() {
@@ -166,15 +167,27 @@ export default {
     async upload({ target }) {
       this.fab = false;
 
-      console.log(target.files[0]);
-      let files = target.files;
-      let fr = new FileReader();
+      if (
+        target.files[0].name.split('.').pop() !== 'oms' ||
+        target.files[0].name.split('.').pop() !== 'json'
+      ) {
+        this.$alertFeedback(
+          'Arquivo inválido, seu arquivo deve ser um .oms',
+          'error'
+        );
+
+        return;
+      }
+
+      // console.log(target.files[0].name.split('.').pop());
+      const { files } = target;
+      const fr = new FileReader();
       console.log(files);
       if (files.length <= 0) {
         return false;
       }
 
-      var json;
+      let json;
 
       async function loadFile(callback) {
         console.log(callback);
@@ -195,10 +208,6 @@ export default {
             mutation: gql`
               mutation createNodeSheet($input: JSON!) {
                 createNodeSheet(input: $input) {
-                  status {
-                    success
-                    error
-                  }
                   data {
                     _id
                   }
@@ -215,14 +224,14 @@ export default {
           .then((data) => {
             // Result
             console.log(data);
-            this.$$alertFeedback('Arquivo salvo com sucesso', 'success');
+            this.$alertFeedback('Arquivo salvo com sucesso', 'success');
             this.isLoading = false;
           })
           .catch((error) => {
             // Error
             this.isLoading = false;
             console.error(
-              'Não foi possivel fazer o UPLOAD do arquivo \n',
+              'Não foi possível fazer o UPLOAD do arquivo \n',
               error
             );
             this.$alertFeedback(
