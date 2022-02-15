@@ -13,9 +13,10 @@ export default {
     },
   },
 
+
   getters: {
     /**
-     * access counter in state from the parameter
+     * access counter in state from the parameterr
      */
 
     // eslint-disable-next-line max-len
