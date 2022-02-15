@@ -2,7 +2,7 @@
   <div class="warpper">
     <h4>{{ value }}</h4>
     <!-- <img src="https://zudesign.com.br/images/logo.svg" alt="alternative" /> -->
-    <v-img
+    <!-- <v-img
       :lazy-src="require(`@/assets/img/lazy-load-parallax.jpg`)"
       class="cameraImg"
       alt="camera"
@@ -10,7 +10,7 @@
         Math.floor(Math.random() * (1000 - 1 + 1)) + 1
       }`"
     >
-    </v-img>
+    </v-img> -->
     <!-- <p>{{ node.id }}</p> -->
   </div>
 </template>

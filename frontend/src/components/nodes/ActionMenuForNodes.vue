@@ -1,6 +1,6 @@
 <template>
   <div>
-    <UploadFileDialog></UploadFileDialog>
+    <!-- <UploadFileDialog></UploadFileDialog> -->
     <div class="menuList">
       <v-btn class="button" color="primary" fab dark small @click="play">
         <v-icon> mdi-play </v-icon>
@@ -22,7 +22,7 @@
         class="d-flex flex-end"
       >
         <template v-slot:activator>
-          <v-btn color="primary" fab dark>
+          <v-btn :loading="isLoading" color="primary" fab dark>
             <v-icon v-if="fab"> mdi-close </v-icon>
             <v-icon dark v-else> mdi-dots-vertical </v-icon>
           </v-btn>
@@ -37,13 +37,16 @@
         >
           <v-icon left dark>{{ item.icon }} </v-icon>{{ item.title }}
         </v-btn>
-        <v-btn color="primary" class="" dark @change="upload">
-          <v-file-input
+        <!-- <v-btn color="primary" class="" dark @change="upload"> -->
+          <input id="fileUpload" type="file" hidden @change="upload" />
+          <v-btn color="primary" class="" dark @click="chooseFiles()">
+            <v-icon left dark>mdi-upload</v-icon>Upload
+          </v-btn>
+          <!-- <v-file-input
             hide-input
             truncate-length="15"
-            ref="myfile"
             v-model="files"
-          ></v-file-input>
+          ></v-file-input> -->
         </v-btn>
       </v-speed-dial>
     </div>
@@ -88,6 +91,7 @@ export default {
         { title: 'Download', icon: 'mdi-file-download', method: 'download' },
         // { title: 'Upload', icon: 'mdi-file-upload', method: 'upload' },
       ],
+      isLoading: false,
     };
   },
 
@@ -104,6 +108,13 @@ export default {
 
   methods: {
     ...mapActions('node', ['play']),
+
+    chooseFiles() {
+      document.getElementById('fileUpload').click();
+      // console.log(this.$alertFeedback);
+      // this.$alertFeedback('Uploading...', 'info');
+      // this.$alertFeedback('George', 'info');
+    },
 
     stop() {
       this.sendMessage({ command: 'process_stop', args: this.editor.save() });
@@ -153,6 +164,8 @@ export default {
     },
 
     async upload({ target }) {
+      this.fab = false;
+
       console.log(target.files[0]);
       let files = target.files;
       let fr = new FileReader();
@@ -171,27 +184,54 @@ export default {
         };
       }
 
+      this.isLoading = true;
+
       // Use time out to wait for the file to be read
       fr.readAsText(files[0]);
 
       loadFile(async () => {
-        await this.$apollo.mutate({
-          mutation: gql`
-            mutation createNodeSheet($input: JSON!) {
-              createNodeSheet(input: $input) {
-                data {
-                  _id
+        await this.$apollo
+          .mutate({
+            mutation: gql`
+              mutation createNodeSheet($input: JSON!) {
+                createNodeSheet(input: $input) {
+                  status {
+                    success
+                    error
+                  }
+                  data {
+                    _id
+                  }
                 }
               }
-            }
-          `,
-          variables: {
-            input: json,
-          },
-          update: (store, { data: { createNodeSheet } }) => {
-            console.log(createNodeSheet.data._id);
-          },
-        });
+            `,
+            variables: {
+              input: json,
+            },
+            update: (store, { data: { createNodeSheet } }) => {
+              console.log(createNodeSheet.data._id);
+            },
+          })
+          .then((data) => {
+            // Result
+            console.log(data);
+            this.$$alertFeedback('Arquivo salvo com sucesso', 'success');
+            this.isLoading = false;
+          })
+          .catch((error) => {
+            // Error
+            this.isLoading = false;
+            console.error(
+              'Não foi possivel fazer o UPLOAD do arquivo \n',
+              error
+            );
+            this.$alertFeedback(
+              'Não foi possível fazer o upload do arquivo',
+              'error'
+            );
+
+            // We restore the initial user input
+          });
         console.log(json);
       });
     },
