@@ -9,7 +9,7 @@ schema {
 }
 
 type Mutation {
-  createNodeSheet(input: JSON!): NodeSheetResult!
+  createNodeSheet(id: ID!,  sketchName: String, saved: Boolean, duplicated: Boolean, content: JSON!): NodeSheetResult!
   updateNodeSheet(id: ID!, input: NodeSheetInput): NodeSheetResult
   deleteNodeSheet(id: ID!): NodeSheetResult
 

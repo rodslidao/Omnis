@@ -77,8 +77,7 @@ class Process:
 class NodeSheet:
     def createNodeSheet(self, **kwargs):
         """Create a new NodeSheet object"""
-        _id = ObjectId()
-        dbo.insert_one("NodeSheets", {"_id": _id, **kwargs})
+        dbo.insert_one("NodeSheets", **kwargs)
         return self.getNodeSheetById(_id)
 
     def getNodeSheetById(self, id):
