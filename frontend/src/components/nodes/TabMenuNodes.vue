@@ -9,6 +9,7 @@
         @click="selectTab(index)"
         @click.middle="close(index)"
         @click.right="contextMenuSelectedTabIndex = index"
+        v-model="tab"
       >
         <div>
           <v-icon
@@ -130,10 +131,7 @@ export default {
     // length(val) {
     //   this.tab = val - 1;
     // },
-    // tab() {
-    //   this.selectTabByIndex(this.tab);
-    //   console.log('tab changed:', this.tab);
-    // },
+  
   },
 
   methods: {
@@ -187,7 +185,17 @@ export default {
 
     // functcion to gerate unique id based in timestamp
     generateId() {
-      return new Date().getTime();
+      const timestamp = Math.floor(new Date().getTime() / 1000).toString(16);
+      const objectId =
+        timestamp +
+        'xxxxxxxxxxxxxxxx'
+          .replace(/[x]/g, () => {
+            return Math.floor(Math.random() * 16).toString(16);
+          })
+          .toLowerCase();
+
+      return objectId;
+      // return new Date().getTime();
     },
 
     close(index) {
@@ -231,6 +239,7 @@ export default {
         saved: false,
         duplicated: true,
       };
+
       this.duplicateTab({
         tab: newTab,
         indexContextMenu: this.contextMenuSelectedTabIndex,
@@ -238,7 +247,8 @@ export default {
       // console.log('selected indexxxxxxxxxxxxxxxx: ', this.selectedTabIndex);
       // console.log('CONTEEEEEEEEEEEEEEEEEE',this.contextMenuSelectedTabIndex)
 
-      this.updateSelectedTab(this.contextMenuSelectedTabIndex);
+      this.updateSelectedTab(this.contextMenuSelectedTabIndex + 1);
+      this.tab = this.contextMenuSelectedTabIndex + 1;
     },
 
     rename(index) {

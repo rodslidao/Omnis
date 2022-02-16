@@ -2,25 +2,31 @@
   <div class="warper">
     <div>
       <div v-for="(alert, i) in alertList" :key="i">
-        <v-fade-transition leave-absolute>
-          <v-snackbar
-            v-on="timer(alert.description)"
-            :style="{ 'padding-bottom': calcMargin(i) }"
-            v-model="snackbar"
-            rounded="pill"
-            :color="alert.type"
-            :timeout="99999"
-          >
-            <!-- {{(alertList.length - (i+1))*3000}} -->
-            {{ alert.description }}
-
-            <template v-slot:action="{ attrs }">
-              <v-btn small icon v-bind="attrs" @click="closeDialog()">
-                <v-icon>mdi-close</v-icon>
-              </v-btn>
+        <v-snackbar
+          v-on="timer(alert.description)"
+          :style="{ 'padding-bottom': calcMargin(i) }"
+          v-model="snackbar"
+          rounded="pill"
+          :color="alert.type"
+          :timeout="99999"
+          transition="fade-transition"
+        >
+          <!-- {{(alertList.length - (i+1))*3000}} -->
+          {{ alert.description }}
+          <v-tooltip top v-if="alert.moreInfo">
+            <template v-slot:activator="{ on, attrs }">
+              <v-icon class="ml-1" dark v-bind="attrs" v-on="on" small
+                >mdi-information-outline</v-icon
+              >
             </template>
-          </v-snackbar>
-        </v-fade-transition>
+            <span>{{ alert.moreInfo }}</span>
+          </v-tooltip>
+          <template v-slot:action="{ attrs }">
+            <v-btn small icon v-bind="attrs" @click="closeDialog()">
+              <v-icon>mdi-close</v-icon>
+            </v-btn>
+          </template>
+        </v-snackbar>
       </div>
     </div>
   </div>

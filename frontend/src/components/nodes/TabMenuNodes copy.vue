@@ -116,6 +116,7 @@ export default {
 
     tab() {
       this.selectTabByIndex(this.tab);
+      console.log('length changed:', this.tab);
     },
   },
 

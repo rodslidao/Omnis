@@ -6,8 +6,12 @@ export default {
   install(Vue, options) {
     // ES6 way of const job = options.job
     // Add $plugin instance method directly to Vue components
-    Vue.prototype.$alertFeedback = (_description, _type) => {
-      options.store.dispatch('alert/addItemList', { description: _description, type: _type }, { root: true });
+    Vue.prototype.$alertFeedback = (_description, _type, _moreInfo) => {
+      options.store.dispatch(
+        'alert/addItemList',
+        { description: _description, type: _type, moreInfo: _moreInfo },
+        { root: true }
+      );
     };
 
     // Add $surname instance property directly to Vue components

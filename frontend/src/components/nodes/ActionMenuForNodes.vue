@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="menuList">
+    <div class="menuList"  v-on:keyup.ctrl.s="save">
       <v-btn class="button" color="primary" fab dark small @click="play">
         <v-icon> mdi-play </v-icon>
       </v-btn>
@@ -81,7 +81,7 @@ export default {
         {
           title: 'Salvar',
           icon: 'mdi-content-save',
-          method: 'save',
+          method: 'saveClicked',
         },
         { title: 'Download', icon: 'mdi-file-download', method: 'download' },
         // { title: 'Upload', icon: 'mdi-file-upload', method: 'upload' },
@@ -103,7 +103,7 @@ export default {
   },
 
   methods: {
-    ...mapActions('node', ['play']),
+    ...mapActions('node', ['play', 'setSaved']),
 
     chooseFiles() {
       document.getElementById('fileUpload').click();
@@ -113,35 +113,137 @@ export default {
     },
 
     stop() {
-      this.sendMessage({ command: 'process_stop', args: this.editor.save() });
+      // this.sendMessage({ command: 'process_stop', args: this.editor.save() });
     },
 
     pause() {
-      this.sendMessage({ command: 'process_pause', args: this.editor.save() });
+      // this.sendMessage({ command: 'process_pause', args: this.editor.save() });
     },
 
     findFunction(name) {
       this[name]();
     },
 
-    save() {
-      const editedNode = this.editor.save();
-      console.log(this.selectedTabId);
-      console.log(this.getSelectedTabName);
+    async saveClicked() {
+      if (this.tabList[this.selectedTabIndex].saved) {
+        await this.update();
+      } else {
+        await this.save();
+      }
+    },
 
-      editedNode.id = this.selectedTabId;
+    async update() {
+      console.log('update');
+      const tabToSave = this.tabList[this.selectedTabIndex];
 
-      editedNode.sketchName = this.getSelectedTabName;
-      editedNode.saved = false;
+      await this.$apollo
+        .mutate({
+          mutation: gql`
+            mutation updateNodeSheet(
+              $id: ID!
+              $sketchName: String
+              $content: JSON!
+            ) {
+              updateNodeSheet(
+                _id: $id
+                sketchName: $sketchName
+                content: $content
+              ) {
+                data {
+                  _id
+                }
+              }
+            }
+          `,
+          variables: {
+            id: tabToSave.id,
+            content: this.editor.save(),
+          },
+          update: (store, { data: { updateNodeSheet } }) => {
+            console.log(updateNodeSheet.data);
+          },
+        })
+        .then((data) => {
+          // Result
+          console.log(data);
+          this.$alertFeedback('Arquivo salvo com sucesso', 'success');
+          this.isLoading = false;
+          // this.setSaved(this.selectedTabIndex);
+        })
+        .catch((error) => {
+          // Error
+          this.isLoading = false;
+          console.error('Não foi possível salvar o arquivo \n', error);
+          this.$alertFeedback(
+            'Não foi possível salvar o arquivo, erro ao conectar com servidor',
+            'error',
+            error,
+          );
 
-      this.updateTabById(editedNode);
+          // We restore the initial user input
+        });
+    },
+
+    async save() {
+      console.log('save');
 
       console.log(" :salvo com sucesso!'");
-      console.log(this.editor.save());
-      this.SEND_MESSAGE({
-        type: 'SAVE_NODE',
-        payload: editedNode,
-      });
+
+      const tabToSave = this.tabList[this.selectedTabIndex];
+
+      await this.$apollo
+        .mutate({
+          mutation: gql`
+            mutation createNodeSheet(
+              $id: ID!
+              $sketchName: String
+              $saved: Boolean
+              $duplicated: Boolean
+              $content: JSON!
+            ) {
+              createNodeSheet(
+                _id: $id
+                sketchName: $sketchName
+                saved: $saved
+                duplicated: $duplicated
+                content: $content
+              ) {
+                data {
+                  _id
+                }
+              }
+            }
+          `,
+          variables: {
+            id: tabToSave.id,
+            sketchName: tabToSave.sketchName,
+            saved: tabToSave.saved,
+            duplicated: tabToSave.duplicated,
+            content: this.editor.save(),
+          },
+          update: (store, { data: { createNodeSheet } }) => {
+            console.log(createNodeSheet);
+          },
+        })
+        .then((data) => {
+          // Result
+          console.log(data);
+          this.$alertFeedback('Arquivo salvo com sucesso', 'success');
+          this.isLoading = false;
+          this.setSaved({ index: this.selectedTabIndex, value: true });
+        })
+        .catch((error) => {
+          // Error
+          this.isLoading = false;
+          console.error('Não foi possível salvar o arquivo \n', error);
+          this.$alertFeedback(
+            'Não foi possível salvar o arquivo, erro ao conectar com servidor',
+            'error',
+            error,
+          );
+
+          // We restore the initial user input
+        });
     },
 
     download() {
@@ -156,7 +258,7 @@ export default {
       download(
         JSON.stringify(this.editor.save()),
         `${fileName}.oms`,
-        'text/plain',
+        'text/plain'
       );
     },
 

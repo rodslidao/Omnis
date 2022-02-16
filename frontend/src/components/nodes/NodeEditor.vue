@@ -6,6 +6,7 @@
       :editor="editor"
       class="action-buttons"
     ></ActionMenuForNodes>
+    {{ checkSavedStatus }}
   </div>
 </template>
 
@@ -28,6 +29,7 @@ import { InterfaceTypePlugin } from '@baklavajs/plugin-interface-types';
 import ActionMenuForNodes from '@/components/nodes/ActionMenuForNodes.vue';
 import VideoStreamingOption from '@/components/nodes/options/VideoStreamingOption.vue';
 import { mapActions, mapState } from 'vuex';
+import node from '../../store/modules/node';
 
 export default {
   // mixins: [mixins],
@@ -102,6 +104,14 @@ export default {
       contentDefault: (state) => state.contentDefault,
     }),
 
+    checkSavedStatus() {
+      console.log('checkSavedStatus');
+      // if (this.tabList !== []) {
+      //   this.setSaved({ index: this.selectedTabIndex, value: false });
+      // }
+      return 0;
+    },
+
     // updateContentDefault() {
     //   console.log('sdfsdfsdfsdfsd');
     //   this.editor.load(this.tabList[this.selectedTabIndex].content);
@@ -115,7 +125,6 @@ export default {
         this.updateNodeContent({
           content: this.editor.save(),
           index: oldValue,
-
         });
 
         console.log('newValue', newValue);
@@ -138,7 +147,11 @@ export default {
   },
 
   methods: {
-    ...mapActions('node', ['updateNodeContent', 'updateContentDefault']),
+    ...mapActions('node', [
+      'updateNodeContent',
+      'updateContentDefault',
+      'setSaved',
+    ]),
 
     addNodeWithCoordinates(nodeType, x, y) {
       const n = new nodeType();
