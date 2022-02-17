@@ -6,13 +6,11 @@
       :editor="editor"
       class="action-buttons"
     ></ActionMenuForNodes>
-    {{ checkSavedStatus }}
   </div>
 </template>
 
 <script>
 //import ProgressStatus from "../components/ProgressStatus";
-import { mapMutations } from 'vuex';
 // import { mapState, mapMutations } from "vuex";
 // import { actions } from "../store/index";
 
@@ -70,7 +68,7 @@ export default {
     this.editor.registerNodeType('VariableNode', VariableNode);
     this.viewPlugin.registerOption(
       'VideoStreamingOption',
-      VideoStreamingOption
+      VideoStreamingOption,
     );
 
     // add some nodes so the screen is not empty on startup
@@ -87,7 +85,7 @@ export default {
 
     this.engine.calculate();
 
-    //tipos de interfaces
+    // tipos de interfaces
     this.editor.use(this.intfTypePlugin);
     this.intfTypePlugin.addType('string', '#8cff00');
     this.intfTypePlugin.addType('array', '#00bfff');

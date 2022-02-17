@@ -44,15 +44,21 @@
           transition="slide-x-transition"
           v-model="showMenu"
           bottom
+          dark
           right
           :position-y="y"
           :position-x="x"
         >
           <v-list>
-            <v-list-item v-for="(item, index) in items" :key="index" link>
+            <v-list-item
+              class="list-item"
+              v-for="(item, index) in items"
+              :key="index"
+              link
+            >
               <v-list-item-title
                 @click="item.function(contextMenuSelectedTabIndex)"
-                ><v-icon class="mr-5">mdi-{{ item.btnIcon }}</v-icon
+                ><v-icon small class="mr-5">mdi-{{ item.btnIcon }}</v-icon
                 >{{ item.title }}
               </v-list-item-title>
             </v-list-item>
@@ -112,7 +118,6 @@ export default {
           btnIcon: 'form-textbox',
           function: this.setRenamingIndex,
         },
-        { title: 'Remove', btnIcon: 'delete-outline', function: this.add },
       ],
     };
   },
@@ -125,13 +130,6 @@ export default {
       contentDefault: (state) => state.contentDefault,
       renamingIndex: (state) => state.renamingIndex,
     }),
-  },
-
-  watch: {
-    // length(val) {
-    //   this.tab = val - 1;
-    // },
-  
   },
 
   methods: {
@@ -155,10 +153,6 @@ export default {
       this.$nextTick(() => {
         this.showMenu = true;
       });
-    },
-
-    async startProcess() {
-      this.play();
     },
 
     async apollo() {
@@ -200,13 +194,10 @@ export default {
 
     close(index) {
       if (this.tabList.length > 1) {
-        console.log('aba fechada, index: ', index);
         this.removeTabByIndex(index);
-        console.log('index: ', this.selectedTabIndex);
         if (index <= this.selectedTabIndex) {
           // this.tabList.length(0);
           this.updateSelectedTab(this.selectedTabIndex - 1);
-          console.log('index22: ', this.selectedTabIndex);
         }
       }
     },
@@ -266,10 +257,15 @@ export default {
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .content {
   width: 100%;
 }
+
+.list-item {
+  min-height: 37px;
+}
+
 .add-tab {
   align-self: center;
   margin: 9px;

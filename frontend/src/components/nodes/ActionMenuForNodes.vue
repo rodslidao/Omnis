@@ -21,7 +21,7 @@
         class="d-flex flex-end"
       >
         <template v-slot:activator>
-          <v-btn :loading="isLoading" color="primary" fab dark>
+          <v-btn color="primary" fab dark>
             <v-icon v-if="fab"> mdi-close </v-icon>
             <v-icon dark v-else> mdi-dots-vertical </v-icon>
           </v-btn>
@@ -49,6 +49,13 @@
         </v-btn>
       </v-speed-dial>
     </div>
+      <v-progress-linear
+      v-if="isLoading"
+      fixed
+      indeterminate
+      color="cyan"
+      bottom
+    ></v-progress-linear>
   </div>
 </template>
 
@@ -112,12 +119,142 @@ export default {
       // this.$alertFeedback('George', 'info');
     },
 
-    stop() {
-      // this.sendMessage({ command: 'process_stop', args: this.editor.save() });
+    async play() {
+      console.log('play');
+      this.isLoading = true;
+
+      const tabToSave = this.tabList[this.selectedTabIndex];
+
+      await this.$apollo
+        .mutate({
+          mutation: gql`
+            mutation play($id: ID!) {
+              loadConfig(_id: $id) {
+              }
+              startProcess {
+                data {
+                  error
+                }
+              }
+            }
+          `,
+          variables: {
+            id: tabToSave.id,
+          },
+          update: (store, { data: { loadConfig } }) => {
+            console.log(loadConfig.data);
+          },
+        })
+
+        .then((data) => {
+          // Result
+          console.log(data);
+          this.$alertFeedback('Programa está sendo executado', 'success');
+          this.isLoading = false;
+          // this.setSaved(this.selectedTabIndex);
+        })
+
+        .catch((error) => {
+          // Error
+          this.isLoading = false;
+          console.error('Não foi possível rodar o programa \n', error);
+          this.$alertFeedback(
+            'Não foi possível rodar programa',
+            'error',
+            error
+          );
+
+          // We restore the initial user input
+        });
     },
 
-    pause() {
-      // this.sendMessage({ command: 'process_pause', args: this.editor.save() });
+    async stop() {
+      console.log('stop');
+      this.isLoading = true;
+      const tabToSave = this.tabList[this.selectedTabIndex];
+
+      await this.$apollo
+        .mutate({
+          mutation: gql`
+            mutation stopProcess() {
+              stopProcess() {
+                data {
+                  _id
+                }num quer
+              }
+            }
+          `,
+          update: (store, { data: { loadConfig } }) => {
+            console.log(loadConfig.data);
+          },
+        })
+
+        .then((data) => {
+          // Result
+          console.log(data);
+          this.$alertFeedback('A rotina foi parada', 'success');
+          this.isLoading = false;
+          // this.setSaved(this.selectedTabIndex);
+        })
+
+        .catch((error) => {
+          // Error
+          this.isLoading = false;
+          console.error('Não foi possível salvar o arquivo \n', error);
+          this.$alertFeedback(
+            'Não foi possível parar a rotina',
+            'error',
+            error
+          );
+
+          // We restore the initial user input
+        });
+    },
+
+    async pause() {
+      console.log('pause');
+      const tabToSave = this.tabList[this.selectedTabIndex];
+      this.isLoading = true;
+
+      await this.$apollo
+        .mutate({
+          mutation: gql`
+            mutation pauseProcess() {
+              pauseProcess() {
+                data {
+                  _id
+                }
+              }
+            }
+          `,
+          variables: {
+            id: tabToSave.id,
+          },
+          update: (store, { data: { loadConfig } }) => {
+            console.log(loadConfig.data);
+          },
+        })
+
+        .then((data) => {
+          // Result
+          console.log(data);
+          this.$alertFeedback('Programa está sendo executado', 'success');
+          this.isLoading = false;
+          // this.setSaved(this.selectedTabIndex);
+        })
+
+        .catch((error) => {
+          // Error
+          this.isLoading = false;
+          console.error('Não foi possível salvar o arquivo \n', error);
+          this.$alertFeedback(
+            'Não foi possível rodar programa',
+            'error',
+            error
+          );
+
+          // We restore the initial user input
+        });
     },
 
     findFunction(name) {
@@ -134,6 +271,7 @@ export default {
 
     async update() {
       console.log('update');
+      this.isLoading = true;
       const tabToSave = this.tabList[this.selectedTabIndex];
 
       await this.$apollo
@@ -177,7 +315,7 @@ export default {
           this.$alertFeedback(
             'Não foi possível salvar o arquivo, erro ao conectar com servidor',
             'error',
-            error,
+            error
           );
 
           // We restore the initial user input
@@ -239,7 +377,7 @@ export default {
           this.$alertFeedback(
             'Não foi possível salvar o arquivo, erro ao conectar com servidor',
             'error',
-            error,
+            error
           );
 
           // We restore the initial user input
