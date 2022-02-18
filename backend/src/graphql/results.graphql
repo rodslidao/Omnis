@@ -48,3 +48,9 @@ type AlertResult {
   buttonText: String
   buttonAction: String
 }
+
+type NodeInfoResult {
+  status: Boolean!
+  error:[String]
+  data: NodeInfo
+}

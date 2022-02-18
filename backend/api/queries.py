@@ -1,6 +1,7 @@
 from .models import *
 from ariadne import QueryType
 from .store import queues, alerts
+from src.nodes.node_registry import NodeRegistry
 query = QueryType()
 
 payload = {"success": False, "errors": None}
@@ -34,3 +35,11 @@ def resolve_getSerials(obj, info, **kwargs):
 @query.field("getCameras")
 def resolve_getCameras(obj, info, **kwargs):
     return {"satatus": True,  "data": CameraManager.get()}
+
+
+@query.field("getNodeInfo")
+def resolve_getNodeInfo(obj, info, node_type):
+    """Get a Node by id and return it like a payload"""
+    result = (NodeRegistry.getNodeClassByName(node_type)).get_info()
+    print(result)
+    return {'status': True, 'data': result}

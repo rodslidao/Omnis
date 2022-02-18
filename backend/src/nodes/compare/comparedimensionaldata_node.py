@@ -4,7 +4,7 @@ from src.nodes.compare.compare_obj import data_comparatives
 
 NODE_TYPE = "COMPARATIVE_DIMENSIONAL_DATA"
 
-class CompareNode(BaseNode):
+class ComparedimensionaldataNode(BaseNode):
     """
     Node to execute logical operations between values.
     """

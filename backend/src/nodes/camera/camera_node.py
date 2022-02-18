@@ -1,3 +1,4 @@
+from src.manager.camera_manager import CameraManager
 from src.nodes.node_manager import NodeManager
 from src.nodes.base_node import BaseNode
 from src.nodes.camera.custom_camera import camera
@@ -37,3 +38,12 @@ class CameraNode(BaseNode):
 
     def reset(self):
         self.stop_event = self.execute()
+
+    @staticmethod
+    def get_info():
+        info  = {}
+        print(CameraManager.get())
+        info["options"] =  {
+            "hardware": CameraManager.get()
+        }
+        return info

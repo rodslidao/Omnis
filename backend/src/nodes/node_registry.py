@@ -51,5 +51,5 @@ for _dir in list(
 for mod in package_nodes:
     mod["package_name"] = importlib.import_module(mod["package_name"], __package__)
     nodeRegistry.append(
-        RegEntry(mod["class_name"][:-4].lower(), getattr(mod["package_name"], mod["class_name"]))
+        RegEntry(getattr(mod["package_name"], 'NODE_TYPE'), getattr(mod["package_name"], mod["class_name"]))
     )

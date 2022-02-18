@@ -87,7 +87,7 @@ class camera:
         self.properties = {}
         if self.stream.isOpened():
             (self.grabbed, self.frame) = self.stream.read()
-            CameraManager.add(self)
+        CameraManager.add(self)
 
     def set_property(self, name, value):
         self.stream.set(getattr(cv2, name) if isinstance(name, str) else name, value)
@@ -163,7 +163,7 @@ class camera:
         Returns a dictionary representation of the camera.
         """
         return {
-            "_id": self._id,
+            "_id": str(self._id),
             "src": self.src,
             "name": self.name,
             "properties": self.properties,
