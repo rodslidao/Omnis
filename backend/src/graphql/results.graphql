@@ -48,3 +48,9 @@ type AlertResult {
   buttonText: String
   buttonAction: String
 }
+
+type SketchListResult {
+  status:Boolean!
+  error:[String]
+  data: [NodeSheet]
+}

@@ -75,27 +75,33 @@ class Process:
 
 
 class NodeSheet:
-    def createNodeSheet(self, **kwargs):
+    def createNodeSheet(self, _id, **kwargs):
         """Create a new NodeSheet object"""
-        dbo.insert_one("NodeSheets", **kwargs)
-        return self.getNodeSheetById(_id)
+        dbo.insert_one("NodeSheets", {'_id': ObjectId(_id), **kwargs})
+        return self.getNodeSheetById(kwargs.get("_id"))
 
-    def getNodeSheetById(self, id):
+    def getNodeSheetById(self, _id):
         """Get a NodeSheet by id"""
-        self.NodeSheet = dbo.find_one("NodeSheets", {"_id": ObjectId(id)})
+        self.NodeSheet = dbo.find_one("NodeSheets", {"_id": ObjectId(_id)})
         return self._format()
 
-    def updateNodeSheet(self, id, **kwargs):
+    def updateNodeSheet(self, _id, **kwargs):
+        # kwargs["_id"] = ObjectId(kwargs["_id"])
         """Update a NodeSheet by id"""
-        dbo.update_one("NodeSheets", {"_id": ObjectId(id)}, {"$set": kwargs})
-        return self.getNodeSheetById(id)
+        print("updatating", kwargs)
+        dbo.update_one("NodeSheets", {"_id": ObjectId(_id)}, {"$set": kwargs})
+        return self.getNodeSheetById(_id)
 
-    def deleteNodeSheet(self, id):
+    def deleteNodeSheet(self, _id):
+        # kwargs["_id"] = ObjectId(kwargs["_id"])
         """Delete a NodeSheet by id"""
-        deleted_sheet = self.getNodeSheetById(id)
-        dbo.delete_one("NodeSheets", {"_id": ObjectId(id)})
+        deleted_sheet = self.getNodeSheetById(_id)
+        dbo.delete_one("NodeSheets", {"_id": ObjectId(_id)})
         return deleted_sheet
 
+    def getSketchList(self):
+        return dbo.find_many("NodeSheets",  data={'content':0})
+        
     def _format(self):
         """Format the NodeSheet object"""
         return self.NodeSheet

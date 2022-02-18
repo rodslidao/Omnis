@@ -100,8 +100,8 @@ class MongoOBJ:
         return self.dbo[collection_name].find_one(query)
 
     @log_error
-    def find_many(self, collection_name, query={}):
-        return self.dbo[collection_name].find(query)
+    def find_many(self, collection_name, query={}, data={}):
+        return self.dbo[collection_name].find(query, data)
 
     @log_error
     def update_one(self, collection_name, query, data):
@@ -130,6 +130,10 @@ class MongoOBJ:
     @log_error
     def find_one_and_replace(self, collection_name, query, data):
         return self.dbo[collection_name].find_one_and_replace(query, data)
+    
+    @log_error
+    def distinct(self, collection_name, query="_id"):
+        return self.dbo[collection_name].distinct(query)
 
     @log_error
     def collection2csv(self, collection):

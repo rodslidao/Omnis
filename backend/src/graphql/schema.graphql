@@ -9,8 +9,8 @@ schema {
 }
 
 type Mutation {
-  createNodeSheet(id: ID!,  sketchName: String, saved: Boolean, duplicated: Boolean, content: JSON!): NodeSheetResult!
-  updateNodeSheet(id: ID!, input: NodeSheetInput): NodeSheetResult
+  createNodeSheet(_id: ID!,  sketchName: String, saved: Boolean, duplicated: Boolean, content: JSON!): NodeSheetResult!
+  updateNodeSheet(_id: ID!, sketchName:String, content: JSON): NodeSheetResult
   deleteNodeSheet(id: ID!): NodeSheetResult
 
   startProcess: ProcessResult!
@@ -41,7 +41,7 @@ type Mutation {
 
 type Query {
   getNodeSheet(id: ID!): NodeSheetResult!
-
+  getSketchList:SketchListResult!
   getCamera(id: ID!): CameraResult!
   getCameras: CamerasResult!
 

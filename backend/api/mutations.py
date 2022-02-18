@@ -17,18 +17,18 @@ mutation = MutationType()
 
 @defaultException
 @mutation.field("createNodeSheet")
-def createNodeSheet_resolver(obj, info, **kwargs):
+def createNodeSheet_resolver(obj, info, _id, **kwargs):
     """Create a new NodeSheet object and return it like a payload"""
     print(kwargs)
-    returns = NodeSheet().createNodeSheet(**kwargs)
+    returns = NodeSheet().createNodeSheet(_id, **kwargs)
     return {"data": returns}
 
 
 @defaultException
 @mutation.field("updateNodeSheet")
-def updateNodeSheet_resolver(obj, info, **kwargs):
+def updateNodeSheet_resolver(obj, info, _id, **kwargs):
     """Update a NodeSheet by id and return it like a payload"""
-    returns = NodeSheet().updateNodeSheet(kwargs.get("id"), **kwargs.get("input", {}))
+    returns = NodeSheet().updateNodeSheet(_id, **kwargs)
     return {"data": returns}
 
 
