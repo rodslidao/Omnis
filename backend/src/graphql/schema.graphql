@@ -42,6 +42,9 @@ type Mutation {
 type Query {
   getNodeSheet(id: ID!): NodeSheetResult!
   getSketchList:SketchListResult!
+
+  getNodeInfo(node_type: ID!): NodeInfoResult!
+
   getCamera(id: ID!): CameraResult!
   getCameras: CamerasResult!
 

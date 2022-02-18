@@ -3,19 +3,14 @@ export default {
   namespaced: true,
   state: {
     alertList: [
-      // { description: 'Meteu essa pai?', type: 'success' },
       // {
-      //   description:
-      //     'Does it decay? That is, as people read a long sentence, their reading speed increases?',
-      //   type: 'info',
-      // },
-      // {
-      //   description:
-      //     'What I would like to do is to calculate the optimal time to show each message based off of the number of characters in that message. I want users to have enough time to comfortably read the message, but not so long that the message impedes their usage of the app.?',
-      //   type: 'warning',
+      //   description: String,
+      //   type: String,
+      //   moreInfo: String,
       // },
     ],
   },
+  // link og beatiful dogs https://www.youtube.com/watch?v=dQw4w9WgXcQ
   mutations: {
     addItemList: (state, item) => {
       state.alertList.push(item);

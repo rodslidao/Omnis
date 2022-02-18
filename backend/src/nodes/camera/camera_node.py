@@ -1,3 +1,4 @@
+from src.manager.camera_manager import CameraManager
 from src.nodes.node_manager import NodeManager
 from src.nodes.base_node import BaseNode
 from src.nodes.camera.custom_camera import camera
@@ -24,13 +25,25 @@ class CameraNode(BaseNode):
     @setInterval(0.5)
     def execute(self, message=""):
         try:
-            self.onSuccess(self.camera.read())
+            self.onSuccess(self.get_frame())
         except Exception as e:
             self.camera.reset()
             self.onFailure("Cant read camera frame", pulse=True, errorMessage=str(e))
+    
+    def get_frame(self):
+        return self.camera.read()
 
     def stop(self):
         self.stop_event.set()
 
     def reset(self):
         self.stop_event = self.execute()
+
+    @staticmethod
+    def get_info():
+        info  = {}
+        print(CameraManager.get())
+        info["options"] =  {
+            "hardware": CameraManager.get()
+        }
+        return info

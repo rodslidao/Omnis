@@ -79,3 +79,10 @@ type DefaultStatus{
   status: Boolean
   error: [String]
 }
+
+type NodeInfo{
+  _id: ID
+  name: String
+  type: String
+  options: JSON
+}

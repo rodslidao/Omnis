@@ -54,3 +54,9 @@ type SketchListResult {
   error:[String]
   data: [NodeSheet]
 }
+
+type NodeInfoResult {
+  status: Boolean!
+  error:[String]
+  data: NodeInfo
+}
