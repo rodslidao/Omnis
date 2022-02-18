@@ -18,6 +18,7 @@ import { Editor } from '@baklavajs/core';
 import { ViewPlugin } from '@baklavajs/plugin-renderer-vue';
 import { OptionPlugin } from '@baklavajs/plugin-options-vue';
 import { Engine } from '@baklavajs/plugin-engine';
+
 import { MoveNode } from '@/components/nodes/MoveNode';
 import { IdentifyNode } from '@/components/nodes/IdentifyNode';
 import { DelayNode } from '@/components/nodes/DelayNode';
@@ -26,8 +27,11 @@ import { IoNode } from '@/components/nodes/IoNode';
 import { InterfaceTypePlugin } from '@baklavajs/plugin-interface-types';
 import ActionMenuForNodes from '@/components/nodes/ActionMenuForNodes.vue';
 import VideoStreamingOption from '@/components/nodes/options/VideoStreamingOption.vue';
+
 import { mapActions, mapState } from 'vuex';
-import node from '../../store/modules/node';
+
+// Custom Baklava Components
+import CustomContextMenu from '@/components/nodes/custom/CustomContextMenu.vue';
 
 export default {
   // mixins: [mixins],
@@ -38,7 +42,8 @@ export default {
     editor: new Editor(),
     viewPlugin: new ViewPlugin(),
     engine: new Engine(true),
-    intfTypePlugin: new InterfaceTypePlugin(),
+    optionPlugin: new OptionPlugin(),
+
     tablist2: 2,
   }),
 
@@ -47,14 +52,27 @@ export default {
   },
 
   created() {
-    // Register the plugins
-    // The view plugin is used for rendering the nodes
-    this.editor.use(this.viewPlugin);
-    // The option plugin provides some default option UI elements
-    this.editor.use(new OptionPlugin());
-    // The engine plugin calculates the nodes in the graph in the
-    // correct order using the "calculate" methods of the nodes
-    this.editor.use(this.engine);
+    this.init();
+
+    this.editor.events.addNode.addListener(this, () => {
+      // this.$store.node.commit("saveNodeConfig", 1);
+      this.saveNode(1);
+    });
+
+    this.editor.events.addConnection.addListener(this, () => {
+      // this.$store.commit("saveNodeConfig", 1);
+      this.saveNode(1);
+    });
+
+    this.editor.events.removeNode.addListener(this, () => {
+      // this.$store.commit("saveNodeConfig", 1);
+      this.saveNode(1);
+    });
+
+    this.editor.events.removeConnection.addListener(this, () => {
+      // this.$store.commit("saveNodeConfig", 1);
+      this.saveNode(1);
+    });
 
     // Show a minimap in the top right corner
     this.viewPlugin.enableMinimap = false;
@@ -68,7 +86,7 @@ export default {
     this.editor.registerNodeType('VariableNode', VariableNode);
     this.viewPlugin.registerOption(
       'VideoStreamingOption',
-      VideoStreamingOption,
+      VideoStreamingOption
     );
 
     // add some nodes so the screen is not empty on startup
@@ -76,17 +94,7 @@ export default {
     // const node2 = this.addNodeWithCoordinates(MoveNode, 300, 140);
     // const node3 = this.addNodeWithCoordinates(IdentifyNode, 50, 480);
 
-    this.editor
-      .addConnection
-      // node1.getInterface('Saida'),
-      // node2.getInterface('Entrada'),
-      // node3.getInterface('Entrada')
-      ();
-
-    this.engine.calculate();
-
     // tipos de interfaces
-    this.editor.use(this.intfTypePlugin);
     this.intfTypePlugin.addType('string', '#8cff00');
     this.intfTypePlugin.addType('array', '#00bfff');
     this.intfTypePlugin.addType('object', '#ff6200');
@@ -100,6 +108,7 @@ export default {
       selectedTabIndex: (state) => state.selectedTabIndex,
       tabList: (state) => state.tabList,
       contentDefault: (state) => state.contentDefault,
+      saveNode: (state) => state.saveNode,
     }),
 
     checkSavedStatus() {
@@ -115,6 +124,46 @@ export default {
     //   this.editor.load(this.tabList[this.selectedTabIndex].content);
     //   return 0;
     // },
+  },
+
+  methods: {
+    ...mapActions('node', [
+      'updateNodeContent',
+      'updateContentDefault',
+      'setSaved',
+    ]),
+
+    init() {
+      this.editor.use(this.viewPlugin);
+      this.editor.use(this.optionPlugin);
+
+      this.viewPlugin.components.contextMenu = CustomContextMenu;
+
+      const intfTypePlugin = new InterfaceTypePlugin();
+      this.editor.use(intfTypePlugin);
+
+      // Register options and nodes
+      registerOptions(this.viewPlugin);
+      registerNodes(this.editor);
+    },
+
+    addNodeWithCoordinates(nodeType, x, y) {
+      const n = new nodeType();
+      this.editor.addNode(n);
+      n.position.x = x;
+      n.position.y = y;
+      return n;
+    },
+  },
+
+  mounted() {
+    // this.$emit('nodeObject', this.editor.save());
+    // console.log("mounted");
+    // this.updateNodeEditor(this.editor);
+    if (Object.values(this.updateContentDefault).length == 0) {
+      this.updateContentDefault(this.editor.save());
+    }
+    console.log(this.contentDefault);
   },
 
   watch: {
@@ -142,32 +191,6 @@ export default {
         this.editor.load(this.tabList[newValue].content);
       },
     },
-  },
-
-  methods: {
-    ...mapActions('node', [
-      'updateNodeContent',
-      'updateContentDefault',
-      'setSaved',
-    ]),
-
-    addNodeWithCoordinates(nodeType, x, y) {
-      const n = new nodeType();
-      this.editor.addNode(n);
-      n.position.x = x;
-      n.position.y = y;
-      return n;
-    },
-  },
-
-  mounted() {
-    // this.$emit('nodeObject', this.editor.save());
-    // console.log("mounted");
-    // this.updateNodeEditor(this.editor);
-    if (Object.values(this.updateContentDefault).length == 0) {
-      this.updateContentDefault(this.editor.save());
-    }
-    console.log(this.contentDefault);
   },
 };
 </script>

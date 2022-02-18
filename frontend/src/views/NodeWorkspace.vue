@@ -1,7 +1,7 @@
 <template>
   <div class="containerNode">
     <!-- <v-tabs-items v-model="selectedTab">
-      <v-tab-item v-for="item in tabList" :key="item.sketchName"> </v-tab-item>
+      <v-tab-item v-for="item in tabList" :key="item.name"> </v-tab-item>
     </v-tabs-items> -->
 
     <NodeEditor

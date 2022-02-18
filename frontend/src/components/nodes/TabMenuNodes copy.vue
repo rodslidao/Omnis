@@ -19,16 +19,16 @@
             show-arrows
             dark
           >
-            <v-tab v-for="(item, index) in tabList" :key="item.sketchName">
+            <v-tab v-for="(item, index) in tabList" :key="item.name">
               <v-icon
                 small
                 dark
                 color="green accent-3"
-                v-if="sketchNameRunning == item.sketchName"
+                v-if="nameRunning == item.name"
               >
                 mdi-play
               </v-icon>
-              {{ +!item.saved ? item.sketchName + '*' : item.sketchName }}
+              {{ +!item.saved ? item.name + '*' : item.name }}
               <v-btn
                 v-if="tabList.length > 1"
                 depressed
@@ -48,7 +48,7 @@
       </div>
     </div>
     <v-tabs-items v-model="tab">
-      <v-tab-item v-for="item in tabList" :key="item.sketchName">
+      <v-tab-item v-for="item in tabList" :key="item.name">
         <!-- {{ item.content }} -->
         <NodeEditor class="nodeEditor"></NodeEditor>
       </v-tab-item>
@@ -72,7 +72,7 @@ export default {
       tab: null,
       actualNode: null,
       length: 0,
-      sketchNameRunning: 'One',
+      nameRunning: 'One',
       newTabCount: 1,
 
       lixo: null,
@@ -164,7 +164,7 @@ export default {
     add() {
       const idGenerated = this.generateId();
       const newTab = {
-        sketchName: `Tab ${this.newTabCount + 1}`,
+        name: `Tab ${this.newTabCount + 1}`,
         id: idGenerated,
         saved: false,
       };
