@@ -24,10 +24,13 @@ class CameraNode(BaseNode):
     @setInterval(0.5)
     def execute(self, message=""):
         try:
-            self.onSuccess(self.camera.read())
+            self.onSuccess(self.get_frame())
         except Exception as e:
             self.camera.reset()
             self.onFailure("Cant read camera frame", pulse=True, errorMessage=str(e))
+    
+    def get_frame(self):
+        return self.camera.read()
 
     def stop(self):
         self.stop_event.set()
