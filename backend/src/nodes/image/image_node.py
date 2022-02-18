@@ -27,6 +27,9 @@ class ImageNode(BaseNode):
         for prop in self.properties:
             self.on(prop, getattr(self.image, prop))
 
+    def get_frame(self):
+        return self.image()
+        
     def update_image(self, message):
         try:
             self.image = Image(image=message['payload'])

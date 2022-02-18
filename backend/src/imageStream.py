@@ -1,4 +1,4 @@
-import cv2
+from src.nodes.node_manager import NodeManager
 from starlette.responses import StreamingResponse
 from starlette.routing import Route
 from os.path import abspath, isfile
@@ -20,6 +20,23 @@ async def frameReader(request):
         
     return StreamingResponse(open(path, 'rb'), status_code, media_type="image/jpeg")
 
+async def nodeFrameGenerator(node_id):
+    fail_frame = imread(failpath)
+    while True:
+        try:
+            frame = (NodeManager().getNodeById(node_id)).get_frame()
+        except:
+            frame = fail_frame
+        encodedImage = simplejpeg.encode_jpeg(
+                    frame,
+                    colorspace="BGR"
+                )
+        yield (b"--frame\r\nContent-Type:image/jpeg\r\n\r\n" + encodedImage + b"\r\n")
+        await asyncio.sleep(0.001)
+
+async def nodeVideoFeed(request):
+    return StreamingResponse(nodeFrameGenerator(request.path_params['node_id']), media_type="multipart/x-mixed-replace; boundary=frame")
+
 async def frameGenerator(cam_id):
     cam = CameraManager.get_by_id(cam_id)
     if cam is None: img_fail = imread(failpath)
@@ -39,5 +56,6 @@ imgRoute = [
 ]
 
 videoRoute = [
+    Route("/node_frame/{node_id}", endpoint=nodeVideoFeed),
     Route("/{video_id}", endpoint=videoFeed)
 ]
