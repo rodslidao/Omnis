@@ -19,3 +19,11 @@ class class_name(BaseNode):
             self.onSuccess()
         except Exception as e:
             self.onFailure(f"{self._id} cant execute.", pulse=True, errorMessage=str(e))
+
+    @staticmethod
+    def get_info():
+        return {
+            "options": {
+                'option_name': 'option_accepted_values',
+            }
+        }

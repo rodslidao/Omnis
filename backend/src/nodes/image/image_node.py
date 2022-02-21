@@ -4,6 +4,18 @@ from src.nodes.image.image_obj import Image
 
 NODE_TYPE = "IMAGE"
 
+properties = [
+    "path", 
+    "height", 
+    "width", 
+    "size", 
+    "color_space",
+    "channels", 
+    "area", 
+    "dominant_color", 
+    "dominant_color_array", 
+    "dominant_color_range"
+]
 class ImageNode(BaseNode):
     """
     Node to manipulate an image with mos common operations.
@@ -12,27 +24,25 @@ class ImageNode(BaseNode):
     def __init__(self, name, id, options, outputConnections, inputConnections) -> None:
         super().__init__(name, NODE_TYPE, id, options, outputConnections)
         self.inputConnections = inputConnections
-        self.image = Image(options.image.get("path", './src/imgs/no_image.jpg'))
+        self.image = None #? Maybe we should use a Image object instead of None ? 
         self.properties = options.image.get("properties", [])
         NodeManager.addNode(self)
         
     def execute(self, message=""):
-        target = message["targetName"].lower()
         
-        try:
-            getattr(self, target)(message)
-        except:
-            pass
+        self.image = Image(image=message['payload'])
+        self.onSuccess(self.image)
 
         for prop in self.properties:
             self.on(prop, getattr(self.image, prop))
 
     def get_frame(self):
         return self.image()
-        
-    def update_image(self, message):
-        try:
-            self.image = Image(image=message['payload'])
-            self.onSuccess(self.image)
-        except Exception as e:
-            self.onFailure(f"{self._id} cant execute.", pulse=True, errorMessage=str(e))
+    
+    @staticmethod
+    def get_info():
+        return {
+            "options": {
+                "properties": properties
+            }
+        }

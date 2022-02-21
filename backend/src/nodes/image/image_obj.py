@@ -6,13 +6,14 @@ class Image:
     def __init__(self, path=None, image=None) -> None:
         self.path = path
         self.image = imread(path) if path else image
+        self.color_code = "BGR"
         assert self.image is not None
-        
-    def resize(self, width, height):
-        self.image = resize(self.image, (width, height))
 
     def __call__(self):
         return self.image
+
+    def color_space(self):
+        return self.color_code
 
     def path(self):
         return self.path
@@ -22,21 +23,15 @@ class Image:
 
     def width(self):
         return self.image.shape[1]
+    
+    def size(self):
+        return self.image.shape[:-1]
 
     def channels(self):
         return self.image.sheape[2] if len(self.image.shape) == 3 else 1
 
-    def pixel(self, x, y):
-        return self.image[y, x]
-
     def area(self):
         return self.width() * self.height()
-
-    def pixel_area(self, x, y, w, h):
-        return self.image[y : y + h, x : x + w]
-
-    def pixel_area_mean(self, x, y, w, h):
-        return mean(self.image[y : y + h, x : x + w])
 
     def dominant_color(self):
         a2D = self.image.reshape(-1, self.image.shape[-1])
