@@ -37,6 +37,8 @@ type Mutation {
   resetSerial(_id: ID!): SerialResult!
   communicateSerial(_id: ID!, payload:String!): SerialResult!
   setCameraProperty(_id: ID!, input: JSON): CameraResult!
+
+  syncHostTime(timestamp: Int): Boolean!
 }
 
 type Query {

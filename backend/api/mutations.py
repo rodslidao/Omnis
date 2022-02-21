@@ -1,4 +1,3 @@
-from email.policy import default
 from .models import *
 from ariadne import MutationType
 from src.nodes.alerts.alert_obj import Alert
@@ -12,6 +11,7 @@ from src.nodes.serial.custom_serial import CustomSerial
 from src.manager.camera_manager import CameraManager
 from src.manager.serial_manager import SerialManager
 
+from src.utility.system.date import set_system_date
 mutation = MutationType()
 
 
@@ -219,3 +219,13 @@ def communicateSerial_resolver(obj, info, _id, payload):
     serial.send(payload)
     print("ok")
     return {"status": True, "data": serial.to_dict()}
+
+@defaultException
+@mutation.field("syncHostTime")
+def syncHostTime_resolver(obj, info, timestamp):
+    """Sync the host time with the server time"""
+    try:
+        set_system_date(timestamp)
+    except:
+        return False
+    return True
