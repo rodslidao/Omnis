@@ -4,6 +4,8 @@ from datetime import datetime
 from .nodes.node_manager import NodeManager
 from .nodes.node_registry import NodeRegistry
 from src.manager.mongo_manager import getDb
+from api import logger, exception
+
 
 class LoadingMode(Enum):
     STARTUP = "STARTUP"
@@ -19,6 +21,7 @@ class NodeChangeType(Enum):
 
 class NodeChange(object):
     # nodeId, nodeName, type, optionsOld, optionsNew, date
+    @exception(logger)
     def __init__(self, nodeId, nodeName, nodeType, optionsOld, optionsNew, date):
         self.nodeId = nodeId
         self.nodeName = nodeName
@@ -28,6 +31,7 @@ class NodeChange(object):
         self.date = datetime.now()
 
 
+@exception(logger)
 def getNodeByInterfaceId(nodeConfig, interfaceId):
     for n in nodeConfig.get("nodes"):
         for i in n.get("interfaces"):
@@ -41,6 +45,7 @@ def getNodeByInterfaceId(nodeConfig, interfaceId):
     # return a
 
 
+@exception(logger)
 def getInterfaceByInterfaceId(nodeConfig, interfaceId):
     for id, node in enumerate(nodeConfig.get("nodes")):
         # get first occurrence of interfaceId in node.get("interfaces")
@@ -56,6 +61,7 @@ def getInterfaceByInterfaceId(nodeConfig, interfaceId):
     return None
 
 
+@exception(logger)
 def extractOptionsFromNode(node):
     node_options = node.get("options")
     options = {}
@@ -64,6 +70,7 @@ def extractOptionsFromNode(node):
     return options
 
 
+@exception(logger)
 def extractConnections(nodeConfig):
     return map(
         lambda node_con: {
@@ -94,6 +101,7 @@ def extractConnections(nodeConfig):
     )
 
 
+@exception(logger)
 def cleanNodeManager(nodeConfigs):
     configNodeIds = map(
         lambda nodeConfig: None
@@ -125,6 +133,7 @@ def cleanNodeManager(nodeConfigs):
     return len(deleted)
 
 
+@exception(logger)
 def loadConfig(NodeSheet, mode=LoadingMode):
     print("loading config")
     numberOfNodesTotal = 0
@@ -132,7 +141,7 @@ def loadConfig(NodeSheet, mode=LoadingMode):
     numberOfNodesInit = 0
     nodesChanged = []
 
-    nodeConfigs = [NodeSheet] #list(dbo.get_collection("node-configs").find({}))
+    nodeConfigs = [NodeSheet]  # list(dbo.get_collection("node-configs").find({}))
 
     for nodeConfig in nodeConfigs:
         connectionList = list(extractConnections(nodeConfig))
@@ -150,8 +159,9 @@ def loadConfig(NodeSheet, mode=LoadingMode):
             # outputConnections is a list of connections that has same node.id in value from.id
             outputConnections = list(
                 filter(
-                    lambda connection: connection.get("from").get("nodeId") == node.get("id"),
-                    connectionList
+                    lambda connection: connection.get("from").get("nodeId")
+                    == node.get("id"),
+                    connectionList,
                 )
             )
             inputConnections = list(
@@ -186,9 +196,7 @@ def loadConfig(NodeSheet, mode=LoadingMode):
                 nodeSettingsChanged = existingNode.options.get(
                     "settings"
                 ) != options.get("settings")
-                outputChanged = (
-                    existingNode.outputConnections != outputConnections
-                )
+                outputChanged = existingNode.outputConnections != outputConnections
                 nameChanged = existingNode.name != node.get("name")
 
                 # Input only relevant for existing nodes with inputConnections !== undefined
@@ -217,6 +225,7 @@ def loadConfig(NodeSheet, mode=LoadingMode):
         numberOfNodesTotal += len(nodeConfig.get("nodes"))
 
 
+@exception(logger)
 def saveNodeChange(nodeChange):
     print("saving node change")
     dbo = getDb()

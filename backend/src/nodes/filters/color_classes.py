@@ -1,12 +1,13 @@
 import math
 import colorsys
-
+from api import logger, exception
 
 class Cor:
     """
     A class to convert color to hex, rgb, hsv and cv2_hsv formats.
     """
 
+    @exception(logger)
     def __init__(self, value, mode):
         """
         :value: color value -> i.eg. (255, 255, 255) or #ffffff\n
@@ -60,9 +61,11 @@ class Cor:
                 self.rgb = self.hsv2rgb(*self.hsv)
                 self.hex = self.any2hex(self.rgb)
 
+    @exception(logger)
     def get_color(self, mode):
         return getattr(self, mode)
 
+    @exception(logger)
     def hsv2rgb(self, h, s_, v_):
         s = s_ / 100
         v = v_ / 100
@@ -83,6 +86,7 @@ class Cor:
             r, g, b = c, 0, x
         return (int((r + m) * 255), int((g + m) * 255), int((b + m) * 255))
 
+    @exception(logger)
     def rgb2hsv(self, r, g, b):
         red_percentage = r / 255
         green_percentage = g / 255
@@ -99,9 +103,11 @@ class Cor:
         print("hsv:", color_hsv)
         return color_hsv
 
+    @exception(logger)
     def any2hex(self, hsv_):
         return tuple(map(hex, hsv_))
 
+    @exception(logger)
     def hex2int(self, hex_):
         return tuple(map(lambda x: int(x, 16), hex_))
 
@@ -121,12 +127,14 @@ class ColorRange:
         get_full() returns all converted color ranges.\n
     """
 
+    @exception(logger)
     def __init__(self, name, mode, lower, upper):
         self.name = name
         self.lower = Cor(lower, mode)
         self.upper = Cor(upper, mode)
         self.mode = mode
 
+    @exception(logger)
     def get(self, mode):
         """
         return a dict with all the color ranges
@@ -136,6 +144,7 @@ class ColorRange:
             "upper": self.upper.getColor(mode),
         }
 
+    @exception(logger)
     def get_full(self):
         """
         return a dict with all the color ranges

@@ -1,13 +1,43 @@
 from .custom_serial import CustomSerial
+from api import logger, exception
 
 
 class SerialGcodeOBJ(CustomSerial):
-    def __init__(self, port=None, name=None, baudrate=9600, filters={}, bytesize=8, parity='N', stopbits=1, timeout=0.01, xonxoff=False, rtscts=False, dsrdtr=False):
-        super().__init__(port, name, baudrate, filters, bytesize, parity, stopbits, timeout, xonxoff, rtscts, dsrdtr, is_gcode=True)
+    @exception(logger)
+    def __init__(
+        self,
+        port=None,
+        name=None,
+        baudrate=9600,
+        filters={},
+        bytesize=8,
+        parity="N",
+        stopbits=1,
+        timeout=0.01,
+        xonxoff=False,
+        rtscts=False,
+        dsrdtr=False,
+    ):
+        super().__init__(
+            port,
+            name,
+            baudrate,
+            filters,
+            bytesize,
+            parity,
+            stopbits,
+            timeout,
+            xonxoff,
+            rtscts,
+            dsrdtr,
+            is_gcode=True,
+        )
         self.pause = False
         self.pause_permission = ["stop", "kill", "quick_stop", "resume"]
 
+    @exception(logger)
     def verify(function):
+        @exception(logger)
         def wrapper(self, *args, **kwargs):
             if self.pause or not self.is_open:
                 return
@@ -16,6 +46,7 @@ class SerialGcodeOBJ(CustomSerial):
         return wrapper
 
     @verify
+    @exception(logger)
     def M114(self, _type="", sequence=["X", "Y", "Z", "A", "B", "C", ":"]):
         """
         Get current position of machine.
@@ -40,6 +71,7 @@ class SerialGcodeOBJ(CustomSerial):
             return self.M114(_type, sequence)
 
     @verify
+    @exception(logger)
     def M119(self, cut=": "):
         """
         Get satus of endstops.
@@ -50,13 +82,14 @@ class SerialGcodeOBJ(CustomSerial):
             Echo = (self.send("M119", echo=True))[1:-1]
         for info in Echo:
             try:
-                pos.append(info[info.index(cut) + len(cut): len(info)])
+                pos.append(info[info.index(cut) + len(cut) : len(info)])
                 key.append(info[: info.index(cut)])
             except ValueError:
                 print("ERROR:", info)
         return dict(zip(key, pos))
 
     @verify
+    @exception(logger)
     def G28(
         self,
         axis="E",
@@ -94,6 +127,7 @@ class SerialGcodeOBJ(CustomSerial):
                 pass
 
     @verify
+    @exception(logger)
     def M_G0(self, *args, **kwargs):
         """
         Send a GCODE movement command (G0) and wait for current position to be reached.
@@ -102,12 +136,13 @@ class SerialGcodeOBJ(CustomSerial):
         cords = ""
         for pos in args:
             cords += f"{pos[0].upper()}{pos[1]} "
-        
+
         # Send machine to the coordinate string
         self.send(f"G0 {cords}")
 
         # if does not have a wait parameter, return.
-        if not kwargs.get("sync"): return
+        if not kwargs.get("sync"):
+            return
 
         # Split the atual and future position in 2 lists.
         future, real = self.M114(), self.M114("R")
@@ -122,6 +157,7 @@ class SerialGcodeOBJ(CustomSerial):
             b = [v for v in self.M114("R").values()]
 
     @verify
+    @exception(logger)
     def pause(self):
         self.pause = True
         """
@@ -130,6 +166,7 @@ class SerialGcodeOBJ(CustomSerial):
         self.send("M0")
 
     @verify
+    @exception(logger)
     def kill(self):
         self.pause = True
         """
@@ -141,6 +178,7 @@ class SerialGcodeOBJ(CustomSerial):
         self.send("M112")
 
     @verify
+    @exception(logger)
     def stop(self):
         self.pause = True
         """
@@ -150,6 +188,7 @@ class SerialGcodeOBJ(CustomSerial):
         """
         self.send("M410")
 
+    @exception(logger)
     def resume(self):
         self.pause = False
         """
@@ -157,6 +196,7 @@ class SerialGcodeOBJ(CustomSerial):
         """
         self.send("M108")
 
+    @exception(logger)
     def callPin(self, name, state, json):
         value = json[name]["command"] + (
             json[name]["values"].replace("_pin_", str(json[name]["pin"]))
@@ -164,5 +204,6 @@ class SerialGcodeOBJ(CustomSerial):
         print(value)
         self.send(value)
 
+    @exception(logger)
     def __str__(self) -> str:
         return f"[[SerialGcodeOBJ] {self.name}, {self.port}, {self.baudrate}]"

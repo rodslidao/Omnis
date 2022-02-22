@@ -1,7 +1,6 @@
 from datetime import datetime
-from ssl import AlertDescription
 from api.store import alerts
-
+from api import logger, exception
 
 AlertLevel = {"INFO": "INFO", "WARNING": "WARNING", "ERROR": "ERROR", "LOG": "LOG"}
 
@@ -27,6 +26,7 @@ class Alert:
     Add an alert object to all subscribed queue's.
     """
 
+    @exception(logger)
     def __init__(
         self,
         level,
