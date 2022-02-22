@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 from bson import ObjectId
+from api import logger, exception
 
 
 class ProductionOBJ:
@@ -34,6 +35,7 @@ class ProductionOBJ:
 
     """
 
+    @exception(logger)
     def __init__(self, expire_delay={"minutes": 0.5}) -> None:
         self.process_seconds = None
         self.date = datetime.utcnow()
@@ -41,12 +43,14 @@ class ProductionOBJ:
         self.st = datetime.utcnow()
         self.delay = expire_delay
 
+    @exception(logger)
     def start(self):
         """
         Overwrite 'createAt' with actual utc timestamp.
         """
         self.st = datetime.utcnow()
 
+    @exception(logger)
     def finish(self, model=None, status=False):
         """
         Calculate: 'process_seconds' and 'expireAt'.
@@ -58,6 +62,7 @@ class ProductionOBJ:
         self.expire = self.date + timedelta(**self.delay)
         return self()
 
+    @exception(logger)
     def __call__(self):
         return {
             "_id": self._id,

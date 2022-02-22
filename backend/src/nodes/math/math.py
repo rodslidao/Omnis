@@ -1,5 +1,5 @@
 import math
-
+from api import logger, exception
 _sum = lambda x, y: x + y
 _sub = lambda x, y: x - y
 _mul = lambda x, y: x * y
@@ -38,6 +38,7 @@ calcs = {
 }
 
 
+@exception(logger)
 def calculate(x, op, y=None):
     match x, y:
         case None, None:
@@ -49,6 +50,7 @@ def calculate(x, op, y=None):
         case _, _:
             return calcs[op](x, y)
 
+@exception(logger)
 def resolve_exression(expression):
     for k in range(0, len(expression), 2):
         if isinstance(expression[k], list):
