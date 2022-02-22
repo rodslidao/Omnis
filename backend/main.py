@@ -48,11 +48,10 @@ try:
     ]
 
     app = Starlette(debug=True, routes=routes)
-    app.logger = logger
     app.mount(
         "/",
         CORSMiddleware(
-            GraphQL(schema, debug=True),
+            GraphQL(schema, debug=True, logger=logger),
             allow_origins=["*"],
             allow_methods=["*"],
             allow_headers=["*"],
