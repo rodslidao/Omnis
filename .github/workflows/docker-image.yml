@@ -1,0 +1,28 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ Desenvolvimento ]
+  pull_request:
+    branches: [ Desenvolvimento ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: docker login
+      env:
+        DOCKER_USER: ${{secrets.DOCKER_OMNIS_USER}}
+        DOCKER_PASSWORD: ${{secrets.DOCKER_OMNIS_PASSWORD}}
+    - name: Build BackEnd
+      run: docker build . -t omnis/backend:$(date +%s) -f ../../backend/Dockerfile
+    - name: Push BackEnd
+      run: docker push ${{secrets.DOCKER_OMNIS_USER}}/release
+    - name: Build FrontEnd
+      run: docker build . -t omnis/frontend:$(date +%s) -f ../../backend/Dockerfile
+    - name: Push FrontEnd
+      run: docker push ${{secrets.DOCKER_OMNIS_USER}}/release
