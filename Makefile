@@ -1,11 +1,11 @@
 include .env
 .PHONY: up
 up:
-	docker-compose up -d --build
+	docker-compose -f ./docker-compose.yml -f ./elasticstack/elastic-compose.yml up -d --build
 
 .PHONY: down
 down:
-	docker-compose down
+	docker-compose -f ./docker-compose.yml -f ./elasticstack/elastic-compose.yml down
 
 .PHONY: logs
 logs:
