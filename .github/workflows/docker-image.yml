@@ -32,7 +32,6 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
-          context: .
           push: false
           tags: ${{ secrets.DOCKER_OMNIS_USER }}/releases:latest
           cache-from: type=local,src=/tmp/.buildx-cache
