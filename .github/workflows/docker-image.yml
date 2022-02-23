@@ -25,7 +25,3 @@ jobs:
       run: docker build . -t omnis/backend:$(date +%s) -f ./backend/Dockerfile
     - name: Push BackEnd
       run: docker push ${{secrets.DOCKER_OMNIS_USER}}/release
-    - name: Build FrontEnd
-      run: docker build . -t omnis/frontend:$(date +%s) -f ./frontend/Dockerfile
-    - name: Push FrontEnd
-      run: docker push ${{secrets.DOCKER_OMNIS_USER}}/releases
