@@ -1,0 +1,37 @@
+input NodeSheetInput {
+  name: String!
+}
+
+input CameraInput {
+  src: Int!
+  name: String
+}
+
+input SerialInput{
+  baudrate:Int
+  bytesize:Int
+  description:Int
+  device:Int
+  dsrdtr:Boolean
+  is_gcode:Boolean
+  manufacturer:Int
+  parity:String
+  pid:Int
+  port:String
+  rtscts:Boolean
+  serial_number:Int
+  stopbits:Int
+  subsystem:Int
+  timeout:Int
+  vid:Int
+  xonxoff:Boolean
+}
+
+input AlertInput {
+  level: String!
+  title: String!
+  description: String!
+  how2solve: String
+  buttonText: String
+  buttonAction: String
+}

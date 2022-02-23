@@ -9,7 +9,7 @@ from cv2 import (
 from cv2 import (
     findContours,
     boundingRect,
-    countourArea,
+    contourArea,
     arcLength,
     boxPoints,
     minAreaRect,
@@ -20,6 +20,7 @@ from cv2 import (
 
 from numpy import int0
 from bson.objectid import ObjectId
+from api import logger, exception
 
 # Map of modes to use for the contour retrieval
 modes = {
@@ -41,6 +42,29 @@ methods = {
 
 # class that represent a dimensional object
 class dimensional_data(object):
+    """
+    Class to represent all parameters of a contour.
+
+    get(key) -> get the value of the key.
+    set(key, value) -> set the value of the key.
+
+    Instante() -> return a dict of the object.
+
+    Properties:
+    \t _id: ObjectId()\n
+    \t area: area of the contour\n
+    \t perimeter: perimeter of the contour\n
+    \t diameter: diameter of the contour\n
+    \t AB: distance between the top left vertex and the to right vertex\n
+    \t AC: distance between the top left vertex and the bottom right vertex\n
+    \t AD: distance between the top left vertex and the bottom left vertex\n
+    \t center: center of the contour\n
+    \t vertices: vertices of the contour in coordinates (x, y)\n
+    \t box: box of the contour in coordinates (x, y, width, height)\n
+
+    """
+
+    @exception(logger)
     def __init__(
         self,
         area=None,
@@ -64,18 +88,41 @@ class dimensional_data(object):
         self.vertices = vertices
         self.box = box
 
+    @exception(logger)
     def get(self, key):
         return getattr(self, key)
 
+    @exception(logger)
     def set(self, key, value):
         setattr(self, key, value)
 
+    @exception(logger)
     def __call__(self):
         return vars(self)
 
 
 # Function to get the contours of an image
+@exception(logger)
 def identifyObjects(image, mode="RETR_TREE", method="CHAIN_APPROX_SIMPLE", **parm):
+
+    """
+    :image: image to get the contours from\n
+    :mode: mode to use for the contour retrieval\n
+    :method: method to use for the contour approximation\n
+    :parm: additional parameters to pass to the contour retrieval\n
+    :returns: a list of contours\n
+    \n
+    Note: 'parms' need be in the pattern of:\n
+        {\n
+            parameter: {\n
+                min: value,\n
+                max: value\n
+            }\n
+        }\n
+    \n
+    \tAccepted paramters are: [area, radius, diamter, perimeter, vertices, width, height].
+    """
+
     # Define the mode, and method to use for the contour retrieval
     md = modes.get(mode, RETR_TREE)
     mt = methods.get(method, CHAIN_APPROX_SIMPLE)
@@ -84,6 +131,7 @@ def identifyObjects(image, mode="RETR_TREE", method="CHAIN_APPROX_SIMPLE", **par
     contours, hierarchy = findContours(image, md, mt)
 
     # function tha verify if some var need to be tested, and then test it
+    @exception(logger)
     def verify(var, name):
         var_d = parm.get(name, False)
         if not var_d:
@@ -98,7 +146,7 @@ def identifyObjects(image, mode="RETR_TREE", method="CHAIN_APPROX_SIMPLE", **par
         hierarchy = component[1]
 
         # calculate area, and reject contours that are too small or too large
-        area = countourArea(contour)
+        area = contourArea(contour)
         if not verify(area, "area"):
             continue
 

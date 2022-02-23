@@ -1,0 +1,66 @@
+scalar JSON
+scalar Decimal
+scalar Upload
+
+schema {
+  mutation: Mutation
+  query: Query
+  subscription: Subscription
+}
+
+type Mutation {
+  createNodeSheet(_id: ID!,  sketchName: String, saved: Boolean, duplicated: Boolean, content: JSON!): NodeSheetResult!
+  updateNodeSheet(_id: ID!, sketchName:String, content: JSON): NodeSheetResult
+  deleteNodeSheet(id: ID!): NodeSheetResult
+
+  startProcess: ProcessResult!
+  stopProcess: ProcessResult!
+  resumeProcess: ProcessResult!
+  pauseProcess: ProcessResult!
+
+  loadConfig(_id: ID!): Boolean!
+  getLoadedConfig: ID!
+
+  createAlert(input: AlertInput!): AlertResult!
+
+  uploadFile(file: Upload!): FileResult!
+  uploadPhoto(photo: Upload!): Photo!
+
+  createCamera(input: CameraInput!): CameraResult!
+  startCamera(_id: ID!): CameraResult!
+  stopCamera(_id: ID!): CameraResult!
+  resetCamera(_id: ID!): CameraResult!
+
+  createSerial(input: JSON): SerialResult!
+  startSerial(_id: ID!): SerialResult!
+  stopSerial(_id: ID!): SerialResult!
+  resetSerial(_id: ID!): SerialResult!
+  communicateSerial(_id: ID!, payload:String!): SerialResult!
+  setCameraProperty(_id: ID!, input: JSON): CameraResult!
+
+  syncHostTime(timestamp: Int): Boolean!
+}
+
+type Query {
+  getNodeSheet(id: ID!): NodeSheetResult!
+  getSketchList:SketchListResult!
+
+  getNodeInfo(node_type: ID!): NodeInfoResult!
+
+  getCamera(id: ID!): CameraResult!
+  getCameras: CamerasResult!
+
+  getSerial(id: ID!): SerialResult!
+  getSerials: SerialsResult!
+
+  getProcess: ProcessResult!
+
+  updateAlerts: DefaultStatus
+  allPhotos: [Photo]
+}
+
+type Subscription {
+  alerts: AlertResult
+  cameras: Camera
+  serials: Serial
+}

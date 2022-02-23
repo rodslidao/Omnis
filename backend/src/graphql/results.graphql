@@ -1,0 +1,62 @@
+type CameraResult { 
+  status:Boolean!
+  error:[String]
+  data: Camera
+}
+
+type CamerasResult {
+  status:Boolean!
+  error:[String]
+  data: [Camera]
+}
+
+type SerialResult{
+  status:Boolean!
+  error:[String]
+  data: Serial
+}
+
+type SerialsResult{
+  status:Boolean!
+  error:[String]
+  data: [Serial]
+}
+
+type FileResult {
+  status:Boolean!
+  error:[String]
+}
+
+type NodeSheetResult{
+  status:Boolean!
+  error:[String]
+  data: NodeSheet
+}
+
+type ProcessResult{
+  status:Boolean!
+  error:[String]
+  data: Process
+}
+
+type AlertResult {
+  level: String
+  title: String
+  date: Float
+  description: String
+  how2solve: String
+  buttonText: String
+  buttonAction: String
+}
+
+type SketchListResult {
+  status:Boolean!
+  error:[String]
+  data: [NodeSheet]
+}
+
+type NodeInfoResult {
+  status: Boolean!
+  error:[String]
+  data: NodeInfo
+}

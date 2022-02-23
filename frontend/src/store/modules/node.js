@@ -33,7 +33,7 @@ export default {
 
   getters: {
     /**
-     * access counter in state from the parameter
+     * access counter in state from the parameterr
      */
 
     // eslint-disable-next-line max-len
@@ -69,6 +69,7 @@ export default {
       const newTab = state.tabList[indexOfNewTab];
       newTab.sketchName = `${contextTab.sketchName} - Cópia`;
       // newTab.baklavaEditor = contextTab.baklavaEditor;
+      // state.selectedTabIndex = indexOfNewTab;
     },
 
     removeTabById: (state, id) => {
@@ -117,6 +118,11 @@ export default {
 
     setSketchName: (state, payload) => {
       state.tabList[payload.index].sketchName = payload.sketchName;
+    },
+
+    setSaved: (state, { index, value }) => {
+      state.tabList[index].saved = value;
+      console.log(state.tabList[index].saved);
     },
 
     asyncIncrement: (state, incrementalObject) => {
@@ -173,6 +179,9 @@ export default {
     },
     setSketchName({ commit }, payload) {
       commit('setSketchName', payload);
+    },
+    setSaved({ commit }, payload) {
+      commit('setSaved', payload);
     },
 
     /**

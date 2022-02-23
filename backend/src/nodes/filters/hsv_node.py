@@ -1,13 +1,7 @@
-if __package__ is None:
-    import sys
-    from os import path
-
-    sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
-
 from src.nodes.node_manager import NodeManager
 from src.nodes.base_node import BaseNode
-from color_classes import ColorRange
-
+from .color_classes import ColorRange
+from api import logger, exception
 
 from cv2 import (
     inRange,
@@ -23,7 +17,16 @@ from numpy import array, ones, uint8
 NODE_TYPE = "HSV"
 
 
-class HSVMaskNode(BaseNode):
+class HsvNode(BaseNode):
+    """
+    HsvNode is a class to convert an image to HSV color space and filter it by a color range.
+
+    Signals ->
+        "HSV Mask" -> returns the filtered color range in HSV color space.
+        "Better HSV" -> returns the same at above but with an MorphologyEx applied to remove noise pixels.
+    """
+
+    @exception(logger)
     def __init__(self, name, type, id, options, outputConnections) -> None:
         super().__init__(name, type, id, options, outputConnections)
         self.lower = options["lower"]["value"]
@@ -36,6 +39,7 @@ class HSVMaskNode(BaseNode):
         ).get("cv2_hsv")
         NodeManager.addNode(self)
 
+    @exception(logger)
     def execute(self, message):
         try:
             hsv_mask = inRange(

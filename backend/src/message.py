@@ -1,11 +1,8 @@
-if __package__ is None:
-    import sys
-    from os import path
-
-    sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
+from api import logger, exception
 
 
 class Message:
+    @exception(logger)
     def __init__(
         self,
         sourceId,
@@ -25,5 +22,7 @@ class Message:
         self.targetNodeId = targetNodeId
         self.payload = payload
         self.additional = additional
+
+    @exception(logger)
     def __str__(self) -> str:
         return f"[{self.sourceName}] -> [{self.targetNodeId}|{self.targetName}] : {self.payload}"

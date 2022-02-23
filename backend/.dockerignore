@@ -1,1 +1,5 @@
 /env
+r.txt
+*.log
+*.pyc
+.vscode/*

@@ -1,55 +1,95 @@
-from .serial_obj import SerialOBJ
+from .custom_serial import CustomSerial
+from api import logger, exception
 
 
-class SerialGcodeOBJ(SerialOBJ):
-    def __init__(self, name, port, baudrate, **kwargs):
-        super().__init__(name, port, baudrate, **kwargs)
+class SerialGcodeOBJ(CustomSerial):
+    @exception(logger)
+    def __init__(
+        self,
+        port=None,
+        name=None,
+        baudrate=9600,
+        filters={},
+        bytesize=8,
+        parity="N",
+        stopbits=1,
+        timeout=0.01,
+        xonxoff=False,
+        rtscts=False,
+        dsrdtr=False,
+    ):
+        super().__init__(
+            port,
+            name,
+            baudrate,
+            filters,
+            bytesize,
+            parity,
+            stopbits,
+            timeout,
+            xonxoff,
+            rtscts,
+            dsrdtr,
+            is_gcode=True,
+        )
         self.pause = False
         self.pause_permission = ["stop", "kill", "quick_stop", "resume"]
 
+    @exception(logger)
     def verify(function):
+        @exception(logger)
         def wrapper(self, *args, **kwargs):
-            if self.pause:
+            if self.pause or not self.is_open:
                 return
             return function(self, *args, **kwargs)
 
         return wrapper
 
     @verify
+    @exception(logger)
     def M114(self, _type="", sequence=["X", "Y", "Z", "A", "B", "C", ":"]):
-        if self.isAlive():
-            echo = self.send(f"M114 {_type}", echo=True)[0]
-            # print(echo)
-            txt = echo
-            for n in sequence:
-                txt = txt.replace(n, "")
-            try:
-                return dict(
-                    zip(
-                        sequence[:-1],
-                        list(map(float, txt.split(" ")[: len(sequence) - 1])),
-                    )
+        """
+        Get current position of machine.
+        _type:
+            R - Return the current position of the machine, in real time.
+            ''- Return the future postion of the machine.
+
+        """
+        echo = self.send(f"M114 {_type}", echo=True)[0]
+        txt = echo
+        for n in sequence:
+            txt = txt.replace(n, "")
+        try:
+            return dict(
+                zip(
+                    sequence[:-1],
+                    list(map(float, txt.split(" ")[: len(sequence) - 1])),
                 )
-            except ValueError:
-                print("\n" * 3, echo)
-                return self.M114(_type, sequence)
+            )
+        except ValueError:
+            print("\n" * 3, echo)
+            return self.M114(_type, sequence)
 
     @verify
+    @exception(logger)
     def M119(self, cut=": "):
-        if self.isAlive():
-            pos = []
-            key = []
-            for _ in range(2):
-                Echo = (self.send("M119", echo=True))[1:-1]
-            for info in Echo:
-                try:
-                    pos.append(info[info.index(cut) + len(cut): len(info)])
-                    key.append(info[: info.index(cut)])
-                except ValueError:
-                    print("ERROR:", info)
-            return dict(zip(key, pos))
+        """
+        Get satus of endstops.
+        """
+        pos = []
+        key = []
+        for _ in range(2):
+            Echo = (self.send("M119", echo=True))[1:-1]
+        for info in Echo:
+            try:
+                pos.append(info[info.index(cut) + len(cut) : len(info)])
+                key.append(info[: info.index(cut)])
+            except ValueError:
+                print("ERROR:", info)
+        return dict(zip(key, pos))
 
     @verify
+    @exception(logger)
     def G28(
         self,
         axis="E",
@@ -59,59 +99,65 @@ class SerialGcodeOBJ(SerialOBJ):
         steps=5,
         speed=50000,
     ):
-        if self.isAlive():
-            self.send("G91")
-            while True:
-                try:
-                    if self.M119()[endStop] != status:
-                        self.send(f"G0 E{offset * -1} F{speed}")
-                    break
-                except KeyError:
-                    pass
+        self.send("G91")
+        while True:
+            try:
+                if self.M119()[endStop] != status:
+                    self.send(f"G0 E{offset * -1} F{speed}")
+                break
+            except KeyError:
+                pass
 
-            while True:
-                try:
-                    while self.M119()[endStop] == status:
-                        self.send(f"G0 {axis}{steps} F{speed}")
+        while True:
+            try:
+                while self.M119()[endStop] == status:
+                    self.send(f"G0 {axis}{steps} F{speed}")
 
-                    self.send("G91")
-                    self.send(f"G0 E-{10} F{speed}")
+                self.send("G91")
+                self.send(f"G0 E-{10} F{speed}")
 
-                    while self.M119()[endStop] == status:
-                        self.send(f"G0 {axis}{1} F{speed}")
+                while self.M119()[endStop] == status:
+                    self.send(f"G0 {axis}{1} F{speed}")
 
-                    self.send("G91")
-                    self.send(f"G0 E{offset} F{speed}")
-                    self.send("G90")
-                    break
-                except KeyError:
-                    pass
+                self.send("G91")
+                self.send(f"G0 E{offset} F{speed}")
+                self.send("G90")
+                break
+            except KeyError:
+                pass
 
     @verify
+    @exception(logger)
     def M_G0(self, *args, **kwargs):
+        """
+        Send a GCODE movement command (G0) and wait for current position to be reached.
+        """
+        # Create a coordinate string based in args.
         cords = ""
         for pos in args:
-            axis = pos[0].upper()
-            pp = pos[1]
-            cords += f"{axis}{pp} "
+            cords += f"{pos[0].upper()}{pos[1]} "
+
+        # Send machine to the coordinate string
         self.send(f"G0 {cords}")
-        if kwargs.get("nonSync"):
+
+        # if does not have a wait parameter, return.
+        if not kwargs.get("sync"):
             return
-        future = self.M114()
-        real = self.M114("R")
-        # while True:
-        a = [v for v in future.values()]
-        b = [v for v in real.values()]
+
+        # Split the atual and future position in 2 lists.
+        future, real = self.M114(), self.M114("R")
+        a, b = [v for v in future.values()], [v for v in real.values()]
+
+        # Wait for the machine to reach the coordinate string. while all axis real coordinates are not equal to the future coordinates (+- 0.5).
         while (
             not all((a[i] - 0.5 <= b[i] <= a[i] + 0.5) for i in range(len(b)))
             and not self.pause
         ):
+            # Update the real position.
             b = [v for v in self.M114("R").values()]
-            # print(a, b)
-
-        real = self.M114("R")
 
     @verify
+    @exception(logger)
     def pause(self):
         self.pause = True
         """
@@ -120,6 +166,7 @@ class SerialGcodeOBJ(SerialOBJ):
         self.send("M0")
 
     @verify
+    @exception(logger)
     def kill(self):
         self.pause = True
         """
@@ -131,6 +178,7 @@ class SerialGcodeOBJ(SerialOBJ):
         self.send("M112")
 
     @verify
+    @exception(logger)
     def stop(self):
         self.pause = True
         """
@@ -139,8 +187,8 @@ class SerialGcodeOBJ(SerialOBJ):
         steppers are expected to be out of position after this command.
         """
         self.send("M410")
-        # self.write(str("M410"+ '{0}'.format('\n')).encode('ascii'))
 
+    @exception(logger)
     def resume(self):
         self.pause = False
         """
@@ -148,6 +196,7 @@ class SerialGcodeOBJ(SerialOBJ):
         """
         self.send("M108")
 
+    @exception(logger)
     def callPin(self, name, state, json):
         value = json[name]["command"] + (
             json[name]["values"].replace("_pin_", str(json[name]["pin"]))
@@ -155,5 +204,6 @@ class SerialGcodeOBJ(SerialOBJ):
         print(value)
         self.send(value)
 
+    @exception(logger)
     def __str__(self) -> str:
         return f"[[SerialGcodeOBJ] {self.name}, {self.port}, {self.baudrate}]"

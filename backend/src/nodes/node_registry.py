@@ -1,50 +1,66 @@
-if __package__ is None:
-    import sys
-    from os import path
-
-    sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
-
-# import all nodes from .nodes folder
-from .button.button_node import ButtonNode
-from .define.variable_node import VariableNode
-from .display.printer_node import PrinterNode
-from .movement.movement_node import MovementNode
-from .serial.camera_node import CameraNode
-from .serial.serial_node import SerialNode
-
-# Copilot suggestion for new nodes:
-# from src.nodes.display.display_node import DisplayNode
-# from src.nodes.led.led_node import LEDNode
-# from src.nodes.motor.motor_node import MotorNode
-# from src.nodes.sensor.sensor_node import SensorNode
+"""
+scan all folders in 'src.nodes' and import all modules using this pattern:
+from src.nodes.[node_name_folder].[node_name] import [NodeName] ( node_name package must finish with '_node.py' )
+"""
+from os import listdir
+import importlib
+from api import logger, exception
 
 
 class RegEntry:
+    """
+    name: name of the node
+    clss: class of the node
+    """
+
+    @exception(logger)
     def __init__(self, name, clss):
         self.name = name
         self.clss = clss
 
 
-# array of all nodes, use RegEntry to register nodes, like Regentry("name", clss)
-nodeRegistry = [
-    RegEntry("button", ButtonNode),
-    RegEntry("camera", CameraNode),
-    RegEntry("movement", MovementNode),
-    RegEntry("printer", PrinterNode),
-    RegEntry("serial", SerialNode),
-    RegEntry("variable", VariableNode)
-    # RegEntry("file_reader", FileReaderNode)
-    # RegEntry("file_writer", FileWriterNode)
-    # RegEntry("logger", LoggerNode)
-    # RegEntry("timer", TimerNode)
-]
-
-
 class NodeRegistry:
     @staticmethod
+    @exception(logger)
     def getNodeClassByName(name):
+        """
+        :param name: name of the node, e.g. 'identify'
+        :return: class of the node, e.g. IdentifyNode
+        """
+
         for entry in nodeRegistry:
             if entry.name == name:
                 return entry.clss
         else:
             raise Exception("Class " + name + " not registered")
+
+
+package_nodes = []  # list of package names and classes
+nodeRegistry = []  # list of RegEntry objects created from package_nodes
+
+# Use map() and filter() to filter out all the files that end with .py or start with _ in the list '_all'
+for _dir in list(
+    filter(lambda x: not (x[-3:] == ".py" or x[0] == "_"), listdir("src/nodes"))
+):
+    # Store all nodes in a dictionary list 'package_nodes', {package_name, class_name}
+    list(
+        map(
+            lambda x: package_nodes.append(
+                {
+                    "package_name": f".{_dir}.{x[:-3]}",
+                    "class_name": f"{x[0].upper()}{x[1:-8]}Node",
+                }
+            ),
+            filter(lambda x: x[-8:] == "_node.py", listdir(f"src/nodes/{_dir}")),
+        )
+    )
+
+# import all the nodes in the list 'package_nodes', and store them in the list 'nodeRegistry' using the RegEntry class
+for mod in package_nodes:
+    mod["package_name"] = importlib.import_module(mod["package_name"], __package__)
+    nodeRegistry.append(
+        RegEntry(
+            getattr(mod["package_name"], "NODE_TYPE"),
+            getattr(mod["package_name"], mod["class_name"]),
+        )
+    )

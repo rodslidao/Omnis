@@ -1,7 +1,6 @@
 <template>
   <div>
-    <!-- <UploadFileDialog></UploadFileDialog> -->
-    <div class="menuList">
+    <div class="menuList"  v-on:keyup.ctrl.s="save">
       <v-btn class="button" color="primary" fab dark small @click="play">
         <v-icon> mdi-play </v-icon>
       </v-btn>
@@ -22,7 +21,7 @@
         class="d-flex flex-end"
       >
         <template v-slot:activator>
-          <v-btn :loading="isLoading" color="primary" fab dark>
+          <v-btn color="primary" fab dark>
             <v-icon v-if="fab"> mdi-close </v-icon>
             <v-icon dark v-else> mdi-dots-vertical </v-icon>
           </v-btn>
@@ -38,7 +37,7 @@
           <v-icon left dark>{{ item.icon }} </v-icon>{{ item.title }}
         </v-btn>
         <!-- <v-btn color="primary" class="" dark @change="upload"> -->
-          <input id="fileUpload" type="file" hidden @change="upload" />
+          <input id="fileUpload" type="file" hidden @change="upload"  accept=".oms," />
           <v-btn color="primary" class="" dark @click="chooseFiles()">
             <v-icon left dark>mdi-upload</v-icon>Upload
           </v-btn>
@@ -50,13 +49,18 @@
         </v-btn>
       </v-speed-dial>
     </div>
+      <v-progress-linear
+      v-if="isLoading"
+      fixed
+      indeterminate
+      color="cyan"
+      bottom
+    ></v-progress-linear>
   </div>
 </template>
 
 <script>
-import { mapState, mapActions, mapMutations, mapGetters } from 'vuex';
-import UPLOAD_PHOTO from '@/graphql/UploadPhoto';
-import UploadFileDialog from '@/components/UploadFileDialog.vue';
+import { mapState, mapActions, mapGetters } from 'vuex';
 import gql from 'graphql-tag';
 
 export default {
@@ -64,9 +68,7 @@ export default {
   props: {
     editor: Object,
   },
-  components: {
-    UploadFileDialog,
-  },
+  components: {},
 
   data() {
     return {
@@ -86,7 +88,7 @@ export default {
         {
           title: 'Salvar',
           icon: 'mdi-content-save',
-          method: 'save',
+          method: 'saveClicked',
         },
         { title: 'Download', icon: 'mdi-file-download', method: 'download' },
         // { title: 'Upload', icon: 'mdi-file-upload', method: 'upload' },
@@ -97,6 +99,7 @@ export default {
 
   computed: {
     ...mapState('node', {
+      selectedTabIndex: (state) => state.selectedTabIndex,
       tabList: (state) => state.tabList,
       selectedTabId: (state) => state.selectedTabId,
     }),
@@ -107,7 +110,7 @@ export default {
   },
 
   methods: {
-    ...mapActions('node', ['play']),
+    ...mapActions('node', ['play', 'setSaved']),
 
     chooseFiles() {
       document.getElementById('fileUpload').click();
@@ -116,36 +119,269 @@ export default {
       // this.$alertFeedback('George', 'info');
     },
 
-    stop() {
-      this.sendMessage({ command: 'process_stop', args: this.editor.save() });
+    async play() {
+      console.log('play');
+      this.isLoading = true;
+
+      const tabToSave = this.tabList[this.selectedTabIndex];
+
+      await this.$apollo
+        .mutate({
+          mutation: gql`
+            mutation play($id: ID!) {
+              loadConfig(_id: $id) {
+              }
+              startProcess {
+                data {
+                  error
+                }
+              }
+            }
+          `,
+          variables: {
+            id: tabToSave.id,
+          },
+          update: (store, { data: { loadConfig } }) => {
+            console.log(loadConfig.data);
+          },
+        })
+
+        .then((data) => {
+          // Result
+          console.log(data);
+          this.$alertFeedback('Programa está sendo executado', 'success');
+          this.isLoading = false;
+          // this.setSaved(this.selectedTabIndex);
+        })
+
+        .catch((error) => {
+          // Error
+          this.isLoading = false;
+          console.error('Não foi possível rodar o programa \n', error);
+          this.$alertFeedback(
+            'Não foi possível rodar programa',
+            'error',
+            error
+          );
+
+          // We restore the initial user input
+        });
     },
 
-    pause() {
-      this.sendMessage({ command: 'process_pause', args: this.editor.save() });
+    async stop() {
+      console.log('stop');
+      this.isLoading = true;
+      const tabToSave = this.tabList[this.selectedTabIndex];
+
+      await this.$apollo
+        .mutate({
+          mutation: gql`
+            mutation stopProcess() {
+              stopProcess() {
+                data {
+                  _id
+                }num quer
+              }
+            }
+          `,
+          update: (store, { data: { loadConfig } }) => {
+            console.log(loadConfig.data);
+          },
+        })
+
+        .then((data) => {
+          // Result
+          console.log(data);
+          this.$alertFeedback('A rotina foi parada', 'success');
+          this.isLoading = false;
+          // this.setSaved(this.selectedTabIndex);
+        })
+
+        .catch((error) => {
+          // Error
+          this.isLoading = false;
+          console.error('Não foi possível salvar o arquivo \n', error);
+          this.$alertFeedback(
+            'Não foi possível parar a rotina',
+            'error',
+            error
+          );
+
+          // We restore the initial user input
+        });
+    },
+
+    async pause() {
+      console.log('pause');
+      const tabToSave = this.tabList[this.selectedTabIndex];
+      this.isLoading = true;
+
+      await this.$apollo
+        .mutate({
+          mutation: gql`
+            mutation pauseProcess() {
+              pauseProcess() {
+                data {
+                  _id
+                }
+              }
+            }
+          `,
+          variables: {
+            id: tabToSave.id,
+          },
+          update: (store, { data: { loadConfig } }) => {
+            console.log(loadConfig.data);
+          },
+        })
+
+        .then((data) => {
+          // Result
+          console.log(data);
+          this.$alertFeedback('Programa está sendo executado', 'success');
+          this.isLoading = false;
+          // this.setSaved(this.selectedTabIndex);
+        })
+
+        .catch((error) => {
+          // Error
+          this.isLoading = false;
+          console.error('Não foi possível salvar o arquivo \n', error);
+          this.$alertFeedback(
+            'Não foi possível rodar programa',
+            'error',
+            error
+          );
+
+          // We restore the initial user input
+        });
     },
 
     findFunction(name) {
       this[name]();
     },
 
-    save() {
-      const editedNode = this.editor.save();
-      console.log(this.selectedTabId);
-      console.log(this.getSelectedTabName);
+    async saveClicked() {
+      if (this.tabList[this.selectedTabIndex].saved) {
+        await this.update();
+      } else {
+        await this.save();
+      }
+    },
 
-      editedNode.id = this.selectedTabId;
+    async update() {
+      console.log('update');
+      this.isLoading = true;
+      const tabToSave = this.tabList[this.selectedTabIndex];
 
-      editedNode.sketchName = this.getSelectedTabName;
-      editedNode.saved = false;
+      await this.$apollo
+        .mutate({
+          mutation: gql`
+            mutation updateNodeSheet(
+              $id: ID!
+              $sketchName: String
+              $content: JSON!
+            ) {
+              updateNodeSheet(
+                _id: $id
+                sketchName: $sketchName
+                content: $content
+              ) {
+                data {
+                  _id
+                }
+              }
+            }
+          `,
+          variables: {
+            id: tabToSave.id,
+            content: this.editor.save(),
+          },
+          update: (store, { data: { updateNodeSheet } }) => {
+            console.log(updateNodeSheet.data);
+          },
+        })
+        .then((data) => {
+          // Result
+          console.log(data);
+          this.$alertFeedback('Arquivo salvo com sucesso', 'success');
+          this.isLoading = false;
+          // this.setSaved(this.selectedTabIndex);
+        })
+        .catch((error) => {
+          // Error
+          this.isLoading = false;
+          console.error('Não foi possível salvar o arquivo \n', error);
+          this.$alertFeedback(
+            'Não foi possível salvar o arquivo, erro ao conectar com servidor',
+            'error',
+            error
+          );
 
-      this.updateTabById(editedNode);
+          // We restore the initial user input
+        });
+    },
+
+    async save() {
+      console.log('save');
 
       console.log(" :salvo com sucesso!'");
-      console.log(this.editor.save());
-      this.SEND_MESSAGE({
-        type: 'SAVE_NODE',
-        payload: editedNode,
-      });
+
+      const tabToSave = this.tabList[this.selectedTabIndex];
+
+      await this.$apollo
+        .mutate({
+          mutation: gql`
+            mutation createNodeSheet(
+              $id: ID!
+              $sketchName: String
+              $saved: Boolean
+              $duplicated: Boolean
+              $content: JSON!
+            ) {
+              createNodeSheet(
+                _id: $id
+                sketchName: $sketchName
+                saved: $saved
+                duplicated: $duplicated
+                content: $content
+              ) {
+                data {
+                  _id
+                }
+              }
+            }
+          `,
+          variables: {
+            id: tabToSave.id,
+            sketchName: tabToSave.sketchName,
+            saved: tabToSave.saved,
+            duplicated: tabToSave.duplicated,
+            content: this.editor.save(),
+          },
+          update: (store, { data: { createNodeSheet } }) => {
+            console.log(createNodeSheet);
+          },
+        })
+        .then((data) => {
+          // Result
+          console.log(data);
+          this.$alertFeedback('Arquivo salvo com sucesso', 'success');
+          this.isLoading = false;
+          this.setSaved({ index: this.selectedTabIndex, value: true });
+        })
+        .catch((error) => {
+          // Error
+          this.isLoading = false;
+          console.error('Não foi possível salvar o arquivo \n', error);
+          this.$alertFeedback(
+            'Não foi possível salvar o arquivo, erro ao conectar com servidor',
+            'error',
+            error
+          );
+
+          // We restore the initial user input
+        });
     },
 
     download() {
@@ -156,7 +392,12 @@ export default {
         a.download = fileName;
         a.click();
       }
-      download(JSON.stringify(this.editor.save()), 'nodes.json', 'text/plain');
+      const fileName = this.tabList[this.selectedTabIndex].sketchName;
+      download(
+        JSON.stringify(this.editor.save()),
+        `${fileName}.oms`,
+        'text/plain'
+      );
     },
 
     out() {
@@ -166,15 +407,27 @@ export default {
     async upload({ target }) {
       this.fab = false;
 
-      console.log(target.files[0]);
-      let files = target.files;
-      let fr = new FileReader();
+      if (
+        target.files[0].name.split('.').pop() !== 'oms' ||
+        target.files[0].name.split('.').pop() !== 'json'
+      ) {
+        this.$alertFeedback(
+          'Arquivo inválido, seu arquivo deve ser um .oms',
+          'error'
+        );
+
+        return;
+      }
+
+      // console.log(target.files[0].name.split('.').pop());
+      const { files } = target;
+      const fr = new FileReader();
       console.log(files);
       if (files.length <= 0) {
         return false;
       }
 
-      var json;
+      let json;
 
       async function loadFile(callback) {
         console.log(callback);
@@ -195,10 +448,6 @@ export default {
             mutation: gql`
               mutation createNodeSheet($input: JSON!) {
                 createNodeSheet(input: $input) {
-                  status {
-                    success
-                    error
-                  }
                   data {
                     _id
                   }
@@ -215,14 +464,14 @@ export default {
           .then((data) => {
             // Result
             console.log(data);
-            this.$$alertFeedback('Arquivo salvo com sucesso', 'success');
+            this.$alertFeedback('Arquivo salvo com sucesso', 'success');
             this.isLoading = false;
           })
           .catch((error) => {
             // Error
             this.isLoading = false;
             console.error(
-              'Não foi possivel fazer o UPLOAD do arquivo \n',
+              'Não foi possível fazer o UPLOAD do arquivo \n',
               error
             );
             this.$alertFeedback(

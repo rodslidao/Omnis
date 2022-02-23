@@ -9,11 +9,11 @@ subscription = SubscriptionType()
 
 @subscription.source("alerts")
 async def alerts_source(obj, info):
+    print("listenning alert queue...")
     queue = asyncio.Queue()
     alerts.append(queue)
     try:
         while True:
-            print("getting alert from queue...")
             alert = await queue.get()
             yield alert
     except asyncio.CancelledError:
@@ -29,11 +29,11 @@ async def alerts_resolver(obj, info):
 #! Escopo de código repetido, verificar possivel solução
 @subscription.source("cameras")
 async def cameras_source(obj, info):
+    print("listenning camera queue...")
     queue = asyncio.Queue()
     CameraManager.queues.append(queue)
     try:
         while True:
-            print("getting camera from queue...")
             camera = await queue.get()
             yield camera
     except asyncio.CancelledError:
@@ -47,11 +47,11 @@ async def cameras_resolver(obj, info):
 #! Escopo de código repetido, verificar possivel solução
 @subscription.source("serials")
 async def serials_source(obj, info):
+    print("listenning serial queue...")
     queue = asyncio.Queue()
     SerialManager.queues.append(queue)
     try:
         while True:
-            print("getting serial from queue...")
             yield await queue.get()
     except asyncio.CancelledError:
         SerialManager.queues.remove(queue)

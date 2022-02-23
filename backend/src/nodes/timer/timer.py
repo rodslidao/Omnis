@@ -3,6 +3,17 @@ from datetime import datetime, timedelta
 from threading import Event
 # Create a chronometer class to measure time, with a start, pause, resume and stop method
 class Chronometer:
+    """
+    A Simple class to measure time, with a start, pause, resume and stop method
+
+    Usage:
+        Chronometer = Chronometer()\n
+        Chronometer.start()\n
+        Chronometer.pause()\n
+        Chronometer.resume()\n
+        Chronometer.stop()\n
+        print(Chronometer.trigger()) or print(Chronometer()) or print(Chronometer.con_Running)\n
+    """
     def __init__(self) -> None:
         self.cron_Running = timedelta(0)
         self.pause_delta = timedelta(0)

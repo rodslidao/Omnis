@@ -1,7 +1,4 @@
 
-# from src.nodes.serial.serial_obj import SerialOBJ
-# from src.nodes.serial.gcode_obj import SerialGcodeOBJ
-
 
 class CAM_PROPS:
     PROP2ID = {
