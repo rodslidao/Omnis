@@ -2,9 +2,11 @@ name: Docker Image CI
 
 on:
   push:
-    branches: [ Desenvolvimento ]
+    branches:
+      - Desenvolvimento
   pull_request:
-    branches: [ Desenvolvimento ]
+    branches:
+      - Desenvolvimento
 
 jobs:
 
@@ -18,8 +20,7 @@ jobs:
       env:
         DOCKER_USER: ${{secrets.DOCKER_OMNIS_USER}}
         DOCKER_PASSWORD: ${{secrets.DOCKER_OMNIS_PASSWORD}}
-      run: |
-        docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+      run: docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
     - name: Build BackEnd
       run: docker build . -t omnis/backend:$(date +%s) -f ../../backend/Dockerfile
     - name: Push BackEnd
@@ -27,4 +28,4 @@ jobs:
     - name: Build FrontEnd
       run: docker build . -t omnis/frontend:$(date +%s) -f ../../backend/Dockerfile
     - name: Push FrontEnd
-      run: docker push ${{secrets.DOCKER_OMNIS_USER}}/release
+      run: docker push ${{secrets.DOCKER_OMNIS_USER}}/releases
