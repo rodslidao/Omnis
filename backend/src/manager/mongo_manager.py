@@ -1,7 +1,7 @@
 from pymongo import MongoClient
 from pymongo.errors import ConnectionFailure
 from os import environ, getenv
-from src.manager import logger
+from api import logger, exception
 from pandas import DataFrame
 
 # get environment variable "NODE_ENV"
@@ -24,6 +24,7 @@ _db = None
 requiredCollections = ["node-configs", "node-templates", "last-values", "node-history"]
 
 
+@exception(logger)
 def getDb():
     global _db
     if _db is None:
@@ -31,6 +32,7 @@ def getDb():
     return _db
 
 
+@exception(logger)
 def connectToMongo(database="Teste"):
     getDb()
     for collectionName in requiredCollections:
@@ -39,26 +41,12 @@ def connectToMongo(database="Teste"):
             logger.debug(f"Created collection {collectionName}")
 
 
-def log_error(function):
-    def wrapper(*args, **kwargs):
-        try:
-            return function(*args, **kwargs)
-        except Exception as e:
-            logger.critical(
-                "MongoDB cant execute function: "
-                + function.__name__
-                + "reason: "
-                + str(e)
-            )
-            raise e
-
-    return wrapper
-
-
 class MongoOBJ:
+    @exception(logger)
     def __init__(self, db_name, db_url):
         self.dbo = self.connect(db_name, db_url)
 
+    @exception(logger)
     def connect(self, db_name, db_url):
         try:
             logger.debug(f"Connecting to MongoDB using url: {db_url}")
@@ -71,71 +59,71 @@ class MongoOBJ:
             logger.info("Connected to MongoDB")
             return self.client.get_database(db_name)
 
-    @log_error
+    @exception(logger)
     def getDB(self):
         return self.dbo
 
-    @log_error
+    @exception(logger)
     def list_collection_names(self):
         return self.dbo.list_collection_names()
 
-    @log_error
+    @exception(logger)
     def get_collection(self, collectionName):
         return self.dbo.get_collection(collectionName)
 
-    @log_error
+    @exception(logger)
     def create_collection(self, collectionName):
         return self.dbo.create_collection(collectionName)
 
-    @log_error
+    @exception(logger)
     def insert_one(self, collection_name, data):
         return self.dbo[collection_name].insert_one(data)
 
-    @log_error
+    @exception(logger)
     def insert_many(self, collection_name, data):
         return self.dbo[collection_name].insert_many(data)
 
-    @log_error
+    @exception(logger)
     def find_one(self, collection_name, query={}):
         return self.dbo[collection_name].find_one(query)
 
-    @log_error
+    @exception(logger)
     def find_many(self, collection_name, query={}, data={}):
         return self.dbo[collection_name].find(query, data)
 
-    @log_error
+    @exception(logger)
     def update_one(self, collection_name, query, data):
         return self.dbo[collection_name].update_one(query, data)
 
-    @log_error
+    @exception(logger)
     def update_many(self, collection_name, query, data):
         return self.dbo[collection_name].update_many(query, data)
 
-    @log_error
+    @exception(logger)
     def delete_one(self, collection_name, query={}):
         return self.dbo[collection_name].delete_one(query)
 
-    @log_error
+    @exception(logger)
     def delete_many(self, collection_name, query={}):
         return self.dbo[collection_name].delete_many(query)
 
-    @log_error
+    @exception(logger)
     def find_one_and_update(self, collection_name, query, data):
         return self.dbo[collection_name].find_one_and_update(query, data)
 
-    @log_error
+    @exception(logger)
     def find_one_and_delete(self, collection_name, query={}):
         return self.dbo[collection_name].find_one_and_delete(query)
 
-    @log_error
+    @exception(logger)
     def find_one_and_replace(self, collection_name, query, data):
         return self.dbo[collection_name].find_one_and_replace(query, data)
     
-    @log_error
+    @exception(logger)
     def distinct(self, collection_name, query="_id"):
         return self.dbo[collection_name].distinct(query)
 
-    @log_error
+    @exception(logger)
     def collection2csv(self, collection):
         arr = self.find_many(collection)
         variables = arr[0].keys()

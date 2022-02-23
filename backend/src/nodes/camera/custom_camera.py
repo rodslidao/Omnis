@@ -8,6 +8,9 @@ from time import sleep
 import datetime
 from collections import deque
 
+from api import logger, exception
+
+
 class FPS:
     """
     FPS class for calculating frames per second. \n
@@ -18,24 +21,30 @@ class FPS:
     \tFPS().fps():\t\t returns the current FPS
 
     """
+
+    @exception(logger)
     def __init__(self):
         self._start = None
         self._end = None
         self._numFrames = 0
 
+    @exception(logger)
     def start(self):
         self._start = datetime.datetime.now()
         return self
 
+    @exception(logger)
     def update(self):
         if self.elapsed() >= 5:
             self._numFrames = 0
             self.start()
         self._numFrames += 1
 
+    @exception(logger)
     def elapsed(self):
         return (datetime.datetime.now() - self._start).total_seconds()
 
+    @exception(logger)
     def fps(self):
         return self._numFrames / self.elapsed()
 
@@ -45,42 +54,44 @@ class camera:
     Complex api for USB cameras.
     When a new camera is started, it will be added to the CameraManager using camera._id as key.
     When a camera is stopped, it will be removed from the CameraManager.
-    
+
     :set_property(name, value):
         Set a property of the camera.
         a list of properties can be found here: https://docs.opencv.org/4.x/d4/d15/group__videoio__flags__base.html
 
     :get_property(name):
         Get a property of the camera.
-    
+
     :get_properties():
         Get all properties of the camera.
-    
+
     :start():
         Start the camera.
         returns self.
-    
+
     :stop():
         Stop the camera.
         returns self.
-    
+
     :reset():
         Reset the camera.
         returns self.
-    
+
     :read():
         Read the current frame.
         returns the current frame.
-    
+
     :to_dict():
         Returns a dictionary representation of the camera.
 
 
     """
+
+    @exception(logger)
     def __init__(self, src=0, name="WebcamVideoStream"):
         self.src = src
         self.stream = cv2.VideoCapture(src, cv2.CAP_V4L2)
-        self.stream.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M','J','P','G'))
+        self.stream.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc("M", "J", "P", "G"))
         self.name = name
         self._id = ObjectId()
         self.stopped = True
@@ -89,13 +100,16 @@ class camera:
             (self.grabbed, self.frame) = self.stream.read()
         CameraManager.add(self)
 
+    @exception(logger)
     def set_property(self, name, value):
         self.stream.set(getattr(cv2, name) if isinstance(name, str) else name, value)
 
+    @exception(logger)
     def set_properties(self, properties):
         for name, value in properties.items():
             self.set_property(name, value)
 
+    @exception(logger)
     def reset(self):
         print("Resetting camera...")
         self.stopped = True
@@ -103,6 +117,7 @@ class camera:
         self.start()
         return self
 
+    @exception(logger)
     def start(self):
         """
         Start the camera.
@@ -115,6 +130,7 @@ class camera:
         CameraManager.update()
         return self
 
+    @exception(logger)
     def updateFrame(self):
         """
         Update the frame of the camera.
@@ -133,6 +149,7 @@ class camera:
             )
             self.fps.update()
 
+    @exception(logger)
     def read(self):
         """
         Read the current frame.
@@ -140,6 +157,7 @@ class camera:
         """
         return self.frame
 
+    @exception(logger)
     def stop(self):
         """
         Stop the camera.
@@ -153,11 +171,13 @@ class camera:
         CameraManager.remove(self)
         return self
 
+    @exception(logger)
     def __del__(self):
         if not self.stopped:
             self.stop()
         self.stream.release()
 
+    @exception(logger)
     def to_dict(self):
         """
         Returns a dictionary representation of the camera.
@@ -171,6 +191,7 @@ class camera:
         }
 
 
+@exception(logger)
 def checker(src=2):
     """
     Checks if the camera is running.

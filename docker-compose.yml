@@ -40,7 +40,7 @@ services:
   backend:
     container_name: backend
     image: omnisofc/backend:latest
-    build: ./backend
+    # build: ./backend
     restart: always
     ports:
       - ${STREAMING_PORT}:${STREAMING_PORT}
@@ -52,6 +52,8 @@ services:
       PYTHON_RUN: ${PYTHON_RUN}
       SERVER_IP: ${SERVER_IP}
       DB_IP: ${DB_IP}
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
     # Enable access to the camera and serial devices (if the device is connected, otherwise it will fail)
     # devices:
       # - "/dev/ttyACM0:/dev/ttyACM0"
@@ -66,17 +68,6 @@ services:
     command: python main.py
     depends_on:
       - mongo-express
-    networks:
-      - mongo-compose-network
-
-  # redis:
-  #   container_name: redis
-  #   image: redis:latest
-  #   ports:
-  #     - "6379:6379"
-  #   networks:
-  #     - mongo-compose-network
-      
 networks: 
   mongo-compose-network:
     driver: bridge

@@ -4,6 +4,7 @@ from src.nodes.[node_name_folder].[node_name] import [NodeName] ( node_name pack
 """
 from os import listdir
 import importlib
+from api import logger, exception
 
 
 class RegEntry:
@@ -11,12 +12,16 @@ class RegEntry:
     name: name of the node
     clss: class of the node
     """
+
+    @exception(logger)
     def __init__(self, name, clss):
         self.name = name
         self.clss = clss
 
+
 class NodeRegistry:
     @staticmethod
+    @exception(logger)
     def getNodeClassByName(name):
         """
         :param name: name of the node, e.g. 'identify'
@@ -30,8 +35,8 @@ class NodeRegistry:
             raise Exception("Class " + name + " not registered")
 
 
-package_nodes = []   # list of package names and classes
-nodeRegistry =  []   # list of RegEntry objects created from package_nodes
+package_nodes = []  # list of package names and classes
+nodeRegistry = []  # list of RegEntry objects created from package_nodes
 
 # Use map() and filter() to filter out all the files that end with .py or start with _ in the list '_all'
 for _dir in list(
@@ -41,7 +46,10 @@ for _dir in list(
     list(
         map(
             lambda x: package_nodes.append(
-                {"package_name": f".{_dir}.{x[:-3]}", "class_name": f"{x[0].upper()}{x[1:-8]}Node"}
+                {
+                    "package_name": f".{_dir}.{x[:-3]}",
+                    "class_name": f"{x[0].upper()}{x[1:-8]}Node",
+                }
             ),
             filter(lambda x: x[-8:] == "_node.py", listdir(f"src/nodes/{_dir}")),
         )
@@ -51,5 +59,8 @@ for _dir in list(
 for mod in package_nodes:
     mod["package_name"] = importlib.import_module(mod["package_name"], __package__)
     nodeRegistry.append(
-        RegEntry(getattr(mod["package_name"], 'NODE_TYPE'), getattr(mod["package_name"], mod["class_name"]))
+        RegEntry(
+            getattr(mod["package_name"], "NODE_TYPE"),
+            getattr(mod["package_name"], mod["class_name"]),
+        )
     )

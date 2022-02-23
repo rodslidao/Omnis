@@ -20,6 +20,7 @@ from cv2 import (
 
 from numpy import int0
 from bson.objectid import ObjectId
+from api import logger, exception
 
 # Map of modes to use for the contour retrieval
 modes = {
@@ -63,6 +64,7 @@ class dimensional_data(object):
 
     """
 
+    @exception(logger)
     def __init__(
         self,
         area=None,
@@ -86,17 +88,21 @@ class dimensional_data(object):
         self.vertices = vertices
         self.box = box
 
+    @exception(logger)
     def get(self, key):
         return getattr(self, key)
 
+    @exception(logger)
     def set(self, key, value):
         setattr(self, key, value)
 
+    @exception(logger)
     def __call__(self):
         return vars(self)
 
 
 # Function to get the contours of an image
+@exception(logger)
 def identifyObjects(image, mode="RETR_TREE", method="CHAIN_APPROX_SIMPLE", **parm):
 
     """
@@ -125,6 +131,7 @@ def identifyObjects(image, mode="RETR_TREE", method="CHAIN_APPROX_SIMPLE", **par
     contours, hierarchy = findContours(image, md, mt)
 
     # function tha verify if some var need to be tested, and then test it
+    @exception(logger)
     def verify(var, name):
         var_d = parm.get(name, False)
         if not var_d:

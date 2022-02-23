@@ -1,6 +1,6 @@
 from src.message import Message
 from src.nodes.node_manager import NodeManager
-from src.logs.log import logSetup
+from api import logger, exception
 
 NODE_TYPE = "BASE_NODE"
 
@@ -32,7 +32,8 @@ class BaseNode:
 
 
     """
-
+    
+    @exception(logger)
     def __init__(self, name, type, id, options, outputConnections) -> None:
         self.name = name
         self.type = type
@@ -40,22 +41,20 @@ class BaseNode:
         self.options = options
         self.outputConnections = outputConnections
         self.running = True
-        self.logger = logSetup(__class__.__name__, alias=self.name, id=self._id, path=__name__)
-        self.log("Created")
-    def log(self, message, level="debug", prefix="", suffix=""):
 
-        getattr(self.logger, level.lower())(f"{prefix}{message}{suffix}")
-
+    @exception(logger)
     def onSuccess(self, payload, additional=None):
         self.on("onSuccess", payload, additional)
-
+    
+    @exception(logger)
     def onSignal(self, signal=True):
         self.on("Sinal", signal)
-
+    
+    @exception(logger)
     def onFailure(self, payload, additional=None, pulse=True, errorMessage=""):
-        self.log(f"onFailure: {payload}", level="warning")
         self.on("onFailure", payload, additional, pulse)
-
+    
+    @exception(logger)
     def on(self, trigger, payload, additional=None, pulse=False, errorMessage=""):
         targets = list(
             filter(
@@ -82,39 +81,35 @@ class BaseNode:
             )
             while not self.running:
                 pass
-            try:
-                if trigger != "onFailure":
-                    self.log(f"Launch {message}", level="debug")
-                NodeManager.getNodeById(target.get("to").get("nodeId")).execute(message)
-            except AttributeError as e:
-                self.log(f"Node {target.get('to').get('nodeId')} not found", level="warning")
-                self.log(f"{e}", level="fatal")
-                raise
-
+            NodeManager.getNodeById(target.get("to").get("nodeId")).execute(message)
+    
+    @exception(logger)
     def pause(self):
-        self.log(f"Paused", level="debug")
         self.running = False
         return True
 
+    @exception(logger)
     def resume(self):
-        self.log(f"Resumed", level="debug")
         self.running = True
         return True
 
+    @exception(logger)
     def stop(self):
-        self.log(f"stop method not implemented for node type {self.type}", level="debug")
         return False
-
+    
+    @exception(logger)
     def reset(self):
-        self.log(f"reset method not implemented for node type {self.type}", level="debug")
         return False
 
+    @exception(logger)
     def pulse(self, color):
         message = {"NodeId": self._id, "color": color}
-
+    
+    @exception(logger)
     def sendConnectionExec(self, fromId, toId):
         message = {"type": "CONNECTION_EXEC", "data": {"from": fromId, "to": toId}}
-
+    
+    @exception(logger)
     def sendErrorMessage(self, nodeId, errorMessage):
         message = {
             "type": "NODE_EXEC_ERROR",
