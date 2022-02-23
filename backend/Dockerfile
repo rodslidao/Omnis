@@ -9,7 +9,7 @@ FROM python:latest
 COPY --from=builder /root/.local /root/.local
 WORKDIR /app
 
-COPY backend/* .
+COPY . .
 
 EXPOSE 3000 3001
 EXPOSE 4000 4001
