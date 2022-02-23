@@ -12,7 +12,6 @@ WORKDIR /app
 COPY ./backend/main.py .
 COPY ./backend/api .
 COPY ./backend/src .
-# COPY ./backend/schema.graphql .
 
 EXPOSE 3000 3001
 EXPOSE 4000 4001
