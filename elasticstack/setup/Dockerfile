@@ -7,5 +7,6 @@ USER root
 RUN mkdir /state && chown elasticsearch /state
 USER elasticsearch:root
 
-COPY . /
+COPY entrypoint.sh /
+COPY helpers.sh /
 ENTRYPOINT ["/entrypoint.sh"]

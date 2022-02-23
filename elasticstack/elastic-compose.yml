@@ -27,7 +27,7 @@ services:
       - "9200:9200"
       - "9300:9300"
     environment:
-      ES_JAVA_OPTS: -Xmx1g -Xms1g
+      ES_JAVA_OPTS: -Xmx256m -Xms256m
       # Bootstrap password.
       # Used to initialize the keystore during the initial startup of
       # Elasticsearch. Ignored on subsequent runs.
@@ -52,7 +52,7 @@ services:
       - "5000:5000/udp"
       - "9600:9600"
     environment:
-      LS_JAVA_OPTS: -Xmx1g -Xms1g
+      LS_JAVA_OPTS: -Xmx256m -Xms256m
       LOGSTASH_INTERNAL_PASSWORD: ${LOGSTASH_INTERNAL_PASSWORD:-}
     networks:
       - elk
@@ -85,7 +85,7 @@ services:
       - -e
       - --strict.perms=false
     volumes:
-      - ./backend/src/logs:/var/log
+      - ../backend/src/logs:/var/log
       - ./extensions/filebeat/config/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro,Z
       - type: bind
         source: /var/lib/docker/containers
