@@ -30,6 +30,7 @@ class ImageNode(BaseNode):
         self.inputConnections = inputConnections
         self.image = None  # ? Maybe we should use a Image object instead of None ?
         self.properties = options.image.get("properties", [])
+        self.auto_run = options["auto_run"]
         NodeManager.addNode(self)
 
     @exception(logger)

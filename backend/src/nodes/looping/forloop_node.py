@@ -22,6 +22,7 @@ class ForloopNode(BaseNode):
         super().__init__(name, type, id, options, outputConnections)
         self.iterator = []
         self.backup = []
+        self.auto_run = options["auto_run"]
         NodeManager.addNode(self)
 
     @exception(logger)

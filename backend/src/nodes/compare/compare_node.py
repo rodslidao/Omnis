@@ -20,6 +20,7 @@ class CompareNode(BaseNode):
         self.value1 = options["value1"]
         self.value2 = options["value2"]
         self.value3 = options["value3"]
+        self.auto_run = options["auto_run"]
         NodeManager.addNode(self)
 
     @exception(logger)

@@ -19,6 +19,7 @@ class ColorSpaceNode(BaseNode):
         self.inputConnections = inputConnections
         self.CSO = options["colorSpaceOrigin"]
         self.CSC = options["colorSpaceConvert"]
+        self.auto_run = options["auto_run"]
         NodeManager.addNode(self)
 
     @exception(logger)

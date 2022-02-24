@@ -21,6 +21,7 @@ class CameraNode(BaseNode):
         super().__init__(name, NODE_TYPE, id, options, outputConnections)
         self.inputConnections = inputConnections
         self.camera = camera(options.hardware.get("camera_id"))
+        self.auto_run = options["auto_run"]
         NodeManager.addNode(self)
         self.stop_event = self.execute()
 

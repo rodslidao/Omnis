@@ -26,13 +26,14 @@ class MovementNode(BaseNode):
             for k, v in options["axis"]["axis_values"].items()
             if k.lower() in self.axis
         }
+        self.auto_run = options["auto_run"]
         NodeManager.addNode(self)
 
     @exception(logger)
     def execute(self, message):
         action = message.targetName.lower()
         if action in self.axis:
-            self.coordinates[action] = message.payload[action]
+            self.coordinates[action] = message.payload
         else:
             try:
                 return getattr(self, action + "_f")(message.payload)
@@ -41,13 +42,11 @@ class MovementNode(BaseNode):
 
     @exception(logger)
     def coordinates_f(self, payload):
-        for k, v in payload["coordinates"].items():
+        for k, v in payload.items():
             self.coordinates[k] = v
-        self.coordinates = payload["coordinates"]
 
     @exception(logger)
     def trigger_f(self, payload=None):
-        sleep(0.2)
         if self.serial is not None and self.serial.is_open:
             movement = [
                 (k, v)

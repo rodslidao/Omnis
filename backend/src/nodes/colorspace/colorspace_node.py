@@ -36,6 +36,7 @@ class ColorspaceNode(BaseNode):
         self.inputConnections = inputConnections
         self.operation = options.color_space["value"]
         self.image = None
+        self.auto_run = options["auto_run"]
         NodeManager.addNode(self)
 
     @exception(logger)

@@ -15,6 +15,7 @@ class DifferenceNode(BaseNode):
         super().__init__(name, NODE_TYPE, id, options, outputConnections)
         self.inputConnections = inputConnections
 
+        self.auto_run = options["auto_run"]
         NodeManager.addNode(self)
 
     @exception(logger)
