@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - "nginx_front"
+  pull_request:
+    branches:
+      - "nginx_front"
 
 jobs:
   docker:
