@@ -68,6 +68,15 @@ services:
     command: python main.py
     depends_on:
       - mongo-express
+
+  frontend:
+    container_name: frontend
+    image: omnisofc/frontend:latest
+    restart: always
+    ports:
+      - 8080:80
+
+
 networks: 
   mongo-compose-network:
     driver: bridge
