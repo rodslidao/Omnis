@@ -68,7 +68,6 @@ services:
     command: python main.py
     depends_on:
       - mongo-express
-
   frontend:
     container_name: frontend
     image: omnisofc/frontend:latest
