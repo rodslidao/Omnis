@@ -30,6 +30,7 @@ class IdentifyNode(BaseNode):
             property_data_list = []
             for object_data in object_data_list:
                 if object_data.get(self.propertie) is not None:
+                    self.on(self.propertie, object_data)
                     property_data_list.append(object_data)
             self.on("onSuccess", property_data_list)
             self.onSignal()
