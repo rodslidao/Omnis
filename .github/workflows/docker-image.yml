@@ -35,6 +35,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: ./backend
+          platforms: linux/arm64
           push: true
           tags: ${{ secrets.DOCKER_OMNIS_USER }}/backend:latest
           cache-from: type=local,src=/tmp/.buildx-cache
