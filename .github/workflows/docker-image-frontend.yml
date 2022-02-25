@@ -35,6 +35,12 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: ./frontend
+          build-args: |
+            NPM_TOKEN=${{ secrets.NODE_ENV_MODE }}
+            VUE_APP_URL_API_IP=${{ secrets.NODE_API_IP }}
+            VUE_APP_URL_API_PORT=${{ secrets.API_PORT }}
+            VUE_APP_URL_API_STREAMING_PORT=${{ secrets.STREAMING_PORT }}
+            
           push: true
           tags: ${{ secrets.DOCKER_OMNIS_USER }}/frontend:latest
           cache-from: type=local,src=/tmp/.buildx-cache
