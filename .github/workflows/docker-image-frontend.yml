@@ -35,6 +35,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
         # Set NODE_ENV as production will fail at build stage: [https://github.com/vuejs/vue-cli/issues/5107]
+          platforms: linux/arm64
           build-args: |
             VUE_APP_URL_API_IP=${{ secrets.API_IP }}
             VUE_APP_URL_API_PORT=${{ secrets.API_PORT }}
