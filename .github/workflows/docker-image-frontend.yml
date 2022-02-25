@@ -39,7 +39,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
         # Set NODE_ENV as production will fail at build stage: [https://github.com/vuejs/vue-cli/issues/5107]
-        platforms: |-
+        platforms: |
               linux/amd64
               linux/arm64
           build-args: |
