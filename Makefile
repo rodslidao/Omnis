@@ -1,12 +1,19 @@
 include .env
 .PHONY: up
 up:
-	docker pull omnisofc/backend:latest && \
 	docker-compose up -d
 
 .PHONY: down
 down:
 	docker-compose down
+
+.PHONY: update
+update:
+	docker-compose pull
+
+.PHONY: build
+build:
+	docker-compose build
 
 .PHONY: logs
 logs:
@@ -27,7 +34,3 @@ restart:
 .PHONY: restart-force
 restart-force:
 	docker-compose down && docker-compose up -d
-
-.PHONY: build
-build:
-	docker-compose build
