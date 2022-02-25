@@ -3,11 +3,8 @@ name: ci-front
 on:
   push:
     branches:
-      - "nginx_front"
-  pull_request:
-    branches:
-      - "nginx_front"
-
+      - "Desenvolvimento"
+      
 jobs:
   docker:
     runs-on: ubuntu-latest
