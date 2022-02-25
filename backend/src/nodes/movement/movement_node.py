@@ -35,10 +35,8 @@ class MovementNode(BaseNode):
         if action in self.axis:
             self.coordinates[action] = message.payload
         else:
-            try:
-                return getattr(self, action + "_f")(message.payload)
-            except Exception as e:
-                self.onFailure("Cant execute action", pulse=True, errorMessage=str(e))
+            return getattr(self, action + "_f")(message.payload)
+
 
     @exception(logger)
     def coordinates_f(self, payload):
@@ -53,13 +51,10 @@ class MovementNode(BaseNode):
                 for k, v in self.coordinates.items()
                 if (k in self.axis and v is not None)
             ]
-            try:
-                print(self.serial.__dict__)
-                self.serial.M_G0(*movement, sync=True)
-                self.log(f"success: {movement}")
-                self.onSuccess(self.serial)
-            except Exception as e:
-                self.onFailure("Cant execute movement", pulse=True, errorMessage=str(e))
+
+            self.serial.M_G0(*movement, sync=True)
+            self.onSuccess(self.serial)
+
         else:
             if not self.serial.is_open:
                 self.onFailure("Serial not running", pulse=True)

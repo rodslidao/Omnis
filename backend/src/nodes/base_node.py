@@ -81,7 +81,10 @@ class BaseNode:
             )
             while not self.running:
                 pass
-            NodeManager.getNodeById(target.get("to").get("nodeId")).execute(message)
+            try:
+                NodeManager.getNodeById(target.get("to").get("nodeId")).execute(message)
+            except Exception as e:
+                self.onFailure(f"{self._id} cant execute.", pulse=True, errorMessage=str(e))
     
     @exception(logger)
     def pause(self):

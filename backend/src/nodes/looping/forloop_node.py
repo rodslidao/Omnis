@@ -38,5 +38,3 @@ class ForloopNode(BaseNode):
             except StopIteration:
                 self.on("Fim")
                 self.iterator = self.backup.copy()
-            except Exception as e:
-                self.onFailure(e)

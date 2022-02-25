@@ -22,17 +22,13 @@ class SerialNode(BaseNode):
     @exception(logger)
     def execute(self, message=""):
         if not self.serial.is_open:
-            try:
-                self.serial.start()
-                self.onSuccess(self.serial)
-                self.on("serial", self.serial)
-                return True
-            except Exception as e:
-                self.onFailure("Cant start serial", pulse=True, errorMessage=str(e))
+            self.serial.start()
+            self.onSuccess(self.serial)
+            self.on("serial", self.serial)
+            return True
         else:
             self.onSuccess(self.serial)
             return True
-        return False
 
     @exception(logger)
     def stop(self):

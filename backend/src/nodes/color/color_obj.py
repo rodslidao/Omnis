@@ -2,10 +2,14 @@ import math
 import colorsys
 from api import logger, exception
 
-class Cor:
+class ColorOBJ:
     """
     A class to convert color to hex, rgb, hsv and cv2_hsv formats.
     """
+    HEX = "HEX"
+    RGB = "RGB"
+    HSV = "HSV"
+    CV2_HSV = "CV2_HSV"
 
     @exception(logger)
     def __init__(self, value, mode):
@@ -24,46 +28,46 @@ class Cor:
 
         """
         match mode:
-            case "hex":
-                self.hex = value
-                self.rgb = self.hex2int(value)
-                self.hsv = self.rgb2hsv(*self.rgb)
-                self.cv2_hsv = [
+            case self.HEX:
+                self.HEX_V = value
+                self.RGB_V = self.hex2int(value)
+                self.HSV_V = self.rgb2hsv(*self.rgb)
+                self.CV2_HSV_V = [
                     self.hsv[0],
                     (self.hsv[1] * 255) / 100,
                     (self.hsv[2] * 255) / 100,
                 ]
-            case "rgb":
-                self.rgb = value
-                self.hex = self.any2hex(value)
-                self.hsv = self.rgb2hsv(*self.rgb)
-                self.cv2_hsv = [
+            case self.RGB:
+                self.RGB_V = value
+                self.HEX_V = self.any2hex(value)
+                self.HSV_V = self.rgb2hsv(*self.rgb)
+                self.CV2_HSV_V = [
                     self.hsv[0],
                     (self.hsv[1] * 255) / 100,
                     (self.hsv[2] * 255) / 100,
                 ]
-            case "hsv":
-                self.hsv = value
-                self.rgb = self.hsv2rgb(*self.hsv)
-                self.hex = self.any2hex(self.rgb)
-                self.cv2_hsv = [
+            case self.HSV:
+                self.HSV_V = value
+                self.RGB_V = self.hsv2rgb(*self.hsv)
+                self.HEX_V = self.any2hex(self.rgb)
+                self.CV2_HSV_V = [
                     self.hsv[0],
                     (self.hsv[1] * 255) / 100,
                     (self.hsv[2] * 255) / 100,
                 ]
-            case "cv2_hsv":
-                self.cv2_hsv = value
-                self.hsv = [
+            case self.CV2_HSV:
+                self.CV2_HSV_V = value
+                self.HSV_V = [
                     self.cv2_hsv[0],
                     (self.cv2_hsv[1] * 100) / 255,
                     (self.cv2_hsv[2] * 100) / 255,
                 ]
-                self.rgb = self.hsv2rgb(*self.hsv)
-                self.hex = self.any2hex(self.rgb)
+                self.RGB_V = self.hsv2rgb(*self.hsv)
+                self.HEX_V = self.any2hex(self.rgb)
 
     @exception(logger)
-    def get_color(self, mode):
-        return getattr(self, mode)
+    def get(self, mode):
+        return getattr(self, f"{mode}_V")
 
     @exception(logger)
     def hsv2rgb(self, h, s_, v_):
@@ -110,49 +114,3 @@ class Cor:
     @exception(logger)
     def hex2int(self, hex_):
         return tuple(map(lambda x: int(x, 16), hex_))
-
-
-class ColorRange:
-    """
-    A class to convert 2 color ranges to another color range format.\n
-    \n
-    :name: name of the color range\n
-    :mode: color mode   -> i.eg. 'rgb' or 'hex'\n
-    :lower: lower color value -> i.eg. (0, 0, 0) or #000000\n
-    :upper: upper color value -> i.eg. (255, 255, 255) or #ffffff\n
-    \n
-    :methods: ->\n
-        get_color(mode) returns the color in the specified mode.\n
-        \n
-        get_full() returns all converted color ranges.\n
-    """
-
-    @exception(logger)
-    def __init__(self, name, mode, lower, upper):
-        self.name = name
-        self.lower = Cor(lower, mode)
-        self.upper = Cor(upper, mode)
-        self.mode = mode
-
-    @exception(logger)
-    def get(self, mode):
-        """
-        return a dict with all the color ranges
-        """
-        return {
-            "lower": self.lower.getColor(mode),
-            "upper": self.upper.getColor(mode),
-        }
-
-    @exception(logger)
-    def get_full(self):
-        """
-        return a dict with all the color ranges
-        """
-        return {
-            self.name: {
-                "hex": self.get("hex"),
-                "rgb": self.get("rgb"),
-                "hsv": self.get("hsv"),
-            }
-        }
