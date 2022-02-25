@@ -34,7 +34,3 @@ restart:
 .PHONY: restart-force
 restart-force:
 	docker-compose down && docker-compose up -d
-
-.PHONY: build
-build:
-	docker-compose build
