@@ -37,7 +37,7 @@ jobs:
           context: ./frontend
           build-args: |
             NPM_TOKEN=${{ secrets.NODE_ENV_MODE }}
-            VUE_APP_URL_API_IP=${{ secrets.NODE_API_IP }}
+            VUE_APP_URL_API_IP=${{ secrets.API_IP }}
             VUE_APP_URL_API_PORT=${{ secrets.API_PORT }}
             VUE_APP_URL_API_STREAMING_PORT=${{ secrets.STREAMING_PORT }}
             
