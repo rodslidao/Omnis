@@ -14,6 +14,9 @@ RUN echo "NODE_ENV=$NODE_ENV \n"\
 
 WORKDIR /app
 COPY package*.json ./
+
+# RUN nvm install 16 && nvm use 16.14.0
+RUN npm install -g npm
 RUN npm ci
 COPY ./ .
 
