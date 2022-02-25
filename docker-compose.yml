@@ -40,20 +40,12 @@ services:
   backend:
     container_name: backend
     image: omnisofc/backend:latest
-    # build: ./backend
+    build: ./backend
     restart: always
     ports:
       - ${STREAMING_PORT}:${STREAMING_PORT}
       - ${SERVER_PORT}:${SERVER_PORT}
-    environment:
-      ENV_MODE: ${ENV_MODE}
-      STREAMING_PORT: ${STREAMING_PORT}
-      SERVER_PORT: ${SERVER_PORT}
-      PYTHON_RUN: ${PYTHON_RUN}
-      SERVER_IP: ${SERVER_IP}
-      DB_IP: ${DB_IP}
-      DB_USER: ${DB_USER}
-      DB_PASS: ${DB_PASS}
+    env_file: .env
     # Enable access to the camera and serial devices (if the device is connected, otherwise it will fail)
     # devices:
       # - "/dev/ttyACM0:/dev/ttyACM0"
@@ -68,6 +60,22 @@ services:
     command: python main.py
     depends_on:
       - mongo-express
+  frontend:
+    container_name: frontend
+    image: omnisofc/frontend:latest
+    env_file: .env
+    build:
+      context: ./frontend/
+      args:
+        VUE_APP_URL_API_IP: ${VUE_APP_URL_API_IP}
+        VUE_APP_URL_API_PORT : ${VUE_APP_URL_API_PORT}
+        VUE_APP_URL_API_STREAMING_PORT: ${VUE_APP_URL_API_STREAMING_PORT}
+        NODE_ENV: ${NODE_ENV}
+    restart: always
+    ports:
+      - 8080:80
+
+
 networks: 
   mongo-compose-network:
     driver: bridge

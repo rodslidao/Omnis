@@ -13,6 +13,7 @@ class ProductionNode(BaseNode):
         self.model = options["model"]["value"]
         self.status = None
         self.production_obj = ProductionOBJ(**options)
+        self.auto_run = options["auto_run"]
         NodeManager.addNode(self)
 
     @exception(logger)

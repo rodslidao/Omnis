@@ -18,6 +18,7 @@ class ComparedimensionaldataNode(BaseNode):
         self.operation = options["operation"]
         self.value2 = options["value2"]
         self.value3 = options["value3"]
+        self.auto_run = options["auto_run"]
         NodeManager.addNode(self)
 
     @exception(logger)

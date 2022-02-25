@@ -54,6 +54,7 @@ class MorphoperationNode(BaseNode):
             element_types[self.element_type], (self.k_size, self.k_size)
         )
 
+        self.auto_run = options["auto_run"]
         NodeManager.addNode(self)
 
     @exception(logger)

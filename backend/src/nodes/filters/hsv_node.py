@@ -37,6 +37,7 @@ class HsvNode(BaseNode):
         self.color_range = ColorRange(
             "color_range", self.mode, self.lower, self.upper
         ).get("cv2_hsv")
+        self.auto_run = options["auto_run"]
         NodeManager.addNode(self)
 
     @exception(logger)

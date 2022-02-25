@@ -1,3 +1,4 @@
+from tkinter import image_names
 from src.nodes.node_manager import NodeManager
 from src.nodes.base_node import BaseNode
 
@@ -21,7 +22,9 @@ class IdentifyNode(BaseNode):
         self.inputConnections = inputConnections
         self.filters = options["filters"]
         self.propertie = options["propertie"]
+        self.auto_run = options["auto_run"]
         NodeManager.addNode(self)
+        if options["startRunning"]: self.execute(message="")
 
     @exception(logger)
     def execute(self, message):
@@ -30,8 +33,32 @@ class IdentifyNode(BaseNode):
             property_data_list = []
             for object_data in object_data_list:
                 if object_data.get(self.propertie) is not None:
+                    self.on(self.propertie, object_data)
                     property_data_list.append(object_data)
             self.on("onSuccess", property_data_list)
             self.onSignal()
         except Exception as e:
             self.onFailure(e, pulse=True)
+
+
+"""
+
+Pegar imagem
+Filtrar imagem
+Identificar objetos
+
+Manipular informações
+
+Informações de validação
+ - Dimensões e etc
+
+Informações de manipulação fisica
+    - Coordenadas
+
+
+
+
+
+
+
+"""

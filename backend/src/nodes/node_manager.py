@@ -18,6 +18,9 @@ class NodeManager:
     @exception(logger)
     def addNode(BaseNode):
         nodes.append(BaseNode)
+        if BaseNode.auto_run:
+            logger.info(f"{BaseNode} start automatically.")
+            BaseNode.execute(message="")
 
     @exception(logger)
     def getActiveNodes():

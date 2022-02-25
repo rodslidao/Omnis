@@ -56,6 +56,7 @@ class ThreshholdNode(BaseNode):
             self.thresh_C = options.thresh_C.get("value")
             self.args = (self.thresh_mean, self.thresh_areas, self.thresh_C)
 
+        self.auto_run = options["auto_run"]
         NodeManager.addNode(self)
 
     @exception(logger)

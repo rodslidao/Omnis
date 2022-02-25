@@ -115,3 +115,7 @@ class BaseNode:
             "type": "NODE_EXEC_ERROR",
             "data": {"nodeId": nodeId, "errorMessage": errorMessage},
         }
+
+    @staticmethod
+    def  __str__(self) -> str:
+        return f"[{self._id}] ({self.type}) {self.name}"

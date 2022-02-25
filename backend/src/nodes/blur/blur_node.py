@@ -24,6 +24,7 @@ class BlurNode(BaseNode):
         self.inputConnections = inputConnections
         self.type = options["blur_type"]
         self.k_size = options["blur_intensity"]
+        self.auto_run = options["auto_run"]
         NodeManager.addNode(self)
 
     @exception(logger)
