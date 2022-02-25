@@ -34,11 +34,12 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
+        # Set NODE_ENV as production will fail at build stage: [https://github.com/vuejs/vue-cli/issues/5107]
           build-args: |
             VUE_APP_URL_API_IP=${{ secrets.API_IP }}
             VUE_APP_URL_API_PORT=${{ secrets.API_PORT }}
             VUE_APP_URL_API_STREAMING_PORT=${{ secrets.STREAMING_PORT }}
-            NODE_ENV=${{ secrets.NODE_ENV }}
+            NODE_ENV=development
           context: ./frontend
           push: true
           tags: ${{ secrets.DOCKER_OMNIS_USER }}/frontend:latest
