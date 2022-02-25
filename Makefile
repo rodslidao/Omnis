@@ -7,14 +7,14 @@ up:
 down:
 	docker-compose down
 
-.PHONY update
+.PHONY: update
 update:
 	docker-compose pull
 
 .PHONY: build
 build:
 	docker-compose build
-	
+
 .PHONY: logs
 logs:
 	docker-compose logs -f
