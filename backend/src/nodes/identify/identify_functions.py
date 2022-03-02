@@ -18,7 +18,7 @@ from cv2 import (
     approxPolyDP,
 )
 
-from numpy import int0
+from numpy import array, int0, ndarray
 from bson.objectid import ObjectId
 from api import logger, exception
 
@@ -129,22 +129,24 @@ def identifyObjects(image, mode="RETR_TREE", method="CHAIN_APPROX_SIMPLE", **par
 
     # Find the contours in the image
     contours, hierarchy = findContours(image, md, mt)
-
+    print(len(contours), len(hierarchy))
     # function tha verify if some var need to be tested, and then test it
     @exception(logger)
     def verify(var, name):
         var_d = parm.get(name, False)
         if not var_d:
+            # print("{} not found".format(name))
             return True
         if var and (var > var_d["min"] and var < var_d["max"]):
             return True
         return False
 
     dimensional_object_list = []
-    for component in zip(contours, hierarchy):
-        contour = component[0]
-        hierarchy = component[1]
+    # for component in zip(contours, hierarchy):
+    #     contour = component[0]
+    #     hierarchy = component[1]
 
+    for contour in contours:
         # calculate area, and reject contours that are too small or too large
         area = contourArea(contour)
         if not verify(area, "area"):
@@ -177,15 +179,21 @@ def identifyObjects(image, mode="RETR_TREE", method="CHAIN_APPROX_SIMPLE", **par
 
         box = int0(boxPoints(minAreaRect(contour)))
         sortedBoxX = sorted(box, key=lambda x: x[0])
-        sortedBoxY = sorted(box, key=lambda x: x[1])
-
+        sortedBoxY = sorted(sortedBoxX, key=lambda x: x[1])
+        print("old box: ", box)
+        print("sorted box x: ", sortedBoxX)
+        print("sorted box y: ", sortedBoxY)
+        
         A, B, C, D = (
             tuple(sortedBoxX[0]),
-            tuple(sortedBoxX[-1]),
-            tuple(sortedBoxY[0]),
-            tuple(sortedBoxY[-1]),
+            tuple(sortedBoxX[1]),
+            tuple(sortedBoxX[2]),
+            tuple(sortedBoxX[3]),
         )
 
+        # Create a np array using the vertices A, B, C, D
+        nbox = array([A, B, C, D])
+        print("new box:", nbox)
         # calculate diagonals, and reject contours that are too small or too large
 
         AB = (abs(A[0] - B[0]) ** 2 + abs(A[1] - B[1]) ** 2) ** 0.5
@@ -210,7 +218,7 @@ def identifyObjects(image, mode="RETR_TREE", method="CHAIN_APPROX_SIMPLE", **par
         # create dimensional object and append to list
         dimensional_object_list.append(
             dimensional_data(
-                area, perimeter, diameter, AB, AC, AD, center, vertices, box
+                area, perimeter, diameter, AB, AC, AD, center, (vertices, {'A':A,'B':B,'C':C,'D':D}), box
             )
         )
 
