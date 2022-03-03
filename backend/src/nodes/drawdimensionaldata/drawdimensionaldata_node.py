@@ -4,6 +4,15 @@ from api import logger, exception
 
 NODE_TYPE = "DRAWDIMENSIONALDATA"
 
+draw_options = {
+    'box':'drawBox',
+    'corners':'drawCorners',
+    'circle':'drawCircle',
+    'center':'drawCenter',
+    'vertices':'drawVertices',
+    'sizes':'drawRectSize',
+    'angle':'drawAngles'
+}
 
 class DrawdimensionaldataNode(BaseNode):
     """
@@ -14,19 +23,22 @@ class DrawdimensionaldataNode(BaseNode):
     def __init__(self, name, id, options, outputConnections, inputConnections) -> None:
         super().__init__(name, NODE_TYPE, id, options, outputConnections)
         self.inputConnections = inputConnections
-        # self.auto_run = options["auto_run"]
+        self.proplist = options.drawable_properties
         NodeManager.addNode(self)
 
     @exception(logger)
     def execute(self, message=""):
-        
-        self.onSuccess()
+        for n in self.proplist:
+            if n in draw_options:
+                self.onSuccess(getattr(self, draw_options[n])(message))
+            else:
+                self.onFailure("No such drawable property: {}".format(n))
 
     @staticmethod
     @exception(logger)
     def get_info():
         return {
             "options": {
-                "option_name": "option_accepted_values",
+                "drawable_properties":list(draw_options.keys()),
             }
         }
