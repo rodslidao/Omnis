@@ -11,10 +11,10 @@ from cv2 import (
     LINE_AA
 )
 
-import numpy as np
-from src.nodes.identify.identify_functions import dimensional_data, identifyObjects
+from numpy import int0
+from src.nodes.identify.identify_functions import dimensional_data
 
-class draw(dimensional_data):
+class DrawOBJ(dimensional_data):
     def __init__(self,image=None, area=None, perimeter=None, diameter=None, AB=None, AC=None, AD=None, center=None, edges=None, corners=None, countour=None, box=None, **kwargs):
         super().__init__(
             area,
@@ -34,7 +34,7 @@ class draw(dimensional_data):
         drawContours(self.image, [self.box], -1, (100, 100, 100), 1, LINE_4)
 
     def drawCircle(self):
-        circle(self.image, self.center, np.int0(self.diameter / 2), (255, 255, 255), 1)
+        circle(self.image, self.center, int0(self.diameter / 2), (255, 255, 255), 1)
 
     def drawCenter(self):
         drawMarker(
