@@ -19,10 +19,7 @@ class class_name(BaseNode):
 
     @exception(logger)
     def execute(self, message=""):
-        try:
-            self.onSuccess()
-        except Exception as e:
-            self.onFailure(f"{self._id} cant execute.", pulse=True, errorMessage=str(e))
+        self.onSuccess()
 
     @staticmethod
     @exception(logger)
