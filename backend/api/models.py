@@ -2,12 +2,11 @@ from ast import Return
 from enum import Enum
 from api import dbo
 from bson.objectid import ObjectId
-from datetime import datetime
-from src.nodes.timer.task_time import setInterval
 from src.loader import loadConfig, LoadingMode
 from src.nodes.node_manager import NodeManager
 from src.nodes.timer.timer import Chronometer
 from api import logger, exception
+from os import popen
 
 def defaultException(function):
     """Decorator to catch exceptions and return a payload with success=False and errors=exception message"""
@@ -79,6 +78,20 @@ class Process:
             "start_at": float(self.startTiming),
             "status": self.status.value,
         }
+
+class grok():
+    @staticmethod
+    def start():
+        popen("ngrok start --all > /dev/null &")
+
+    @staticmethod
+    def stop():
+        popen("kill -9 $(ps -ef | grep '[n]grok'| awk '{print $2}')")
+
+    @staticmethod
+    def get_url():
+        txt = (popen('curl -s localhost:4040/api/tunnels | jq ".tunnels[].public_url"').read()).replace('//', '')
+        return list(map( lambda x: dict(zip(('protocol','uri','port'), x.split(':'))), list(filter(None, txt.split('"')))))
 
 
 class NodeSheet:

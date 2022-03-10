@@ -1,6 +1,5 @@
 from .models import *
 from ariadne import QueryType
-from .store import queues, alerts
 from src.nodes.node_registry import NodeRegistry
 query = QueryType()
 
@@ -47,3 +46,10 @@ def resolve_getNodeInfo(obj, info, node_type):
     """Get a Node by id and return it like a payload"""
     result = (NodeRegistry.getNodeClassByName(node_type)).get_info()
     return {'status': True, 'data': result}
+
+@query.field("requestManutention")
+def resolve_getManutentionUrl(obj, info, node_type):
+    """Get a Node by id and return it like a payload"""
+    grok.stop()
+    grok.start()
+    return {'status': True, 'data': grok.get_url()}
