@@ -82,7 +82,7 @@ class Process:
 class grok():
     @staticmethod
     def get_url():
-        txt = (popen('curl -s localhost:4040/api/tunnels | jq ".tunnels[].public_url"').read()).replace('//', '')
+        txt = (popen('curl -s host.docker.internal:4040/api/tunnels | jq ".tunnels[].public_url"').read()).replace('//', '')
         return list(map( lambda x: dict(zip(('protocol','uri','port'), x.split(':'))), list(filter(None, txt.split('"')))))
 
 

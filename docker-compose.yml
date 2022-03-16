@@ -45,6 +45,7 @@ services:
     ports:
       - ${STREAMING_PORT}:${STREAMING_PORT}
       - ${SERVER_PORT}:${SERVER_PORT}
+      - 4040:4040
     env_file: .env
     environment:
       DB_HOST: mongo_c
