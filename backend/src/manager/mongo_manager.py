@@ -7,18 +7,18 @@ from pandas import DataFrame
 # get environment variable "NODE_ENV"
 # environment = os.environ.get("NODE_ENV", "DEV")
 from dotenv import load_dotenv
+from os import popen
 
 load_dotenv()
+
 db_port = environ.get("DB_PORT", "27017")
-db_ip = environ.get("DB_IP", "localhost")
+db_ip = getenv("DB_HOST")
 
 url = (
     f"mongodb://{db_ip}:{db_port}/"
-    if environ.get("ENV_MODE") == "production"
+    if environ.get("ENV_MODE") != "cloud"
     else f"mongodb+srv://{getenv('DB_USER')}:{getenv('DB_PASS')}@cluster0.diykb.mongodb.net/test?retryWrites=true&w=majority"
 )
-_db = None
-requiredCollections = ["users", "images", "videos", "comments", "likes"]
 
 _db = None
 requiredCollections = ["node-configs", "node-templates", "last-values", "node-history"]

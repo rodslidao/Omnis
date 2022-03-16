@@ -47,9 +47,7 @@ def resolve_getNodeInfo(obj, info, node_type):
     result = (NodeRegistry.getNodeClassByName(node_type)).get_info()
     return {'status': True, 'data': result}
 
-@query.field("requestManutention")
-def resolve_getManutentionUrl(obj, info, node_type):
+@query.field("getManutention")
+def resolve_getManutention(obj, info):
     """Get a Node by id and return it like a payload"""
-    grok.stop()
-    grok.start()
     return {'status': True, 'data': grok.get_url()}

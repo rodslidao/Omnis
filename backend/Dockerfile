@@ -3,8 +3,7 @@ RUN apt-get update -y && apt-get upgrade -y
 RUN apt-get install ffmpeg libsm6 libxext6  -y
 RUN /usr/local/bin/python -m pip install --upgrade pip
 COPY requirements.txt .
-RUN pip install --user -r requirements.txt
-
+RUN pip install --user -r requirements.txt && apt-get install jq -y
 FROM python:latest
 COPY --from=builder /root/.local /root/.local
 WORKDIR /app

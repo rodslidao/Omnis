@@ -60,3 +60,9 @@ type NodeInfoResult {
   error:[String]
   data: NodeInfo
 }
+
+type ManutentionResult {
+  status: Boolean!
+  error:[String]
+  data: [Manutention]
+}

@@ -58,7 +58,7 @@ type Query {
   updateAlerts: DefaultStatus
   allPhotos: [Photo]
 
-  requestManutention: [JSON]
+  getManutention: ManutentionResult
 }
 
 type Subscription {

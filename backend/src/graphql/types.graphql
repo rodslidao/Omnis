@@ -86,3 +86,8 @@ type NodeInfo{
   type: String
   options: JSON
 }
+type Manutention{
+  protocol: String
+  url: String
+  port: Int
+}

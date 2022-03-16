@@ -12,7 +12,7 @@ levels = {
 }
 
 log_paths = ["src/logs/untimed_log.json", "src/logs/timed_log.json"]
-logger = default_setup(getLogger(__name__), *log_paths, level=levels["debug"])
+logger = default_setup(getLogger(str(__name__)), *log_paths, level=levels["debug"])
 
 from src.manager.mongo_manager import connectToMongo, getDb
 
