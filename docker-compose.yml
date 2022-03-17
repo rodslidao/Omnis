@@ -45,7 +45,7 @@ services:
     ports:
       - ${STREAMING_PORT}:${STREAMING_PORT}
       - ${SERVER_PORT}:${SERVER_PORT}
-      - 4040:4040
+
     env_file: .env
     environment:
       DB_HOST: mongo_c
@@ -64,9 +64,11 @@ services:
       # Share /dev is insecure but is required for the camera and serial devices that not has connected to the host. ( disable this if all devices are connected to the host )
       - /dev:/dev
       - ./backend:/app
+      - /home/ubuntu/.url_host:/app/.url_host
     command: python main.py
     depends_on:
       - mongo-express
+      
   frontend:
     container_name: frontend
     image: omnisofc/frontend:latest

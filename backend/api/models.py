@@ -1,4 +1,3 @@
-from ast import Return
 from enum import Enum
 from api import dbo
 from bson.objectid import ObjectId
@@ -6,7 +5,7 @@ from src.loader import loadConfig, LoadingMode
 from src.nodes.node_manager import NodeManager
 from src.nodes.timer.timer import Chronometer
 from api import logger, exception
-from os import popen
+from json import load
 
 def defaultException(function):
     """Decorator to catch exceptions and return a payload with success=False and errors=exception message"""
@@ -82,8 +81,8 @@ class Process:
 class grok():
     @staticmethod
     def get_url():
-        txt = (popen('curl -s host.docker.internal:4040/api/tunnels | jq ".tunnels[].public_url"').read()).replace('//', '')
-        return list(map( lambda x: dict(zip(('protocol','uri','port'), x.split(':'))), list(filter(None, txt.split('"')))))
+        with open('.url_host', 'r') as f:
+            return load(f)
 
 
 class NodeSheet:

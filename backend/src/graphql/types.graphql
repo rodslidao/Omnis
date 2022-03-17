@@ -87,7 +87,7 @@ type NodeInfo{
   options: JSON
 }
 type Manutention{
-  protocol: String
+  proto: String
   url: String
-  port: Int
+  port: String
 }
