@@ -3,7 +3,7 @@ name: ci-front
 on:
   push:
     branches:
-      - "Desenvolvimento"
+      - "docker_builder"
       
 jobs:
   docker:
