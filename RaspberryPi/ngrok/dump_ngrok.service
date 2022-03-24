@@ -4,10 +4,9 @@ After=network-online.target
 Wants=network-online.target
 
 [Service]
-type=simple
 User=ubuntu
 WorkingDirectory=/home/ubuntu
-ExecStart=/home/ubuntu/env310/bin/python /home/ubuntu/github/Omnis-Interface/RaspberryPi/ngrok/dump_url.py
+ExecStart=/home/ubuntu/.asdf/shims/python /home/ubuntu/github/Omnis-Interface/RaspberryPi/ngrok/dump_url.py
 Restart=on-failure
 
 [Install]

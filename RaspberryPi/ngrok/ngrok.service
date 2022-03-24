@@ -4,7 +4,6 @@ After=network-online.target
 Wants=network-online.target
 
 [Service]
-type=simple
 User=ubuntu
 WorkingDirectory=/home/ubuntu
 ExecStart=/snap/bin/ngrok start --all --config="/home/ubuntu/.ngrok2/ngrok.yml"
