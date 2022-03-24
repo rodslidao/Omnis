@@ -3,7 +3,7 @@ name: ci
 on:
   push:
     branches:
-      - "Desenvolvimento"
+      - "docker_builder"
 
 jobs:
   docker:
