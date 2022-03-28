@@ -18,26 +18,26 @@ class ComparedimensionaldataNode(BaseNode):
         self.operation = options["operation"]
         self.value2 = options["value2"]
         self.value3 = options["value3"]
-        self.auto_run = options["auto_run"]
+        self.auto_run = options["auto_run"]["value"]
         NodeManager.addNode(self)
 
     @exception(logger)
     def execute(self, message=""):
-        target = message["targetName"].lower()
+        target = message.targetName.lower()
         getattr(self, target)(message)
         pass
 
     @exception(logger)
     def dimensional_obj(self, message):
-        self.dimensional_obj = message["payload"]
+        self.dimensional_obj = message.payload
 
     @exception(logger)
     def value2(self, message):
-        self.value2 = message["payload"]
+        self.value2 = message.payload
 
     @exception(logger)
     def value3(self, message):
-        self.value3 = message["payload"]
+        self.value3 = message.payload
 
     @exception(logger)
     def trigger(self, message):

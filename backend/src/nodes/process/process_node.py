@@ -1,31 +1,38 @@
 from src.nodes.node_manager import NodeManager
 from src.nodes.base_node import BaseNode
+from src.nodes.process.process_obj import process
 from api import logger, exception
+NODE_TYPE = "PROCESS"
 
-NODE_TYPE = "node_type"
+process_options ={
+    'stop': process.stopProcess,
+    'pause': process.pauseProcess,
+    'resume': process.resumeProcess,
+    'reset': NodeManager.restart
+}
 
-
-class class_name(BaseNode):
+class ProcessNode(BaseNode):
     """
-    node_description
+    insert_node_description_here
     """
 
     @exception(logger)
     def __init__(self, name, id, options, outputConnections, inputConnections) -> None:
         super().__init__(name, NODE_TYPE, id, options, outputConnections)
         self.inputConnections = inputConnections
-        self.auto_run = options["auto_run"]["value"]
+        self.function = process_options.get(options["action"].get("value", 'stop'), 'stop')
+        self.auto_run = options["auto_run"].get("value", False)
         NodeManager.addNode(self)
 
     @exception(logger)
     def execute(self, message=""):
-        self.onSuccess()
+        pass
 
     @staticmethod
     @exception(logger)
     def get_info():
         return {
             "options": {
-                "option_name": "option_accepted_values",
+                "actions": list(process_options.keys()),
             }
         }

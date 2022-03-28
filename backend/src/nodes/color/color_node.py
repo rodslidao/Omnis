@@ -23,14 +23,14 @@ class ColorNode(BaseNode):
         self.color_mode = options["color_name"]
         
         self.color = color(self.color_code, self.color_mode)
-        self.auto_run = options["auto_run"]
+        self.auto_run = options["auto_run"]["value"]
 
         NodeManager.addNode(self)
 
     @exception(logger)
     def execute(self, message=None):
         if message:
-            self.color = color(message["payload"], self.color_mode)
+            self.color = color(message.payload, self.color_mode)
         for output in color_modes:
             self.on(output, self.color.get(output))
 

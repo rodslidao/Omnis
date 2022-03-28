@@ -9,7 +9,7 @@ payload = {"success": False, "errors": None}
 @query.field("getNodeSheet")
 def getNodeSheet_resolver(obj, info, **kwargs):
     """Get a NodeSheet by id and return it like a payload"""
-    result = NodeSheet().getNodeSheetById(id=kwargs.get("id"))
+    result = NodeSheet().getNodeSheetById(_id=kwargs.get("_id"))
     payload["success"] = True
     payload["data"] = result
     return payload

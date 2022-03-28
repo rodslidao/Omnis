@@ -1,10 +1,10 @@
 from time import sleep
+import timeit
 from src.nodes.node_manager import NodeManager
 from src.nodes.base_node import BaseNode
 from src.manager.serial_manager import SerialManager
 from api import logger, exception
-
-NODE_TYPE = "SERIAL"
+from os import popen
 NODE_TYPE = "MOVEMENT"
 
 
@@ -21,16 +21,19 @@ class MovementNode(BaseNode):
         self.serial_id = options["hardware"]["serial_id"]
         self.serial = SerialManager.get_by_id(self.serial_id)
         self.axis = list(map(lambda x: x.lower(), options["axis"]["list_of_axis"]))
+        self.trigger_delay = 10
         self.coordinates = {
             k.lower(): v
-            for k, v in options["axis"]["axis_values"].items()
+            for k, v in options["axis"]["values"].items()
             if k.lower() in self.axis
         }
-        self.auto_run = options["auto_run"]
+        self.auto_run = options["auto_run"]["value"]
+        print(name, self.auto_run)
         NodeManager.addNode(self)
 
     @exception(logger)
     def execute(self, message):
+        #print(f"{self.name} recived: {message}, {type(message)}")
         action = message.targetName.lower()
         if action in self.axis:
             self.coordinates[action] = message.payload
@@ -45,15 +48,16 @@ class MovementNode(BaseNode):
 
     @exception(logger)
     def trigger_f(self, payload=None):
-        if self.serial is not None and self.serial.is_open:
+        if True or self.serial is not None and self.serial.is_open:
             movement = [
                 (k, v)
                 for k, v in self.coordinates.items()
-                if (k in self.axis and v is not None)
+               if (k in self.axis and v is not None)
             ]
-
-            self.serial.M_G0(*movement, sync=True)
-            self.onSuccess(self.serial)
+            #print(f"{movement}")
+            #self.serial.M_G0(*movement, sync=True)
+            sleep(5)
+            self.onSuccess(self.serial_id)
 
         else:
             if not self.serial.is_open:

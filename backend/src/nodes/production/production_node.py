@@ -13,7 +13,7 @@ class ProductionNode(BaseNode):
         self.model = options["model"]["value"]
         self.status = None
         self.production_obj = ProductionOBJ(**options)
-        self.auto_run = options["auto_run"]
+        self.auto_run = options["auto_run"]["value"]
         NodeManager.addNode(self)
 
     @exception(logger)
@@ -25,4 +25,4 @@ class ProductionNode(BaseNode):
             _ = self.production_obj.finish(model=self.model, status=self.status)
             self.onSuccess(_)
         elif target == "status":
-            self.status = message["payload"]
+            self.status = message.payload

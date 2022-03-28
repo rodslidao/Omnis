@@ -26,17 +26,17 @@ class HsvNode(BaseNode):
     """
 
     @exception(logger)
-    def __init__(self, name, type, id, options, outputConnections) -> None:
-        super().__init__(name, type, id, options, outputConnections)
+    def __init__(self, name, id, options, outputConnections, inputConnections) -> None:
+        super().__init__(name, NODE_TYPE, id, options, outputConnections)
         self.color_range = {"lower": options["lower"]["value"], "upper": options["upper"]["value"]}
-        self.auto_run = options["auto_run"]
+        self.auto_run = options["auto_run"]["value"]
         NodeManager.addNode(self)
 
     @exception(logger)
     def execute(self, message):
-        target = message["targetName"].lower()
+        target = message.targetName.lower()
         if target == "color_range":
-            self.color_range = message["payload"]
+            self.color_range = message.payload
 
         try:
             self.onSuccess(inRange(

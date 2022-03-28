@@ -36,12 +36,12 @@ class ColorspaceNode(BaseNode):
         self.inputConnections = inputConnections
         self.operation = options.color_space["value"]
         self.image = None
-        self.auto_run = options["auto_run"]
+        self.auto_run = options["auto_run"]["value"]
         NodeManager.addNode(self)
 
     @exception(logger)
     def execute(self, message):
-        self.image = message["payload"]
+        self.image = message.payload
         try:
             self.image = cvtColor(self.image, color_operations[self.operation])
             self.onSuccess(self.image)

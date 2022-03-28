@@ -18,11 +18,11 @@ class IdentifyNode(BaseNode):
 
     @exception(logger)
     def __init__(self, name, id, options, outputConnections, inputConnections) -> None:
-        super().__init__(name, type, id, options, outputConnections)
+        super().__init__(name, NODE_TYPE, id, options, outputConnections)
         self.inputConnections = inputConnections
         self.filters = options["filters"]
         self.propertie = options["propertie"]
-        self.auto_run = options["auto_run"]
+        self.auto_run = options["auto_run"]["value"]
         NodeManager.addNode(self)
         if options["startRunning"]: self.execute(message="")
 

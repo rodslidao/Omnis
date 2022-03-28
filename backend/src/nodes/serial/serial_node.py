@@ -15,7 +15,7 @@ class SerialNode(BaseNode):
         self.serial_id = options["hardware"]["serial_id"]
         self.serial = SerialManager.get_by_id(self.serial_id)
         self.stop_event = self.execute()
-        self.auto_run = options["auto_run"]
+        self.auto_run = options["auto_run"]["value"]
         NodeManager.addNode(self)
 
     @setInterval(1)

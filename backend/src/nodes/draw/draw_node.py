@@ -30,7 +30,7 @@ class DrawNode(BaseNode):
 
     @exception(logger)
     def execute(self, message=""):
-        target = message["targetName"].lower()
+        target = message.targetName.lower()
 
         if target == 'dimensional_data':
             if isinstance(message['payload'], list):

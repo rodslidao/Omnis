@@ -11,7 +11,11 @@ from src.nodes.serial.custom_serial import CustomSerial
 from src.manager.camera_manager import CameraManager
 from src.manager.serial_manager import SerialManager
 
+from src.nodes.process.process_node import process
+
 from src.utility.system.date import set_system_date
+import threading
+
 mutation = MutationType()
 
 
@@ -80,7 +84,7 @@ def resumeProcess_resolver(obj, info):
 @mutation.field("loadConfig")
 def loadConfig_resolver(obj, info, _id):
     try:
-        LastValue.loadConfig(_id)
+        process.loadingProcess(_id)
         return True
     except Exception as e:
         print(e)

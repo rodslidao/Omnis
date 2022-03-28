@@ -1,5 +1,6 @@
 from src.message import Message
 from src.nodes.node_manager import NodeManager
+from src.nodes.node_manager import nodes as NODE_LIST
 from api import logger, exception
 
 NODE_TYPE = "BASE_NODE"
@@ -65,7 +66,6 @@ class BaseNode:
         if pulse:
             self.sendErrorMessage(self._id, errorMessage)
         for target in targets:
-
             self.sendConnectionExec(
                 target.get("from").get("id"), target.get("to").get("id")
             )
@@ -82,10 +82,27 @@ class BaseNode:
             while not self.running:
                 pass
             try:
-                NodeManager.getNodeById(target.get("to").get("nodeId")).execute(message)
+                #print(f'Trigger: {target.get("to").get("nodeId")}, message: {message}')
+                #print(target.get("to").get("nodeId"))
+                node_ro_run = NodeManager.getNodeById(target.get("to").get("nodeId"))
+                node_ro_run.execute(message)
             except Exception as e:
+                print(e)
                 self.onFailure(f"{self._id} cant execute.", pulse=True, errorMessage=str(e))
-    
+
+    @exception(logger)
+    def AutoRun(self):
+        message = Message(
+                "auto_run",
+                "auto_run",
+                "auto_run",
+                "auto_run",
+                "auto_run",
+                "auto_run",
+                "auto_run"
+            )
+        NodeManager.getNodeById(self._id).execute(message)
+        
     @exception(logger)
     def pause(self):
         self.running = False
@@ -119,6 +136,6 @@ class BaseNode:
             "data": {"nodeId": nodeId, "errorMessage": errorMessage},
         }
 
-    @staticmethod
+#    @staticmethod
     def  __str__(self) -> str:
         return f"[{self._id}] ({self.type}) {self.name}"
