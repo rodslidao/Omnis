@@ -14,12 +14,15 @@ class class_name(BaseNode):
     def __init__(self, name, id, options, outputConnections, inputConnections) -> None:
         super().__init__(name, NODE_TYPE, id, options, outputConnections)
         self.inputConnections = inputConnections
-        self.auto_run = options["auto_run"]["value"]
+        self.auto_run = options["auto_run"]
         NodeManager.addNode(self)
 
     @exception(logger)
     def execute(self, message=""):
-        self.onSuccess()
+        try:
+            self.onSuccess()
+        except Exception as e:
+            self.onFailure(f"{self._id} cant execute.", pulse=True, errorMessage=str(e))
 
     @staticmethod
     @exception(logger)

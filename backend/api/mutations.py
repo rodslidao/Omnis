@@ -11,10 +11,7 @@ from src.nodes.serial.custom_serial import CustomSerial
 from src.manager.camera_manager import CameraManager
 from src.manager.serial_manager import SerialManager
 
-from src.nodes.process.process_node import process
-
 from src.utility.system.date import set_system_date
-
 mutation = MutationType()
 
 
@@ -83,7 +80,7 @@ def resumeProcess_resolver(obj, info):
 @mutation.field("loadConfig")
 def loadConfig_resolver(obj, info, _id):
     try:
-        process.loadingProcess(_id)
+        LastValue.loadConfig(_id)
         return True
     except Exception as e:
         print(e)
@@ -222,7 +219,6 @@ def communicateSerial_resolver(obj, info, _id, payload):
     serial.send(payload)
     print("ok")
     return {"status": True, "data": serial.to_dict()}
-
 
 @defaultException
 @mutation.field("syncHostTime")

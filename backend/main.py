@@ -51,7 +51,7 @@ try:
     app.mount(
         "/",
         CORSMiddleware(
-            GraphQL(schema, debug=True),
+            GraphQL(schema, debug=True, logger=logger),
             allow_origins=["*"],
             allow_methods=["*"],
             allow_headers=["*"],

@@ -86,8 +86,3 @@ type NodeInfo{
   type: String
   options: JSON
 }
-type Manutention{
-  proto: String
-  url: String
-  port: String
-}

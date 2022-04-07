@@ -1,9 +1,8 @@
 from numpy import unravel_index, bincount, zeros, uint8, mean, array
-from cv2 import imread, cvtColor, COLOR_BGR2HSV_FULL
+from cv2 import imread, resize, cvtColor, COLOR_BGR2HSV_FULL
 from numexpr import evaluate
 from api import logger, exception
 
-#! Verify @exception(logger) performance.
 
 class Image:
     @exception(logger)
@@ -48,7 +47,7 @@ class Image:
     @exception(logger)
     def dominant_color(self):
         a2D = self.image.reshape(-1, self.image.shape[-1])
-        col_range = (256, 256, 256)
+        col_range = (256, 256, 256)  # generically : a2D.max(0)+1
         eval_params = {
             "a0": a2D[:, 0],
             "a1": a2D[:, 1],
@@ -72,7 +71,7 @@ class Image:
     @exception(logger)
     def dominant_color_range(self, variance=0.3):
         color_array = self.dominant_color_array()
-        hsv_bkg_median_max = array(list(map(lambda x: x + (x * variance), color_array)))
-        hsv_bkg_median_min = array(list(map(lambda x: x - (x * variance), color_array)))
+        hsv_bkg_median_max = list(map(lambda x: x + (x * variance), color_array))
+        hsv_bkg_median_min = list(map(lambda x: x - (x * variance), color_array))
 
         return hsv_bkg_median_min, hsv_bkg_median_max

@@ -24,12 +24,12 @@ class BlurNode(BaseNode):
         self.inputConnections = inputConnections
         self.type = options["blur_type"]
         self.k_size = options["blur_intensity"]
-        self.auto_run = options["auto_run"]["value"]
+        self.auto_run = options["auto_run"]
         NodeManager.addNode(self)
 
     @exception(logger)
     def execute(self, message=""):
-        self.image = message.payload
+        self.image = message["payload"]
         try:
             _ = blur_types[self.type](
                 self.image,

@@ -54,12 +54,12 @@ class MorphoperationNode(BaseNode):
             element_types[self.element_type], (self.k_size, self.k_size)
         )
 
-        self.auto_run = options["auto_run"]["value"]
+        self.auto_run = options["auto_run"]
         NodeManager.addNode(self)
 
     @exception(logger)
     def execute(self, message):
-        self.image = message.payload
+        self.image = message["payload"]
         try:
             _ = morphologyEx(self.image, operations_types[self.op_type], self.kernel)
             self.onSuccess(_)
