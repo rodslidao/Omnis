@@ -17,8 +17,6 @@ class SerialGcodeOBJ(CustomSerial):
         xonxoff=False,
         rtscts=False,
         dsrdtr=False,
-        is_gcode=True,
-        _id=None,
     ):
         super().__init__(
             port,
@@ -33,7 +31,6 @@ class SerialGcodeOBJ(CustomSerial):
             rtscts,
             dsrdtr,
             is_gcode=True,
-            _id=_id
         )
         self.pause = False
         self.pause_permission = ["stop", "kill", "quick_stop", "resume"]

@@ -13,10 +13,10 @@ type Mutation {
   updateNodeSheet(_id: ID!, sketchName:String, content: JSON): NodeSheetResult
   deleteNodeSheet(id: ID!): NodeSheetResult
 
-  startProcess: ProcessResult
-  stopProcess: ProcessResult
-  resumeProcess: ProcessResult
-  pauseProcess: ProcessResult
+  startProcess: ProcessResult!
+  stopProcess: ProcessResult!
+  resumeProcess: ProcessResult!
+  pauseProcess: ProcessResult!
 
   loadConfig(_id: ID!): Boolean!
   getLoadedConfig: ID!
@@ -42,24 +42,21 @@ type Mutation {
 }
 
 type Query {
-  getNodeSheet(_id: ID!): NodeSheetResult!
+  getNodeSheet(id: ID!): NodeSheetResult!
   getSketchList:SketchListResult!
 
   getNodeInfo(node_type: ID!): NodeInfoResult!
 
-  getCamera(_id: ID!): CameraResult!
+  getCamera(id: ID!): CameraResult!
   getCameras: CamerasResult!
 
-  getSerial(_id: ID!): SerialResult!
+  getSerial(id: ID!): SerialResult!
   getSerials: SerialsResult!
 
-  getProcess: ProcessResult
+  getProcess: ProcessResult!
 
   updateAlerts: DefaultStatus
   allPhotos: [Photo]
-
-  getManutention: ManutentionResult
-  getThr: [String]
 }
 
 type Subscription {

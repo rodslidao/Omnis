@@ -20,7 +20,7 @@ class BaseManager():
 
     @exception(logger)
     def remove(self, payload):
-        self.store.pop(payload._id, None)
+        del self.store[payload._id]
         self.update()
 
     @exception(logger)
@@ -29,11 +29,7 @@ class BaseManager():
     
     @exception(logger)
     def get_by_id(self, id):
-        if len(id.encode('utf-8')) >= 12:
-            _ = ObjectId(id)
-        else:
-            _ = None
-        return self.store.get(_)            
+        return self.store.get(ObjectId(id))            
 
     @exception(logger)
     def __str__(self) -> str:

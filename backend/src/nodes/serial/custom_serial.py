@@ -3,9 +3,8 @@ from serial import Serial, serialutil
 from bson import ObjectId
 from src.manager.serial_manager import SerialManager
 from api import logger, exception
-from threading import Lock
 
-send_lock = Lock()
+
 class CustomSerial(Serial):
     """
     Class to comunicate with serial port.
@@ -50,15 +49,14 @@ class CustomSerial(Serial):
         rtscts=False,
         dsrdtr=False,
         is_gcode=False,
-        _id=None,
     ) -> None:
-        self._id = ObjectId(_id)
+        self._id = ObjectId()
         super().__init__(
             port, baudrate, bytesize, parity, stopbits, timeout, xonxoff, rtscts, dsrdtr
         )
         self.port = port
         self.baudrate = baudrate
-        #self.is_open = False
+        self.is_open = False
         self.is_gcode = is_gcode
         self.last_value_send = None
         self.last_value_received = None
@@ -73,7 +71,7 @@ class CustomSerial(Serial):
 
     @exception(logger)
     def start(self):
-        if not self.is_open:
+        try:
             if self.port is None:
                 compatible = self.findMostCompatiblePort()
                 if compatible is not None:
@@ -83,19 +81,21 @@ class CustomSerial(Serial):
             assert (
                 self.port is not None
             ), "Port is not set and no compatible filter found!"
-            self.open()
+            super().open()
+            self.is_open = True
+
+        except serialutil.SerialException as e:
+            if "No such file or directory" in str(e):
+                print(f"Porta não encontrada! [{self.port}]")
+            raise e
         return self
 
     @exception(logger)
     def close(self):
-        super().close()
-    
-    def stop(self):
-        self.close()
-        return self
-
-    def remove(self):
         SerialManager.remove(self)
+        super().close()
+        self.is_open = False
+        return self
 
     @exception(logger)
     def reset(self):
@@ -105,16 +105,17 @@ class CustomSerial(Serial):
 
     @exception(logger)
     def send(self, message, echo=False):
-        send_lock.acquire()
         try:
             _ = self.write(message)
             if echo:
                 return _
         except serialutil.PortNotOpenError:
-            self.open()
+            self.start()
             return self.send(message, echo)
-        finally:
-            send_lock.release()
+        except Exception as e:
+            self.close()
+            print("Trigger alert and log error - serial.send()")
+            raise e
 
     @exception(logger)
     def write(self, payload):
@@ -154,8 +155,8 @@ class CustomSerial(Serial):
             "port": self.port,
             "name": self.name,
             "baudrate": self.baudrate,
-            "is_open": self.is_open == True,
-            "is_gcode": self.is_gcode == True,
+            "is_open": self.is_open,
+            "is_gcode": self.is_gcode,
             "last_value_send": self.last_value_send,
             "last_value_received": self.last_value_received,
         }
