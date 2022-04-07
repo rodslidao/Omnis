@@ -91,6 +91,7 @@ class ProcessManager(Process):
     @exception(logger)
     def loadingProcess(self, load_id=None):
         if self.isAnyOfStatus(Process.StatusCode.STOPPED):
+            NodeManager.clear()
             load(load_id)
             self.config_loaded = True
             return True
@@ -100,6 +101,7 @@ class ProcessManager(Process):
         while not external_stop_event.isSet():
             th = threading.Thread(name="StartProcess", target=NodeManager.start)
             th.start()
+            print("NEW CICLE STARTED...")
             th.join()
 
     @exception(logger)

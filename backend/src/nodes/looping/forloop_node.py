@@ -22,26 +22,31 @@ class ForloopNode(BaseNode):
         self.iterator = enumerate(options["iterator"]["value"])
         self.backup = options["iterator"]["value"][:]
         self.auto_run = options["auto_run"]["value"]
-        print(name, self.iterator, self.auto_run, id)
-        self.run_next = True
         NodeManager.addNode(self)
 
     @exception(logger)
     def execute(self, message):
         target = message.targetName
-        if target == "Lista":
+        if target == "iterator":
             self.iterator = enumerate(message.payload)
             self.backup = self.iterator
         elif target == "next" or "auto_run":
-            try:
-                self.item_id, self.item = next(self.iterator)
-                if self.run_next:
+            print(self.name, message)
+            if not self.stop_event.is_set():
+                try:
+                    self.item_id, self.item = next(self.iterator)
                     self.on("item", self.item)
-
-            except StopIteration:
-                self.on("end", "")
-                self.iterator = enumerate(self.backup[:])
+                except StopIteration:
+                    self.iterator = enumerate(self.backup[:])
+                    self.on("end", "")
+        else:
+            raise "Target not found"
     
+    # @exception(logger)
+    # def stop(self):
+    #     self.run_next = False
+
     @exception(logger)
-    def stop(self):
-        self.run_next = False
+    def reset(self):
+        super().reset()
+        self.iterator = enumerate(self.backup[:])

@@ -1,6 +1,7 @@
 from .models import *
 from ariadne import QueryType
 from src.nodes.node_registry import NodeRegistry
+from threading import enumerate as thread_enumerate
 query = QueryType()
 
 payload = {"success": False, "errors": None}
@@ -51,3 +52,8 @@ def resolve_getNodeInfo(obj, info, node_type):
 def resolve_getManutention(obj, info):
     """Get a Node by id and return it like a payload"""
     return {'status': True, 'data': grok.get_url()}
+
+@query.field("getThr")
+def resolve_getThr(obj, info):
+    """Get a Node by id and return it like a payload"""
+    return list([ thread.name for thread in thread_enumerate() ])

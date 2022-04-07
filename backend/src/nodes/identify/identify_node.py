@@ -24,21 +24,24 @@ class IdentifyNode(BaseNode):
         self.propertie = options["propertie"]
         self.auto_run = options["auto_run"]["value"]
         NodeManager.addNode(self)
-        if options["startRunning"]: self.execute(message="")
 
     @exception(logger)
     def execute(self, message):
-        try:
-            object_data_list = identifyObjects(message, **self.filters)
-            property_data_list = []
-            for object_data in object_data_list:
-                if object_data.get(self.propertie) is not None:
-                    self.on(self.propertie, object_data)
-                    property_data_list.append(object_data)
-            self.on("onSuccess", property_data_list)
-            self.onSignal()
-        except Exception as e:
-            self.onFailure(e, pulse=True)
+        print(f"{self.name} - triggered")
+        object_data_list = identifyObjects(message.payload, **self.filters)
+        for object_data in object_data_list:
+            for prop_key in self.propertie:
+                if object_data.get(prop_key) is not None:
+                    self.on(prop_key, object_data.get(prop_key))
+
+            self.on("object", object_data)
+            self.onSuccess(object_data())
+
+        #property_data_list.add(object_data)
+        #self.on("onSuccess", list(property_data_list))
+        #self.onSignal()
+        # except Exception as e:
+        #     self.onFailure(e, pulse=True)
 
 
 """

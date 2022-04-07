@@ -59,6 +59,7 @@ type Query {
   allPhotos: [Photo]
 
   getManutention: ManutentionResult
+  getThr: [String]
 }
 
 type Subscription {

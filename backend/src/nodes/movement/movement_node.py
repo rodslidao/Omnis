@@ -21,6 +21,7 @@ class MovementNode(BaseNode):
         self.serial_id = options["hardware"]["serial_id"]
         self.serial = SerialManager.get_by_id(self.serial_id)
         self.axis = list(map(lambda x: x.lower(), options["axis"]["list_of_axis"]))
+        self.relative = options["axis"].get("relative", False)
         self.trigger_delay = 10
         self.coordinates = {
             k.lower(): v
@@ -44,19 +45,29 @@ class MovementNode(BaseNode):
     @exception(logger)
     def coordinates_f(self, payload):
         for k, v in payload.items():
-            self.coordinates[k] = v
+            self.coordinates[k.lower()] = v
 
     @exception(logger)
     def trigger_f(self, payload=None):
-        if True or self.serial is not None and self.serial.is_open:
+        if self.serial is not None and self.serial.is_open:
             movement = [
                 (k, v)
                 for k, v in self.coordinates.items()
                if (k in self.axis and v is not None)
             ]
-            #print(f"{movement}")
-            #self.serial.M_G0(*movement, sync=True)
-            sleep(5)
+            print(f"{self.name} {movement}, relative: {self.relative}")
+            #sleep(2)
+            #if not self.relative:
+            t = 0.5
+             
+            if self.relative:
+                self.serial.send("G91")
+                t = 1
+            else:
+                self.serial.send("G90")
+
+            self.serial.M_G0(*movement, sync=True)
+            sleep(t)
             self.onSuccess(self.serial_id)
 
         else:

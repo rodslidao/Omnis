@@ -26,3 +26,17 @@ if environ.get("PYTHON_RUN", "true").lower() == "false":
 
 connectToMongo()
 dbo = getDb()
+
+from src.manager.serial_manager import SerialManager
+from src.manager.camera_manager import CameraManager
+from src.nodes.serial.custom_serial import CustomSerial
+from src.nodes.serial.gcode_obj import SerialGcodeOBJ
+from src.nodes.camera.custom_camera import camera
+
+for serial_config in dbo.find_many('serial-manager', {}):
+    print("Serials:", serial_config)
+    SerialManager.add(SerialGcodeOBJ(**serial_config) if serial_config.get("is_gcode", False) else CustomSerial(**serial_config))
+
+for camera_config in dbo.find_many('camera-manager', {}):
+    print("Cameras:", camera_config)
+    CameraManager.add(camera(**camera_config))

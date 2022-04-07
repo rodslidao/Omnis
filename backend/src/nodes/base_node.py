@@ -2,6 +2,7 @@ from src.message import Message
 from src.nodes.node_manager import NodeManager
 from src.nodes.node_manager import nodes as NODE_LIST
 from api import logger, exception
+from threading import Event
 
 NODE_TYPE = "BASE_NODE"
 
@@ -42,6 +43,7 @@ class BaseNode:
         self.options = options
         self.outputConnections = outputConnections
         self.running = True
+        self.stop_event = Event()
 
     @exception(logger)
     def onSuccess(self, payload, additional=None):
@@ -101,7 +103,8 @@ class BaseNode:
                 "auto_run",
                 "auto_run"
             )
-        NodeManager.getNodeById(self._id).execute(message)
+        self.reset()
+        self.execute(message)
         
     @exception(logger)
     def pause(self):
@@ -115,11 +118,13 @@ class BaseNode:
 
     @exception(logger)
     def stop(self):
-        return False
+        self.stop_event.set()
     
     @exception(logger)
     def reset(self):
-        return False
+        self.stop()
+        self.stop_event.clear()
+        self.running = True
 
     @exception(logger)
     def pulse(self, color):

@@ -27,13 +27,13 @@ class NodeSheet:
     @exception(logger)
     def createNodeSheet(self, _id, **kwargs):
         """Create a new NodeSheet object"""
-        dbo.insert_one("NodeSheets", {'_id': ObjectId(_id), **kwargs})
+        dbo.insert_one("node-sheets", {'_id': ObjectId(_id), **kwargs})
         return self.getNodeSheetById(kwargs.get("_id"))
 
     @exception(logger)
     def getNodeSheetById(self, _id):
         """Get a NodeSheet by id"""
-        self.NodeSheet = dbo.find_one("NodeSheets", {"_id": ObjectId(_id)})
+        self.NodeSheet = dbo.find_one("node-sheets", {"_id": ObjectId(_id)})
         return self._format()
 
     @exception(logger)
@@ -41,7 +41,7 @@ class NodeSheet:
         # kwargs["_id"] = ObjectId(kwargs["_id"])
         """Update a NodeSheet by id"""
         print("updatating", kwargs)
-        dbo.update_one("NodeSheets", {"_id": ObjectId(_id)}, {"$set": kwargs})
+        dbo.update_one("node-sheets", {"_id": ObjectId(_id)}, {"$set": kwargs})
         return self.getNodeSheetById(_id)
 
     @exception(logger)
@@ -49,7 +49,7 @@ class NodeSheet:
         # kwargs["_id"] = ObjectId(kwargs["_id"])
         """Delete a NodeSheet by id"""
         deleted_sheet = self.getNodeSheetById(_id)
-        dbo.delete_one("NodeSheets", {"_id": ObjectId(_id)})
+        dbo.delete_one("node-sheets", {"_id": ObjectId(_id)})
         return deleted_sheet
 
     @exception(logger)

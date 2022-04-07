@@ -62,7 +62,10 @@ class NodeManager:
         global nodes, auto_run_nodes
         #NodeManager.stop()
         #nodes, auto_run_nodes = {}, []   
-
+    def clear():
+        global nodes, auto_run_nodes
+        nodes, auto_run_nodes = {}, {}
+        
     def restart():
         NodeManager.stop()
         NodeManager.start()

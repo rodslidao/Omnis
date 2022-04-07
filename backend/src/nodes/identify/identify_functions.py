@@ -30,8 +30,7 @@ from cv2 import (
     blur
 )
 import cv2
-
-from numpy import angle, float32, int0, uint8
+from numpy import angle, float32, int0, uint8, array
 from bson.objectid import ObjectId
 from api import logger, exception
 
@@ -90,7 +89,8 @@ class dimensional_data(object):
         edges= None,
         corners= None,
         countour = None,
-        box=None
+        box=None,
+        center_dist=None
     ):
         self._id = ObjectId()
         self.area = area
@@ -104,6 +104,7 @@ class dimensional_data(object):
         self.corners = corners
         self.countour = countour
         self.box = box
+        self.center_dist = center_dist
         self.angle = self.getAngle()[1]
 
     def getAngle(self, pivot='A'):
@@ -116,7 +117,7 @@ class dimensional_data(object):
         else:
             print("Failed to find pivot")
             return False, 0
-        self.angle = find_angle(self.center, self.pivot) 
+        self.angle = find_angle(tuple(self.center.values()), self.pivot) 
         return True, self.angle
 
     @exception(logger)
@@ -242,14 +243,16 @@ def identifyObjects(image, mode="RETR_TREE", method="CHAIN_APPROX_SIMPLE", **par
 
         if AB is None or AC is None or AD is None:
             continue
-        print(AB, AC, AD)
+        #print(AB, AC, AD)
 
         # calculate center of mass
         M = moments(contour)
         cx = int(M["m10"] / M["m00"])
         cy = int(M["m01"] / M["m00"])
 
-        center = (cx, cy) #{"X": cx, "Y": cy}
+        #center = (cx, cy)
+        center = {"X": cx, "Y": cy}
+        center_dist ={"X":int(cx - (image.shape[1]/2)), "Y":int(cy - (image.shape[0]/2))}
         if len(corners) == 0:
             corners = [
                         [int(center[0]-(diameter/2)), center[1]],
@@ -259,11 +262,9 @@ def identifyObjects(image, mode="RETR_TREE", method="CHAIN_APPROX_SIMPLE", **par
             ]
         
         
-        # create dimensional object and append to list
-        print("adicionando objeto")
         dimensional_object_list.append(
             dimensional_data(
-                area, perimeter, diameter, AB, AC, AD, center, edges, corners, contour, box
+                area, perimeter, diameter, AB, AC, AD, center, edges, corners, contour, box, center_dist
             )
         )
     # return list of dimensional objects that passed all tests
