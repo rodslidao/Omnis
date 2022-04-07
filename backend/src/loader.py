@@ -1,5 +1,7 @@
 from enum import Enum
 from datetime import datetime
+from bson import ObjectId
+from api.models import NodeSheet
 
 from .nodes.node_manager import NodeManager
 from .nodes.node_registry import NodeRegistry
@@ -172,7 +174,7 @@ def loadConfig(NodeSheet, mode=LoadingMode):
                 )
             )
 
-            if not existingNode:
+            if existingNode is None:
                 newCls(
                     node.get("name"),
                     node.get("id"),
@@ -183,6 +185,7 @@ def loadConfig(NodeSheet, mode=LoadingMode):
                 numberOfNodesInit += 1
 
                 if mode == LoadingMode.RUNNING:
+                    exit("PQ TA AQUI?")
                     saveNodeChange(
                         NodeChange(
                             node.get("id"),
@@ -224,7 +227,6 @@ def loadConfig(NodeSheet, mode=LoadingMode):
 
         numberOfNodesTotal += len(nodeConfig.get("nodes"))
 
-
 @exception(logger)
 def saveNodeChange(nodeChange):
     print("saving node change")
@@ -234,3 +236,18 @@ def saveNodeChange(nodeChange):
         dbo.get_collection("node-history").insert_one(nodeChange)
     except Exception as e:
         print("Can't save node change: {}".format(e))
+
+@exception(logger)
+def load(node_id=None):
+    dbo = getDb()
+    #NodeManager.reset()
+    current_loaded_query = {"description":"current-config-loaded-id"}
+    if node_id is not None:
+        dbo.update_one("last-values", current_loaded_query, {"$set": {"sheet-id": ObjectId(node_id)}})
+        sheet = NodeSheet().getNodeSheetById(node_id)["content"]
+    else:
+        _ = dbo.find_one("last-values", current_loaded_query)["sheet-id"]
+        print("auto_select id:", _)
+        sheet = NodeSheet().getNodeSheetById(dbo.find_one("last-values", current_loaded_query)["sheet-id"])["content"]
+    loadConfig(sheet, LoadingMode)
+    

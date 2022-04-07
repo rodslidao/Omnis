@@ -1,6 +1,7 @@
 from src.message import Message
 from src.nodes.node_manager import NodeManager
 from api import logger, exception
+from threading import Event
 
 NODE_TYPE = "BASE_NODE"
 
@@ -41,6 +42,7 @@ class BaseNode:
         self.options = options
         self.outputConnections = outputConnections
         self.running = True
+        self.stop_event = Event()
 
     @exception(logger)
     def onSuccess(self, payload, additional=None):
@@ -65,7 +67,6 @@ class BaseNode:
         if pulse:
             self.sendErrorMessage(self._id, errorMessage)
         for target in targets:
-
             self.sendConnectionExec(
                 target.get("from").get("id"), target.get("to").get("id")
             )
@@ -81,8 +82,25 @@ class BaseNode:
             )
             while not self.running:
                 pass
-            NodeManager.getNodeById(target.get("to").get("nodeId")).execute(message)
-    
+
+            node_ro_run = NodeManager.getNodeById(target.get("to").get("nodeId"))
+            node_ro_run.execute(message)
+
+
+    @exception(logger)
+    def AutoRun(self):
+        message = Message(
+                "auto_run",
+                "auto_run",
+                "auto_run",
+                "auto_run",
+                "auto_run",
+                "auto_run",
+                "auto_run"
+            )
+        self.reset()
+        self.execute(message)
+        
     @exception(logger)
     def pause(self):
         self.running = False
@@ -95,12 +113,15 @@ class BaseNode:
 
     @exception(logger)
     def stop(self):
-        return False
+        self.stop_event.set()
     
     @exception(logger)
     def reset(self):
-        return False
+        self.stop()
+        self.stop_event.clear()
+        self.running = True
 
+    #Todo: Implement the following methods in the frontend0
     @exception(logger)
     def pulse(self, color):
         message = {"NodeId": self._id, "color": color}
@@ -116,6 +137,5 @@ class BaseNode:
             "data": {"nodeId": nodeId, "errorMessage": errorMessage},
         }
 
-    @staticmethod
     def  __str__(self) -> str:
         return f"[{self._id}] ({self.type}) {self.name}"

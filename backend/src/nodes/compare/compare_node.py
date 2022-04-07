@@ -20,26 +20,26 @@ class CompareNode(BaseNode):
         self.value1 = options["value1"]
         self.value2 = options["value2"]
         self.value3 = options["value3"]
-        self.auto_run = options["auto_run"]
+        self.auto_run = options["auto_run"]["value"]
         NodeManager.addNode(self)
 
     @exception(logger)
     def execute(self, message=""):
-        target = message["targetName"].lower()
+        target = message.targetName.lower()
         getattr(self, target)(message)
         pass
 
     @exception(logger)
     def value1(self, message):
-        self.value1 = message["payload"]
+        self.value1 = message.payload
 
     @exception(logger)
     def value2(self, message):
-        self.value2 = message["payload"]
+        self.value2 = message.payload
 
     @exception(logger)
     def value3(self, message):
-        self.value3 = message["payload"]
+        self.value3 = message.payload
 
     @exception(logger)
     def trigger(self, message):

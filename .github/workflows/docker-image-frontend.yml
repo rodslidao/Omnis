@@ -3,7 +3,7 @@ name: ci-front
 on:
   push:
     branches:
-      - "Desenvolvimento"
+      - "docker_builder"
       
 jobs:
   docker:
@@ -12,6 +12,10 @@ jobs:
       # Check out code
       - name: Checkout
         uses: actions/checkout@v2
+        
+      - name: Set up QEMU dependency
+        uses: docker/setup-qemu-action@v1
+        
       # This is the a separate action that sets up buildx runner
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
@@ -35,6 +39,9 @@ jobs:
         uses: docker/build-push-action@v2
         with:
         # Set NODE_ENV as production will fail at build stage: [https://github.com/vuejs/vue-cli/issues/5107]
+          platforms: |
+              linux/amd64
+              linux/arm64
           build-args: |
             VUE_APP_URL_API_IP=${{ secrets.API_IP }}
             VUE_APP_URL_API_PORT=${{ secrets.API_PORT }}

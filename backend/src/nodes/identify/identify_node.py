@@ -1,4 +1,3 @@
-from tkinter import image_names
 from src.nodes.node_manager import NodeManager
 from src.nodes.base_node import BaseNode
 
@@ -18,47 +17,21 @@ class IdentifyNode(BaseNode):
 
     @exception(logger)
     def __init__(self, name, id, options, outputConnections, inputConnections) -> None:
-        super().__init__(name, type, id, options, outputConnections)
+        super().__init__(name, NODE_TYPE, id, options, outputConnections)
         self.inputConnections = inputConnections
         self.filters = options["filters"]
         self.propertie = options["propertie"]
-        self.auto_run = options["auto_run"]
+        self.auto_run = options["auto_run"]["value"]
         NodeManager.addNode(self)
-        if options["startRunning"]: self.execute(message="")
 
     @exception(logger)
     def execute(self, message):
-        try:
-            object_data_list = identifyObjects(message, **self.filters)
-            property_data_list = []
-            for object_data in object_data_list:
-                if object_data.get(self.propertie) is not None:
-                    self.on(self.propertie, object_data)
-                    property_data_list.append(object_data)
-            self.on("onSuccess", property_data_list)
-            self.onSignal()
-        except Exception as e:
-            self.onFailure(e, pulse=True)
+        print(f"{self.name} - triggered")
+        object_data_list = identifyObjects(message.payload, **self.filters)
+        for object_data in object_data_list:
+            for prop_key in self.propertie:
+                if object_data.get(prop_key) is not None:
+                    self.on(prop_key, object_data.get(prop_key))
 
-
-"""
-
-Pegar imagem
-Filtrar imagem
-Identificar objetos
-
-Manipular informações
-
-Informações de validação
- - Dimensões e etc
-
-Informações de manipulação fisica
-    - Coordenadas
-
-
-
-
-
-
-
-"""
+            self.on("object", object_data)
+            self.onSuccess(object_data())

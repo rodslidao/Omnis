@@ -19,14 +19,14 @@ class ColorSpaceNode(BaseNode):
         self.inputConnections = inputConnections
         self.CSO = options["colorSpaceOrigin"]
         self.CSC = options["colorSpaceConvert"]
-        self.auto_run = options["auto_run"]
+        self.auto_run = options["auto_run"]["value"]
         NodeManager.addNode(self)
 
     @exception(logger)
     def execute(self, message):
         try:
             _ = cv2.cvtColor(
-                message["payload"], getattr(cv2, f"COLOR_{self.CSC}2{self.CSO}")
+                message.payload, getattr(cv2, f"COLOR_{self.CSC}2{self.CSO}")
             )
             self.onSuccess(_)
         except Exception as e:
