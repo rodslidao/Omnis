@@ -16,13 +16,13 @@ class ColorrangeNode(BaseNode):
         self.inputConnections = inputConnections
         self.lower = None
         self.upper = None
-        # self.auto_run = options["auto_run"]
+        # self.auto_run = options["auto_run"]["value"]
         NodeManager.addNode(self)
 
     @exception(logger)
     def execute(self, message=None):
-        if message["targetName"] in ["lower", "upper"]:
-            setattr(self, message["targetName"], message["lower"])
+        if message.targetName in ["lower", "upper"]:
+            setattr(self, message.targetName, message.payload["lower"])
 
         if self.lower and self.upper:
             self.onSuccess({"lower": self.lower, "upper": self.upper})

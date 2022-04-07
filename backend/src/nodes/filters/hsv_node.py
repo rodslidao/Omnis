@@ -5,13 +5,13 @@ from api import logger, exception
 from cv2 import (
     inRange,
     cvtColor,
-    COLOR_BGR2HSV_FULL,
-    morphologyEx,
-    MORPH_CLOSE,
-    MORPH_OPEN,
+    COLOR_BGR2HSV,
+    bitwise_and,
+    FONT_HERSHEY_SIMPLEX,
+    putText,
 )
 
-from numpy import array, ones, uint8
+from numpy import array
 
 NODE_TYPE = "HSV"
 
@@ -26,23 +26,46 @@ class HsvNode(BaseNode):
     """
 
     @exception(logger)
-    def __init__(self, name, type, id, options, outputConnections) -> None:
-        super().__init__(name, type, id, options, outputConnections)
-        self.color_range = {"lower": options["lower"]["value"], "upper": options["upper"]["value"]}
-        self.auto_run = options["auto_run"]
+    def __init__(self, name, id, options, outputConnections, inputConnections) -> None:
+        super().__init__(name, NODE_TYPE, id, options, outputConnections)
+        print(options)
+        self.color_range = {
+            "lower": options["filter"]["lower"],
+            "upper": options["filter"]["upper"],
+        }
+        self.auto_run = options["auto_run"]["value"]
         NodeManager.addNode(self)
 
     @exception(logger)
     def execute(self, message):
-        target = message["targetName"].lower()
+        target = message.targetName.lower()
         if target == "color_range":
-            self.color_range = message["payload"]
+            self.color_range = message.payload
+        elif target == "image":
+            self.message = message
+            self.onSuccess(self.convert_frame())
 
-        try:
-            self.onSuccess(inRange(
-                cvtColor(message['payload'], COLOR_BGR2HSV_FULL),
-                array(self.color_range["lower"]),
-                array(self.color_range["upper"]),
-            ))
-        except Exception as e:
-            self.onFailure(e)
+    @exception(logger)
+    def convert_frame(self):
+        return inRange(
+            cvtColor(self.message.payload, COLOR_BGR2HSV),
+            array(self.color_range["lower"]),
+            array(self.color_range["upper"]),
+        )
+
+    @exception(logger)
+    def get_frame(self):
+        
+        _ = bitwise_and(
+            self.message.payload, self.message.payload, mask=self.convert_frame()
+        )
+
+        return putText(
+            _,
+            f"HSV Range: {self.color_range}",
+            (10, 30),
+            FONT_HERSHEY_SIMPLEX,
+            0.5,
+            (0, 0, 255),
+            2,
+        )

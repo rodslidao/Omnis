@@ -28,7 +28,7 @@ requiredCollections = ["node-configs", "node-templates", "last-values", "node-hi
 def getDb():
     global _db
     if _db is None:
-        _db = MongoOBJ("Teste", url)
+        _db = MongoOBJ(environ.get("DB_NAME"), url)
     return _db
 
 

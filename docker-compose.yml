@@ -2,6 +2,7 @@
 version: "3.1"
 services:
   mongo:
+    privileged: true
     image: mongo:4.2
     container_name: mongo_c
     restart: always
@@ -17,6 +18,7 @@ services:
       - ./mongodb:/data/db
  
   mongo-express:
+    privileged: true
     image: mongo-express:latest
     restart: always
     ports:
@@ -38,6 +40,7 @@ services:
       - ./mongodb:/data/db
 
   backend:
+    privileged: true
     container_name: backend
     image: omnisofc/backend:latest
     build: ./backend
@@ -59,7 +62,6 @@ services:
       # - "/dev/video0:/dev/video0"
       # - "/dev/video2:/dev/video2"
       # - "/dev/video4:/dev/video4"
-    privileged: true
     volumes:
       # Share /dev is insecure but is required for the camera and serial devices that not has connected to the host. ( disable this if all devices are connected to the host )
       - /dev:/dev
@@ -70,6 +72,7 @@ services:
       - mongo-express
       
   frontend:
+    privileged: true
     container_name: frontend
     image: omnisofc/frontend:latest
     env_file: .env
@@ -83,7 +86,6 @@ services:
     restart: always
     ports:
       - 8080:80
-
 
 networks: 
   mongo-compose-network:
