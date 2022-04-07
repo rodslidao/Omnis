@@ -1,4 +1,3 @@
-from tkinter import image_names
 from src.nodes.node_manager import NodeManager
 from src.nodes.base_node import BaseNode
 
@@ -36,32 +35,3 @@ class IdentifyNode(BaseNode):
 
             self.on("object", object_data)
             self.onSuccess(object_data())
-
-        #property_data_list.add(object_data)
-        #self.on("onSuccess", list(property_data_list))
-        #self.onSignal()
-        # except Exception as e:
-        #     self.onFailure(e, pulse=True)
-
-
-"""
-
-Pegar imagem
-Filtrar imagem
-Identificar objetos
-
-Manipular informações
-
-Informações de validação
- - Dimensões e etc
-
-Informações de manipulação fisica
-    - Coordenadas
-
-
-
-
-
-
-
-"""

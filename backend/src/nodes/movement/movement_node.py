@@ -29,12 +29,10 @@ class MovementNode(BaseNode):
             if k.lower() in self.axis
         }
         self.auto_run = options["auto_run"]["value"]
-        print(name, self.auto_run)
         NodeManager.addNode(self)
 
     @exception(logger)
     def execute(self, message):
-        #print(f"{self.name} recived: {message}, {type(message)}")
         action = message.targetName.lower()
         if action in self.axis:
             self.coordinates[action] = message.payload
@@ -47,6 +45,7 @@ class MovementNode(BaseNode):
         for k, v in payload.items():
             self.coordinates[k.lower()] = v
 
+    #ToDo time for wait after movment needs to be set on options.
     @exception(logger)
     def trigger_f(self, payload=None):
         if self.serial is not None and self.serial.is_open:
@@ -55,14 +54,12 @@ class MovementNode(BaseNode):
                 for k, v in self.coordinates.items()
                if (k in self.axis and v is not None)
             ]
-            print(f"{self.name} {movement}, relative: {self.relative}")
-            #sleep(2)
-            #if not self.relative:
-            t = 0.5
+
+            t = 0.5     #! Remove this line
              
             if self.relative:
                 self.serial.send("G91")
-                t = 1
+                t = 1   #! Remove this line
             else:
                 self.serial.send("G90")
 

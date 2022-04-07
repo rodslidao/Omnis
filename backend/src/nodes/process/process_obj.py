@@ -101,7 +101,6 @@ class ProcessManager(Process):
         while not external_stop_event.isSet():
             th = threading.Thread(name="StartProcess", target=NodeManager.start)
             th.start()
-            print("NEW CICLE STARTED...")
             th.join()
 
     @exception(logger)

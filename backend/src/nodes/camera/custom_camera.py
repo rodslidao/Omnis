@@ -1,13 +1,12 @@
 from bson import ObjectId
-import cv2
+from numpy import ascontiguousarray
+from src.manager.camera_manager import CameraManager
 from threading import Thread
 from time import sleep
-from src.manager.camera_manager import CameraManager
 from time import sleep
-from numpy import ascontiguousarray
 
+import cv2
 import datetime
-from collections import deque
 
 from api import logger, exception
 
@@ -91,15 +90,15 @@ class camera:
     @exception(logger)
     def __init__(self, src=0, name="WebcamVideoStream", _id=None):
         self.src = src
-        self.stream = cv2.VideoCapture(src)
+
+        # Todo: Test another back_end API for camera.
+        self.stream = cv2.VideoCapture(src, cv2.CAP_V4L2)
+
         self.stream.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc("M", "J", "P", "G"))
+
+        #! That is not ideal, properties should be set in the constructor as **keyword arguments
         self.stream.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
         self.stream.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
-        # self.stream.set(cv2.CAP_PROP_FPS, 30)
-        # self.stream.set(cv2.CAP_PROP_AUTOFOCUS, 0)
-        # self.stream.set(cv2.CAP_PROP_AUTO_EXPOSURE, 0)
-        #self.stream.set(cv2.CAP_PROP_WHIT)
-        
 
         self.name = name
         self._id = ObjectId(_id)
@@ -135,13 +134,13 @@ class camera:
         returns self.
         """
         if self.stopped:
-            #self.fps = FPS().start()
             self.stopped = False
-            self.t = Thread(target=self.updateFrame, name=self.name, args=(), daemon=True)
+            self.t = Thread(
+                target=self.updateFrame, name=self.name, args=(), daemon=True
+            )
             self.t.start()
             CameraManager.update()
         return self
-
 
     @exception(logger)
     def updateFrame(self):
@@ -151,17 +150,7 @@ class camera:
         """
         while not self.stopped:
             (self.grabbed, self.frame) = self.stream.read()
-            # cv2.putText(
-            #     self.frame,
-            #     "FPS: {:.2f}".format(self.fps.fps()),
-            #     (10, 30),
-            #     cv2.FONT_HERSHEY_SIMPLEX,
-            #     0.7,
-            #     (0, 0, 255),
-            #     2,
-            # )
             self.scale_lines_draw()
-            #self.fps.update()
 
     @exception(logger)
     def read(self):
@@ -169,7 +158,8 @@ class camera:
         Read the current frame.
         returns the current frame.
         """
-        #return ascontiguousarray(self.frame[150:330, 120:520])
+
+        #! Do not use this, the ROI needs to be set in the constructor, or another node should be used.
         return ascontiguousarray(self.frame[130:350, 120:520])
 
     @exception(logger)
@@ -210,15 +200,31 @@ class camera:
         }
 
     def scale_lines_draw(self):
-        x,y = 20, 300
+        x, y = 20, 300
         l = 3
         s = 150
 
-        for i, n in enumerate(range(10, s+1, int(s/l))):    
-            cv2.line(self.frame, (int(320-((n)/2)), int(240+(i*x/2))), (int(320+((n)/2)), int(240+(i*x/2))), (255, 255, 255), thickness=1)
-            cv2.putText(self.frame, f"{n}",(int(320-s/2), int(240+(i*x/2))), cv2.FONT_HERSHEY_SIMPLEX,  0.25, (255, 255, 255), 1, cv2.LINE_AA)
+        for i, n in enumerate(range(10, s + 1, int(s / l))):
+            cv2.line(
+                self.frame,
+                (int(320 - ((n) / 2)), int(240 + (i * x / 2))),
+                (int(320 + ((n) / 2)), int(240 + (i * x / 2))),
+                (255, 255, 255),
+                thickness=1,
+            )
+            cv2.putText(
+                self.frame,
+                f"{n}",
+                (int(320 - s / 2), int(240 + (i * x / 2))),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                0.25,
+                (255, 255, 255),
+                1,
+                cv2.LINE_AA,
+            )
 
-        cv2.rectangle(self.frame, (120, 170), (520,310), (255,255,255), 1)
+        cv2.rectangle(self.frame, (120, 170), (520, 310), (255, 255, 255), 1)
+
 
 @exception(logger)
 def checker(src=2):

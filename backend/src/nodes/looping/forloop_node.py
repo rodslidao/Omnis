@@ -31,7 +31,8 @@ class ForloopNode(BaseNode):
             self.iterator = enumerate(message.payload)
             self.backup = self.iterator
         elif target == "next" or "auto_run":
-            print(self.name, message)
+
+            # Is important itereate the iterator before or back up it, before send signal to avoid infinite loop or empty list.
             if not self.stop_event.is_set():
                 try:
                     self.item_id, self.item = next(self.iterator)
@@ -40,11 +41,8 @@ class ForloopNode(BaseNode):
                     self.iterator = enumerate(self.backup[:])
                     self.on("end", "")
         else:
+            #? This is necessary?
             raise "Target not found"
-    
-    # @exception(logger)
-    # def stop(self):
-    #     self.run_next = False
 
     @exception(logger)
     def reset(self):

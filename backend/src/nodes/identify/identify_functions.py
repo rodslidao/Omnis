@@ -29,8 +29,8 @@ from cv2 import (
     moments,
     blur
 )
-import cv2
-from numpy import angle, float32, int0, uint8, array
+
+from numpy import angle, float32, int0, uint8
 from bson.objectid import ObjectId
 from api import logger, exception
 
@@ -243,16 +243,15 @@ def identifyObjects(image, mode="RETR_TREE", method="CHAIN_APPROX_SIMPLE", **par
 
         if AB is None or AC is None or AD is None:
             continue
-        #print(AB, AC, AD)
 
         # calculate center of mass
         M = moments(contour)
         cx = int(M["m10"] / M["m00"])
         cy = int(M["m01"] / M["m00"])
 
-        #center = (cx, cy)
         center = {"X": cx, "Y": cy}
         center_dist ={"X":int(cx - (image.shape[1]/2)), "Y":int(cy - (image.shape[0]/2))}
+
         if len(corners) == 0:
             corners = [
                         [int(center[0]-(diameter/2)), center[1]],

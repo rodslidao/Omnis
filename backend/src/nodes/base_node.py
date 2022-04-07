@@ -1,6 +1,5 @@
 from src.message import Message
 from src.nodes.node_manager import NodeManager
-from src.nodes.node_manager import nodes as NODE_LIST
 from api import logger, exception
 from threading import Event
 
@@ -83,14 +82,10 @@ class BaseNode:
             )
             while not self.running:
                 pass
-            try:
-                #print(f'Trigger: {target.get("to").get("nodeId")}, message: {message}')
-                #print(target.get("to").get("nodeId"))
-                node_ro_run = NodeManager.getNodeById(target.get("to").get("nodeId"))
-                node_ro_run.execute(message)
-            except Exception as e:
-                print(e)
-                self.onFailure(f"{self._id} cant execute.", pulse=True, errorMessage=str(e))
+
+            node_ro_run = NodeManager.getNodeById(target.get("to").get("nodeId"))
+            node_ro_run.execute(message)
+
 
     @exception(logger)
     def AutoRun(self):
@@ -126,6 +121,7 @@ class BaseNode:
         self.stop_event.clear()
         self.running = True
 
+    #Todo: Implement the following methods in the frontend0
     @exception(logger)
     def pulse(self, color):
         message = {"NodeId": self._id, "color": color}
@@ -141,6 +137,5 @@ class BaseNode:
             "data": {"nodeId": nodeId, "errorMessage": errorMessage},
         }
 
-#    @staticmethod
     def  __str__(self) -> str:
         return f"[{self._id}] ({self.type}) {self.name}"
