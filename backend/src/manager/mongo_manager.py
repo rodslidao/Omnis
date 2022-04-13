@@ -4,6 +4,9 @@ from os import environ, getenv
 from api import logger, exception
 from pandas import DataFrame
 
+from numpy import integer, floating, ndarray
+from json import loads, dumps, JSONEncoder
+from bson.errors import InvalidDocument
 # get environment variable "NODE_ENV"
 # environment = os.environ.get("NODE_ENV", "DEV")
 from dotenv import load_dotenv
@@ -39,6 +42,18 @@ def connectToMongo(database="Teste"):
         if collectionName not in _db.list_collection_names():
             _db.create_collection(collectionName)
             logger.debug(f"Created collection {collectionName}")
+
+
+class CustomEncoder(JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, integer):
+            return int(obj)
+        elif isinstance(obj, floating):
+            return float(obj)
+        elif isinstance(obj, ndarray):
+            return obj.tolist()
+        else:
+            return super(CustomEncoder, self).default(obj)
 
 
 class MongoOBJ:
@@ -77,11 +92,18 @@ class MongoOBJ:
 
     @exception(logger)
     def insert_one(self, collection_name, data):
-        return self.dbo[collection_name].insert_one(data)
+        try:
+            return self.dbo[collection_name].insert_one(data)
+        except InvalidDocument:
+            return self.insert_one(collection_name, loads(dumps(data, cls=CustomEncoder)))
 
     @exception(logger)
     def insert_many(self, collection_name, data):
-        return self.dbo[collection_name].insert_many(data)
+        try:
+            return self.dbo[collection_name].insert_many(data)
+        except InvalidDocument:
+            return self.insert_many(collection_name, loads(dumps(data, cls=CustomEncoder)))
+
 
     @exception(logger)
     def find_one(self, collection_name, query={}):
@@ -118,7 +140,7 @@ class MongoOBJ:
     @exception(logger)
     def find_one_and_replace(self, collection_name, query, data):
         return self.dbo[collection_name].find_one_and_replace(query, data)
-    
+
     @exception(logger)
     def distinct(self, collection_name, query="_id"):
         return self.dbo[collection_name].distinct(query)
