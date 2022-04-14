@@ -11,6 +11,10 @@ export const descriptions = [
     `,
     category: 'Utilidades',
     tags: ['json', 'mapping', 'object'],
+    resettable: true,
+    stoppable: false,
+    configurable: true,
+    hasHistory: false,
   },
   {
     name: 'Blur (Borrar)',
@@ -23,6 +27,10 @@ export const descriptions = [
     `,
     category: 'Filtros',
     tags: ['filter', 'blur', 'borrar', 'borrado', 'imagem', 'filtros'],
+    resettable: true,
+    stoppable: false,
+    configurable: true,
+    hasHistory: false,
   },
   {
     name: 'Detecção de Borda',
@@ -37,6 +45,10 @@ export const descriptions = [
         `,
     category: 'Filtros',
     tags: ['filter', 'canny', 'bordas', 'imagem', 'filtros'],
+    resettable: true,
+    stoppable: false,
+    configurable: true,
+    hasHistory: false,
   },
   {
     name: 'Comunicação Serial',
@@ -50,6 +62,10 @@ export const descriptions = [
         `,
     category: 'Hardware',
     tags: ['serial', 'arduino', 'comunicação', 'comunicacao'],
+    resettable: true,
+    stoppable: false,
+    configurable: true,
+    hasHistory: false,
   },
   {
     name: 'Camera',
@@ -63,6 +79,10 @@ export const descriptions = [
         `,
     category: 'Hardware',
     tags: ['camera', 'hardware', 'comunicacao', 'comunicacao'],
+    resettable: true,
+    stoppable: false,
+    configurable: true,
+    hasHistory: false,
   },
   {
     name: 'Alerta',
@@ -76,6 +96,10 @@ export const descriptions = [
         `,
     category: 'Feedback',
     tags: ['alert', 'utilidades', 'utilidade', 'feedback', 'depuração'],
+    resettable: true,
+    stoppable: false,
+    configurable: true,
+    hasHistory: false,
   },
   {
     name: 'log',
@@ -88,6 +112,23 @@ export const descriptions = [
         `,
     category: 'Feedback',
     tags: ['log', 'utilidades', 'utilidade', 'feedback', 'depuração'],
+    resettable: true,
+    stoppable: false,
+    configurable: true,
+    hasHistory: false,
+  },
+  {
+    name: 'Botão',
+    type: 'button',
+    text: 'Esse node é capaz de criar um botão',
+    icon: 'gesture-tap-button',
+    examples: 'A ação vai iniciar assim que o botão  for clicado',
+    category: 'Entradas',
+    tags: ['button', 'utilidades', 'utilidade', 'feedback', 'depuração'],
+    resettable: true,
+    stoppable: false,
+    configurable: true,
+    hasHistory: false,
   },
 ];
 
@@ -99,12 +140,12 @@ export function getDescription(nodeType) {
   const description = descriptions.find((descr) => descr.type === nodeType);
 
   if (description) return description.text;
-  else return 'No description provided for node';
+  return 'No description provided for node';
 }
 
 export function getTags(nodeType) {
   const description = descriptions.find((descr) => descr.type === nodeType);
 
   if (description) return description.tags;
-  else return [];
+  return [];
 }

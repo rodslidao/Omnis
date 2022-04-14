@@ -56,13 +56,16 @@
                 <v-list-item
                   v-for="(item, index2) in descriptionsList"
                   @mouseenter="updateHoverItem(item)"
+                  @click="addNode()"
                   :key="index2"
                   v-if="item.category == category"
                   link
                 >
                   <v-list-item-icon>
-                    <v-icon v-text="`mdi-${item.icon}`"></v-icon>
-                  </v-list-item-icon>
+                    <v-icon
+                      v-text="`mdi-${item.icon}`"
+                    ></v-icon> </v-list-item-icon
+                  ><link rel="stylesheet" href="" />
 
                   <v-list-item-content>
                     <v-list-item-title v-text="item.name"></v-list-item-title>
@@ -72,11 +75,11 @@
             </v-list>
           </v-col>
           <v-col v-if="hoveredItem">
-            <h2>{{hoveredItem.name}}</h2>
-            <p>{{hoveredItem.text}}</p>
-            <br>
+            <h2>{{ hoveredItem.name }}</h2>
+            <p>{{ hoveredItem.text }}</p>
+            <br />
             <h4>Exemplo</h4>
-            <p>{{hoveredItem.examples}}</p>
+            <p>{{ hoveredItem.examples }}</p>
           </v-col>
         </v-row>
         <!-- <v-card-text class="pb-0">
@@ -162,9 +165,8 @@ import {
   getTags,
   getCategoryList,
   descriptions,
-} from '../dialogs/nodeDescription';
-import { apiBaseUrl } from '@/main';
-import Home from '../../../views/Home.vue';
+} from '../nodeDescription';
+import Home from '@/views/Home.vue';
 
 export default {
   components: { Home },
@@ -209,14 +211,19 @@ export default {
     include() {
       return [document.querySelector('.included')];
     },
+
+    add() {
+      console.log(this.hoveredItem);
+    },
+
     addNode() {
-      if (this.selected != null)
-        this.onChildClick(
-          `addNode:${this.nodeListFiltered[this.selected].type}`
-        );
-      else this.addTemplate();
+      if (this.selected != null) {
+        this.onChildClick(`addNode:${this.hoveredItem.type}`);
+        console.log('entrei');
+      } else this.addTemplate();
     },
     addTemplate() {
+      console.log('entrei tamplate');
       let template = this.templates[this.selectedTemplate];
 
       template.position.x =
@@ -228,7 +235,7 @@ export default {
       this.onClickOutside(undefined);
     },
     fetchTemplates() {
-      let loadTemplateUrl = `${apiBaseUrl}/node-templates/all`;
+      // let loadTemplateUrl = `${apiBaseUrl}/node-templates/all`;
       // this.axios.get(loadTemplateUrl)
       // .then((response) => {
       //   this.templates = response.data;

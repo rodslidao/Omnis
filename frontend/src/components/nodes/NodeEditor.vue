@@ -18,6 +18,7 @@ import { Editor } from '@baklavajs/core';
 import { ViewPlugin } from '@baklavajs/plugin-renderer-vue';
 import { OptionPlugin } from '@baklavajs/plugin-options-vue';
 import { Engine } from '@baklavajs/plugin-engine';
+import { registerOptions, registerNodes } from "@/registerNodes"
 
 import { MoveNode } from '@/components/nodes/MoveNode';
 import { IdentifyNode } from '@/components/nodes/IdentifyNode';
@@ -32,6 +33,7 @@ import { mapActions, mapState } from 'vuex';
 
 // Custom Baklava Components
 import CustomContextMenu from '@/components/nodes/custom/CustomContextMenu.vue';
+import CustomNode from '@/components/nodes/custom/CustomNode.vue';
 
 export default {
   // mixins: [mixins],
@@ -88,6 +90,10 @@ export default {
       'VideoStreamingOption',
       VideoStreamingOption
     );
+    // this.viewPlugin.registerOption(
+    //   'EventButtonOption',
+    //   EventButtonOption
+    // );
 
     // add some nodes so the screen is not empty on startup
     // const node1 = this.addNodeWithCoordinates(MoveNode, 50, 140);
@@ -138,6 +144,7 @@ export default {
       this.editor.use(this.optionPlugin);
 
       this.viewPlugin.components.contextMenu = CustomContextMenu;
+      this.viewPlugin.components.node = CustomNode;
 
       const intfTypePlugin = new InterfaceTypePlugin();
       this.editor.use(intfTypePlugin);
