@@ -1,5 +1,5 @@
 /* eslint-disable no-underscore-dangle */
-import { Editor } from '@baklavajs/core';
+// import { Editor } from '@baklavajs/core';
 
 export default {
   namespaced: true,
@@ -30,6 +30,7 @@ export default {
     contentDefault: {},
     renamingIndex: null,
     saveNode: null,
+    deletedNode: null,
   },
 
   getters: {
@@ -133,7 +134,10 @@ export default {
     saveNodeConfig: (state, node) => {
       state.saveNode = node;
     },
-    
+    deletedNode: (state, node) => {
+      state.deletedNode = node;
+      console.log('state', state.deletedNode);
+    },
   },
 
   actions: {
@@ -190,6 +194,9 @@ export default {
     },
     saveNodeConfig({ commit }, payload) {
       commit('saveNodeConfig', payload);
+    },
+    deletedNode({ commit }, payload) {
+      commit('deletedNode', payload);
     },
 
     /**

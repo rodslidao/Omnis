@@ -1,12 +1,17 @@
 // import EventButtonOption from "@/options/EventButtonOption";
 import { MoveNode } from '@/components/nodes/MoveNode';
-import EventButtonOption from "@/components/nodes/options/EventButtonOption";
+import EventButtonOption from '@/components/nodes/options/EventButtonOption.vue';
 
 // ButtonNode
 import ButtonNode from '@/components/nodes/ButtonNode';
 
+// TextNode
+import TextTemplateDialog from '@/components/nodes/text/TextTemplateDialog.vue';
+import TextTemplateNode from '@/components/nodes/text/TextTemplateNode';
+
 export function registerOptions(viewPlugin) {
-  viewPlugin.registerOption("EventButtonOption", EventButtonOption);
+  viewPlugin.registerOption('EventButtonOption', EventButtonOption);
+  viewPlugin.registerOption('TextTemplateDialog', TextTemplateDialog);
 }
 
 export function registerNodes(editorInstance) {
@@ -14,4 +19,6 @@ export function registerNodes(editorInstance) {
 
   // User input
   editorInstance.registerNodeType('button', ButtonNode, 'Input');
+
+  editorInstance.registerNodeType('text-template', TextTemplateNode, 'Text');
 }

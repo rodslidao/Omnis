@@ -1,6 +1,6 @@
 <template>
   <div class="text-center">
-    <v-menu v-model="menu" :close-on-content-click="false" offset-x>
+    <v-menu dark v-model="menu" :close-on-content-click="false" offset-x>
       <template v-slot:activator="{ on, attrs }">
         <div
           @contextmenu.prevent.stop="on.click"
@@ -66,7 +66,9 @@
         <v-list class="pa-0">
           <v-list-item>
             <v-list-item-avatar :color="color" size="56" class="rounded">
-              <v-icon>{{ typeIcon }}</v-icon>
+              <v-icon :color="color" class="icon-contrast">{{
+                typeIcon
+              }}</v-icon>
             </v-list-item-avatar>
             <v-list-item-content style="text-align: left">
               <v-list-item-title>
@@ -157,12 +159,14 @@
 </template>
 
 <script>
-import { apiBaseUrl } from '@/main.js';
-import { getDescription, descriptions } from '../nodeDescription.js';
-import NodeContextMenuListItem from './NodeContextMenuListItem';
-import NodeContextMenuColorPicker from './NodeContextMenuColorPicker';
-import TextEditable from './TextEditable';
+// import { apiBaseUrl } from '@/main.js';
 import EventBus from '@/event-bus';
+import { mapActions, mapState } from 'vuex';
+import { getDescription, descriptions } from '../nodeDescription';
+import NodeContextMenuListItem from './NodeContextMenuListItem.vue';
+import NodeContextMenuColorPicker from './NodeContextMenuColorPicker.vue';
+import TextEditable from './TextEditable.vue';
+
 
 export default {
   components: {
@@ -201,12 +205,17 @@ export default {
     dragging: Boolean,
   },
   inject: ['editor'],
+
   created() {
     this.color = this.nodeData.getOptionValue('color');
     this.running = this.nodeData.getOptionValue('running');
     this.description = getDescription(this.nodeData.type);
   },
   methods: {
+    ...mapActions('node', [
+      'deletedNode',
+    ]),
+
     changeColor(event) {
       this.color = event;
       this.$emit('optionChange', 'color', this.color);
@@ -232,10 +241,11 @@ export default {
       this.dialog = false;
     },
     deleteNode() {
-      this.$store.commit('deleteNode', this.nodeData);
+      this.deletedNode(this.nodeData);
+      // this.$store.commit('deleteNode', this.nodeData); // old
     },
     activateNode() {
-      let action = this.running ? 'stop' : 'start';
+      // let action = this.running ? 'stop' : 'start';
 
       // let lastValueUrl = `${apiBaseUrl}/${action}/${this.nodeData.id}`;
       // this.axios
@@ -295,6 +305,7 @@ export default {
       }
     },
   },
+
   computed: {
     typeIcon() {
       let nodeType = this.descriptionsList.find(
@@ -303,7 +314,7 @@ export default {
       if (!nodeType) {
         return 'mdi-help-circle-outline';
       }
-      return nodeType.icon;
+      return `mdi-${nodeType.icon}`;
     },
     isResettable() {
       let nodeType = this.descriptionsList.find(
@@ -353,12 +364,15 @@ export default {
 };
 </script>
 
-
 <style scoped>
 .scroll-card {
   overflow-y: scroll;
   display: flex !important;
   flex-direction: column;
+}
+
+.icon-contrast {
+  -webkit-filter: invert() grayscale() contrast(100);
 }
 
 .grid-container {

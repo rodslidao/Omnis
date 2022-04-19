@@ -11,13 +11,13 @@
 import { socketio } from '@/main';
 
 export default {
-  data: function() {
+  data() {
     return {
       isActive: false,
       isConnected: false,
-    }
+    };
   },
-  inject: ['editor', "plugin"],
+  inject: ['editor', 'plugin'],
   props: {
     data: Object,
     name: String,
@@ -40,13 +40,13 @@ export default {
     this.isConnected = this.data.connectionCount > 0;
   },
   created() {
-    socketio.on('INTERFACE_STATE', (data) => {
-      if (data.some(elem => elem === this.data.id)) {
-        this.isActive = true;
-      } else {
-        this.isActive = false;
-      }
-    });
+    // socketio.on('INTERFACE_STATE', (data) => {
+    //   if (data.some(elem => elem === this.data.id)) {
+    //     this.isActive = true;
+    //   } else {
+    //     this.isActive = false;
+    //   }
+    // });
   },
   methods: {
     startHover() {
@@ -65,25 +65,25 @@ export default {
   computed: {
     classes() {
       return {
-        "node-interface": true,
-        "--input": this.data.isInput,
-        "--output": !this.data.isInput,
-        "--connected": this.isConnected,
-        "labelActive": this.isActive
+        'node-interface': true,
+        '--input': this.data.isInput,
+        '--output': !this.data.isInput,
+        '--connected': this.isConnected,
+        'labelActive': this.isActive,
       };
     },
     displayName() {
       return this.data.displayName || this.name;
     },
     color() {
-      if (this.data.type === "JSON") return {"background-color": "orange"};
-      if (this.data.type === "XML") return {"background-color": "blue"};
-      if (this.data.type === "Message") return {"background-color": "blue"};
-      else return {"background-color": "white"};
+      if (this.data.type === 'JSON') return { 'background-color': 'orange' };
+      if (this.data.type === 'XML') return { 'background-color': 'blue' };
+      if (this.data.type === 'Message') return { 'background-color': 'blue' };
+      else return { 'background-color': 'white' };
     }
   },
   watch: {
-    "data.type": {
+    'data.type': {
       handler(newValue) {
         this.plugin.hooks.renderInterface.execute(this);  
       },

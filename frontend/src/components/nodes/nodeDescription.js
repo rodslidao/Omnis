@@ -130,6 +130,19 @@ export const descriptions = [
     configurable: true,
     hasHistory: false,
   },
+  {
+    name: 'Texto',
+    type: 'text-template',
+    text: 'Esse node é capaz de criar um texto',
+    icon: 'text',
+    examples: 'A ação vai iniciar assim que o botão  for clicado',
+    category: 'Entradas',
+    tags: ['text', 'utilidades', 'utilidade', 'feedback', 'depuração'],
+    resettable: true,
+    stoppable: false,
+    configurable: true,
+    hasHistory: false,
+  },
 ];
 
 export function getCategoryList() {

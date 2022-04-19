@@ -18,7 +18,7 @@ import { Editor } from '@baklavajs/core';
 import { ViewPlugin } from '@baklavajs/plugin-renderer-vue';
 import { OptionPlugin } from '@baklavajs/plugin-options-vue';
 import { Engine } from '@baklavajs/plugin-engine';
-import { registerOptions, registerNodes } from "@/registerNodes"
+import { registerOptions, registerNodes } from '@/registerNodes';
 
 import { MoveNode } from '@/components/nodes/MoveNode';
 import { IdentifyNode } from '@/components/nodes/IdentifyNode';
@@ -34,6 +34,7 @@ import { mapActions, mapState } from 'vuex';
 // Custom Baklava Components
 import CustomContextMenu from '@/components/nodes/custom/CustomContextMenu.vue';
 import CustomNode from '@/components/nodes/custom/CustomNode.vue';
+import CustomInterface from '@/components/nodes/custom/CustomInterface.vue';
 
 export default {
   // mixins: [mixins],
@@ -53,27 +54,53 @@ export default {
     ActionMenuForNodes,
   },
 
+  computed: {
+    ...mapState('node', {
+      selectedTabIndex: (state) => state.selectedTabIndex,
+      tabList: (state) => state.tabList,
+      contentDefault: (state) => state.contentDefault,
+      saveNode: (state) => state.saveNode,
+      deletedNode: (state) => state.deletedNode,
+    }),
+
+    checkSavedStatus() {
+      console.log('checkSavedStatus');
+      // if (this.tabList !== []) {
+      //   this.setSaved({ index: this.selectedTabIndex, value: false });
+      // }
+      return 0;
+    },
+
+    // updateContentDefault() {
+    //   console.log('sdfsdfsdfsdfsd');
+    //   this.editor.load(this.tabList[this.selectedTabIndex].content);
+    //   return 0;
+    // },
+  },
+
   created() {
     this.init();
 
     this.editor.events.addNode.addListener(this, () => {
       // this.$store.node.commit("saveNodeConfig", 1);
-      this.saveNode(1);
+      console.log(this.saveNode);
+      this.saveNodeConfig(1);
+      console.log('save aqui');
     });
 
     this.editor.events.addConnection.addListener(this, () => {
       // this.$store.commit("saveNodeConfig", 1);
-      this.saveNode(1);
+      this.saveNodeConfig(1);
     });
 
     this.editor.events.removeNode.addListener(this, () => {
       // this.$store.commit("saveNodeConfig", 1);
-      this.saveNode(1);
+      this.saveNodeConfig(1);
     });
 
     this.editor.events.removeConnection.addListener(this, () => {
       // this.$store.commit("saveNodeConfig", 1);
-      this.saveNode(1);
+      this.saveNodeConfig(1);
     });
 
     // Show a minimap in the top right corner
@@ -101,35 +128,12 @@ export default {
     // const node3 = this.addNodeWithCoordinates(IdentifyNode, 50, 480);
 
     // tipos de interfaces
-    this.intfTypePlugin.addType('string', '#8cff00');
-    this.intfTypePlugin.addType('array', '#00bfff');
-    this.intfTypePlugin.addType('object', '#ff6200');
-    this.intfTypePlugin.addType('int', '#ff0055');
+    // this.intfTypePlugin.addType('string', '#8cff00');
+    // this.intfTypePlugin.addType('array', '#00bfff');
+    // this.intfTypePlugin.addType('object', '#ff6200');
+    // this.intfTypePlugin.addType('int', '#ff0055');
 
     // console.log(this.editor.save());
-  },
-
-  computed: {
-    ...mapState('node', {
-      selectedTabIndex: (state) => state.selectedTabIndex,
-      tabList: (state) => state.tabList,
-      contentDefault: (state) => state.contentDefault,
-      saveNode: (state) => state.saveNode,
-    }),
-
-    checkSavedStatus() {
-      console.log('checkSavedStatus');
-      // if (this.tabList !== []) {
-      //   this.setSaved({ index: this.selectedTabIndex, value: false });
-      // }
-      return 0;
-    },
-
-    // updateContentDefault() {
-    //   console.log('sdfsdfsdfsdfsd');
-    //   this.editor.load(this.tabList[this.selectedTabIndex].content);
-    //   return 0;
-    // },
   },
 
   methods: {
@@ -137,6 +141,7 @@ export default {
       'updateNodeContent',
       'updateContentDefault',
       'setSaved',
+      'saveNodeConfig',
     ]),
 
     init() {
@@ -145,6 +150,7 @@ export default {
 
       this.viewPlugin.components.contextMenu = CustomContextMenu;
       this.viewPlugin.components.node = CustomNode;
+      this.viewPlugin.components.nodeInterface = CustomInterface;
 
       const intfTypePlugin = new InterfaceTypePlugin();
       this.editor.use(intfTypePlugin);
@@ -174,6 +180,13 @@ export default {
   },
 
   watch: {
+    "$store.state.node.deletedNode": {
+      handler(newValue) {
+        if (newValue) {
+          this.editor.removeNode(newValue);
+        }
+      }
+    },
     '$store.state.node.selectedTabIndex': {
       handler(newValue, oldValue) {
         this.updateNodeContent({
@@ -195,6 +208,11 @@ export default {
 
           console.log('duplicated load2', this.tabList[newValue].duplicated);
         }
+        // console.log('this.tabList[newValue].content', this.tabList[newValue].content);
+        // let oi = this.editor.save()
+        // console.log('oi', oi);
+        // this.editor.load(oi);
+        // this.editor.load(this.editor.save());
         this.editor.load(this.tabList[newValue].content);
       },
     },

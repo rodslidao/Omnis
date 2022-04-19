@@ -3,22 +3,37 @@
     <v-dialog v-model="dialog" max-width="600px">
       <v-card>
         <v-card-title>
-          <span class="headline">{{nodeCopy.name}}</span>
+          <span class="headline">{{ nodeCopy.name }}</span>
         </v-card-title>
         <v-divider></v-divider>
         <v-card-text class="pb-1">
           <v-form v-model="valid">
             <v-row>
               <v-col cols="6">
-                <v-text-field label="Name" :rules="[rules.required]" v-model="nodeCopy.name" outlined dense hide-details></v-text-field>
+                <v-text-field
+                  label="Name"
+                  :rules="[rules.required]"
+                  v-model="nodeCopy.name"
+                  outlined
+                  dense
+                  hide-details
+                ></v-text-field>
               </v-col>
               <v-col cols="6">
-                <v-checkbox label="Allow Undefined" v-model="valueCopy.allowUndefined" hide-details class="mt-1"></v-checkbox>
+                <v-checkbox
+                  label="Allow Undefined"
+                  v-model="valueCopy.allowUndefined"
+                  hide-details
+                  class="mt-1"
+                ></v-checkbox>
               </v-col>
               <v-col cols="12">
                 <v-textarea
-                  outlined hide-details label="Template"
-                  :rules="[rules.required]" v-model="valueCopy.template"
+                  outlined
+                  hide-details
+                  label="Template"
+                  :rules="[rules.required]"
+                  v-model="valueCopy.template"
                 ></v-textarea>
               </v-col>
             </v-row>
@@ -26,7 +41,12 @@
         </v-card-text>
         <v-divider></v-divider>
         <v-textarea
-          outlined label="Notes" class="px-5 py-2" rows="3" hide-details v-model="valueCopy.notes"
+          outlined
+          label="Notes"
+          class="px-5 py-2"
+          rows="3"
+          hide-details
+          v-model="valueCopy.notes"
         ></v-textarea>
         <v-divider></v-divider>
         <v-card-actions>
@@ -43,7 +63,6 @@
   </v-row>
 </template>
 
-
 <script>
 import EventBus from '@/event-bus';
 
@@ -53,16 +72,16 @@ export default {
     nodeCopy: null,
     valueCopy: null,
     rules: {
-      required: value => !!value || 'Required.',
-      positive: value => value > 0 || 'Positive number required.',
+      required: (value) => !!value || 'Required.',
+      positive: (value) => value > 0 || 'Positive number required.',
     },
     valid: false,
-    type: null
+    type: null,
   }),
-  props: ["option", "node", "value"],
+  props: ['option', 'node', 'value'],
   created() {
     this.init();
-    EventBus.$on("OPEN_SETTINGS", (nodeId) => {
+    EventBus.$on('OPEN_SETTINGS', (nodeId) => {
       if (nodeId === this.node.id) {
         this.dialog = true;
         this.init();
@@ -71,15 +90,17 @@ export default {
   },
   methods: {
     save() {
-      this.node.setOptionValue("settings", this.valueCopy);
+      this.node.setOptionValue('settings', this.valueCopy);
       this.node.name = this.nodeCopy.name;
-      this.$store.commit("saveNodeConfig", this.node.id);
+      this.$store.commit('saveNodeConfig', this.node.id);
       this.dialog = false;
     },
     init() {
-      this.nodeCopy = {...this.node};
-      this.valueCopy = JSON.parse(JSON.stringify(this.node.getOptionValue("settings")));
+      this.nodeCopy = { ...this.node };
+      this.valueCopy = JSON.parse(
+        JSON.stringify(this.node.getOptionValue('settings'))
+      );
     },
   },
-}
+};
 </script>
