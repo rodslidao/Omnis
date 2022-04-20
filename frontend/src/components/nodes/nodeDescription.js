@@ -143,6 +143,19 @@ export const descriptions = [
     configurable: true,
     hasHistory: false,
   },
+  {
+    name: 'Mover Eixo',
+    type: 'move-axis',
+    text: 'Esse node é capaz de mover um eixo',
+    icon: 'axis-arrow',
+    examples: 'A ação vai iniciar assim que o botão  for clicado',
+    category: 'Hardware',
+    tags: ['move', 'axis', 'hardware'],
+    resettable: true,
+    stoppable: false,
+    configurable: true,
+    hasHistory: false,
+  },
 ];
 
 export function getCategoryList() {

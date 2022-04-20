@@ -3,6 +3,7 @@ import { Node } from '@baklavajs/core';
 
 export default class IntervalNode extends Node {
   type = 'text-template';
+
   name = 'Text Template';
 
   constructor() {

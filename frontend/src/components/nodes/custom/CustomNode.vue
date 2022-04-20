@@ -10,6 +10,7 @@
     <div
       :class="classTitle"
       :style="myStyle"
+      @click.middle="deleteNode()"
       @mousedown.self.prevent.stop="startDrag"
       @contextmenu.prevent.capture=""
     >
@@ -52,11 +53,12 @@
 </template>
 
 <script>
+import EventBus from '@/event-bus';
 import { Components } from '@baklavajs/plugin-renderer-vue';
+import { mapActions } from 'vuex';
 import NodeContextMenu from '@/components/nodes/dialogs/NodeContextMenu.vue';
 import CustomInterface from './CustomInterface.vue';
 // import { socketio } from '@/main';
-import EventBus from '@/event-bus';
 
 const ERROR_PULSE_LENGTH = 2000;
 
@@ -67,7 +69,7 @@ export default {
     NodeOption: Components.NodeOption,
     NodeContextMenu,
   },
-  data: function () {
+  data() {
     return {
       showMenu: false,
       x: 0,
@@ -103,6 +105,13 @@ export default {
     });
   },
   methods: {
+    ...mapActions('node', ['saveNodeConfig', 'deletedNode']),
+
+    deleteNode() {
+      console.log('delete node');
+      this.deletedNode(this.nodeData);
+    },
+
     sendNotification(message) {
       if (Notification.permission === 'granted') new Notification(message);
       else if (Notification.permission !== 'granted') {
@@ -131,7 +140,8 @@ export default {
     optionChange(option, data) {
       if (option === 'color') this.myStyle.backgroundColor = data;
       this.data.setOptionValue(option, data);
-      this.$store.commit('saveNodeConfig', this.data.id);
+      this.saveNodeConfig(this.data.id);
+      // this.$store.commit('saveNodeConfig', this.data.id);
     },
     mouseUp(event) {
       // Depending which element calls the mouseUp Event the id must be fetched from another element
@@ -140,8 +150,7 @@ export default {
         event.target.id === this.data.id
       ) {
         this.stopDrag();
-        console.log('aqui ele tentou salvar automaticamente');
-
+        this.saveNodeConfig(this.data.id);
         // this.$store.commit('saveNodeConfig', this.data.id);
       }
     },
