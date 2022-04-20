@@ -225,6 +225,10 @@ export default {
 </script>
 
 <style scoped>
+
+.node{
+}
+
 .interface-row {
   display: flex;
 }

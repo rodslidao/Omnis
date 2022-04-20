@@ -9,7 +9,14 @@ export default class MoveAxis extends Node {
 
   name = 'Mover Eixo';
 
-  axisList = ['X', 'Y', 'Z'];
+  axisList = [
+    { name: 'X', isActive: true, value: 0 },
+    { name: 'Y', isActive: true, value: 0 },
+    { name: 'Z', isActive: true, value: 0 },
+    { name: 'F', isActive: true, value: 0 },
+  ];
+
+  board = 'default';
 
   constructor() {
     super();
@@ -21,36 +28,40 @@ export default class MoveAxis extends Node {
     this.addOutputInterface('onSuccess');
     this.addOutputInterface('onFailure');
     this.axisList.forEach((axis) => {
-      this.addOption(axis, 'CheckboxOption');
-    });
-
-    // this.addOption("+ Opções", "ButtonOption", () => ({ testtext: "any" }), "MySidebarOption");
-    // this.setOptionValue("+ Opções", "Arduino Nano");
-
-    this.events.update.addListener(this, (event) => {
-      // console.log(this.interfaces.entries());
-       console.log('axis');
-      const item = this.axisList.find((axis) => axis == event.name);
-      console.log(item);
-      console.log(event.name);
-      if (event.name === item) {
-        if (this.getOptionValue(item)) {
-          this.addInputInterface(`${item} `);
+      if (axis.isActive) {
+        if (axis.name === 'F') {
+          this.addInputInterface('Velocidade');
         } else {
-          this.removeInterface(`${item} `);
+          this.addInputInterface(axis.name);
         }
       }
     });
+    // this.axisList.forEach((axis) => {
+    //   this.addOption(axis[0], 'CheckboxOption');
+    // });
 
-    this.addInputInterface('Velocidade', 'NumberOption', 10000);
+    // this.events.update.addListener(this, (event) => {
+    // });
 
-    this.addOption('settings', 'MoveAxisDialog', {
-      template: 'Hello, my name is {name}',
-      allowUndefined: false,
-      velocity: 10000,
-    });
+    
+    // this.events.update.addListener(this, (event) => {
+    //   // console.log(this.interfaces.entries());
+    //   console.log('axis');
+    //   const item = this.axisList.find((axis) => axis == event.name);
+    //   console.log(item);
+    //   console.log(event.name);
+    //   if (event.name === item) {
+    //     if (this.getOptionValue(item)) {
+    //       this.addInputInterface(`${item} `);
+    //     } else {
+    //       this.removeInterface(`${item} `);
+    //     }
+    //   }
+    // });
 
-    this.addOption('color', undefined, '#607565');
+    this.addOption('axisList', 'MoveAxisDialog', this.axisList);
+    this.addOption('board', 'MoveAxisDialog', this.board);
+    this.addOption('color', undefined, '#FF9800');
     this.addOption('running', undefined, true);
   }
 }

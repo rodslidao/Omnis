@@ -6,10 +6,10 @@
           <span class="headline">{{ nodeCopy.name }}</span>
         </v-card-title>
         <v-divider></v-divider>
-        <v-card-text class="pb-1">
+        <v-card-text class="pb-1 pt-5">
           <v-form v-model="valid">
-            <v-row>
-              <v-col cols="6">
+            <v-col>
+              <v-row>
                 <v-text-field
                   label="Name"
                   :rules="[rules.required]"
@@ -18,37 +18,40 @@
                   dense
                   hide-details
                 ></v-text-field>
-              </v-col>
-              <v-col cols="6">
+              </v-row>
+              <v-row
+                v-for="(axis, index) in axisListCopy"
+                :key="index"
+                class="pt-5"
+              >
                 <v-checkbox
-                  label="Allow Undefined"
-                  v-model="valueCopy.allowUndefined"
+                  :label="axis.name == 'F' ? 'Velocidade' : axis.name"
+                  v-model="axis.isActive"
                   hide-details
-                  class="mt-1"
                 ></v-checkbox>
-              </v-col>
-              <v-col cols="12">
-                <v-textarea
+                <v-text-field
+                  class="ml-3"
+                  v-model="axis.value"
+                  number
+                  :disabled="!axis.isActive"
                   outlined
+                  dense
                   hide-details
-                  label="Template"
-                  :rules="[rules.required]"
-                  v-model="valueCopy.template"
-                ></v-textarea>
-              </v-col>
-            </v-row>
+                ></v-text-field>
+              </v-row>
+              <v-row>
+                <v-overflow-btn
+                  class="my-2"
+                  :items="boardList"
+                  :label="boardCopy"
+                  editable
+                  item-value="text"
+                ></v-overflow-btn>
+              </v-row>
+            </v-col>
+            <v-col cols="6"> </v-col>
           </v-form>
         </v-card-text>
-        <v-divider></v-divider>
-        <v-textarea
-          outlined
-          label="Notes"
-          class="px-5 py-2"
-          rows="3"
-          hide-details
-          v-model="valueCopy.notes"
-        ></v-textarea>
-        <v-divider></v-divider>
         <v-divider></v-divider>
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -67,12 +70,22 @@
 <script>
 import EventBus from '@/event-bus';
 import { mapActions } from 'vuex';
+import gql from 'graphql-tag';
 
 export default {
   data: () => ({
     dialog: false,
     nodeCopy: null,
-    valueCopy: null,
+    axisListCopy: null,
+    boardCopy: null,
+    boardList: [
+      'Arduino',
+      'Raspberry Pi',
+      'ESP32',
+      'ESP8266',
+      'BeagleBone Black',
+    ],
+
     rules: {
       required: (value) => !!value || 'Required.',
       positive: (value) => value > 0 || 'Positive number required.',
@@ -80,6 +93,7 @@ export default {
     valid: false,
     type: null,
   }),
+
   props: ['option', 'node', 'value'],
   created() {
     this.init();
@@ -90,21 +104,42 @@ export default {
       }
     });
   },
+
   methods: {
     ...mapActions('node', ['saveNodeConfig']),
 
     save() {
-      this.node.setOptionValue('settings', this.valueCopy);
+      this.node.setOptionValue('axisList', this.axisListCopy);
       this.node.name = this.nodeCopy.name;
       this.saveNodeConfig(this.node.id);
       // this.$store.commit('saveNodeConfig', this.node.id);
       this.dialog = false;
     },
-    init() {
+
+    async getBoards() {
+      const response = await this.$apollo.query({
+        query: gql`
+          query {
+            getNodeInfo(node_type: "MOVEMENT") {
+              data {
+                options
+              }
+            }
+          }
+        `,
+      });
+      console.log(this.$apollo.store);
+      this.boardList = response.data.getNodeInfo.data.options;
+      console.log(this.boardList);
+    },
+
+    async init() {
       this.nodeCopy = { ...this.node };
-      this.valueCopy = JSON.parse(
-        JSON.stringify(this.node.getOptionValue('settings'))
+      this.boardCopy = this.node.getOptionValue('board');
+      this.axisListCopy = JSON.parse(
+        JSON.stringify(this.node.getOptionValue('axisList'))
       );
+      await this.getBoards();
     },
   },
 };
