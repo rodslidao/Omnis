@@ -5,12 +5,6 @@ from time import sleep
 from src.utility.system.class_inspect import is_static_method
 import platform
 
-environ.setdefault("SO", platform.system())
-environ.setdefault("ENV_MODE", "cloud")
-environ.setdefault("DB_USER", "sherensberk")
-environ.setdefault("DB_PASS", "5V%2awj%24QxbcvXrpGT")
-environ.setdefault("DB_NAME", "Rose_ADP_dev")
-
 levels = {
     "debug": DEBUG,
     "info": INFO,
