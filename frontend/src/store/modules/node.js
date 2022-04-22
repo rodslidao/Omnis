@@ -1,5 +1,5 @@
 /* eslint-disable no-underscore-dangle */
-import { Editor } from '@baklavajs/core';
+// import { Editor } from '@baklavajs/core';
 
 export default {
   namespaced: true,
@@ -7,13 +7,13 @@ export default {
     counter: 0,
     tabList: [
       // {
-      //   sketchName: 'two',
+      //   name: 'two',
       //   id: 1641587087910,
       //   saved: true,
       //   content: {},
       // },
       // {
-      //   sketchName: 'tree',
+      //   name: 'tree',
       //   id: 1641587087911,
       //   saved: true,
       //   content: {},
@@ -29,6 +29,8 @@ export default {
     selectedTabIndex: 0,
     contentDefault: {},
     renamingIndex: null,
+    saveNode: null,
+    deletedNode: null,
   },
 
   getters: {
@@ -38,7 +40,7 @@ export default {
 
     // eslint-disable-next-line max-len
     SelectedTabName: (state) => {
-      state.tabList.find(((tab) => tab.id === state.selectedTabId).sketchName);
+      state.tabList.find(((tab) => tab.id === state.selectedTabId).name);
     },
     selectedTabObject: (state) => state.tabList.find((tab) => tab.id === state.selectedTabId),
   },
@@ -67,7 +69,7 @@ export default {
       // state.duplicatedTab.contextTabIndex = contextTab;
       state.tabList.splice(indexOfNewTab, 0, payload.tab);
       const newTab = state.tabList[indexOfNewTab];
-      newTab.sketchName = `${contextTab.sketchName} - Cópia`;
+      newTab.name = `${contextTab.name} - Cópia`;
       // newTab.baklavaEditor = contextTab.baklavaEditor;
       // state.selectedTabIndex = indexOfNewTab;
     },
@@ -117,7 +119,7 @@ export default {
     },
 
     setSketchName: (state, payload) => {
-      state.tabList[payload.index].sketchName = payload.sketchName;
+      state.tabList[payload.index].name = payload.name;
     },
 
     setSaved: (state, { index, value }) => {
@@ -128,6 +130,13 @@ export default {
     asyncIncrement: (state, incrementalObject) => {
       const { incrementalValue } = incrementalObject;
       state.counter += incrementalValue;
+    },
+    saveNodeConfig: (state, node) => {
+      state.saveNode = node;
+    },
+    deletedNode: (state, node) => {
+      state.deletedNode = node;
+      console.log('state', state.deletedNode);
     },
   },
 
@@ -182,6 +191,12 @@ export default {
     },
     setSaved({ commit }, payload) {
       commit('setSaved', payload);
+    },
+    saveNodeConfig({ commit }, payload) {
+      commit('saveNodeConfig', payload);
+    },
+    deletedNode({ commit }, payload) {
+      commit('deletedNode', payload);
     },
 
     /**

@@ -103,6 +103,7 @@ export default {
       tabList: (state) => state.tabList,
       selectedTabId: (state) => state.selectedTabId,
     }),
+    
     ...mapGetters('node', [
       'selectedTabName',
       'selectedTabObject', // -> this.getTabName
@@ -123,14 +124,13 @@ export default {
       console.log('play');
       this.isLoading = true;
 
-      const tabToSave = this.tabList[this.selectedTabIndex];
+      const tabToPlay = this.tabList[this.selectedTabIndex];
 
       await this.$apollo
         .mutate({
           mutation: gql`
             mutation play($id: ID!) {
-              loadConfig(_id: $id) {
-              }
+              loadConfig(_id: $id) 
               startProcess {
                 data {
                   error
@@ -139,10 +139,11 @@ export default {
             }
           `,
           variables: {
-            id: tabToSave.id,
+            id: '620c0b85b975eb564a701b5e',
+            // id: tabToPlay.id,
           },
-          update: (store, { data: { loadConfig } }) => {
-            console.log(loadConfig.data);
+          update: (store, { data: { startProcess } }) => {
+            console.log(startProcess.data);
           },
         })
 
@@ -279,12 +280,12 @@ export default {
           mutation: gql`
             mutation updateNodeSheet(
               $id: ID!
-              $sketchName: String
+              $name: String
               $content: JSON!
             ) {
               updateNodeSheet(
                 _id: $id
-                sketchName: $sketchName
+                name: $name
                 content: $content
               ) {
                 data {
@@ -334,14 +335,14 @@ export default {
           mutation: gql`
             mutation createNodeSheet(
               $id: ID!
-              $sketchName: String
+              $name: String
               $saved: Boolean
               $duplicated: Boolean
               $content: JSON!
             ) {
               createNodeSheet(
                 _id: $id
-                sketchName: $sketchName
+                name: $name
                 saved: $saved
                 duplicated: $duplicated
                 content: $content
@@ -354,7 +355,7 @@ export default {
           `,
           variables: {
             id: tabToSave.id,
-            sketchName: tabToSave.sketchName,
+            name: tabToSave.name,
             saved: tabToSave.saved,
             duplicated: tabToSave.duplicated,
             content: this.editor.save(),
@@ -392,7 +393,7 @@ export default {
         a.download = fileName;
         a.click();
       }
-      const fileName = this.tabList[this.selectedTabIndex].sketchName;
+      const fileName = this.tabList[this.selectedTabIndex].name;
       download(
         JSON.stringify(this.editor.save()),
         `${fileName}.oms`,
