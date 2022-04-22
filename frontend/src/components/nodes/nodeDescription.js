@@ -78,7 +78,7 @@ export const descriptions = [
             Esse node é capaz de capturar uma imagem da camera
         `,
     category: 'Hardware',
-    tags: ['camera', 'hardware', 'comunicacao', 'comunicacao'],
+    tags: ['camera', 'hardware', 'comunicação', 'comunicacao'],
     resettable: true,
     stoppable: false,
     configurable: true,

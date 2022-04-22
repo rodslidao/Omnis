@@ -10,7 +10,7 @@ export default {
       // },
     ],
   },
-  // link og beatiful dogs https://www.youtube.com/watch?v=dQw4w9WgXcQ
+  // link og beautiful dogs https://www.youtube.com/watch?v=dQw4w9WgXcQ
   mutations: {
     addItemList: (state, item) => {
       state.alertList.push(item);

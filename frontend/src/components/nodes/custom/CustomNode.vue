@@ -10,7 +10,6 @@
     <div
       :class="classTitle"
       :style="myStyle"
-      @click.middle="deleteNode()"
       @mousedown.self.prevent.stop="startDrag"
       @contextmenu.prevent.capture=""
     >
@@ -75,7 +74,9 @@ export default {
       x: 0,
       y: 0,
       myStyle: {
-        backgroundColor: this.data.getOptionValue('color'),
+        backgroundColor: '#1e1e1e',
+        borderBottom: '3px solid',
+        borderColor: this.data.getOptionValue('color'),
       },
       pulse: false,
       pulseColor: 'cyan',
@@ -120,6 +121,7 @@ export default {
         });
       }
     },
+
     openAltContextMenu(e) {
       e.preventDefault();
       this.showMenu = false;
@@ -138,7 +140,7 @@ export default {
     },
 
     optionChange(option, data) {
-      if (option === 'color') this.myStyle.backgroundColor = data;
+      if (option === 'color') this.myStyle.borderColor = data;
       this.data.setOptionValue(option, data);
       this.saveNodeConfig(this.data.id);
       // this.$store.commit('saveNodeConfig', this.data.id);
@@ -225,8 +227,8 @@ export default {
 </script>
 
 <style scoped>
-
 .node{
+  padding-bottom: 2em;
 }
 
 .interface-row {

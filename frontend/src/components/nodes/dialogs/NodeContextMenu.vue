@@ -1,3 +1,4 @@
+/* eslint-disable no-shadow */
 <template>
   <div class="text-center">
     <v-menu dark v-model="menu" :close-on-content-click="false" offset-x>
@@ -13,12 +14,13 @@
             :id="nodeData.id"
             class="name"
             style="text-align: center"
+            @click.middle="deleteNode()"
             @mousedown.self.prevent.stop="$emit('start-drag')"
             @mouseup.self.prevent.stop="$emit('stop-drag', $event)"
           >
             {{ nodeData.name }}
           </h3>
-          <h5
+          <!-- <h5
             :id="nodeData.id"
             class="type"
             style="text-align: center"
@@ -26,7 +28,7 @@
             @mouseup.self.prevent.stop="$emit('stop-drag', $event)"
           >
             {{ nodeData.type }}
-          </h5>
+          </h5> -->
           <v-btn
             v-if="isStoppable"
             icon
@@ -112,27 +114,27 @@
           v-if="isStoppable"
         />
         <NodeContextMenuListItem
-          title="Reset Node"
-          color="orange"
-          icon="mdi-backup-restore"
-          @click="resetNode"
-          v-if="isResettable"
-        />
-        <NodeContextMenuListItem
           title="Open Settings"
-          color="teal"
+          color="grey"
           icon="mdi-cog-outline"
           @click="openSettings"
           v-if="isConfigurable"
         />
         <NodeContextMenuListItem
+          title="Reset Node"
+          color="grey"
+          icon="mdi-backup-restore"
+          @click="resetNode"
+          v-if="isResettable"
+        />
+        <NodeContextMenuListItem
           title="Settings History"
-          color="purple lighten-1"
+          color="grey"
           icon="mdi-format-list-numbered"
           @click="openHistory"
           v-if="hasHistory"
         />
-        <NodeContextMenuColorPicker :color="color" @colorChange="changeColor" />
+        <NodeContextMenuColorPicker color="grey" @colorChange="changeColor" />
         <NodeContextMenuListItem
           v-for="(action, i) in actions"
           :key="i"
@@ -161,12 +163,11 @@
 <script>
 // import { apiBaseUrl } from '@/main.js';
 import EventBus from '@/event-bus';
-import { mapActions, mapState } from 'vuex';
+import { mapActions } from 'vuex';
 import { getDescription, descriptions } from '../nodeDescription';
 import NodeContextMenuListItem from './NodeContextMenuListItem.vue';
 import NodeContextMenuColorPicker from './NodeContextMenuColorPicker.vue';
 import TextEditable from './TextEditable.vue';
-
 
 export default {
   components: {
@@ -186,13 +187,13 @@ export default {
     actions: [
       {
         text: 'Create Template',
-        color: 'blue',
+        color: 'grey',
         callable: 'createTemplate',
         icon: 'mdi-card-bulleted-outline',
       },
       {
         text: 'Delete Node',
-        color: 'red',
+        color: 'grey',
         callable: 'deleteNode',
         icon: 'mdi-trash-can-outline',
       },
@@ -212,9 +213,7 @@ export default {
     this.description = getDescription(this.nodeData.type);
   },
   methods: {
-    ...mapActions('node', [
-      'deletedNode',
-    ]),
+    ...mapActions('node', ['deletedNode']),
 
     changeColor(event) {
       this.color = event;
@@ -263,9 +262,9 @@ export default {
       this.menu = false;
     },
     createTemplate() {
-      let data = this.nodeData.save();
+      const data = this.nodeData.save();
 
-      let template = { ...data };
+      const template = { ...data };
 
       delete template.id;
       delete template.state;
@@ -275,8 +274,8 @@ export default {
       delete template.position;
 
       template.position = {};
-      template['position']['x'] = 0;
-      template['position']['y'] = 0;
+      template.position.x = 0;
+      template.position.y = 0;
 
       // let createTemplateUrl = `${apiBaseUrl}/node-template`;
       // this.axios.post(createTemplateUrl, template).then(() => {
@@ -308,8 +307,8 @@ export default {
 
   computed: {
     typeIcon() {
-      let nodeType = this.descriptionsList.find(
-        (nodeType) => nodeType.type === this.nodeData.type
+      const nodeType = this.descriptionsList.find(
+        (nodeType) => nodeType.type === this.nodeData.type,
       );
       if (!nodeType) {
         return 'mdi-help-circle-outline';
@@ -317,28 +316,28 @@ export default {
       return `mdi-${nodeType.icon}`;
     },
     isResettable() {
-      let nodeType = this.descriptionsList.find(
-        (nodeType) => nodeType.type === this.nodeData.type
+      const nodeType = this.descriptionsList.find(
+        (nodeType) => nodeType.type === this.nodeData.type,
       );
       return nodeType.resettable;
     },
     runningColor() {
       if (this.running) return 'green';
-      else return 'red';
+      return 'red';
     },
     isStoppable() {
       return this.descriptionsList.find(
-        (nodeType) => nodeType.type === this.nodeData.type
+        (nodeType) => nodeType.type === this.nodeData.type,
       ).stoppable;
     },
     isConfigurable() {
       return this.descriptionsList.find(
-        (nodeType) => nodeType.type === this.nodeData.type
+        (nodeType) => nodeType.type === this.nodeData.type,
       ).configurable;
     },
     hasHistory() {
       return this.descriptionsList.find(
-        (nodeType) => nodeType.type === this.nodeData.type
+        (nodeType) => nodeType.type === this.nodeData.type,
       ).hasHistory;
     },
     /**
@@ -347,9 +346,9 @@ export default {
      * - 180px if its not stoppable to make use of the full title width
      */
     titleStyle() {
-      let stoppable = this.descriptionsList.find(
-        (nodeType) => nodeType.type === this.nodeData.type
-      ).stoppable;
+      const { stoppable } = this.descriptionsList.find(
+        (nodeType) => nodeType.type === this.nodeData.type,
+      );
       return {
         width: stoppable ? '150px' : '180px',
       };
@@ -391,6 +390,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
+  font-weight: 400;
 }
 
 .type {
@@ -424,6 +424,5 @@ export default {
 <style lang="scss">
 .node > .__title {
   padding-top: 2px;
-  padding-bottom: 0;
 }
 </style>

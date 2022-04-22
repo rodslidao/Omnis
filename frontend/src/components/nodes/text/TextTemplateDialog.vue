@@ -98,7 +98,7 @@ export default {
     init() {
       this.nodeCopy = { ...this.node };
       this.valueCopy = JSON.parse(
-        JSON.stringify(this.node.getOptionValue('settings'))
+        JSON.stringify(this.node.getOptionValue('settings')),
       );
     },
   },

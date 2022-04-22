@@ -42,8 +42,8 @@
               <v-row>
                 <v-overflow-btn
                   class="my-2"
-                  :items="boardList"
-                  :label="boardCopy ===  null ? 'Selecione uma placa' : boardCopy"
+                  :items="cameraList"
+                  :label="cameraCopy === null ? 'Selecione uma Camera' : cameraCopy"
                   editable
                   item-value="text"
                 ></v-overflow-btn>
@@ -77,13 +77,10 @@ export default {
     dialog: false,
     nodeCopy: null,
     axisListCopy: null,
-    boardCopy: null,
-    boardList: [
-      'Arduino',
-      'Raspberry Pi',
-      'ESP32',
-      'ESP8266',
-      'BeagleBone Black',
+    cameraCopy: null,
+    cameraList: [
+      'camera 1 ',
+      'camera 2',
     ],
 
     rules: {
@@ -129,15 +126,15 @@ export default {
         `,
       });
       console.log(this.$apollo.store);
-      this.boardList = response.data.getNodeInfo.data.options;
-      console.log(this.boardList);
+      this.cameraList = response.data.getNodeInfo.data.options;
+      console.log(this.cameraList);
     },
 
     async init() {
       this.nodeCopy = { ...this.node };
-      this.boardCopy = this.node.getOptionValue('board');
+      this.cameraCopy = this.node.getOptionValue('board');
       this.axisListCopy = JSON.parse(
-        JSON.stringify(this.node.getOptionValue('axisList')),
+        JSON.stringify(this.node.getOptionValue('axisList'))
       );
       await this.getBoards();
     },

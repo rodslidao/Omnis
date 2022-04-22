@@ -30,15 +30,14 @@
 </template>
 
 <script>
-import { apiBaseUrl, socketio } from '@/main.js';
+// import { apiBaseUrl, socketio } from '@/main.js';
 
 export default {
   props: ['option', 'node', 'value'],
-  data: () => {
-    return {
-      executionCount: 0,
-    };
-  },
+  data: () => ({
+    executionCount: 0,
+  }),
+
   created() {
     // socketio.on('EXEC_COUNT', (data) => {
     //   if (data.nodeId === this.node.id) {
@@ -59,7 +58,6 @@ export default {
   },
 };
 </script>
-
 
 <style scoped>
 .opt-container {
