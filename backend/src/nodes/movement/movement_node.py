@@ -3,18 +3,17 @@ import timeit
 from src.nodes.node_manager import NodeManager
 from src.nodes.base_node import BaseNode
 from src.manager.serial_manager import SerialManager
-from api import logger, exception
-from os import popen
+from api import logger, exception, for_all_methods
 NODE_TYPE = "MOVEMENT"
 
 
+@for_all_methods(exception(logger))
 class MovementNode(BaseNode):
     """
     A class to send movement commands GCODES trough an serial instace.
 
     """
 
-    @exception(logger)
     def __init__(self, name, id, options, outputConnections, inputConnections) -> None:
         super().__init__(name, NODE_TYPE, id, options, outputConnections)
         self.inputConnections = inputConnections
@@ -31,7 +30,6 @@ class MovementNode(BaseNode):
         self.auto_run = options["auto_run"]["value"]
         NodeManager.addNode(self)
 
-    @exception(logger)
     def execute(self, message):
         action = message.targetName.lower()
         if action in self.axis:
@@ -40,13 +38,11 @@ class MovementNode(BaseNode):
             return getattr(self, action + "_f")(message.payload)
 
 
-    @exception(logger)
     def coordinates_f(self, payload):
         for k, v in payload.items():
             self.coordinates[k.lower()] = v
 
     #ToDo time for wait after movment needs to be set on options.
-    @exception(logger)
     def trigger_f(self, payload=None):
         if self.serial is not None and self.serial.is_open:
             movement = [
@@ -74,17 +70,14 @@ class MovementNode(BaseNode):
             if self.serial is None:
                 self.onFailure("Serial not connected", pulse=True)
 
-    @exception(logger)
     def stop(self):
         try:
             self.serial.stop()
         except AttributeError:
             pass
 
-    @exception(logger)
     def resume(self):
         super().resume()
 
-    @exception(logger)
     def pause(self):
         super().pause()

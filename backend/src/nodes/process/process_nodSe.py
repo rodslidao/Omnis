@@ -1,22 +1,21 @@
 from src.nodes.node_manager import NodeManager
 from src.nodes.base_node import BaseNode
-from src.nodes.process.process_obj import process
-from api import logger, exception
+from src.nodes.process.process import process
+from api import logger, exception, for_all_methods
 NODE_TYPE = "PROCESS"
 
 process_options ={
-    'stop': process.stopProcess,
-    'pause': process.pauseProcess,
-    'resume': process.resumeProcess,
-    'reset': NodeManager.restart
+    'stop': process.stop,
+    'pause': process.pause
 }
 
+
+@for_all_methods(exception(logger))
 class ProcessNode(BaseNode):
     """
     insert_node_description_here
     """
 
-    @exception(logger)
     def __init__(self, name, id, options, outputConnections, inputConnections) -> None:
         super().__init__(name, NODE_TYPE, id, options, outputConnections)
         self.inputConnections = inputConnections
@@ -24,12 +23,10 @@ class ProcessNode(BaseNode):
         self.auto_run = options["auto_run"].get("value", False)
         NodeManager.addNode(self)
 
-    @exception(logger)
     def execute(self, message=""):
         pass
 
     @staticmethod
-    @exception(logger)
     def get_info():
         return {
             "options": {

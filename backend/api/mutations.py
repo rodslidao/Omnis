@@ -11,7 +11,7 @@ from src.nodes.serial.custom_serial import CustomSerial
 from src.manager.camera_manager import CameraManager
 from src.manager.serial_manager import SerialManager
 
-from src.nodes.process.process_node import process
+from src.nodes.process.process import process
 
 from src.utility.system.date import set_system_date
 
@@ -22,7 +22,6 @@ mutation = MutationType()
 @mutation.field("createNodeSheet")
 def createNodeSheet_resolver(obj, info, _id, **kwargs):
     """Create a new NodeSheet object and return it like a payload"""
-    print(kwargs)
     returns = NodeSheet().createNodeSheet(_id, **kwargs)
     return {"data": returns}
 
@@ -47,7 +46,7 @@ def deleteNodeSheet_resolver(obj, info, id):
 @mutation.field("startProcess")
 def startProcess_resolver(obj, info):
     """Start a process by id and return it like a payload"""
-    process.startProcess()
+    process.start()
     returns = process.dict()
     return {"data": returns}
 
@@ -56,7 +55,7 @@ def startProcess_resolver(obj, info):
 @mutation.field("stopProcess")
 def stopProcess_resolver(obj, info):
     """Stop a process by id and return it like a payload"""
-    process.stopProcess()
+    process.stop()
     returns = process.dict()
     return {"data": returns}
 
@@ -65,7 +64,7 @@ def stopProcess_resolver(obj, info):
 @mutation.field("pauseProcess")
 def pauseProcess_resolver(obj, info):
     """Pause a process by id and return it like a payload"""
-    process.pauseProcess()
+    process.pause()
     returns = process.dict()
     return {"data": returns}
 
@@ -74,7 +73,7 @@ def pauseProcess_resolver(obj, info):
 @mutation.field("resumeProcess")
 def resumeProcess_resolver(obj, info):
     """Resume a process by id and return it like a payload"""
-    process.resumeProcess()
+    process.resume()
     returns = process.dict()
     return {"data": returns}
 
@@ -82,22 +81,13 @@ def resumeProcess_resolver(obj, info):
 @defaultException
 @mutation.field("loadConfig")
 def loadConfig_resolver(obj, info, _id):
-    try:
-        process.loadingProcess(_id)
-        return True
-    except Exception as e:
-        print(e)
-        return False
+    return process.load(_id)
 
 
 @defaultException
 @mutation.field("getLoadedConfig")
 def getLoadedConfig_resolver(obj, info):
-    try:
-        return LastValue.getLoadedConfig()
-    except Exception as e:
-        print(e)
-        return False
+    return process.getLoadedId()
 
 
 @defaultException
@@ -215,12 +205,11 @@ def stopSerial_resolver(obj, info, _id):
 
 
 @defaultException
-@mutation.field("communicateSerial")
-def communicateSerial_resolver(obj, info, _id, payload):
+@mutation.field("sendSerial")
+def sendSerial_resolver(obj, info, _id, payload):
     """Communicate a serial by id and return it like a payload"""
     serial = SerialManager.get_by_id(_id)
     serial.send(payload)
-    print("ok")
     return {"status": True, "data": serial.to_dict()}
 
 

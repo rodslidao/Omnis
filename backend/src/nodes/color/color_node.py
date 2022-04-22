@@ -1,7 +1,7 @@
 from src.nodes.node_manager import NodeManager
 from src.nodes.base_node import BaseNode
 from src.nodes.color.color_obj import ColorOBJ as color
-from api import logger, exception
+from api import logger, exception, for_all_methods
 
 NODE_TYPE = "COLOR"
 
@@ -9,12 +9,12 @@ color_modes = [
     color.RGB, color.HEX, color.HSV, color.CV2_HSV
 ]
 
+@for_all_methods(exception(logger))
 class ColorNode(BaseNode):
     """
     insert_node_description_here
     """
 
-    @exception(logger)
     def __init__(self, name, id, options, outputConnections, inputConnections) -> None:
         super().__init__(name, NODE_TYPE, id, options, outputConnections)
         self.inputConnections = inputConnections
@@ -27,7 +27,6 @@ class ColorNode(BaseNode):
 
         NodeManager.addNode(self)
 
-    @exception(logger)
     def execute(self, message=None):
         if message:
             self.color = color(message.payload, self.color_mode)
@@ -35,7 +34,6 @@ class ColorNode(BaseNode):
             self.on(output, self.color.get(output))
 
     @staticmethod
-    @exception(logger)
     def get_info():
         return {
             "options": {

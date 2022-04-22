@@ -2,13 +2,13 @@ from src.nodes.node_manager import NodeManager
 from src.nodes.base_node import BaseNode
 from src.nodes.timer.task_time import setInterval
 from src.manager.serial_manager import SerialManager
-from api import logger, exception
+from api import logger, exception, for_all_methods
 
 NODE_TYPE = "SERIAL"
 
 
+@for_all_methods(exception(logger))
 class SerialNode(BaseNode):
-    @exception(logger)
     def __init__(self, name, id, options, outputConnections, inputConnections) -> None:
         super().__init__(name, NODE_TYPE, id, options, outputConnections)
         self.inputConnections = inputConnections
@@ -19,7 +19,6 @@ class SerialNode(BaseNode):
         NodeManager.addNode(self)
 
     @setInterval(1)
-    @exception(logger)
     def execute(self, message=""):
         if not self.serial.is_open:
             self.serial.start()
@@ -30,10 +29,8 @@ class SerialNode(BaseNode):
             self.onSuccess(self.serial)
             return True
 
-    @exception(logger)
     def stop(self):
         self.stop_event.set()
 
-    @exception(logger)
     def reset(self):
         self.stop_event = self.execute()

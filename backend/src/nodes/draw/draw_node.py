@@ -1,7 +1,7 @@
 from src.nodes.node_manager import NodeManager
 from src.nodes.base_node import BaseNode
 from src.nodes.draw.draw_obj import DrawOBJ
-from api import logger, exception
+from api import logger, exception, for_all_methods
 
 NODE_TYPE = "DRAW"
 
@@ -15,13 +15,12 @@ draw_options = {
     "angle": "drawAngles",
 }
 
-
+@for_all_methods(exception(logger))
 class DrawNode(BaseNode):
     """
     insert_node_description_here
     """
 
-    @exception(logger)
     def __init__(self, name, id, options, outputConnections, inputConnections) -> None:
         super().__init__(name, NODE_TYPE, id, options, outputConnections)
         self.inputConnections = inputConnections
@@ -31,7 +30,6 @@ class DrawNode(BaseNode):
         self.obj = None
         NodeManager.addNode(self)
 
-    @exception(logger)
     def execute(self, message=""):
         target = message.targetName.lower()
 
@@ -59,7 +57,6 @@ class DrawNode(BaseNode):
                         self.onFailure("No such drawable property: {}".format(n))
 
     @staticmethod
-    @exception(logger)
     def get_info():
         return {
             "options": {
@@ -67,6 +64,5 @@ class DrawNode(BaseNode):
             }
         }
 
-    @exception(logger)
     def get_frame(self):
         return self.image

@@ -1,13 +1,13 @@
 from src.nodes.node_manager import NodeManager
 from src.nodes.base_node import BaseNode
 from .production_obj import ProductionOBJ
-from api import logger, exception
+from api import logger, exception, for_all_methods
 
 NODE_TYPE = "PRODUCTION"
 
 
+@for_all_methods(exception(logger))
 class ProductionNode(BaseNode):
-    @exception(logger)
     def __init__(self, name, id, options, outputConnections, inputConnections) -> None:
         super().__init__(name, NODE_TYPE, id, options, outputConnections)
         self.model = options["model"]["value"]
@@ -16,7 +16,6 @@ class ProductionNode(BaseNode):
         self.auto_run = options["auto_run"]["value"]
         NodeManager.addNode(self)
 
-    @exception(logger)
     def execute(self, message):
         target = message.targetName.lower()
         if target == "start":

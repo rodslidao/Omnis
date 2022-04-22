@@ -14,7 +14,7 @@ from cv2 import (
     THRESH_BINARY_INV,
     ADAPTIVE_THRESH_MEAN_C,
 )
-from api import logger, exception
+from api import logger, exception, for_all_methods
 
 NODE_TYPE = "THRESHHOLD"
 
@@ -38,12 +38,12 @@ thresh_functions = {
 }
 
 
+@for_all_methods(exception(logger))
 class ThreshholdNode(BaseNode):
     """
     insert_node_description_here
     """
 
-    @exception(logger)
     def __init__(self, name, id, options, outputConnections, inputConnections) -> None:
         super().__init__(name, NODE_TYPE, id, options, outputConnections)
         self.inputConnections = inputConnections
@@ -59,7 +59,6 @@ class ThreshholdNode(BaseNode):
         self.auto_run = options["auto_run"]["value"]
         NodeManager.addNode(self)
 
-    @exception(logger)
     def execute(self, message):
         self.image = message.payload
         try:
@@ -70,12 +69,10 @@ class ThreshholdNode(BaseNode):
         except Exception as e:
             self.onFailure(f"{self._id} cant execute.", pulse=True, errorMessage=str(e))
 
-    @exception(logger)
     def get_frame(self):
         return self.image
 
     @staticmethod
-    @exception(logger)
     def get_info():
         return {
             "options": {

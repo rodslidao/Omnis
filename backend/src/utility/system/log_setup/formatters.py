@@ -2,6 +2,7 @@ from logging import Formatter, getLogger
 from json import dumps
 from traceback import format_exception
 from datetime import datetime
+from coloredlogs import ColoredFormatter
 logger = getLogger(__name__)
 
 class JsonFormatter(Formatter):
@@ -73,7 +74,8 @@ def remove_none(d):
     except:
         logger.exception('Issue stripping None vals from nested object')
 
-console_formatter = Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+console_formatter = ColoredFormatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
 formatters = {
     'json': JsonFormatter(),
     'console': console_formatter

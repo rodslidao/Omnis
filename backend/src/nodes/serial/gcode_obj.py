@@ -1,9 +1,9 @@
 from .custom_serial import CustomSerial
-from api import logger, exception
+from api import logger, exception, for_all_methods
 
 
+@for_all_methods(exception(logger))
 class SerialGcodeOBJ(CustomSerial):
-    @exception(logger)
     def __init__(
         self,
         port=None,
@@ -38,9 +38,7 @@ class SerialGcodeOBJ(CustomSerial):
         self.pause = False
         self.pause_permission = ["stop", "kill", "quick_stop", "resume"]
 
-    @exception(logger)
     def verify(function):
-        @exception(logger)
         def wrapper(self, *args, **kwargs):
             if self.pause or not self.is_open:
                 return
@@ -49,7 +47,6 @@ class SerialGcodeOBJ(CustomSerial):
         return wrapper
 
     @verify
-    @exception(logger)
     def M114(self, _type="", sequence=["X", "Y", "Z", "A", "B", "C", ":"]):
         """
         Get current position of machine.
@@ -69,12 +66,11 @@ class SerialGcodeOBJ(CustomSerial):
                     list(map(float, txt.split(" ")[: len(sequence) - 1])),
                 )
             )
-        except ValueError:
+        except ValueError:                      #! Why this error?
             print("\n" * 3, echo)
             return self.M114(_type, sequence)
 
     @verify
-    @exception(logger)
     def M119(self, cut=": "):
         """
         Get satus of endstops.
@@ -87,12 +83,11 @@ class SerialGcodeOBJ(CustomSerial):
             try:
                 pos.append(info[info.index(cut) + len(cut) : len(info)])
                 key.append(info[: info.index(cut)])
-            except ValueError:
+            except ValueError:                      #! Why this error?
                 print("ERROR:", info)
         return dict(zip(key, pos))
 
     @verify
-    @exception(logger)
     def G28(
         self,
         axis="E",
@@ -130,7 +125,6 @@ class SerialGcodeOBJ(CustomSerial):
                 pass
 
     @verify
-    @exception(logger)
     def M_G0(self, *args, **kwargs):
         """
         Send a GCODE movement command (G0) and wait for current position to be reached.
@@ -160,7 +154,6 @@ class SerialGcodeOBJ(CustomSerial):
             b = [v for v in self.M114("R").values()]
 
     @verify
-    @exception(logger)
     def pause(self):
         self.pause = True
         """
@@ -169,7 +162,6 @@ class SerialGcodeOBJ(CustomSerial):
         self.send("M0")
 
     @verify
-    @exception(logger)
     def kill(self):
         self.pause = True
         """
@@ -181,7 +173,6 @@ class SerialGcodeOBJ(CustomSerial):
         self.send("M112")
 
     @verify
-    @exception(logger)
     def stop(self):
         self.pause = True
         """
@@ -191,7 +182,6 @@ class SerialGcodeOBJ(CustomSerial):
         """
         self.send("M410")
 
-    @exception(logger)
     def resume(self):
         self.pause = False
         """
@@ -199,14 +189,11 @@ class SerialGcodeOBJ(CustomSerial):
         """
         self.send("M108")
 
-    @exception(logger)
     def callPin(self, name, state, json):
         value = json[name]["command"] + (
             json[name]["values"].replace("_pin_", str(json[name]["pin"]))
         ).replace("_state_", str(json[name][state]))
-        print(value)
         self.send(value)
 
-    @exception(logger)
     def __str__(self) -> str:
         return f"[[SerialGcodeOBJ] {self.name}, {self.port}, {self.baudrate}]"

@@ -1,17 +1,16 @@
 from src.nodes.node_manager import NodeManager
 from src.nodes.base_node import BaseNode
 from src.nodes.compare.compare_obj import data_comparatives
-from api import exception, logger
+from api import exception, logger, for_all_methods
 
 NODE_TYPE = "COMPARATIVE_DIMENSIONAL_DATA"
 
-
+@for_all_methods(exception(logger))
 class ComparedimensionaldataNode(BaseNode):
     """
     Node to execute logical operations between values.
     """
 
-    @exception(logger)
     def __init__(self, name, id, options, outputConnections, inputConnections) -> None:
         super().__init__(name, NODE_TYPE, id, options, outputConnections)
         self.inputConnections = inputConnections
@@ -21,25 +20,20 @@ class ComparedimensionaldataNode(BaseNode):
         self.auto_run = options["auto_run"]["value"]
         NodeManager.addNode(self)
 
-    @exception(logger)
     def execute(self, message=""):
         target = message.targetName.lower()
         getattr(self, target)(message)
         pass
 
-    @exception(logger)
     def dimensional_obj(self, message):
         self.dimensional_obj = message.payload
 
-    @exception(logger)
     def value2(self, message):
         self.value2 = message.payload
 
-    @exception(logger)
     def value3(self, message):
         self.value3 = message.payload
 
-    @exception(logger)
     def trigger(self, message):
         try:
             self.onSuccess(

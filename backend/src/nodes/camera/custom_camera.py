@@ -8,9 +8,10 @@ from time import sleep
 import cv2
 import datetime
 
-from api import logger, exception
+from api import logger, exception, for_all_methods
 
 
+@for_all_methods(exception(logger))
 class FPS:
     """
     FPS class for calculating frames per second. \n
@@ -22,33 +23,29 @@ class FPS:
 
     """
 
-    @exception(logger)
     def __init__(self):
         self._start = None
         self._end = None
         self._numFrames = 0
 
-    @exception(logger)
     def start(self):
         self._start = datetime.datetime.now()
         return self
 
-    @exception(logger)
     def update(self):
         if self.elapsed() >= 5:
             self._numFrames = 0
             self.start()
         self._numFrames += 1
 
-    @exception(logger)
     def elapsed(self):
         return (datetime.datetime.now() - self._start).total_seconds()
 
-    @exception(logger)
     def fps(self):
         return self._numFrames / self.elapsed()
 
 
+@for_all_methods(exception(logger))
 class camera:
     """
     Complex api for USB cameras.
@@ -87,7 +84,6 @@ class camera:
 
     """
 
-    @exception(logger)
     def __init__(self, src=0, name="WebcamVideoStream", _id=None):
         self.src = src
 
@@ -110,24 +106,20 @@ class camera:
             cv2.imwrite("./frame.jpg", self.read())
         CameraManager.add(self)
 
-    @exception(logger)
     def set_property(self, name, value):
         self.stream.set(getattr(cv2, name) if isinstance(name, str) else name, value)
 
-    @exception(logger)
     def set_properties(self, properties):
         for name, value in properties.items():
             self.set_property(name, value)
 
-    @exception(logger)
     def reset(self):
-        print("Resetting camera...")
+        logger.info("Resetting camera")
         self.stopped = True
         CameraManager.update()
         self.start()
         return self
 
-    @exception(logger)
     def start(self):
         """
         Start the camera.
@@ -142,7 +134,6 @@ class camera:
             CameraManager.update()
         return self
 
-    @exception(logger)
     def updateFrame(self):
         """
         Update the frame of the camera.
@@ -152,7 +143,6 @@ class camera:
             (self.grabbed, self.frame) = self.stream.read()
             self.scale_lines_draw()
 
-    @exception(logger)
     def read(self):
         """
         Read the current frame.
@@ -162,7 +152,6 @@ class camera:
         #! Do not use this, the ROI needs to be set in the constructor, or another node should be used.
         return ascontiguousarray(self.frame[130:350, 120:520])
 
-    @exception(logger)
     def stop(self):
         """
         Stop the camera.
@@ -176,17 +165,14 @@ class camera:
         CameraManager.update()
         return self
 
-    @exception(logger)
     def remove(self):
         CameraManager.remove(self)
 
-    @exception(logger)
     def __del__(self):
         if not self.stopped:
             self.stop()
         self.stream.release()
 
-    @exception(logger)
     def to_dict(self):
         """
         Returns a dictionary representation of the camera.
@@ -226,7 +212,6 @@ class camera:
         cv2.rectangle(self.frame, (120, 170), (520, 310), (255, 255, 255), 1)
 
 
-@exception(logger)
 def checker(src=2):
     """
     Checks if the camera is running.

@@ -1,6 +1,6 @@
 from src.nodes.node_manager import NodeManager
 from src.nodes.base_node import BaseNode
-from api import logger, exception
+from api import logger, exception, for_all_methods
 
 from cv2 import (
     getStructuringElement,
@@ -37,13 +37,12 @@ element_types = {
     "ELLIPSE": MORPH_ELLIPSE,
 }
 
-
+@for_all_methods(exception(logger))
 class MorphoperationNode(BaseNode):
     """
     insert_node_description_here
     """
 
-    @exception(logger)
     def __init__(self, name, id, options, outputConnections, inputConnections) -> None:
         super().__init__(name, NODE_TYPE, id, options, outputConnections)
         self.inputConnections = inputConnections
@@ -57,7 +56,6 @@ class MorphoperationNode(BaseNode):
         self.auto_run = options["auto_run"]["value"]
         NodeManager.addNode(self)
 
-    @exception(logger)
     def execute(self, message):
         self.image = message.payload
         try:
@@ -66,12 +64,10 @@ class MorphoperationNode(BaseNode):
         except Exception as e:
             self.onFailure(f"{self._id} cant execute.", pulse=True, errorMessage=str(e))
 
-    @exception(logger)
     def get_frame(self):
         return self.image
 
     @staticmethod
-    @exception(logger)
     def get_info():
         return {
             "options": {

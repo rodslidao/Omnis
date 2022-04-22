@@ -106,7 +106,6 @@ class DrawOBJ(dimensional_data):
             )
 
     def drawAngles(self):
-        print(self.angle)
         ellipse(
             self.image,
             center=tuple(self.center.values()),
