@@ -1,25 +1,38 @@
-from cv2 import RETR_LIST, RETR_EXTERNAL, RETR_CCOMP, RETR_TREE, RETR_FLOODFILL
+from math import sqrt
 from cv2 import (
-    CHAIN_APPROX_NONE,
-    CHAIN_APPROX_SIMPLE,
-    CHAIN_APPROX_TC89_L1,
     CHAIN_APPROX_TC89_KCOS,
+    TERM_CRITERIA_MAX_ITER,
+    CHAIN_APPROX_TC89_L1,
+    CHAIN_APPROX_SIMPLE,
+    CHAIN_APPROX_NONE,
+    TERM_CRITERIA_EPS,
+    RETR_FLOODFILL,
+    RETR_EXTERNAL,
+    RETR_CCOMP,
+    RETR_LIST,
+    RETR_TREE
 )
 
 from cv2 import (
-    findContours,
+    connectedComponentsWithStats,
+    minEnclosingCircle,
+    approxPolyDP,
     boundingRect,
+    cornerHarris,
+    cornerSubPix,
+    findContours,
     contourArea,
+    minAreaRect,
     arcLength,
     boxPoints,
-    minAreaRect,
-    minEnclosingCircle,
+    threshold,
     moments,
-    approxPolyDP,
+    blur
 )
 
-from numpy import int0
+from numpy import angle, float32, int0, uint8
 from bson.objectid import ObjectId
+from api import logger, exception
 
 # Map of modes to use for the contour retrieval
 modes = {
@@ -63,6 +76,7 @@ class dimensional_data(object):
 
     """
 
+    @exception(logger)
     def __init__(
         self,
         area=None,
@@ -72,8 +86,11 @@ class dimensional_data(object):
         AC=None,
         AD=None,
         center=None,
-        vertices=None,
+        edges= None,
+        corners= None,
+        countour = None,
         box=None,
+        center_dist=None
     ):
         self._id = ObjectId()
         self.area = area
@@ -83,20 +100,55 @@ class dimensional_data(object):
         self.AC = AC
         self.AD = AD
         self.center = center
-        self.vertices = vertices
+        self.edges = edges
+        self.corners = corners
+        self.countour = countour
         self.box = box
+        self.center_dist = center_dist
+        self.angle = self.getAngle()[1]
 
+    def getAngle(self, pivot='A'):
+        if pivot in ['A','B','C','D']:
+            self.pivot = self.edges[pivot]
+        elif isinstance(pivot, (tuple, list)):
+            self.pivot = pivot
+        elif pivot <= len(self.corners)-1:
+            self.pivot = self.corners[pivot]
+        else:
+            print("Failed to find pivot")
+            return False, 0
+        self.angle = find_angle(tuple(self.center.values()), self.pivot) 
+        return True, self.angle
+
+    @exception(logger)
     def get(self, key):
         return getattr(self, key)
 
+    @exception(logger)
     def set(self, key, value):
         setattr(self, key, value)
 
+    @exception(logger)
     def __call__(self):
         return vars(self)
 
+@exception(logger)
+def find_corners(mask):
+    img = blur(mask, (3, 3))
+    dst = cornerHarris(img, 10, 3, 0.04)
+    dst = threshold(dst, 0.1*dst.max(), 255, 0)[1]
+    centroids = connectedComponentsWithStats(uint8(dst))[3]
+    criteria = (TERM_CRITERIA_EPS + TERM_CRITERIA_MAX_ITER, 100, 0.001)
+    return int0(cornerSubPix(mask, float32(centroids),(5,5),(-1,-1),criteria))[1:]
+
+@exception(logger)
+def find_angle(origin, point, degrees=True, positive=True):
+    _a = angle(complex(*(point[0] - origin[0], origin[1] - point[1])), degrees)
+    if _a < 0 and positive: _a += 360
+    return _a
 
 # Function to get the contours of an image
+@exception(logger)
 def identifyObjects(image, mode="RETR_TREE", method="CHAIN_APPROX_SIMPLE", **parm):
 
     """
@@ -122,9 +174,10 @@ def identifyObjects(image, mode="RETR_TREE", method="CHAIN_APPROX_SIMPLE", **par
     mt = methods.get(method, CHAIN_APPROX_SIMPLE)
 
     # Find the contours in the image
-    contours, hierarchy = findContours(image, md, mt)
+    contours, _ = findContours(image, md, mt)
 
     # function tha verify if some var need to be tested, and then test it
+    @exception(logger)
     def verify(var, name):
         var_d = parm.get(name, False)
         if not var_d:
@@ -134,15 +187,12 @@ def identifyObjects(image, mode="RETR_TREE", method="CHAIN_APPROX_SIMPLE", **par
         return False
 
     dimensional_object_list = []
-    for component in zip(contours, hierarchy):
-        contour = component[0]
-        hierarchy = component[1]
 
+    for contour in contours:
         # calculate area, and reject contours that are too small or too large
         area = contourArea(contour)
         if not verify(area, "area"):
             continue
-
         # calculate radius, and reject contours that are too small or too large
         (x, y), radius = minEnclosingCircle(contour)
         if not verify(radius, "radius"):
@@ -162,35 +212,36 @@ def identifyObjects(image, mode="RETR_TREE", method="CHAIN_APPROX_SIMPLE", **par
         vertices = approxPolyDP(contour, 0.01 * perimeter, True)
         if not verify(len(vertices), "vertices"):
             continue
-
+        
         # calculate width and height, and reject contours that are too small or too large
         x, y, w, h = boundingRect(contour)
         if not verify(w, "width") or not verify(h, "height"):
             continue
 
         box = int0(boxPoints(minAreaRect(contour)))
-        sortedBoxX = sorted(box, key=lambda x: x[0])
-        sortedBoxY = sorted(box, key=lambda x: x[1])
+        A, B, C, D = box[0], box[1], box[2], box[3]
+        edges = {'A':A,'B':B,'C':C,'D':D}
 
-        A, B, C, D = (
-            tuple(sortedBoxX[0]),
-            tuple(sortedBoxX[-1]),
-            tuple(sortedBoxY[0]),
-            tuple(sortedBoxY[-1]),
-        )
-
+        # Improve corners detection
+        n = 5 # px off-set from image boundaries to avoid errors. 
+        corners = [[cord[0]+A[0]-n, cord[1]+B[1]-n] for cord in find_corners(image[B[1]-n:D[1]+n, A[0]-n:C[0]+n])]
+        
         # calculate diagonals, and reject contours that are too small or too large
+        distance = lambda p1, p2: sqrt((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2)
 
-        AB = (abs(A[0] - B[0]) ** 2 + abs(A[1] - B[1]) ** 2) ** 0.5
+        AB = distance(A, B)
         if not verify(AB, "AB"):
             continue
 
-        AC = (abs(A[0] - C[0]) ** 2 + abs(A[1] - C[1]) ** 2) ** 0.5
+        AC = distance(A, C)
         if not verify(AC, "AC"):
             continue
-
-        AD = (abs(A[0] - D[0]) ** 2 + abs(A[1] - D[1]) ** 2) ** 0.5
+        
+        AD = distance(A, D)
         if not verify(AD, "AD"):
+            continue
+
+        if AB is None or AC is None or AD is None:
             continue
 
         # calculate center of mass
@@ -199,17 +250,24 @@ def identifyObjects(image, mode="RETR_TREE", method="CHAIN_APPROX_SIMPLE", **par
         cy = int(M["m01"] / M["m00"])
 
         center = {"X": cx, "Y": cy}
+        center_dist ={"X":int(cx - (image.shape[1]/2)), "Y":int(cy - (image.shape[0]/2))}
 
-        # create dimensional object and append to list
+        if len(corners) == 0:
+            corners = [
+                        [int(center[0]-(diameter/2)), center[1]],
+                        [center[0], int(center[1]-(diameter/2))],
+                        [int(center[0]+(diameter/2)), center[1]],
+                        [center[0], int(center[1]+(diameter/2))]
+            ]
+        
+        
         dimensional_object_list.append(
             dimensional_data(
-                area, perimeter, diameter, AB, AC, AD, center, vertices, box
+                area, perimeter, diameter, AB, AC, AD, center, edges, corners, contour, box, center_dist
             )
         )
-
     # return list of dimensional objects that passed all tests
     return dimensional_object_list
-
 
 # parameters to filter contours (Example)
 # parm = {
@@ -258,8 +316,14 @@ def identifyObjects(image, mode="RETR_TREE", method="CHAIN_APPROX_SIMPLE", **par
 #         "min":10,
 #         "max":100
 #     },
+# }
+# -- not included yet --
+#     "edges":{
+#         "min":10,
+#         "max":100
+#     },
 
-#     "vertices":{
+#    "corners":{
 #         "min":10,
 #         "max":100
 #     },

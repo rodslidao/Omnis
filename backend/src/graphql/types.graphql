@@ -1,7 +1,8 @@
 type NodeSheet {
-  sketchName: String,
-  saved: Boolean,
-  duplicated:Boolean,
+  _id: ID!
+  name: String
+  saved: Boolean
+  duplicated:Boolean
   content: NDS
 }
 
@@ -77,4 +78,16 @@ type Photo {
 type DefaultStatus{
   status: Boolean
   error: [String]
+}
+
+type NodeInfo{
+  _id: ID
+  name: String
+  type: String
+  options: JSON
+}
+type Manutention{
+  proto: String
+  url: String
+  port: String
 }

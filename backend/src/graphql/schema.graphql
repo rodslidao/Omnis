@@ -9,14 +9,14 @@ schema {
 }
 
 type Mutation {
-  createNodeSheet(id: ID!,  sketchName: String, saved: Boolean, duplicated: Boolean, content: JSON!): NodeSheetResult!
-  updateNodeSheet(id: ID!, input: NodeSheetInput): NodeSheetResult
+  createNodeSheet(_id: ID!,  sketchName: String, saved: Boolean, duplicated: Boolean, content: JSON!): NodeSheetResult!
+  updateNodeSheet(_id: ID!, sketchName:String, content: JSON): NodeSheetResult
   deleteNodeSheet(id: ID!): NodeSheetResult
 
-  startProcess: ProcessResult!
-  stopProcess: ProcessResult!
-  resumeProcess: ProcessResult!
-  pauseProcess: ProcessResult!
+  startProcess: ProcessResult
+  stopProcess: ProcessResult
+  resumeProcess: ProcessResult
+  pauseProcess: ProcessResult
 
   loadConfig(_id: ID!): Boolean!
   getLoadedConfig: ID!
@@ -37,21 +37,29 @@ type Mutation {
   resetSerial(_id: ID!): SerialResult!
   communicateSerial(_id: ID!, payload:String!): SerialResult!
   setCameraProperty(_id: ID!, input: JSON): CameraResult!
+
+  syncHostTime(timestamp: Int): Boolean!
 }
 
 type Query {
-  getNodeSheet(id: ID!): NodeSheetResult!
+  getNodeSheet(_id: ID!): NodeSheetResult!
+  getSketchList:SketchListResult!
 
-  getCamera(id: ID!): CameraResult!
+  getNodeInfo(node_type: ID!): NodeInfoResult!
+
+  getCamera(_id: ID!): CameraResult!
   getCameras: CamerasResult!
 
-  getSerial(id: ID!): SerialResult!
+  getSerial(_id: ID!): SerialResult!
   getSerials: SerialsResult!
 
-  getProcess: ProcessResult!
+  getProcess: ProcessResult
 
   updateAlerts: DefaultStatus
   allPhotos: [Photo]
+
+  getManutention: ManutentionResult
+  getThr: [String]
 }
 
 type Subscription {

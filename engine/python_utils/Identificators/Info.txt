@@ -1,2 +1,0 @@
-Códigos de conversão de cor bidirecional:
-# BGR, RGB, HSV, HLS, Lab, Luv, YUV, YCrCb

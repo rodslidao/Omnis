@@ -7,13 +7,14 @@ const envfile = '.env';
 // }
 
 const result = dotenv.config({
+  silent: true,
   path: path.resolve('../', envfile),
 });
 
 // optional: check for errors
-if (result.error) {
-  throw result.error;
-}
+// if (result.error) {
+//   throw result.error;
+// }
 
 module.exports = {
   pwa: {

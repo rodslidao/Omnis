@@ -1,3 +1,5 @@
 /env
 r.txt
 *.log
+*.*.json
+core

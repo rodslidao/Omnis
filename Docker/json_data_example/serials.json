@@ -1,5 +1,0 @@
-[
-    {"name":"Serial2", "baudrate":5000, "port":"COM6", "reconnect":false, "gcode":true},
-    {"name":"Octopus V1.1", "baudrate":2000, "port":"COM6", "reconnect":false, "gcode":true},
-    {"name":"Octopus V1.1", "baudrate":250000, "port":"COM6", "reconnect":false, "gcode":true}
-]
