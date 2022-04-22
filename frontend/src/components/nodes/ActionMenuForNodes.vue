@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="menuList"  v-on:keyup.ctrl.s="save">
+    <div class="menuList" v-on:keyup.ctrl.s="save">
       <v-btn class="button" color="primary" fab dark small @click="play">
         <v-icon> mdi-play </v-icon>
       </v-btn>
@@ -37,19 +37,24 @@
           <v-icon left dark>{{ item.icon }} </v-icon>{{ item.title }}
         </v-btn>
         <!-- <v-btn color="primary" class="" dark @change="upload"> -->
-          <input id="fileUpload" type="file" hidden @change="upload"  accept=".oms," />
-          <v-btn color="primary" class="" dark @click="chooseFiles()">
-            <v-icon left dark>mdi-upload</v-icon>Upload
-          </v-btn>
-          <!-- <v-file-input
+        <input
+          id="fileUpload"
+          type="file"
+          hidden
+          @change="upload"
+          accept=".oms,"
+        />
+        <v-btn color="primary" class="" dark @click="chooseFiles()">
+          <v-icon left dark>mdi-upload</v-icon>Upload
+        </v-btn>
+        <!-- <v-file-input
             hide-input
             truncate-length="15"
             v-model="files"
           ></v-file-input> -->
-        </v-btn>
       </v-speed-dial>
     </div>
-      <v-progress-linear
+    <v-progress-linear
       v-if="isLoading"
       fixed
       indeterminate
@@ -103,7 +108,7 @@ export default {
       tabList: (state) => state.tabList,
       selectedTabId: (state) => state.selectedTabId,
     }),
-    
+
     ...mapGetters('node', [
       'selectedTabName',
       'selectedTabObject', // -> this.getTabName
@@ -124,13 +129,13 @@ export default {
       console.log('play');
       this.isLoading = true;
 
-      const tabToPlay = this.tabList[this.selectedTabIndex];
+      // aconst tabToPlay = this.tabList[this.selectedTabIndex];
 
       await this.$apollo
         .mutate({
           mutation: gql`
             mutation play($id: ID!) {
-              loadConfig(_id: $id) 
+              loadConfig(_id: $id)
               startProcess {
                 data {
                   error
@@ -162,7 +167,7 @@ export default {
           this.$alertFeedback(
             'Não foi possível rodar programa',
             'error',
-            error
+            error,
           );
 
           // We restore the initial user input
@@ -172,7 +177,7 @@ export default {
     async stop() {
       console.log('stop');
       this.isLoading = true;
-      const tabToSave = this.tabList[this.selectedTabIndex];
+      // const tabToSave = this.tabList[this.selectedTabIndex];
 
       await this.$apollo
         .mutate({
@@ -205,7 +210,7 @@ export default {
           this.$alertFeedback(
             'Não foi possível parar a rotina',
             'error',
-            error
+            error,
           );
 
           // We restore the initial user input
@@ -251,7 +256,7 @@ export default {
           this.$alertFeedback(
             'Não foi possível rodar programa',
             'error',
-            error
+            error,
           );
 
           // We restore the initial user input
@@ -278,16 +283,8 @@ export default {
       await this.$apollo
         .mutate({
           mutation: gql`
-            mutation updateNodeSheet(
-              $id: ID!
-              $name: String
-              $content: JSON!
-            ) {
-              updateNodeSheet(
-                _id: $id
-                name: $name
-                content: $content
-              ) {
+            mutation updateNodeSheet($id: ID!, $name: String, $content: JSON!) {
+              updateNodeSheet(_id: $id, name: $name, content: $content) {
                 data {
                   _id
                 }
@@ -316,7 +313,7 @@ export default {
           this.$alertFeedback(
             'Não foi possível salvar o arquivo, erro ao conectar com servidor',
             'error',
-            error
+            error,
           );
 
           // We restore the initial user input
@@ -325,7 +322,7 @@ export default {
 
     async save() {
       console.log('save');
-
+      this.isLoading = true;
       console.log(" :salvo com sucesso!'");
 
       const tabToSave = this.tabList[this.selectedTabIndex];
@@ -378,7 +375,7 @@ export default {
           this.$alertFeedback(
             'Não foi possível salvar o arquivo, erro ao conectar com servidor',
             'error',
-            error
+            error,
           );
 
           // We restore the initial user input
@@ -397,7 +394,7 @@ export default {
       download(
         JSON.stringify(this.editor.save()),
         `${fileName}.oms`,
-        'text/plain'
+        'text/plain',
       );
     },
 
@@ -409,12 +406,12 @@ export default {
       this.fab = false;
 
       if (
-        target.files[0].name.split('.').pop() !== 'oms' ||
-        target.files[0].name.split('.').pop() !== 'json'
+        target.files[0].name.split('.').pop() !== 'oms'
+        || target.files[0].name.split('.').pop() !== 'json'
       ) {
         this.$alertFeedback(
           'Arquivo inválido, seu arquivo deve ser um .oms',
-          'error'
+          'error',
         );
 
         return;
@@ -425,7 +422,7 @@ export default {
       const fr = new FileReader();
       console.log(files);
       if (files.length <= 0) {
-        return false;
+        return;
       }
 
       let json;
@@ -459,6 +456,7 @@ export default {
               input: json,
             },
             update: (store, { data: { createNodeSheet } }) => {
+              // eslint-disable-next-line no-underscore-dangle
               console.log(createNodeSheet.data._id);
             },
           })
@@ -473,11 +471,11 @@ export default {
             this.isLoading = false;
             console.error(
               'Não foi possível fazer o UPLOAD do arquivo \n',
-              error
+              error,
             );
             this.$alertFeedback(
               'Não foi possível fazer o upload do arquivo',
-              'error'
+              'error',
             );
 
             // We restore the initial user input

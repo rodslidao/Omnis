@@ -13,10 +13,15 @@ import TextTemplateNode from '@/components/nodes/text/TextTemplateNode';
 import MoveAxisDialog from '@/components/nodes/move/MoveAxisDialog.vue';
 import MoveAxisNode from '@/components/nodes/move/MoveAxisNode';
 
+// MoveNode
+import CameraDialog from '@/components/nodes/camera/CameraDialog.vue';
+import CameraNode from '@/components/nodes/camera/CameraNode';
+
 export function registerOptions(viewPlugin) {
   viewPlugin.registerOption('EventButtonOption', EventButtonOption);
   viewPlugin.registerOption('TextTemplateDialog', TextTemplateDialog);
   viewPlugin.registerOption('MoveAxisDialog', MoveAxisDialog);
+  viewPlugin.registerOption('CameraDialog', CameraDialog);
 }
 
 export function registerNodes(editorInstance) {
@@ -28,4 +33,6 @@ export function registerNodes(editorInstance) {
   editorInstance.registerNodeType('text-template', TextTemplateNode, 'Text');
 
   editorInstance.registerNodeType('move-axis', MoveAxisNode, 'Move');
+
+  editorInstance.registerNodeType('camera', CameraNode, 'Output');
 }

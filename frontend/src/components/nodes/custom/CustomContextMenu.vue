@@ -159,6 +159,7 @@
 </template>
 
 <script>
+import Home from '@/views/Home.vue';
 import { Components } from '@baklavajs/plugin-renderer-vue';
 import {
   getDescription,
@@ -166,7 +167,6 @@ import {
   getCategoryList,
   descriptions,
 } from '../nodeDescription';
-import Home from '@/views/Home.vue';
 
 export default {
   components: { Home },
