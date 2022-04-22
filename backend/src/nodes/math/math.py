@@ -1,5 +1,5 @@
 import math
-from api import logger, exception
+from api import logger, exception, for_all_methods
 _sum = lambda x, y: x + y
 _sub = lambda x, y: x - y
 _mul = lambda x, y: x * y

@@ -1,7 +1,8 @@
 import math
 import colorsys
-from api import logger, exception
+from api import logger, exception, for_all_methods
 
+@for_all_methods(exception(logger))
 class ColorOBJ:
     """
     A class to convert color to hex, rgb, hsv and cv2_hsv formats.
@@ -11,7 +12,6 @@ class ColorOBJ:
     HSV = "HSV"
     CV2_HSV = "CV2_HSV"
 
-    @exception(logger)
     def __init__(self, value, mode):
         """
         :value: color value -> i.eg. (255, 255, 255) or #ffffff\n
@@ -65,11 +65,9 @@ class ColorOBJ:
                 self.RGB_V = self.hsv2rgb(*self.hsv)
                 self.HEX_V = self.any2hex(self.rgb)
 
-    @exception(logger)
     def get(self, mode):
         return getattr(self, f"{mode}_V")
 
-    @exception(logger)
     def hsv2rgb(self, h, s_, v_):
         s = s_ / 100
         v = v_ / 100
@@ -90,7 +88,6 @@ class ColorOBJ:
             r, g, b = c, 0, x
         return (int((r + m) * 255), int((g + m) * 255), int((b + m) * 255))
 
-    @exception(logger)
     def rgb2hsv(self, r, g, b):
         red_percentage = r / 255
         green_percentage = g / 255
@@ -104,13 +101,10 @@ class ColorOBJ:
         color_v = round(100 * color_hsv_percentage[2])
         
         color_hsv = (color_h, color_s, color_v)
-        print("hsv:", color_hsv)
         return color_hsv
 
-    @exception(logger)
     def any2hex(self, hsv_):
         return tuple(map(hex, hsv_))
 
-    @exception(logger)
     def hex2int(self, hex_):
         return tuple(map(lambda x: int(x, 16), hex_))

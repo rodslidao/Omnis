@@ -1,5 +1,5 @@
 # For all possible logical comparative between two values, make a function:
-from api import logger, exception
+from api import logger, exception, for_all_methods
 
 
 @exception(logger)

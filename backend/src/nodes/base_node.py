@@ -1,10 +1,11 @@
 from src.message import Message
 from src.nodes.node_manager import NodeManager
-from api import logger, exception
+from api import logger, exception, for_all_methods
 from threading import Event
 
 NODE_TYPE = "BASE_NODE"
 
+@for_all_methods(exception(logger))
 class BaseNode:
     """
     A class that represents a node, and its properties.
@@ -29,12 +30,8 @@ class BaseNode:
         sendConnectionExec(fromId, toId): Sends a connection execution message to the node.
         sendErrorMessage(nodeId, errorMessage): Sends an error message to the node.
 
-        log(message, level="debug", prefix="", suffix=""): Logs a message.
-
-
     """
     
-    @exception(logger)
     def __init__(self, name, type, id, options, outputConnections) -> None:
         self.name = name
         self.type = type
@@ -44,19 +41,15 @@ class BaseNode:
         self.running = True
         self.stop_event = Event()
 
-    @exception(logger)
     def onSuccess(self, payload, additional=None):
         self.on("onSuccess", payload, additional)
     
-    @exception(logger)
     def onSignal(self, signal=True):
         self.on("Sinal", signal)
     
-    @exception(logger)
     def onFailure(self, payload, additional=None, pulse=True, errorMessage=""):
         self.on("onFailure", payload, additional, pulse)
     
-    @exception(logger)
     def on(self, trigger, payload, additional=None, pulse=False, errorMessage=""):
         targets = list(
             filter(
@@ -82,12 +75,11 @@ class BaseNode:
             )
             while not self.running:
                 pass
-
+            logger.info(f"{self} -> {message}")
             node_ro_run = NodeManager.getNodeById(target.get("to").get("nodeId"))
             node_ro_run.execute(message)
 
 
-    @exception(logger)
     def AutoRun(self):
         message = Message(
                 "auto_run",
@@ -101,36 +93,29 @@ class BaseNode:
         self.reset()
         self.execute(message)
         
-    @exception(logger)
     def pause(self):
         self.running = False
         return True
 
-    @exception(logger)
     def resume(self):
         self.running = True
         return True
 
-    @exception(logger)
     def stop(self):
         self.stop_event.set()
     
-    @exception(logger)
     def reset(self):
         self.stop()
         self.stop_event.clear()
         self.running = True
 
     #Todo: Implement the following methods in the frontend0
-    @exception(logger)
     def pulse(self, color):
         message = {"NodeId": self._id, "color": color}
     
-    @exception(logger)
     def sendConnectionExec(self, fromId, toId):
         message = {"type": "CONNECTION_EXEC", "data": {"from": fromId, "to": toId}}
     
-    @exception(logger)
     def sendErrorMessage(self, nodeId, errorMessage):
         message = {
             "type": "NODE_EXEC_ERROR",

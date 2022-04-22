@@ -2,10 +2,12 @@ from serial.tools import list_ports
 from serial import Serial, serialutil
 from bson import ObjectId
 from src.manager.serial_manager import SerialManager
-from api import logger, exception
+from api import logger, exception, for_all_methods
 from threading import Lock
 
 send_lock = Lock()
+
+@for_all_methods(exception(logger))
 class CustomSerial(Serial):
     """
     Class to comunicate with serial port.
@@ -35,7 +37,6 @@ class CustomSerial(Serial):
 
     """
 
-    @exception(logger)
     def __init__(
         self,
         port=None,
@@ -71,7 +72,6 @@ class CustomSerial(Serial):
         self.filters = filters
         SerialManager.add(self)
 
-    @exception(logger)
     def start(self):
         if not self.is_open:
             if self.port is None:
@@ -86,7 +86,6 @@ class CustomSerial(Serial):
             self.open()
         return self
 
-    @exception(logger)
     def close(self):
         super().close()
     
@@ -97,13 +96,11 @@ class CustomSerial(Serial):
     def remove(self):
         SerialManager.remove(self)
 
-    @exception(logger)
     def reset(self):
         self.close()
         self.start()
         return self
 
-    @exception(logger)
     def send(self, message, echo=False):
         send_lock.acquire()
         try:
@@ -116,13 +113,11 @@ class CustomSerial(Serial):
         finally:
             send_lock.release()
 
-    @exception(logger)
     def write(self, payload):
         super().write((f"{payload}\n").encode("ascii"))
         self.last_value_send = payload
         return self.echo()
 
-    @exception(logger)
     def echo(self):
         lines = []
         _b = self.readline()
@@ -133,7 +128,6 @@ class CustomSerial(Serial):
         self.last_value_received = lines
         return lines
 
-    @exception(logger)
     def findMostCompatiblePort(self):
         ports = {}
         port_list = {f"{p.vid}{p.serial_number}": p for p in list_ports.comports()}
@@ -147,7 +141,6 @@ class CustomSerial(Serial):
         if ports:
             return port_list.get(max(ports, key=ports.get))
 
-    @exception(logger)
     def to_dict(self):
         return {
             "_id": self._id,

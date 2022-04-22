@@ -1,13 +1,13 @@
-from backend.src.nodes.base_node import BaseNode
+from src.nodes.base_node import BaseNode
 from src.nodes.node_manager import NodeManager
 from src.nodes.blister.blister_obj import Blister, Slot
-from src.manager.blister_manager import BlisterManager
-from numpy import ndenumerate
-from api import logger, exception
+from bson import ObjectId
+from api import logger, exception, for_all_methods, dbo
 
 NODE_TYPE = "BLISTER"
 
 
+@for_all_methods(exception(logger))
 class BlisterNode(BaseNode):
     """
     Inputs:
@@ -19,21 +19,24 @@ class BlisterNode(BaseNode):
 
     """
 
-    @exception(logger)
     def __init__(self, name, id, options, outputConnections, inputConnections) -> None:
         super().__init__(name, NODE_TYPE, id, options, outputConnections)
         self.inputConnections = inputConnections
-        self.shape = options.get("shape")
-        self.slot_config = options.get("slot_config")
-        self.blister = Blister(self.shape, BlisterManager.get_by_id(self.slot_config))
-        # self.blister = Blister(shape=options["shape"], slot_config=options["S2"])
+        self.blister_id = options["blister_id"]["value"]
+        self.blister = Blister(
+            **dbo.find_one(
+                "blister-manager", {"_id": ObjectId(self.blister_id)}
+            )
+        )
+
         self.auto_run = options["auto_run"]["value"]
         NodeManager.addNode(self)
 
     def __next__(self):
-        self.on("item", next(self.slot_config))
+        garbage = next(self.blister)
+        self.on("item", garbage)
+        return garbage
 
-    @exception(logger)
     def execute(self, message):
         target = message.targetName.lower()
         match target:
@@ -42,19 +45,14 @@ class BlisterNode(BaseNode):
             case "next":
                 return next(self)
             case "in_roi":
-                self.on("out_roi", self.blister.roi(message.payload))
-                return
-            case "config":
-                self.blister = Blister(
-                    shape=self.shape,
-                    slot_config=message.payload
-                    if isinstance(message.payload, (dict, Slot))
-                    else BlisterManager.get_by_id(message.payload),
-                )
-                return self.reset()
+                garbage = self.blister.roi(message.payload)
+                self.on("out_roi", garbage) #! Send data, or blister object? what is the best way?
+                return garbage()
             case "end":
                 self.reset()
                 self.on("end", True)
+            case "draw":
+                self.blister.draw(message.payload)
             case _:
                 return self.onFailure(message)
         if self.auto_run:
@@ -63,18 +61,16 @@ class BlisterNode(BaseNode):
     def reset(self):
         self.blister.reset_iterator()
 
-    # def order(self, message):
-    #     return message.payload.flatten()[0]
-
     @staticmethod
-    @exception(logger)
     def get_info():
         return {
-            "options": {
-                "option_name": "option_accepted_values",
-            }
+            "options": list(map(normalize_id_on_dict, dbo.find_many("blister-manager"))),
         }
 
+def normalize_id_on_dict(dictionary):
+    temp = dictionary.copy()
+    temp['_id'] = str(dictionary['_id'])
+    return temp
 
 if __name__ == "__main__":
     S2 = Slot(

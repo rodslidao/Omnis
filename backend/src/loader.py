@@ -6,7 +6,7 @@ from api.models import NodeSheet
 from .nodes.node_manager import NodeManager
 from .nodes.node_registry import NodeRegistry
 from src.manager.mongo_manager import getDb
-from api import logger, exception
+from api import logger, exception, for_all_methods
 
 
 class LoadingMode(Enum):
@@ -20,10 +20,8 @@ class NodeChangeType(Enum):
     MODIFY = "MODIFY"
     DELETE = "DELETE"
 
-
 class NodeChange(object):
     # nodeId, nodeName, type, optionsOld, optionsNew, date
-    @exception(logger)
     def __init__(self, nodeId, nodeName, nodeType, optionsOld, optionsNew, date):
         self.nodeId = nodeId
         self.nodeName = nodeName
@@ -39,13 +37,6 @@ def getNodeByInterfaceId(nodeConfig, interfaceId):
         for i in n.get("interfaces"):
             if i[1]["id"] == interfaceId:
                 return n
-    # a = next(
-    #     n
-    #     for n in nodeConfig.get("nodes")
-    #     if any([i[1]["id"] == interfaceId for i in n.get("interfaces")])
-    # )
-    # return a
-
 
 @exception(logger)
 def getInterfaceByInterfaceId(nodeConfig, interfaceId):
@@ -137,7 +128,6 @@ def cleanNodeManager(nodeConfigs):
 
 @exception(logger)
 def loadConfig(NodeSheet, mode=LoadingMode):
-    print("loading config")
     numberOfNodesTotal = 0
     numberOfNodesChanged = 0
     numberOfNodesInit = 0
@@ -149,11 +139,7 @@ def loadConfig(NodeSheet, mode=LoadingMode):
         connectionList = list(extractConnections(nodeConfig))
         # print("connectionList: {}".format(list(connectionList)))
         for node in nodeConfig.get("nodes"):
-
-            try:
-                newCls = NodeRegistry.getNodeClassByName(node.get("type"))
-            except Exception:
-                print("Node type '{}' not found".format(node.get("type")))
+            newCls = NodeRegistry.getNodeClassByName(node.get("type"))
 
             options = extractOptionsFromNode(node)
             existingNode = NodeManager.getNodeById(node.get("id"))
@@ -229,25 +215,18 @@ def loadConfig(NodeSheet, mode=LoadingMode):
 
 @exception(logger)
 def saveNodeChange(nodeChange):
-    print("saving node change")
     dbo = getDb()
-    # try insert nodeChange in node-history collection of dbo, if can't insert, by any reason, inform
-    try:
-        dbo.get_collection("node-history").insert_one(nodeChange)
-    except Exception as e:
-        print("Can't save node change: {}".format(e))
+    dbo.get_collection("node-history").insert_one(nodeChange)
 
 @exception(logger)
 def load(node_id=None):
     dbo = getDb()
-    #NodeManager.reset()
+    NodeManager.clear()
     current_loaded_query = {"description":"current-config-loaded-id"}
     if node_id is not None:
         dbo.update_one("last-values", current_loaded_query, {"$set": {"sheet-id": ObjectId(node_id)}})
         sheet = NodeSheet().getNodeSheetById(node_id)["content"]
     else:
         _ = dbo.find_one("last-values", current_loaded_query)["sheet-id"]
-        print("auto_select id:", _)
         sheet = NodeSheet().getNodeSheetById(dbo.find_one("last-values", current_loaded_query)["sheet-id"])["content"]
     loadConfig(sheet, LoadingMode)
-    

@@ -35,7 +35,7 @@ type Mutation {
   startSerial(_id: ID!): SerialResult!
   stopSerial(_id: ID!): SerialResult!
   resetSerial(_id: ID!): SerialResult!
-  communicateSerial(_id: ID!, payload:String!): SerialResult!
+  sendSerial(_id: ID!, payload:String!): SerialResult!
   setCameraProperty(_id: ID!, input: JSON): CameraResult!
 
   syncHostTime(timestamp: Int): Boolean!

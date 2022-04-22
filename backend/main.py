@@ -19,7 +19,6 @@ try:
     from ariadne.asgi import GraphQL
 
     from starlette.middleware.cors import CORSMiddleware
-    from starlette.middleware import Middleware
     from starlette.applications import Starlette
     from starlette.routing import Mount
 
@@ -33,21 +32,12 @@ try:
         type_defs, query, mutation, subscription, snake_case_fallback_resolvers
     )
 
-    middleware = [
-        Middleware(
-            CORSMiddleware,
-            allow_origins=["*"],
-            allow_methods=["*"],
-            allow_headers=["*"],
-        )
-    ]
-
     routes = [
         Mount("/imgs", routes=imgRoute),
         Mount("/videos", routes=videoRoute),
     ]
 
-    app = Starlette(debug=True, routes=routes)
+    app = Starlette(debug=True, routes=routes, on_startup=[], on_shutdown=[dbo.close])
     app.mount(
         "/",
         CORSMiddleware(
@@ -56,6 +46,7 @@ try:
             allow_methods=["*"],
             allow_headers=["*"],
         ),
+        "Omnis"
     )
 
     port = environ["SERVER_PORT"] if environ.get("SERVER_PORT") else 5000
@@ -68,9 +59,7 @@ try:
         socketI.close()
 
     if __name__ == "__main__":
-        uvicorn.run("main:app", host=host, port=int(port), log_level="info")
-
-except KeyboardInterrupt:
-    logger.debug("Server stopped manually")
+        uvicorn.run("main:app", host=host, port=int(port), log_level=logger.level)
+        
 except Exception as e:
     logger.critical(e)

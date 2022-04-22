@@ -5,7 +5,7 @@ from src.nodes.node_manager import NodeManager
 from src.nodes.base_node import BaseNode
 
 from cv2 import GaussianBlur, blur, medianBlur
-from api import logger, exception
+from api import logger, exception, for_all_methods
 
 NODE_TYPE = "BLUR"
 
@@ -13,12 +13,12 @@ NODE_TYPE = "BLUR"
 blur_types = {"GAUSSIAN": GaussianBlur, "MEDIAN": medianBlur, "DEFAULT": blur}
 
 
+@for_all_methods(exception(logger))
 class BlurNode(BaseNode):
     """
     Node to somothing an image
     """
 
-    @exception(logger)
     def __init__(self, name, id, options, outputConnections, inputConnections) -> None:
         super().__init__(name, NODE_TYPE, id, options, outputConnections)
         self.inputConnections = inputConnections
@@ -27,7 +27,6 @@ class BlurNode(BaseNode):
         self.auto_run = options["auto_run"]["value"]
         NodeManager.addNode(self)
 
-    @exception(logger)
     def execute(self, message=""):
         self.image = message.payload
         try:
@@ -39,12 +38,10 @@ class BlurNode(BaseNode):
         except Exception as e:
             self.onFailure(f"{self._id} cant execute.", pulse=True, errorMessage=str(e))
 
-    @exception(logger)
     def get_frame(self):
         return self.image
 
     @staticmethod
-    @exception(logger)
     def get_info():
         return {
             "options": {
