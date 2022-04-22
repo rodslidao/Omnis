@@ -20,7 +20,14 @@ class MovementNode(BaseNode):
         self.inputConnections = inputConnections
         self.serial_id = options["hardware"]["serial_id"]
         self.serial = SerialManager.get_by_id(self.serial_id)
-        self.axis = list(map(lambda x: x.lower(), options["axis"]["list_of_axis"]))
+        
+        self.axis = []
+        self.coordinates = {}
+        for axi in options['axisList']:
+            if axi['isActive']:
+                self.axis.append(axi['name'].lower())
+                self.coordinates[axi['name'].lower()] = axi['value']
+                
         self.relative = options["axis"].get("relative", False)
         self.trigger_delay = 10
         self.coordinates = {
@@ -83,4 +90,5 @@ class MovementNode(BaseNode):
         super().pause()
 
     def get_info():
-        return {"options": list(map(str, SerialManager.get_ids()))}
+        print(SerialManager.get_info())
+        return {"options": SerialManager.get_info()}

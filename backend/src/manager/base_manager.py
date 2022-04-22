@@ -24,8 +24,12 @@ class BaseManager():
         return list(map(lambda x: x.to_dict(), self.store.values()))
     
     def get_ids(self):
-        return list(self.store.keys())
+        return list(str(self.store.keys()))
+
+    def get_info(self):
         
+        return [{'name':V.name, '_id':str(V._id)} for V in self.store.values()]
+
     def get_by_id(self, id):
         if len(id.encode('utf-8')) >= 12:
             _ = ObjectId(id)

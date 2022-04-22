@@ -50,10 +50,8 @@ from src.nodes.serial.custom_serial import CustomSerial
 from src.nodes.serial.gcode_obj import SerialGcodeOBJ
 from src.nodes.camera.custom_camera import camera
 
-if True or environ.get("SO").lower() == "linux":
-    for serial_config in dbo.find_many('serial-manager', {}):
-        serial_config['port'] = 'COM3'
-        SerialManager.add(SerialGcodeOBJ(**serial_config) if serial_config.get("is_gcode", False) else CustomSerial(**serial_config))
+for serial_config in dbo.find_many('serial-manager', {}):
+    SerialManager.add(SerialGcodeOBJ(**serial_config) if serial_config.get("is_gcode", False) else CustomSerial(**serial_config))
 
-    for camera_config in dbo.find_many('camera-manager', {}):
-        CameraManager.add(camera(**camera_config))
+for camera_config in dbo.find_many('camera-manager', {}):
+    CameraManager.add(camera(**camera_config))
