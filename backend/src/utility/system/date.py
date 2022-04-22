@@ -17,10 +17,13 @@ def set_system_date(_date, write_date=True):
         case float() | int():
             _date = stamp_to_date(_date)
         case _:
-            raise TypeError("Invalid date type")
+            raise TypeError(f"Invalid date type: ({_date, type(_date)})")
     if platform_system() == "Linux" and write_date:
             print(f"Setting system date to {_date}")
             os_system(f"sudo date -s '{_date}'")
+    elif platform_system() == "Windows" and write_date:
+        print(f"System unsupported set date operation: {_date}")
+
     return _date
 
 def get_system_date(_str=False, _format=DATE_FORMAT):

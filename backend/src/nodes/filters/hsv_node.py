@@ -1,18 +1,17 @@
 from src.nodes.node_manager import NodeManager
 from src.nodes.base_node import BaseNode
-from .color_classes import ColorRange
-
+from api import logger, exception
 
 from cv2 import (
     inRange,
     cvtColor,
-    COLOR_BGR2HSV_FULL,
-    morphologyEx,
-    MORPH_CLOSE,
-    MORPH_OPEN,
+    COLOR_BGR2HSV,
+    bitwise_and,
+    FONT_HERSHEY_SIMPLEX,
+    putText,
 )
 
-from numpy import array, ones, uint8
+from numpy import array
 
 NODE_TYPE = "HSV"
 
@@ -26,34 +25,47 @@ class HsvNode(BaseNode):
         "Better HSV" -> returns the same at above but with an MorphologyEx applied to remove noise pixels.
     """
 
-    def __init__(self, name, type, id, options, outputConnections) -> None:
-        super().__init__(name, type, id, options, outputConnections)
-        self.lower = options["lower"]["value"]
-        self.upper = options["upper"]["value"]
-        self.mode = options["color_mode"]
-        self.interations = options["interations"]
-        self.kernel = ones((5, 5), uint8)
-        self.color_range = ColorRange(
-            "color_range", self.mode, self.lower, self.upper
-        ).get("cv2_hsv")
+    @exception(logger)
+    def __init__(self, name, id, options, outputConnections, inputConnections) -> None:
+        super().__init__(name, NODE_TYPE, id, options, outputConnections)
+        print(options)
+        self.color_range = {
+            "lower": options["filter"]["lower"],
+            "upper": options["filter"]["upper"],
+        }
+        self.auto_run = options["auto_run"]["value"]
         NodeManager.addNode(self)
 
+    @exception(logger)
     def execute(self, message):
-        try:
-            hsv_mask = inRange(
-                cvtColor(message, COLOR_BGR2HSV_FULL),
-                array(self.color_range["lower"]),
-                array(self.color_range["upper"]),
-            )
-            better_hsv = morphologyEx(
-                morphologyEx(
-                    hsv_mask, MORPH_CLOSE, self.kernel, iterations=self.interations
-                ),
-                MORPH_OPEN,
-                self.kernel,
-                iterations=self.interations,
-            )
-            self.on("Better HSV", better_hsv)
-            self.on("HSV Mask", hsv_mask)
-        except Exception as e:
-            self.onFailure(e)
+        target = message.targetName.lower()
+        if target == "color_range":
+            self.color_range = message.payload
+        elif target == "image":
+            self.message = message
+            self.onSuccess(self.convert_frame())
+
+    @exception(logger)
+    def convert_frame(self):
+        return inRange(
+            cvtColor(self.message.payload, COLOR_BGR2HSV),
+            array(self.color_range["lower"]),
+            array(self.color_range["upper"]),
+        )
+
+    @exception(logger)
+    def get_frame(self):
+        
+        _ = bitwise_and(
+            self.message.payload, self.message.payload, mask=self.convert_frame()
+        )
+
+        return putText(
+            _,
+            f"HSV Range: {self.color_range}",
+            (10, 30),
+            FONT_HERSHEY_SIMPLEX,
+            0.5,
+            (0, 0, 255),
+            2,
+        )

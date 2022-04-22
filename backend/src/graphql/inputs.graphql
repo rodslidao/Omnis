@@ -5,6 +5,7 @@ input NodeSheetInput {
 input CameraInput {
   src: Int!
   name: String
+  _id: ID
 }
 
 input SerialInput{
@@ -25,6 +26,7 @@ input SerialInput{
   timeout:Int
   vid:Int
   xonxoff:Boolean
+  _id: ID
 }
 
 input AlertInput {

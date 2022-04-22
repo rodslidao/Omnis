@@ -1,0 +1,13 @@
+[Unit]
+Description=Ngrok
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=ubuntu
+WorkingDirectory=/home/ubuntu
+ExecStart=/snap/bin/ngrok start --all --config="/home/ubuntu/.ngrok2/ngrok.yml"
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

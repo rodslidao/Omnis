@@ -1,6 +1,7 @@
 import threading
+from bson.objectid import ObjectId
 
-def setInterval(interval):
+def setInterval(interval, stop_event=None, name=""):
     """
     Decorator to set a function to be called at every interval seconds.
 
@@ -18,13 +19,13 @@ def setInterval(interval):
     """
     def decorator(function):
         def wrapper(*args, **kwargs):
-            stopped = threading.Event()
+            stopped = threading.Event() if stop_event is None else stop_event
 
             def loop():
                 while not stopped.wait(interval): 
                     function(*args, **kwargs)
 
-            t = threading.Thread(target=loop)
+            t = threading.Thread(name=f"{name}_{ObjectId()}", target=loop)
             t.daemon = True 
             t.start()
             return stopped
