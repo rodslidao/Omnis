@@ -4,6 +4,7 @@ from os import environ
 from time import sleep
 from src.utility.system.class_inspect import is_static_method
 import platform
+environ.setdefault("SO", platform.system())
 
 levels = {
     "debug": DEBUG,
