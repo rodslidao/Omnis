@@ -4,6 +4,7 @@ from src.nodes.node_manager import NodeManager
 from src.nodes.base_node import BaseNode
 from src.manager.serial_manager import SerialManager
 from api import logger, exception, for_all_methods
+
 NODE_TYPE = "MOVEMENT"
 
 
@@ -37,25 +38,24 @@ class MovementNode(BaseNode):
         else:
             return getattr(self, action + "_f")(message.payload)
 
-
     def coordinates_f(self, payload):
         for k, v in payload.items():
             self.coordinates[k.lower()] = v
 
-    #ToDo time for wait after movment needs to be set on options.
+    # ToDo time for wait after movment needs to be set on options.
     def trigger_f(self, payload=None):
         if self.serial is not None and self.serial.is_open:
             movement = [
                 (k, v)
                 for k, v in self.coordinates.items()
-               if (k in self.axis and v is not None)
+                if (k in self.axis and v is not None)
             ]
 
-            t = 0.5     #! Remove this line
-             
+            t = 0.5  #! Remove this line
+
             if self.relative:
                 self.serial.send("G91")
-                t = 1   #! Remove this line
+                t = 1  #! Remove this line
             else:
                 self.serial.send("G90")
 
@@ -81,3 +81,6 @@ class MovementNode(BaseNode):
 
     def pause(self):
         super().pause()
+
+    def get_info():
+        return {"options": list(map(str, SerialManager.get_ids()))}

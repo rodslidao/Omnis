@@ -4,6 +4,8 @@ from os import environ
 from time import sleep
 from src.utility.system.class_inspect import is_static_method
 import platform
+from dotenv import load_dotenv
+load_dotenv()
 environ.setdefault("SO", platform.system())
 
 levels = {
@@ -40,7 +42,6 @@ connectToMongo()
 dbo = getDb()
 
 custom_handler(logger, "mongo", "json", dbo, levels[lvl])
-logger.info("Logger is set up.")
 
 from src.manager.serial_manager import SerialManager
 from src.manager.camera_manager import CameraManager

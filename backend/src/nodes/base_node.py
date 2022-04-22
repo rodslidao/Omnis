@@ -124,3 +124,9 @@ class BaseNode:
 
     def  __str__(self) -> str:
         return f"[{self._id}] ({self.type}) {self.name}"
+
+    @staticmethod
+    def normalize_id_on_dict(dictionary):
+        temp = dictionary.copy()
+        temp['_id'] = str(dictionary['_id'])
+        return temp

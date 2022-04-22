@@ -64,13 +64,9 @@ class BlisterNode(BaseNode):
     @staticmethod
     def get_info():
         return {
-            "options": list(map(normalize_id_on_dict, dbo.find_many("blister-manager"))),
+            "options": list(map(BaseNode.normalize_id_on_dict, dbo.find_many("blister-manager"))),
         }
 
-def normalize_id_on_dict(dictionary):
-    temp = dictionary.copy()
-    temp['_id'] = str(dictionary['_id'])
-    return temp
 
 if __name__ == "__main__":
     S2 = Slot(
