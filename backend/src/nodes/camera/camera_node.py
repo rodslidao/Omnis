@@ -40,4 +40,4 @@ class CameraNode(BaseNode):
 
     @staticmethod
     def get_info():
-        return {"options": {"hardware": CameraManager.get()}}
+        return {"options": CameraManager.get_info()}

@@ -88,7 +88,7 @@ class camera:
         self.src = src
 
         # Todo: Test another back_end API for camera.
-        self.stream = cv2.VideoCapture(src, cv2.CAP_V4L2)
+        self.stream = cv2.VideoCapture(src)#, cv2.CAP_V4L2)
 
         self.stream.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc("M", "J", "P", "G"))
 
@@ -104,6 +104,7 @@ class camera:
         if self.stream.isOpened():
             (self.grabbed, self.frame) = self.stream.read()
             cv2.imwrite("./frame.jpg", self.read())
+        self.start()
         CameraManager.add(self)
 
     def set_property(self, name, value):
@@ -150,7 +151,8 @@ class camera:
         """
 
         #! Do not use this, the ROI needs to be set in the constructor, or another node should be used.
-        return ascontiguousarray(self.frame[130:350, 120:520])
+        # return ascontiguousarray(self.frame[130:350, 120:520])
+        return self.frame
 
     def stop(self):
         """

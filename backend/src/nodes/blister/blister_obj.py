@@ -144,11 +144,12 @@ class Blister:
      [03,13,23,33]]  i=3, j(x)=0,1,2,3 |\n
     """
 
-    def __init__(self, shape, slot_config, _id=None, **kwargs) -> None:
+    def __init__(self, shape, name,  slot_config, _id=None, **kwargs) -> None:
         self._id = ObjectId(_id)
         self.slot_config = (
             slot_config if not isinstance(slot_config, Slot) else slot_config()
         )
+        self.name=name
         self.shape = shape
         self.kwargs = kwargs
         self.data = self.generate_data(shape, **self.slot_config)
