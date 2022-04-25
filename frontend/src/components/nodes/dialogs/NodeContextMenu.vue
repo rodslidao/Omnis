@@ -213,7 +213,7 @@ export default {
     this.description = getDescription(this.nodeData.type);
   },
   methods: {
-    ...mapActions('node', ['deletedNode']),
+    ...mapActions('node', ['deletedNode', 'saveNodeConfig']),
 
     changeColor(event) {
       this.color = event;
@@ -236,7 +236,8 @@ export default {
     },
     changeName(data) {
       this.nodeData.name = data;
-      this.$store.commit('saveNodeConfig', this.nodeData.id);
+      this.saveNodeConfig(this.nodeData.id);
+      // this.$store.commit('saveNodeConfig', this.nodeData.id);
       this.dialog = false;
     },
     deleteNode() {
@@ -258,9 +259,11 @@ export default {
       // });
     },
     openSettings() {
+      console.log('openSettings');
       EventBus.$emit('OPEN_SETTINGS', this.nodeData.id);
       this.menu = false;
     },
+
     createTemplate() {
       const data = this.nodeData.save();
 

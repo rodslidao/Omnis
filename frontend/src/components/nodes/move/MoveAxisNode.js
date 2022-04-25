@@ -16,7 +16,7 @@ export default class MoveAxis extends Node {
     { name: 'F', isActive: true, value: 0 },
   ];
 
-  board = 'default';
+  board = null ;
 
   constructor() {
     super();
@@ -60,7 +60,7 @@ export default class MoveAxis extends Node {
     // });
 
     this.addOption('axisList', 'MoveAxisDialog', this.axisList);
-    this.addOption('board', 'MoveAxisDialog', this.board);
+    this.addOption('board', undefined, this.board);
     this.addOption('color', undefined, '#FF9800');
     this.addOption('running', undefined, true);
   }

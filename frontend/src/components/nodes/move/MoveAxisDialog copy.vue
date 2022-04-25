@@ -2,19 +2,18 @@
   <v-row justify="center">
     <v-dialog v-model="dialog" max-width="600px">
       <v-card dark>
-        <v-card-title>
-          <TextEditable :text="node.name" @changeText="changeName" />
+        <v-card-title >
+          <TextEditable
+            :text="node.name"
+            @changeText="changeName"
+          />
           <!-- <span class="headline">{{ nodeCopy.name }}</span> -->
         </v-card-title>
         <v-divider></v-divider>
         <v-card-text class="pt-4">
           <v-form v-model="valid">
-            <v-row>
-              <v-col
-                ><h3>Placa</h3>
-                <p>Selecione a placa que executara o movimento.</p></v-col
-              >
-              <v-col>
+            <v-col class="">
+              <v-row>
                 <v-select
                   :items="boardListName"
                   :label="
@@ -23,19 +22,15 @@
                   dense
                   outlined
                 ></v-select>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col
-                ><h3>Distancias</h3>
-                <p>Distancia que a maquina vai se mexer em relação a origem da
-                maquina.</p></v-col
-              >
-              <v-col>
-               <v-row
+              </v-row>
+              <h3>
+                Distancia que a maquina vai se mexer em relação a origem da
+                maquina.
+              </h3>
+              <v-row
                 v-for="(axis, index) in axisListCopy"
                 :key="index"
-                class="mb-4 mt-4"
+                class=" mb-4 mt-4"
               >
                 <v-checkbox
                   class="mt-0"
@@ -53,9 +48,7 @@
                   hide-details
                 ></v-text-field>
               </v-row>
-              </v-col>
-            </v-row>
-
+            </v-col>
           </v-form>
         </v-card-text>
         <v-divider></v-divider>
