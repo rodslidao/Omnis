@@ -74,12 +74,13 @@
               </v-list-group>
             </v-list>
           </v-col>
-          <v-col v-if="hoveredItem">
-            <h2>{{ hoveredItem.name }}</h2>
-            <p>{{ hoveredItem.text }}</p>
+          <v-col v-if="hoveredItem" class="mt-4">
+            <div class="text-h5 ">{{ hoveredItem.name }}</div>
+            <v-divider></v-divider>
+            <p class="text-subtitle-1 text--grey lighten-4" >{{ hoveredItem.text }}</p>
             <br />
-            <h4>Exemplo</h4>
-            <p>{{ hoveredItem.examples }}</p>
+            <div class="font-italic text-subtitle-1 text--grey lighten-5">Exemplo:</div>
+            <p class="text--grey lighten-4">{{ hoveredItem.examples }}</p>
           </v-col>
         </v-row>
         <!-- <v-card-text class="pb-0">
