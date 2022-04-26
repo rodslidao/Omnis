@@ -5,6 +5,7 @@ import VueTheMask from 'vue-the-mask';
 import VueHaptic from 'vue-haptic';
 import JsonEditor from 'vue-json-edit';
 import VueApexCharts from 'vue-apexcharts';
+// import {WebRTC} from 'vue-webrtc';
 
 import AlertFeedback from '@/plugins/alertFeedback';
 
@@ -84,7 +85,8 @@ Vue.use(VueHaptic, {
 // Vue.use(VueSocketIO, SocketInstance, store)
 
 // Vue.use(VueSocketIO, SocketInstance)
-Vue.use(VueTheMask, JsonEditor, VueApexCharts, BaklavaVuePlugin);
+// Vue.component(WebRTC.name, WebRTC);
+Vue.use(VueTheMask, JsonEditor, VueApexCharts, BaklavaVuePlugin, );
 Vue.use(AlertFeedback, {
   store,
 });

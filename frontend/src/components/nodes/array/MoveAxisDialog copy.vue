@@ -2,73 +2,53 @@
   <v-row justify="center">
     <v-dialog v-model="dialog" max-width="600px">
       <v-card dark>
-        <v-card-title>
-          <TextEditable :text="node.name" @changeText="changeName" />
+        <v-card-title >
+          <TextEditable
+            :text="node.name"
+            @changeText="changeName"
+          />
           <!-- <span class="headline">{{ nodeCopy.name }}</span> -->
         </v-card-title>
         <v-divider></v-divider>
         <v-card-text class="pt-4">
           <v-form v-model="valid">
-            <NodeConfigTitle
-              title="Placa"
-              description="Selecione a placa que executara o movimento."
-            >
-              <v-select
-                :items="boardListName"
-                :label="boardCopy === null ? 'Selecione uma placa' : boardCopy"
-                dense
-              ></v-select>
-            </NodeConfigTitle>
-            <NodeConfigTitle
-              title="Distancias"
-              description="Distancia que a maquina vai se mexer em relação a origem da maquina."
-            >
-              <div class="mb-n4">
-                <div
-                  v-for="(axis, index) in axisListCopy"
-                  :key="index"
-                  class="mb-4 d-flex"
-                >
-                  <v-checkbox
-                    class="mt-0"
-                    v-if="axis.name != 'F'"
-                    :label="axis.name"
-                    v-model="axis.isActive"
-                    hide-details
-                  ></v-checkbox>
-                  <v-text-field
-                    v-if="axis.name != 'F'"
-                    class="ml-3"
-                    v-model="axis.value"
-                    number
-                    :disabled="!axis.isActive"
-                    dense
-                    hide-details
-                  ></v-text-field>
-                </div>
-              </div>
-            </NodeConfigTitle>
-            <NodeConfigTitle
-              title="Velocidade"
-              description="Defina a Velocidade que todos os eixos irão se deslocar."
-            >
-              <div class="d-flex">
+            <v-col class="">
+              <v-row>
+                <v-select
+                  :items="boardListName"
+                  :label="
+                    boardCopy === null ? 'Selecione uma placa' : boardCopy
+                  "
+                  dense
+                  outlined
+                ></v-select>
+              </v-row>
+              <h3>
+                Distancia que a maquina vai se mexer em relação a origem da
+                maquina.
+              </h3>
+              <v-row
+                v-for="(axis, index) in axisListCopy"
+                :key="index"
+                class=" mb-4 mt-4"
+              >
                 <v-checkbox
                   class="mt-0"
-                  v-model="this.axisListCopy.at(-1).isActive"
+                  :label="axis.name == 'F' ? 'Velocidade' : axis.name"
+                  v-model="axis.isActive"
                   hide-details
                 ></v-checkbox>
-
                 <v-text-field
                   class="ml-3"
-                  v-model="this.axisListCopy.at(-1).value"
+                  v-model="axis.value"
                   number
-                  :disabled="!this.axisListCopy.at(-1).isActive"
+                  :disabled="!axis.isActive"
+                  outlined
                   dense
                   hide-details
                 ></v-text-field>
-              </div>
-            </NodeConfigTitle>
+              </v-row>
+            </v-col>
           </v-form>
         </v-card-text>
         <v-divider></v-divider>
@@ -97,7 +77,6 @@ import EventBus from '@/event-bus';
 import { mapActions } from 'vuex';
 import gql from 'graphql-tag';
 import TextEditable from '@/components/nodes/dialogs/TextEditable.vue';
-import NodeConfigTitle from '@/components/nodes/NodeConfigTitle.vue';
 
 export default {
   data: () => ({
@@ -117,7 +96,6 @@ export default {
   }),
   components: {
     TextEditable,
-    NodeConfigTitle,
   },
 
   props: ['option', 'node', 'value'],

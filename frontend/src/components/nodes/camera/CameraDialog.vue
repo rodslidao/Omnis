@@ -1,7 +1,7 @@
 <template>
   <v-row justify="center">
     <v-dialog v-model="dialog" max-width="600px">
-      <v-card>
+      <v-card dark>
         <v-card-title>
           <TextEditable :text="node.name" @changeText="changeName" />
           <!-- <span class="headline">{{ nodeCopy.name }}</span> -->
@@ -10,30 +10,69 @@
         <v-card-text class="pt-4">
           <v-form v-model="valid">
             <v-col class="">
-              <v-row>
-                <h3 class="mb-4">
-                  Selecione a camera que deseja pegar a imagem
-                </h3>
+              <NodeConfigTitle
+                title="Camera"
+                description="Selecione a camera que deseja pegar a imagem."
+              >
                 <v-select
                   :items="cameraListName"
+                  v-model="cameraCopy"
+                  dense
+                ></v-select>
+              </NodeConfigTitle>
+              <!-- <v-row>
+              <v-col
+                ><div class="text-h6 text-uppercase text--darken--primary">Camera</div>
+                <p>Selecione a camera que deseja pegar a imagem</p></v-col
+              >
+              <v-col>
+                 <v-select
+                  :items="cameraListName"
                   :label="
-                    cameraCopy === null ? 'Selecione uma placa' : cameraCopy
+                    cameraCopy === null ? 'Selecione uma camera' : cameraCopy
                   "
                   v-model="cameraCopy"
                   dense
-                  outlined
+                  
                 ></v-select>
-              </v-row>
+              </v-col>
+            </v-row> -->
               <v-row>
                 <!-- <v-img
                   v-if="dialog"
                   :lazy-src="require(`@/assets/img/lazy-load-parallax.jpg`)"
                   class="cameraImg"
                   alt="camera"
-                  :src="UrlMaker()"
+                  :src="imgUrl"
                 >
                 </v-img> -->
-                <iframe v-if="dialog" width="560" height="315" src="https://www.youtube.com/embed/7GI_GD8LOPQ?controls=0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                <iframe
+                  class="myFrame"
+                  :src="UrlMaker()"
+                  title="W3Schools Free Online Web Tutorials"
+                  onload="siteLoaded(flip)"
+                >
+                </iframe>
+
+                <!-- <video
+                  id="video"
+                  class="embed-responsive-item"
+                  autoplay="true"
+                  playsinline="true"
+                  controls="true"
+                  muted="true"
+                ></video> -->
+                <!-- <v-video
+                  v-if="dialog"
+                  class="cameraImg"
+                  alt="camera"
+                  :src="UrlMaker()"
+                >
+                </v-video> -->
+                <!-- <iframe v-if="dialog" width="560" height="315" src="https://www.youtube.com/embed/7GI_GD8LOPQ?controls=0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe> -->
+                <!-- começas aqui -->
+
+                <!-- termina aqui -->
               </v-row>
             </v-col>
           </v-form>
@@ -41,7 +80,7 @@
         <v-divider></v-divider>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="dialog = false" rounded>
+          <v-btn color="blue darken-1" text @click="close()" rounded>
             Close
           </v-btn>
           <v-btn
@@ -61,7 +100,9 @@
 
 <script>
 import EventBus from '@/event-bus';
+// import WebRTC from 'vue-webrtc';
 import { mapActions } from 'vuex';
+import NodeConfigTitle from '@/components/nodes/NodeConfigTitle.vue';
 import gql from 'graphql-tag';
 import TextEditable from '@/components/nodes/dialogs/TextEditable.vue';
 
@@ -82,9 +123,16 @@ export default {
     },
     valid: false,
     type: null,
+    imgUrl: '',
+    cameraId: '',
+
+    // img: null,
+    // roomId: 'public-room-v3',
   }),
   components: {
     TextEditable,
+    NodeConfigTitle,
+    // 'vue-webrtc': WebRTC,
   },
 
   props: ['option', 'node', 'value'],
@@ -100,6 +148,22 @@ export default {
     });
   },
 
+  mounted() {
+    // setInterval(() => {
+    //   if (!this.cameraId) {
+    //     this.cameraId = this.getCameraIdByName();
+    //     console.log('adwadad');
+    //   }
+    //   const url = `http://${process.env.VUE_APP_URL_API_IP}:${
+    //     process.env.VUE_APP_URL_API_STREAMING_PORT
+    //   }/videos/${this.cameraId}?${
+    //     Math.floor(Math.random() * (1000 - 1 + 1)) + 1
+    //   }`;
+    //   console.log(this.imgUrl);
+    //   this.imgUrl = url;
+    // }, 2000);
+  },
+
   methods: {
     ...mapActions('node', ['saveNodeConfig']),
 
@@ -108,7 +172,21 @@ export default {
       this.saveNodeConfig(this.node.id);
       // this.$store.commit('saveNodeConfig', this.node.id);
       this.dialog = false;
+
+      this.$destroy();
+
+      // remove the element from the DOM
+      this.$el.parentNode.removeChild(this.$el);
+
       this.init();
+    },
+
+    close() {
+      this.dialog = false;
+      this.$destroy();
+
+      // remove the element from the DOM
+      this.$el.parentNode.removeChild(this.$el);
     },
 
     async getCamera() {
@@ -145,6 +223,7 @@ export default {
           cameraId = item._id;
         }
       }, this);
+      console.log('camera id ', cameraId);
       return cameraId;
     },
 
@@ -154,10 +233,23 @@ export default {
       // }/videos/${this.getCameraIdByName()}?${
       //   Math.floor(Math.random() * (1000 - 1 + 1)) + 1
       // }`;
-      const url = `http://${process.env.VUE_APP_URL_API_IP}:${
-        process.env.VUE_APP_URL_API_STREAMING_PORT
-      }/videos/${this.getCameraIdByName()}`;
+
+      // fetch(
+      //   `http://${process.env.VUE_APP_URL_API_IP}:${
+      //     process.env.VUE_APP_URL_API_PORT
+      //   }/videos/${this.getCameraIdByName()}`
+      // );
+      const url = `http://${process.env.VUE_APP_URL_API_IP}:${process.env.VUE_APP_URL_API_STREAMING_PORT}`;
+
+      // navigator.sendBeacon(`${url}/close_connection`);
+      const id = this.getCameraIdByName();
+      if (id !== null) {
+        navigator.sendBeacon(
+          `http://${process.env.VUE_APP_URL_API_IP}:${process.env.VUE_APP_URL_API_PORT}/videos/${id}`
+        );
+      }
       console.log(url);
+
       return url;
     },
 
@@ -173,5 +265,12 @@ export default {
 img {
   width: 100%;
   border-radius: 20px;
+}
+iframe {
+  width: 100%;
+  border: none;
+  // height: 414px;
+  border-radius: 7px;
+  aspect-ratio: 4/3;
 }
 </style>
