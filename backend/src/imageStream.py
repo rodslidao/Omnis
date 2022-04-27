@@ -1,5 +1,5 @@
 from src.nodes.node_manager import NodeManager
-from starlette.responses import StreamingResponse
+from starlette.responses import StreamingResponse, JSONResponse
 from starlette.routing import Route
 from os.path import abspath, isfile
 import simplejpeg
@@ -57,15 +57,14 @@ def frameGenerator(cam_id):
 
 
 def videoFeed(request):
-    return StreamingResponse(
-        frameGenerator(request.path_params["video_id"]),
-        media_type="multipart/x-mixed-replace; boundary=frame",
-    )
+    if request.path_params['video_id'] not in ['null', None]:
+        CameraManager.set_stream_id(request.path_params['video_id'])
+    return JSONResponse({"selected_camera": request.path_params['video_id']})
 
 
 imgRoute = [Route("/{img_name}", endpoint=frameReader)]
 
 videoRoute = [
     Route("/node_frame/{node_id}", endpoint=nodeVideoFeed),
-    Route("/{video_id}", endpoint=videoFeed),
+    Route("/{video_id}", endpoint=videoFeed, methods=['GET', 'POST']),
 ]

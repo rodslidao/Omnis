@@ -31,11 +31,7 @@ class BaseManager():
         return [{'name':V.name, '_id':str(V._id)} for V in self.store.values()]
 
     def get_by_id(self, id):
-        if len(id.encode('utf-8')) >= 12:
-            _ = ObjectId(id)
-        else:
-            _ = None
-        return self.store.get(_)            
+        return self.store.get(ObjectId(id))            
 
     def __str__(self) -> str:
         message = "" if len(self.store) != 0 else "Nenhum objeto encontrado!"

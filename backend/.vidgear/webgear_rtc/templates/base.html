@@ -1,0 +1,37 @@
+<!--
+===============================================
+vidgear library source-code is deployed under the Apache 2.0 License:
+Copyright (c) 2019 Abhishek Thakur(@abhiTronix) <abhi.una12@gmail.com>
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+===============================================
+-->
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="description" content="Video-Streaming Test for WebGear API of VidGear Python library.">
+    <meta name="author" content="abhiTronix">
+    <title>WebGear_RTC API Bare-minimum Template</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', path='/img/favicon-32x32.png') }}">
+    <link href="{{ url_for('static', path='/css/custom.css') }}" rel="stylesheet">
+
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+
+<body class="bodycontainer">
+    {% block content %}{% endblock %}
+    <script src="{{ url_for('static', path='/js/custom.js') }}"></script>
+</body>
+
+</html>
