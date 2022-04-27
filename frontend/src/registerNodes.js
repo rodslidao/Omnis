@@ -17,11 +17,16 @@ import MoveAxisNode from '@/components/nodes/move/MoveAxisNode';
 import CameraDialog from '@/components/nodes/camera/CameraDialog.vue';
 import CameraNode from '@/components/nodes/camera/CameraNode';
 
+// ifNode
+import IfDialog from '@/components/nodes/if/IfDialog.vue';
+import IfNode from '@/components/nodes/if/IfNode';
+
 export function registerOptions(viewPlugin) {
   viewPlugin.registerOption('EventButtonOption', EventButtonOption);
   viewPlugin.registerOption('TextTemplateDialog', TextTemplateDialog);
   viewPlugin.registerOption('MoveAxisDialog', MoveAxisDialog);
   viewPlugin.registerOption('CameraDialog', CameraDialog);
+  viewPlugin.registerOption('IfDialog', IfDialog);
 }
 
 export function registerNodes(editorInstance) {
@@ -34,5 +39,7 @@ export function registerNodes(editorInstance) {
 
   editorInstance.registerNodeType('move-axis', MoveAxisNode, 'Move');
 
-  editorInstance.registerNodeType('camera', CameraNode, 'Output');
+  editorInstance.registerNodeType('camera', CameraNode, 'Img');
+
+  editorInstance.registerNodeType('if', IfNode, 'Output');
 }

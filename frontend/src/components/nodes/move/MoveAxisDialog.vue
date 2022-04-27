@@ -14,8 +14,9 @@
               description="Selecione a placa que executara o movimento."
             >
               <v-select
-                :items="boardListName"
-                :label="boardCopy === null ? 'Selecione uma placa' : boardCopy"
+                :items="boardList"
+                v-model="boardNameSelected"
+                item-text="name"
                 dense
               ></v-select>
             </NodeConfigTitle>
@@ -104,8 +105,8 @@ export default {
     dialog: false,
     nodeCopy: null,
     axisListCopy: null,
-    boardCopy: null,
-    boardListName: [],
+    boardNameSelected: null,
+    boardList: [],
     Description: '',
 
     rules: {
@@ -138,6 +139,12 @@ export default {
 
     save() {
       this.node.setOptionValue('axisList', this.axisListCopy);
+      const objectBoardSelected = this.boardList.find(
+        (obj) => obj.name === this.boardNameSelected
+      );
+
+      console.log(objectBoardSelected);
+      this.node.setOptionValue('board', objectBoardSelected);
       this.saveNodeConfig(this.node.id);
       // this.$store.commit('saveNodeConfig', this.node.id);
       this.dialog = false;
@@ -159,14 +166,18 @@ export default {
       // console.log(this.$apollo.store);
 
       // make a list of boards name from the response
-      response.data.getNodeInfo.data.options.forEach((item) => {
-        this.boardListName.push(item.name);
-      }, this);
+      this.boardList = [];
+      this.boardList = response.data.getNodeInfo.data.options;
+      console.log(this.boardList);
+      // response.data.getNodeInfo.data.options.forEach((item) => {
+      //   this.boardList.push(item.name);
+      // }, this);
     },
 
     async init() {
       this.nodeCopy = { ...this.node };
-      this.boardCopy = this.node.getOptionValue('board');
+      this.boardList = [];
+      this.boardList.push(this.node.getOptionValue('board'));
       this.axisListCopy = JSON.parse(
         JSON.stringify(this.node.getOptionValue('axisList'))
       );

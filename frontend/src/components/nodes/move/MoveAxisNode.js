@@ -19,7 +19,7 @@ export default class MoveAxis extends Node {
     { name: 'F', isActive: false, value: 0 },
   ];
 
-  board = null;
+  board = { name: '', id: '' };
 
   constructor() {
     super();
