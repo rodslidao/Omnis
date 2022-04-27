@@ -17,6 +17,22 @@ export const descriptions = [
     hasHistory: false,
   },
   {
+    name: 'Condicinal IF',
+    type: 'if',
+    text: `
+            Com esse node você será capaz de fazer operações condicionais
+        `,
+    icon: 'call-merge',
+    examples: `Se por exemplo a Entrada 'A' for maior que a 'B', você pode definir a saída de acordo com a condição
+    `,
+    category: 'Utilidades',
+    tags: ['if', 'condition', 'if-else', 'else'],
+    resettable: true,
+    stoppable: false,
+    configurable: true,
+    hasHistory: false,
+  },
+  {
     name: 'Blur (Borrar)',
     type: 'filter-blur',
     text: `
