@@ -3,7 +3,9 @@ from bson import ObjectId
 from src.nodes.node_manager import NodeManager
 from src.nodes.timer.timer import Chronometer
 from src.nodes.alerts.alert_obj import Alert
-from api import logger, exception, for_all_methods
+from api import logger, exception
+from api.decorators import for_all_methods
+from src.loader import load
 
 
 @for_all_methods(exception(logger))
@@ -71,7 +73,7 @@ class Process(threading.Thread):
         self.endTiming = self.Chronometer.cron_End.timestamp()
         if wait:
             self.join()
-            print(1/0)
+            print(1 / 0)
         # Alert("INFO", "Process Stopped", str(self.getStatus()))
 
     def getStatus(self):
@@ -85,10 +87,8 @@ class Process(threading.Thread):
         }
 
 
-from src.loader import load
-
 @for_all_methods(exception(logger))
-class sample_process():
+class sample_process:
     def __init__(self, *args, **kwargs) -> None:
         self.loaded_id = None
         self.st = NodeManager.start
@@ -96,12 +96,12 @@ class sample_process():
         self.kwargs = kwargs
         self.status = Process.STOPPED
         self.process = Process(self.st, *self.args, **self.kwargs)
-        # print(1/0)
 
     def load(self, _id=None):
         if self.status == Process.STOPPED:
             load(_id)
             self.loaded_id = _id
+            Alert("INFO", "Process Loaded", str(self.process.getStatus()))
             return True
         return False
 
@@ -113,21 +113,26 @@ class sample_process():
             self.load()
         self.process = Process(self.st, *self.args, **self.kwargs)
         self.process.start()
-    
+        Alert("INFO", "Process Started", str(self.process.getStatus()))
+
     def pause(self):
         NodeManager.pause()
         self.process.pause()
+        Alert("INFO", "Process Paused", str(self.process.getStatus()))
 
     def resume(self):
         NodeManager.resume()
         self.process.resume()
+        Alert("INFO", "Process Resumed", str(self.process.getStatus()))
 
     def stop(self, wait=True):
         NodeManager.stop()
         self.process.stop(wait)
+        Alert("INFO", "Process Stopped", str(self.process.getStatus()))
 
     def dict(self):
         return self.process.getStatus()
+
 
 process = sample_process()
 
@@ -137,6 +142,7 @@ if __name__ == "__main__":
 
     def fatorial_calculator(n):
         return math.factorial(n)
+
     example = Process(fatorial_calculator, 399999)
     example.start()
     example.stop()

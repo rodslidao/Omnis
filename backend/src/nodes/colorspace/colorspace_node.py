@@ -1,10 +1,9 @@
-from tkinter import N
 from src.nodes.node_manager import NodeManager
 from src.nodes.base_node import BaseNode
 
-from api import logger, exception, for_all_methods
+from api import logger, exception
+from api.decorators import for_all_methods
 
-NODE_TYPE = "COLORSPACE"
 from cv2 import (
     cvtColor,
     COLOR_BGR2HSV,
@@ -14,6 +13,8 @@ from cv2 import (
     COLOR_BGR2GRAY,
     COLOR_GRAY2BGR,
 )
+
+NODE_TYPE = "COLORSPACE"
 
 color_operations = {
     "BGR2HSV": COLOR_BGR2HSV,
@@ -31,9 +32,9 @@ class ColorspaceNode(BaseNode):
     insert_node_description_here
     """
 
-    def __init__(self, name, id, options, outputConnections, inputConnections) -> None:
-        super().__init__(name, NODE_TYPE, id, options, outputConnections)
-        self.inputConnections = inputConnections
+    def __init__(self, name, id, options, output_connections, input_connections):
+        super().__init__(name, NODE_TYPE, id, options, output_connections)
+        self.input_connections = input_connections
         self.operation = options.color_space["value"]
         self.image = None
         self.auto_run = options["auto_run"]["value"]

@@ -1,17 +1,17 @@
+from dotenv import load_dotenv
 from pymongo import MongoClient
 from pymongo.errors import ConnectionFailure
 from os import environ, getenv
-from api import logger, exception, for_all_methods
+from api import logger, exception
+from api.decorators import for_all_methods
 from pandas import DataFrame
 
 from numpy import integer, floating, ndarray
-from json import loads, dumps, JSONEncoder
-from bson.errors import InvalidDocument
-# get environment variable "NODE_ENV"
-# environment = os.environ.get("NODE_ENV", "DEV")
-from dotenv import load_dotenv
-from os import popen
+
+from json import load, loads, dumps, JSONEncoder
+
 load_dotenv()
+# from bson.errors import InvalidDocument
 
 db_port = environ.get("DB_PORT", "27017")
 db_ip = getenv("DB_HOST")
@@ -23,7 +23,14 @@ url = (
 )
 
 _db = None
-requiredCollections = []#["node-configs", "node-templates", "last-values", "node-history"]
+requiredCollections = [
+    "node-sheets",
+    "camera-manager",
+    "serial-manager",
+    "blister-manager",
+    "last-values",
+    "log",
+]
 
 
 @exception(logger)
@@ -58,7 +65,6 @@ class CustomEncoder(JSONEncoder):
 
 @for_all_methods(exception(logger))
 class MongoOBJ:
-    
     def __init__(self, db_name, db_url):
         self.dbo = self.connect(db_name, db_url)
 
@@ -90,14 +96,14 @@ class MongoOBJ:
         # try:
         return self.dbo[collection_name].insert_one(data)
         # except InvalidDocument:
-        #     return self.dbo[collection_name].insert_one(loads(dumps(data, cls=CustomEncoder)))
+        #     return self.dbo[collection_name].insert_one(
+        #       loads(dumps(data, cls=CustomEncoder)))
 
     def insert_many(self, collection_name, data):
         # try:
         return self.dbo[collection_name].insert_many(data)
         # except InvalidDocument:
         #     return self.dbo[collection_name].insert_many(dumps(data, cls=CustomEncoder))
-
 
     def find_one(self, collection_name, query={}):
         return self.dbo[collection_name].find_one(query)

@@ -1,9 +1,10 @@
 import threading
-from api import logger
 import time
-from api import CameraStreamer
+
+from api import logger, dbo, CameraStreamer
+
+
 try:
-    from api import *
     from api.queries import query
     from api.mutations import mutation
     from api.subscriptions import subscription
@@ -60,7 +61,7 @@ try:
             allow_methods=["*"],
             allow_headers=["*"],
         )
-]
+    ]
 
     port = environ["SERVER_PORT"] if environ.get("SERVER_PORT") else 5000
     stream = environ["STREAMING_PORT"] if environ.get("STREAMING_PORT") else 4000
@@ -73,8 +74,26 @@ try:
         socketI.close()
 
     if __name__ == "__main__":
-        b = threading.Thread(target=uvicorn.run, kwargs={ 'app':app, 'host':host, 'port':int(port), 'log_level':logger.level}, daemon=True)
-        a = threading.Thread(target=uvicorn.run, kwargs={ 'app':CameraStreamer(), 'host':host, 'port':int(stream), 'log_level':logger.level}, daemon=True)
+        b = threading.Thread(
+            target=uvicorn.run,
+            kwargs={
+                "app": app,
+                "host": host,
+                "port": int(port),
+                "log_level": logger.level,
+            },
+            daemon=True,
+        )
+        a = threading.Thread(
+            target=uvicorn.run,
+            kwargs={
+                "app": CameraStreamer(),
+                "host": host,
+                "port": int(stream),
+                "log_level": logger.level,
+            },
+            daemon=True,
+        )
         a.start()
         b.start()
         while threading.active_count() > 1:

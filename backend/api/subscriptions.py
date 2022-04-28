@@ -1,5 +1,5 @@
 import asyncio
-from .store import alerts, serials, cameras
+from .store import alerts
 from ariadne import SubscriptionType
 from src.manager.camera_manager import CameraManager
 from src.manager.serial_manager import SerialManager
@@ -27,7 +27,6 @@ async def alerts_resolver(obj, info):
     return obj
 
 
-#! Escopo de código repetido, verificar possivel solução
 @subscription.source("cameras")
 async def cameras_source(obj, info):
     queue = asyncio.Queue()
@@ -40,11 +39,12 @@ async def cameras_source(obj, info):
         CameraManager.queues.remove(queue)
         raise
 
+
 @subscription.field("cameras")
 async def cameras_resolver(obj, info):
     return obj
 
-#! Escopo de código repetido, verificar possivel solução
+
 @subscription.source("serials")
 async def serials_source(obj, info):
     queue = asyncio.Queue()
@@ -55,6 +55,7 @@ async def serials_source(obj, info):
     except asyncio.CancelledError:
         SerialManager.queues.remove(queue)
         raise
+
 
 @subscription.field("serials")
 async def serials_resolver(obj, info):

@@ -2,7 +2,8 @@ from src.nodes.base_node import BaseNode
 from src.nodes.node_manager import NodeManager
 from src.nodes.blister.blister_obj import Blister, Slot
 from bson import ObjectId
-from api import logger, exception, for_all_methods, dbo
+from api import logger, exception, dbo
+from api.decorators import for_all_methods
 
 NODE_TYPE = "BLISTER"
 
@@ -19,14 +20,12 @@ class BlisterNode(BaseNode):
 
     """
 
-    def __init__(self, name, id, options, outputConnections, inputConnections) -> None:
-        super().__init__(name, NODE_TYPE, id, options, outputConnections)
-        self.inputConnections = inputConnections
+    def __init__(self, name, id, options, output_connections, input_connections):
+        super().__init__(name, NODE_TYPE, id, options, output_connections)
+        self.input_connections = input_connections
         self.blister_id = options["blister_id"]["value"]
         self.blister = Blister(
-            **dbo.find_one(
-                "blister-manager", {"_id": ObjectId(self.blister_id)}
-            )
+            **dbo.find_one("blister-manager", {"_id": ObjectId(self.blister_id)})
         )
 
         self.auto_run = options["auto_run"]["value"]
@@ -46,7 +45,9 @@ class BlisterNode(BaseNode):
                 return next(self)
             case "in_roi":
                 garbage = self.blister.roi(message.payload)
-                self.on("out_roi", garbage) #! Send data, or blister object? what is the best way?
+                self.on(
+                    "out_roi", garbage
+                )  # ! Send data, or blister object? what is the best way?
                 return garbage()
             case "end":
                 self.reset()
@@ -64,7 +65,9 @@ class BlisterNode(BaseNode):
     @staticmethod
     def get_info():
         return {
-            "options": list(map(BaseNode.normalize_id_on_dict, dbo.find_many("blister-manager"))),
+            "options": list(
+                map(BaseNode.normalize_id_on_dict, dbo.find_many("blister-manager"))
+            ),
         }
 
 

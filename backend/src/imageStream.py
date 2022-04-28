@@ -4,10 +4,9 @@ from starlette.routing import Route
 from os.path import abspath, isfile
 import simplejpeg
 from cv2 import imread
+from src.manager.camera_manager import CameraManager
 
 failpath = abspath("./src/imgs/no_image.jpg")
-
-from src.manager.camera_manager import CameraManager
 
 
 def frameReader(request):
@@ -28,7 +27,7 @@ def nodeFrameGenerator(node_id):
     while True:
         try:
             frame = (NodeManager.getNodeById(node_id)).get_frame()
-        except:
+        except Exception:
             frame = fail_frame
         if isinstance(frame, str):
             frame = fail_frame
@@ -57,14 +56,14 @@ def frameGenerator(cam_id):
 
 
 def videoFeed(request):
-    if request.path_params['video_id'] not in ['null', None, 'undefined']:
-        CameraManager.set_stream_id(request.path_params['video_id'])
-    return JSONResponse({"selected_camera": request.path_params['video_id']})
+    if request.path_params["video_id"] not in ["null", None, "undefined"]:
+        CameraManager.set_stream_id(request.path_params["video_id"])
+    return JSONResponse({"selected_camera": request.path_params["video_id"]})
 
 
 imgRoute = [Route("/{img_name}", endpoint=frameReader)]
 
 videoRoute = [
     Route("/node_frame/{node_id}", endpoint=nodeVideoFeed),
-    Route("/{video_id}", endpoint=videoFeed, methods=['GET', 'POST']),
+    Route("/{video_id}", endpoint=videoFeed, methods=["GET", "POST"]),
 ]

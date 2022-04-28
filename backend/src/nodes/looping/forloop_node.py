@@ -1,7 +1,7 @@
-from src.nodes.blister.blister_obj import Blister
 from src.nodes.node_manager import NodeManager
 from src.nodes.base_node import BaseNode
-from api import logger, exception, for_all_methods
+from api import logger, exception
+from api.decorators import for_all_methods
 from src.nodes.process.process import process
 
 NODE_TYPE = "FORLOOP"
@@ -19,8 +19,8 @@ class ForloopNode(BaseNode):
         :Fim: - Envia um sinal de fim de execução, reseta o iterator. \n
     """
 
-    def __init__(self, name, id, options, outputConnections, inputConnections) -> None:
-        super().__init__(name, NODE_TYPE, id, options, outputConnections)
+    def __init__(self, name, id, options, output_connections, input_connections):
+        super().__init__(name, NODE_TYPE, id, options, output_connections)
         self.iterator = enumerate(options["iterator"]["value"])
         self.backup = options["iterator"]["value"][:]
         self.auto_run = options["auto_run"]["value"]
@@ -33,7 +33,7 @@ class ForloopNode(BaseNode):
             if target == "iterator":
                 self.iterator = message.payload
                 # self.backup = self.iterator
-            # Is important itereate the iterator before or back up it, before send signal to avoid infinite loop or empty list.
+            # Is important iterate the iterator before or back up it, before send signal to avoid infinite loop or empty list.
             if not self.stop_event.is_set():
                 try:
                     self.item_id, self.item = next(self.iterator)

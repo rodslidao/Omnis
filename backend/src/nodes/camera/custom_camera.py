@@ -1,21 +1,25 @@
 from bson import ObjectId
-from numpy import ascontiguousarray
 from src.manager.camera_manager import CameraManager
-from threading import Thread
-from time import sleep
-from time import sleep
-
-import cv2
-import datetime
-
-from api import logger, exception, for_all_methods
+from cv2 import line, putText, FONT_HERSHEY_SIMPLEX, rectangle, LINE_AA
+from api import logger, exception
+from api.decorators import for_all_methods
 from vidgear.gears import CamGear
+
+
 @for_all_methods(exception(logger))
-class camera(CamGear):
+class Camera(CamGear):
+    """_summary_
+
+    Args:
+        CamGear (_type_): _description_
+    """
+
     def __init__(self, source=0, name="WebcamVideoStream", _id=None, **options):
         super().__init__(source, **options)
         self.start()
         self.name = name
+        self.source = source
+        self.opt = options
         self._id = ObjectId(_id)
         CameraManager.add(self)
 
@@ -28,34 +32,36 @@ class camera(CamGear):
         """
         return {
             "_id": str(self._id),
-            "src": self.src,
+            "src": self.source,
             "name": self.name,
-            "properties": self.properties,
-            "running": not self.stopped,
+            "properties": self.opt,
+            # "running": not self.__terminate.is_set(),
         }
 
     def scale_lines_draw(self):
-        x, y = 20, 300
-        l = 3
-        s = 150
+        """
+        Draw lines to scale the image.
+        """
+        x_size = 20
+        line_qtd = 3
+        line_size = 150
 
-        for i, n in enumerate(range(10, s + 1, int(s / l))):
-            cv2.line(
+        for i, n in enumerate(range(10, line_size + 1, int(line_size / line_qtd))):
+            line(
                 self.frame,
-                (int(320 - ((n) / 2)), int(240 + (i * x / 2))),
-                (int(320 + ((n) / 2)), int(240 + (i * x / 2))),
+                (int(320 - ((n) / 2)), int(240 + (i * x_size / 2))),
+                (int(320 + ((n) / 2)), int(240 + (i * x_size / 2))),
                 (255, 255, 255),
                 thickness=1,
             )
-            cv2.putText(
+            putText(
                 self.frame,
                 f"{n}",
-                (int(320 - s / 2), int(240 + (i * x / 2))),
-                cv2.FONT_HERSHEY_SIMPLEX,
+                (int(320 - line_size / 2), int(240 + (i * x_size / 2))),
+                FONT_HERSHEY_SIMPLEX,
                 0.25,
                 (255, 255, 255),
                 1,
-                cv2.LINE_AA,
+                LINE_AA,
             )
-
-        cv2.rectangle(self.frame, (120, 170), (520, 310), (255, 255, 255), 1)
+            rectangle(self.frame, (120, 170), (520, 310), (255, 255, 255), 1)

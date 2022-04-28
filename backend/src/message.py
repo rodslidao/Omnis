@@ -1,6 +1,3 @@
-from api import logger, exception, for_all_methods
-
-
 class Message:
     def __init__(
         self,

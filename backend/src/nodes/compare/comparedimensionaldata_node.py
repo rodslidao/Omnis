@@ -5,15 +5,16 @@ from api import exception, logger, for_all_methods
 
 NODE_TYPE = "COMPARATIVE_DIMENSIONAL_DATA"
 
+
 @for_all_methods(exception(logger))
 class ComparedimensionaldataNode(BaseNode):
     """
     Node to execute logical operations between values.
     """
 
-    def __init__(self, name, id, options, outputConnections, inputConnections) -> None:
-        super().__init__(name, NODE_TYPE, id, options, outputConnections)
-        self.inputConnections = inputConnections
+    def __init__(self, name, id, options, output_connections, input_connections):
+        super().__init__(name, NODE_TYPE, id, options, output_connections)
+        self.input_connections = input_connections
         self.operation = options["operation"]
         self.value2 = options["value2"]
         self.value3 = options["value3"]
@@ -43,7 +44,3 @@ class ComparedimensionaldataNode(BaseNode):
             )
         except Exception as e:
             self.onFailure(f"{self._id} cant execute.", pulse=True, errorMessage=str(e))
-
-
-# ! Fazer o node de imagem gerar a imagem apartir de qualquer path.
-# ! Usar o node_tester pra testar uma logica simples de identificação.

@@ -1,12 +1,15 @@
 import math
 import colorsys
-from api import logger, exception, for_all_methods
+from api import logger, exception
+from api.decorators import for_all_methods
+
 
 @for_all_methods(exception(logger))
 class ColorOBJ:
     """
     A class to convert color to hex, rgb, hsv and cv2_hsv formats.
     """
+
     HEX = "HEX"
     RGB = "RGB"
     HSV = "HSV"
@@ -99,7 +102,7 @@ class ColorOBJ:
         color_h = round(360 * color_hsv_percentage[0])
         color_s = round(100 * color_hsv_percentage[1])
         color_v = round(100 * color_hsv_percentage[2])
-        
+
         color_hsv = (color_h, color_s, color_v)
         return color_hsv
 

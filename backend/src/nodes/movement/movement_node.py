@@ -1,9 +1,9 @@
 from time import sleep
-import timeit
 from src.nodes.node_manager import NodeManager
 from src.nodes.base_node import BaseNode
 from src.manager.serial_manager import SerialManager
-from api import logger, exception, for_all_methods
+from api import logger, exception
+from api.decorators import for_all_methods
 
 NODE_TYPE = "MOVEMENT"
 
@@ -15,19 +15,17 @@ class MovementNode(BaseNode):
 
     """
 
-    def __init__(self, name, id, options, outputConnections, inputConnections) -> None:
-        super().__init__(name, NODE_TYPE, id, options, outputConnections)
-        self.inputConnections = inputConnections
+    def __init__(self, name, id, options, output_connections, input_connections):
+        super().__init__(name, NODE_TYPE, id, options, output_connections)
+        self.input_connections = input_connections
         self.serial_id = options["hardware"]["serial_id"]
         self.serial = SerialManager.get_by_id(self.serial_id)
-        
         self.axis = []
         self.coordinates = {}
-        for axi in options['axisList']:
-            if axi['isActive']:
-                self.axis.append(axi['name'].lower())
-                self.coordinates[axi['name'].lower()] = axi['value']
-                
+        for axi in options["axisList"]:
+            if axi["isActive"]:
+                self.axis.append(axi["name"].lower())
+                self.coordinates[axi["name"].lower()] = axi["value"]
         self.relative = options["axis"].get("relative", False)
         self.trigger_delay = 10
         self.coordinates = {
@@ -49,7 +47,7 @@ class MovementNode(BaseNode):
         for k, v in payload.items():
             self.coordinates[k.lower()] = v
 
-    # ToDo time for wait after movment needs to be set on options.
+    # ToDo time for wait after movement needs to be set on options.
     def trigger_f(self, payload=None):
         if self.serial is not None and self.serial.is_open:
             movement = [
@@ -58,11 +56,11 @@ class MovementNode(BaseNode):
                 if (k in self.axis and v is not None)
             ]
 
-            t = 0.5  #! Remove this line
+            t = 0.5  # ! Remove this line
 
             if self.relative:
                 self.serial.send("G91")
-                t = 1  #! Remove this line
+                t = 1  # ! Remove this line
             else:
                 self.serial.send("G90")
 

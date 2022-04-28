@@ -1,7 +1,8 @@
 from src.nodes.node_manager import NodeManager
 from src.nodes.base_node import BaseNode
 from src.nodes.draw.draw_obj import DrawOBJ
-from api import logger, exception, for_all_methods
+from api import logger, exception
+from api.decorators import for_all_methods
 
 NODE_TYPE = "DRAW"
 
@@ -15,15 +16,16 @@ draw_options = {
     "angle": "drawAngles",
 }
 
+
 @for_all_methods(exception(logger))
 class DrawNode(BaseNode):
     """
     insert_node_description_here
     """
 
-    def __init__(self, name, id, options, outputConnections, inputConnections) -> None:
-        super().__init__(name, NODE_TYPE, id, options, outputConnections)
-        self.inputConnections = inputConnections
+    def __init__(self, name, id, options, output_connections, input_connections):
+        super().__init__(name, NODE_TYPE, id, options, output_connections)
+        self.input_connections = input_connections
         self.proplist = options["drawable_properties"]
         self.auto_run = options["auto_run"]["value"]
         self.image = None

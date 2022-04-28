@@ -4,7 +4,8 @@ from src.nodes.[node_name_folder].[node_name] import [NodeName] ( node_name pack
 """
 from os import listdir
 import importlib
-from api import logger, exception, for_all_methods
+from api import logger, exception
+from api.decorators import for_all_methods
 
 
 class RegEntry:

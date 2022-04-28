@@ -1,9 +1,10 @@
-from .custom_serial import CustomSerial
-from api import logger, exception, for_all_methods
+from .custom_serial import Serial
+from api import logger, exception
+from api.decorators import for_all_methods
 
 
 @for_all_methods(exception(logger))
-class SerialGcodeOBJ(CustomSerial):
+class SerialGcodeOBJ(Serial):
     def __init__(
         self,
         port=None,
@@ -33,7 +34,7 @@ class SerialGcodeOBJ(CustomSerial):
             rtscts,
             dsrdtr,
             is_gcode=True,
-            _id=_id
+            _id=_id,
         )
         self.pause = False
         self.pause_permission = ["stop", "kill", "quick_stop", "resume"]
@@ -66,14 +67,14 @@ class SerialGcodeOBJ(CustomSerial):
                     list(map(float, txt.split(" ")[: len(sequence) - 1])),
                 )
             )
-        except ValueError:                      #! Why this error?
+        except ValueError:  # ! Why this error?
             print("\n" * 3, echo)
             return self.M114(_type, sequence)
 
     @verify
     def M119(self, cut=": "):
         """
-        Get satus of endstops.
+        Get status of endstops.
         """
         pos = []
         key = []
@@ -83,7 +84,7 @@ class SerialGcodeOBJ(CustomSerial):
             try:
                 pos.append(info[info.index(cut) + len(cut) : len(info)])
                 key.append(info[: info.index(cut)])
-            except ValueError:                      #! Why this error?
+            except ValueError:  # ! Why this error?
                 print("ERROR:", info)
         return dict(zip(key, pos))
 

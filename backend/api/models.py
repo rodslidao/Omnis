@@ -1,11 +1,15 @@
 from api import dbo
 from bson.objectid import ObjectId
 from json import load
-from api import logger, exception, for_all_methods
+from api import logger, exception
+from api.decorators import for_all_methods
 
 
 def defaultException(function):
-    """Decorator to catch exceptions and return a payload with success=False and errors=exception message"""
+    """
+    Decorator to catch exceptions,
+    and return a payload with success=False and errors=exception message
+    """
 
     def wrapper(*args, **kwargs):
         try:
@@ -55,12 +59,13 @@ class NodeSheet:
 
     def delete_node_sheet(self, _id):
         """Delete a NodeSheet by id"""
-        logger.info(f"Deleting NodeSheet [{}_id]")
+        logger.info(f"Deleting NodeSheet [{_id}]")
         deleted_sheet = self.getNodeSheetById(_id)
         dbo.delete_one("node-sheets", {"_id": ObjectId(_id)})
         return deleted_sheet
 
     def get_sketch_list(self):
+        """Get a list of all sketches"""
         return dbo.find_many("NodeSheets", data={"content": 0})
 
     def _format(self):

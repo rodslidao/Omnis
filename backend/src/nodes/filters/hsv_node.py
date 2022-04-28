@@ -1,6 +1,7 @@
 from src.nodes.node_manager import NodeManager
 from src.nodes.base_node import BaseNode
-from api import logger, exception, for_all_methods
+from api import logger, exception
+from api.decorators import for_all_methods
 
 from cv2 import (
     inRange,
@@ -26,8 +27,8 @@ class HsvNode(BaseNode):
         "Better HSV" -> returns the same at above but with an MorphologyEx applied to remove noise pixels.
     """
 
-    def __init__(self, name, id, options, outputConnections, inputConnections) -> None:
-        super().__init__(name, NODE_TYPE, id, options, outputConnections)
+    def __init__(self, name, id, options, output_connections, input_connections):
+        super().__init__(name, NODE_TYPE, id, options, output_connections)
         self.color_range = {
             "lower": options["filter"]["lower"],
             "upper": options["filter"]["upper"],
@@ -41,8 +42,14 @@ class HsvNode(BaseNode):
             self.color_range = message.payload
         elif target == "image":
             self.message = message
-            self.onSuccess(self.convert_frame(message.payload, self.color_range['lower'], self.color_range['upper']))
-    
+            self.onSuccess(
+                self.convert_frame(
+                    message.payload,
+                    self.color_range["lower"],
+                    self.color_range["upper"],
+                )
+            )
+
     @staticmethod
     def convert_frame(image, lower, upper):
         return inRange(
@@ -52,9 +59,15 @@ class HsvNode(BaseNode):
         )
 
     def get_frame(self):
-        
+
         _ = bitwise_and(
-            self.message.payload, self.message.payload, mask=self.convert_frame(self.message.payload, self.color_range["lower"], self.color_range["upper"])
+            self.message.payload,
+            self.message.payload,
+            mask=self.convert_frame(
+                self.message.payload,
+                self.color_range["lower"],
+                self.color_range["upper"],
+            ),
         )
 
         return putText(

@@ -1,5 +1,7 @@
 from cv2.bgsegm import createBackgroundSubtractorMOG
-from api import logger, exception, for_all_methods
+from api import logger, exception
+from api.decorators import for_all_methods
+
 
 @for_all_methods(exception(logger))
 class MotionSensor:

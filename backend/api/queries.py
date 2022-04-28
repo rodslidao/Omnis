@@ -1,14 +1,15 @@
-from .models import *
+from .models import NodeSheet, grok
 from ariadne import QueryType
 from src.nodes.node_registry import NodeRegistry
 from threading import enumerate as thread_enumerate
+from src.manager.camera_manager import CameraManager
+from src.manager.serial_manager import SerialManager
 
 query = QueryType()
 
 payload = {"success": False, "errors": None}
 
 
-@defaultException
 @query.field("getNodeSheet")
 def getNodeSheet_resolver(obj, info, **kwargs):
     """Get a NodeSheet by id and return it like a payload"""
@@ -18,21 +19,11 @@ def getNodeSheet_resolver(obj, info, **kwargs):
     return payload
 
 
-@defaultException
-@query.field("getProcess")
-def getProcess_resolver(obj, info):
-    return {"status": {"success": True}, "data": process.dict()}
-
-
 @query.field("allPhotos")
 def resolve_allPhotos(obj, info, **kwargs):
     """Get all photos from the database"""
     payload = [{"filename": "a.png", "path": "imgs/a.png"}]
     return payload
-
-
-from src.manager.camera_manager import CameraManager
-from src.manager.serial_manager import SerialManager
 
 
 @query.field("getSerials")

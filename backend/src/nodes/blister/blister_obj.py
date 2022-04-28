@@ -4,19 +4,27 @@ from numpy import ndarray, ndenumerate, generic, array, reshape
 from json import loads, dumps
 import cv2
 
-#! Slot should be a self-contained class or Node?
+# ! Slot should be a self-contained class or Node?
+
+
 class Slot:
     """
     Slot is a class that represents a slot in a grid/blister of slots.
-    all the attributes except (item, empty, counter and _id) are dimensions in an unit 'x' or coordinates in a world of this unit. eg.
-    all coordinates are the distance from the origin of the world (0,0) at top left corner.
+    all the attributes except (item, empty, counter and _id) are dimensions in an unit 'x'
+    or coordinates in a world of this unit. eg.
+    all coordinates are the distance from the origin of the world (0,0)
+     at top left corner.
 
-    origin = (20,10), means that the FIRST SLOT start 20mm from the left and 10mm from the top.
+    origin = (20,10), means that the FIRST SLOT start 20mm from the
+    left and 10mm from the top.
     position = (0,0), means that THIS SLOT in the first column and first row in the grid.
     sizes = (100,100), means that the slots is 100mm wide and 100mm high
-    borders = (10,10), means that the slots has 10mm of border on the left and top.
-    counter = (2, 1), means that every 2 slots at X axis and 1 slot at Y axis will sum extra border.
-    extra = (10,0), means that 10mm of extra border will be added to the slots at X axis, after counter.
+    borders = (10,10), means that the slots has 10mm of border on the
+    left and top.
+    counter = (2, 1), means that every 2 slots at X axis and 1 slot at Y axis will sum
+    extra border.
+    extra = (10,0), means that 10mm of extra border will be added to the slots at X axis,
+    after counter.
     Example:
         origin = (20,10)
         sizes = (100,100)
@@ -112,7 +120,7 @@ class Slot:
 class Blister:
     """
     Blister is a class that represents a 2D matrix of slots.\n
-    It is used to store the data of the blister, and dinamicly generate the slots.\n
+    It is used to store the data of the blister, and dynamically generate the slots.\n
     It is also used to iterate over the slots.
 
     blister_example = Blister(shape=(10, 10), slot_config={'origin':[0, 0], 'sizes':[50, 50], 'borders':[15, 0]})
@@ -136,7 +144,7 @@ class Blister:
     ** Note **
 
     Slots.position is not same as the position of the slot in the blister.
-    Slots.position is the position as a coorditane (X,Y) in the blister.
+    Slots.position is the position as a coordinate (X,Y) in the blister.
     blister.data[i,j] is the slot at data[i,j] position (y,x).\n
     [[00,10,20,30],  i=0, j(x)=0,1,2,3 | blister.data[0,2].position = (2,0) or 20\n
      [01,11,21,31],  i=1, j(x)=0,1,2,3 |\n
@@ -144,12 +152,12 @@ class Blister:
      [03,13,23,33]]  i=3, j(x)=0,1,2,3 |\n
     """
 
-    def __init__(self, shape, name,  slot_config, _id=None, **kwargs) -> None:
+    def __init__(self, shape, name, slot_config, _id=None, **kwargs) -> None:
         self._id = ObjectId(_id)
         self.slot_config = (
             slot_config if not isinstance(slot_config, Slot) else slot_config()
         )
-        self.name=name
+        self.name = name
         self.shape = shape
         self.kwargs = kwargs
         self.data = self.generate_data(shape, **self.slot_config)
@@ -299,14 +307,23 @@ class Blister:
         """
         Args:
             T (bool, optional): Tranpose the matrix. Defaults to False.
+
             flatten (bool, optional): return a flattened array. Defaults to False.
+
             start_x (int, optional): initial axis x to start manipulate. Defaults to 0.
-            steps_x (int, optional): every 'n' x axis will be re_order. Defaults to 1 (all), (2 will set even or odds, depends on start_x).
-            x (int, optional): directional flux of elements in X axis. Defaults to 1 ( L > R) | -1 (L < R).
-            y (_type_, optional): directional flux of elements in Y axis. Defaults to None (Not change).
+
+            steps_x (int, optional): every 'n' x axis will be re_order.
+
+            Defaults to 1 (all), (2 will set even or odds, depends on start_x).
+
+            x (int, optional): directional flux of elements in X axis.
+            Defaults to 1 ( L > R) | -1 (L < R).
+
+            y (_type_, optional): directional flux of elements in Y axis.
+            Defaults to None (Not change).
 
         Returns:
-            self.data (ndarray): re_orderded array.
+            self.data (ndarray): sorted array.
         """
         if y is not None:
             self.data[::] = self.data[::y]

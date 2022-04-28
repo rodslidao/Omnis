@@ -1,14 +1,16 @@
 from serial.tools import list_ports
-from serial import Serial, serialutil
+from serial import Serial as _Serial, serialutil
 from bson import ObjectId
 from src.manager.serial_manager import SerialManager
-from api import logger, exception, for_all_methods
+from api import logger, exception
+from api.decorators import for_all_methods
 from threading import Lock
 
 send_lock = Lock()
 
+
 @for_all_methods(exception(logger))
-class CustomSerial(Serial):
+class Serial(_Serial):
     """
     Class to comunicate with serial port.
 
@@ -59,7 +61,6 @@ class CustomSerial(Serial):
         )
         self.port = port
         self.baudrate = baudrate
-        #self.is_open = False
         self.is_gcode = is_gcode
         self.last_value_send = None
         self.last_value_received = None
@@ -88,7 +89,7 @@ class CustomSerial(Serial):
 
     def close(self):
         super().close()
-    
+
     def stop(self):
         self.close()
         return self
@@ -156,6 +157,6 @@ class CustomSerial(Serial):
 
 @exception(logger)
 def checker():
-    a = CustomSerial(device="/dev/ttyACM0", baudrate=250000)
+    a = Serial(device="/dev/ttyACM0", baudrate=250000)
     a.open()
     a.close()

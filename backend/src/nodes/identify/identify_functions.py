@@ -1,5 +1,4 @@
 from math import sqrt
-from msilib.schema import Error
 from cv2 import (
     CHAIN_APPROX_TC89_KCOS,
     TERM_CRITERIA_MAX_ITER,
@@ -34,7 +33,8 @@ from cv2 import (
 
 from numpy import angle, float32, int0, uint8, ndenumerate
 from bson.objectid import ObjectId
-from api import logger, exception, for_all_methods
+from api import logger, exception
+from api.decorators import for_all_methods
 from src.nodes.blister.blister_obj import Blister
 
 # Map of modes to use for the contour retrieval
@@ -129,7 +129,7 @@ class dimensional_data(object):
         setattr(self, key, value)
 
     def __str__(self) -> str:
-        _ = {i:self.__dict__[i] for i in self.__dict__ if i in ['area']}
+        _ = {i: self.__dict__[i] for i in self.__dict__ if i in ["area"]}
         return f"((dimensional_data) {_})"
 
     def __repr__(self):
@@ -159,7 +159,9 @@ def find_angle(origin, point, degrees=True, positive=True):
 
 # Function to get the contours of an image
 @exception(logger)
-def identifyObjects(images_array, mode="RETR_TREE", method="CHAIN_APPROX_SIMPLE", **parm):
+def identifyObjects(
+    images_array, mode="RETR_TREE", method="CHAIN_APPROX_SIMPLE", **parm
+):
 
     """
     :image: image to get the contours from\n
@@ -176,13 +178,12 @@ def identifyObjects(images_array, mode="RETR_TREE", method="CHAIN_APPROX_SIMPLE"
             }\n
         }\n
     \n
-    \tAccepted paramters are: [area, radius, diamter, perimeter, vertices, width, height].
+    \tAccepted parameters are: [area, radius, diamter, perimeter, vertices, width, height].
     """
 
     # Define the mode, and method to use for the contour retrieval
     md = modes.get(mode, RETR_TREE)
     mt = methods.get(method, CHAIN_APPROX_SIMPLE)
-
 
     # function tha verify if some var need to be tested, and then test it
     @exception(logger)
@@ -194,7 +195,11 @@ def identifyObjects(images_array, mode="RETR_TREE", method="CHAIN_APPROX_SIMPLE"
             return True
         return False
 
-    for index, slot in ndenumerate(images_array) if not isinstance(images_array, Blister) else images_array:
+    for index, slot in (
+        ndenumerate(images_array)
+        if not isinstance(images_array, Blister)
+        else images_array
+    ):
         dimensional_object_list = []
         image = slot.item
         # Find the contours in the image
@@ -234,14 +239,20 @@ def identifyObjects(images_array, mode="RETR_TREE", method="CHAIN_APPROX_SIMPLE"
             edges = {"A": A, "B": B, "C": C, "D": D}
 
             # Improve corners detection
-            n = 10 # px off-set from image boundaries to avoid errors.
+            n = 10  # px off-set from image boundaries to avoid errors.
             corners = [
-            [cord[0] + A[0] - n, cord[1] + B[1] - n]
-            for cord in find_corners(image[A[1]- n if A[1]>=n else 0:D[1]+n, B[0] - n if B[0]>=n else 0:C[0]+n])
+                [cord[0] + A[0] - n, cord[1] + B[1] - n]
+                for cord in find_corners(
+                    image[
+                        A[1] - n if A[1] >= n else 0 : D[1] + n,
+                        B[0] - n if B[0] >= n else 0 : C[0] + n,
+                    ]
+                )
             ]
 
             # calculate diagonals, and reject contours that are too small or too large
-            distance = lambda p1, p2: sqrt((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2)
+            def distance(p1, p2):
+                return sqrt((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2)
 
             AB = distance(A, B)
             if not verify(AB, "AB"):
@@ -271,12 +282,11 @@ def identifyObjects(images_array, mode="RETR_TREE", method="CHAIN_APPROX_SIMPLE"
 
             if len(corners) == 0:
                 corners = [
-                    [int(center['X'] - (diameter / 2)), center['Y']],
-                    [center['X'], int(center['Y'] - (diameter / 2))],
-                    [int(center['X'] + (diameter / 2)), center['Y']],
-                    [center['X'], int(center['Y'] + (diameter / 2))],
+                    [int(center["X"] - (diameter / 2)), center["Y"]],
+                    [center["X"], int(center["Y"] - (diameter / 2))],
+                    [int(center["X"] + (diameter / 2)), center["Y"]],
+                    [center["X"], int(center["Y"] + (diameter / 2))],
                 ]
-
 
             # ! Define an output shape, and pre-allocate an array for the result.
             # ! shape is used to define a ROI of the image.
@@ -300,10 +310,11 @@ def identifyObjects(images_array, mode="RETR_TREE", method="CHAIN_APPROX_SIMPLE"
                 )
             )
         # return list of dimensional objects that passed all tests
-        #? dimensional_object_list if parm.get("return_list", False) else dimensional_object_list[0]
+        # ? dimensional_object_list if parm.get("return_list", False) else dimensional_object_list[0]
 
-        slot.item = dimensional_object_list if not parm.get("bollean", False) else True
+        slot.item = dimensional_object_list if not parm.get("boolean", False) else True
     return images_array
+
 
 # parameters to filter contours (Example)
 # parm = {

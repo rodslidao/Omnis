@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from bson import ObjectId
-from api import logger, exception, for_all_methods
+from api import logger, exception
+from api.decorators import for_all_methods
 
 
 @for_all_methods(exception(logger))
@@ -23,7 +24,7 @@ class ProductionOBJ:
     Notes:\n
     \t'process_seconds' is a float value calculated when 'finish' is called.\n
     \t'finish(model, status)' must be called to finish the process and is a magic method that returns a dict representation of the process.\n
-    \t'expireAt': is calculated suming the 'expire_delay' keys with 'createAt'.\n
+    \t'expireAt': is calculated summing the 'expire_delay' keys with 'createAt'.\n
     \t'expire_delay' is a dict with the following keys:\n
     \t\t\tseconds: Number of seconds to add to 'createAt' to calculate 'expireAt'.\n
     \t\t\tminutes: Minutes to add to 'createAt' to calculate 'expireAt'.\n

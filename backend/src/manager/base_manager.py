@@ -1,16 +1,18 @@
-
 from bson import ObjectId
-from api import logger, exception, for_all_methods
+from api import logger, exception
+from api.decorators import for_all_methods
+
+
 @for_all_methods(exception(logger))
-class BaseManager():
+class BaseManager:
     def __init__(self) -> None:
         self.store = {}
-        self.queues =[]
-    
+        self.queues = []
+
     def add(self, payload):
         self.store[payload._id] = payload
         self.update()
-    
+
     def update(self):
         for queue in self.queues:
             for payload in self.store.values():
@@ -21,20 +23,19 @@ class BaseManager():
         self.update()
 
     def get(self):
-        return list(map(lambda x: x.to_dict(), self.store.values()))
-    
+        return list(map(lambda x: x, self.store.values()))
+
     def get_ids(self):
         return list(str(self.store.keys()))
 
     def get_info(self):
-        
-        return [{'name':V.name, 'id':str(V._id)} for V in self.store.values()]
+        return [{"name": V.name, "id": str(V._id)} for V in self.store.values()]
 
     def get_by_id(self, id):
-        return self.store.get(ObjectId(id))            
+        return self.store.get(ObjectId(id))
 
     def __str__(self) -> str:
-        message = "" if len(self.store) != 0 else "Nenhum objeto encontrado!"
-        for k,v in self.store.items():
+        message = "" if len(self.store) != 0 else "None Object Detected!"
+        for k, v in self.store.items():
             message += f"{str(k)[0].upper()}{str(k)[1:]}: {v}\n"
         return message

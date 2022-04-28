@@ -1,14 +1,16 @@
-from api import logger, exception, for_all_methods
-#from src.enums import loadConfig, LoadingMode
+from api import logger, exception
+from api.decorators import for_all_methods
+
+# from src.enums import loadConfig, LoadingMode
 import threading
 
 
 nodes = {}
 auto_run_nodes = {}
 
+
 @for_all_methods(exception(logger))
 class NodeManager:
-
     def getNodeById(nodeId):
         return nodes.get(nodeId, None)
 
@@ -27,20 +29,26 @@ class NodeManager:
         ths = {}
         for node_id in auto_run_nodes.keys():
             node = NodeManager.getNodeById(node_id)
-            logger.info(f"[{node}] STARTED WHIOUT REQUEST.")
-            ths[node._id] = threading.Thread(name=f"{node._id}_auto_run_start",target=node.AutoRun)
+            logger.info(f"[{node}] STARTED WITHOUT REQUEST.")
+            ths[node._id] = threading.Thread(
+                name=f"{node._id}_auto_run_start", target=node.AutoRun
+            )
             ths[node._id].start()
-        
-        for _ in ths.values(): _.join()
+
+        for _ in ths.values():
+            _.join()
 
     def stop(context="external"):
         ths = {}
         global nodes, auto_run_nodes
         for node in list(nodes.values()):
-            ths[node._id]=threading.Thread(name=f"{node._id}_auto_run_stop",target=node.stop)
+            ths[node._id] = threading.Thread(
+                name=f"{node._id}_auto_run_stop", target=node.stop
+            )
             ths[node._id].start()
-        
-        for _ in ths.values(): _.join
+
+        for _ in ths.values():
+            _.join
 
     def pause():
         for node in nodes.values():
@@ -52,12 +60,13 @@ class NodeManager:
 
     def reset():
         global nodes, auto_run_nodes
-        #NodeManager.stop()
-        #nodes, auto_run_nodes = {}, []   
+        # NodeManager.stop()
+        # nodes, auto_run_nodes = {}, []
+
     def clear():
         global nodes, auto_run_nodes
         nodes, auto_run_nodes = {}, {}
-        
+
     def restart():
         NodeManager.stop()
         NodeManager.start()

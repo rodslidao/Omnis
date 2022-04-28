@@ -2,7 +2,8 @@ from src.nodes.node_manager import NodeManager
 from src.nodes.base_node import BaseNode
 
 from .identify_functions import identifyObjects
-from api import logger, exception, for_all_methods
+from api import logger, exception
+from api.decorators import for_all_methods
 
 NODE_TYPE = "IDENTIFY"
 
@@ -16,9 +17,9 @@ class IdentifyNode(BaseNode):
         "onSuccess" -> returns a list of dimensional countour data.
     """
 
-    def __init__(self, name, id, options, outputConnections, inputConnections) -> None:
-        super().__init__(name, NODE_TYPE, id, options, outputConnections)
-        self.inputConnections = inputConnections
+    def __init__(self, name, id, options, output_connections, input_connections):
+        super().__init__(name, NODE_TYPE, id, options, output_connections)
+        self.input_connections = input_connections
         self.filters = options["filters"]
         self.propertie = options["propertie"]
         self.auto_run = options["auto_run"]["value"]
@@ -32,5 +33,5 @@ class IdentifyNode(BaseNode):
         #         if object_data.get(prop_key) is not None:
         #             self.on(prop_key, object_data.get(prop_key))
 
-            # self.on("object", object_data)
-            # self.onSuccess(object_data())
+        # self.on("object", object_data)
+        # self.onSuccess(object_data())

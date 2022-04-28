@@ -1,6 +1,7 @@
 from src.nodes.node_manager import NodeManager
 from src.nodes.base_node import BaseNode
-from api import logger, exception, for_all_methods
+from api import logger, exception
+from api.decorators import for_all_methods
 
 from cv2 import (
     getStructuringElement,
@@ -37,15 +38,16 @@ element_types = {
     "ELLIPSE": MORPH_ELLIPSE,
 }
 
+
 @for_all_methods(exception(logger))
 class MorphoperationNode(BaseNode):
     """
     insert_node_description_here
     """
 
-    def __init__(self, name, id, options, outputConnections, inputConnections) -> None:
-        super().__init__(name, NODE_TYPE, id, options, outputConnections)
-        self.inputConnections = inputConnections
+    def __init__(self, name, id, options, output_connections, input_connections):
+        super().__init__(name, NODE_TYPE, id, options, output_connections)
+        self.input_connections = input_connections
         self.op_type = options.operation_type["value"]
         self.element_type = options.element_type["value"]
         self.k_size = options.k_size["value"]

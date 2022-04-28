@@ -1,21 +1,70 @@
 import math
-from api import logger, exception, for_all_methods
-_sum = lambda x, y: x + y
-_sub = lambda x, y: x - y
-_mul = lambda x, y: x * y
-_div = lambda x, y: x / y
-_mod = lambda x, y: x % y
-_pow = lambda x, y: math.pow(x, y)
-_sqrt = lambda x: math.sqrt(x)
-_log = lambda x: math.log(x)
-_log10 = lambda x: math.log10(x)
-_sin = lambda x: math.sin(math.radians(x))
-_cos = lambda x: math.cos(math.radians(x))
-_tan = lambda x: math.tan(math.radians(x))
-_atan = lambda x: math.atan(math.radians(x))
-_asin = lambda x: math.asin(math.radians(x))
-_acos = lambda x: math.acos(math.radians(x))
-_trunc = lambda x: math.trunc(x)
+from api import logger, exception
+
+
+def _sum(x, y):
+    return x + y
+
+
+def _sub(x, y):
+    return x - y
+
+
+def _mul(x, y):
+    return x * y
+
+
+def _div(x, y):
+    return x / y
+
+
+def _mod(x, y):
+    return x % y
+
+
+def _pow(x, y):
+    return math.pow(x, y)
+
+
+def _sqrt(x):
+    return math.sqrt(x)
+
+
+def _log(x):
+    return math.log(x)
+
+
+def _log10(x):
+    return math.log10(x)
+
+
+def _sin(x):
+    return math.sin(math.radians(x))
+
+
+def _cos(x):
+    return math.cos(math.radians(x))
+
+
+def _tan(x):
+    return math.tan(math.radians(x))
+
+
+def _atan(x):
+    return math.atan(math.radians(x))
+
+
+def _asin(x):
+    return math.asin(math.radians(x))
+
+
+def _acos(x):
+    return math.acos(math.radians(x))
+
+
+def _trunc(x):
+    return math.trunc(x)
+
 
 calcs = {
     "+": _sum,
@@ -44,11 +93,12 @@ def calculate(x, op, y=None):
         case None, None:
             return None
         case None, _:
-             return calcs[op](y)
+            return calcs[op](y)
         case _, None:
             return calcs[op](x)
         case _, _:
             return calcs[op](x, y)
+
 
 @exception(logger)
 def resolve_exression(expression):

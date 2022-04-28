@@ -1,6 +1,7 @@
 from src.nodes.node_manager import NodeManager
 from src.nodes.base_node import BaseNode
-from api import logger, exception, for_all_methods
+from api import logger, exception
+from api.decorators import for_all_methods
 
 NODE_TYPE = "COORDINATECORRECTION"
 
@@ -11,9 +12,9 @@ class CoordinateCorrectionNode(BaseNode):
     insert_node_description_here
     """
 
-    def __init__(self, name, id, options, outputConnections, inputConnections) -> None:
-        super().__init__(name, NODE_TYPE, id, options, outputConnections)
-        self.inputConnections = inputConnections
+    def __init__(self, name, id, options, output_connections, input_connections):
+        super().__init__(name, NODE_TYPE, id, options, output_connections)
+        self.input_connections = input_connections
 
         self.cords = {}
         self.scale = options["scale"]
@@ -28,7 +29,7 @@ class CoordinateCorrectionNode(BaseNode):
         if message.targetName == "coords":
             self.cords = message.payload
 
-        # multuiply by scale and sum offset in each dimension
+        # multiply by scale and sum offset in each dimension
         if self.cords is not None:
             for c, s, v in zip(
                 self.cords.items(), self.scale.values(), self.offset.values()
