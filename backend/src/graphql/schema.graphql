@@ -10,7 +10,8 @@ schema {
 
 type Mutation {
   createNodeSheet(_id: ID!,  name: String, sketchName: String, saved: Boolean, duplicated: Boolean, content: JSON!): NodeSheetResult!
-  updateNodeSheet(_id: ID!, sketchName:String, content: JSON): NodeSheetResult
+  saveNodeSheet(_id: ID!,  name: String, sketchName: String, saved: Boolean, duplicated: Boolean, content: JSON!): NodeSheetResult!
+  updateNodeSheet(_id: ID!, name:String, content: JSON): NodeSheetResult
   deleteNodeSheet(id: ID!): NodeSheetResult
 
   startProcess: ProcessResult

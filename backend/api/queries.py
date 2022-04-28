@@ -46,8 +46,8 @@ def resolve_getCameras(obj, info, **kwargs):
 
 
 @query.field("getSketchList")
-def resolve_getSketchList(obj, info):
-    returns = list(NodeSheet().getSketchList())
+def resolve_get_sketch_list(obj, info):
+    returns = list(NodeSheet().get_sketch_list())
     return {"status": True, "data": returns}
 
 

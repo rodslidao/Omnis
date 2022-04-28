@@ -28,7 +28,7 @@ class BaseManager():
 
     def get_info(self):
         
-        return [{'name':V.name, '_id':str(V._id)} for V in self.store.values()]
+        return [{'name':V.name, 'id':str(V._id)} for V in self.store.values()]
 
     def get_by_id(self, id):
         if len(id.encode('utf-8')) >= 12:
