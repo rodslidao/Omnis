@@ -57,7 +57,7 @@ def frameGenerator(cam_id):
 
 
 def videoFeed(request):
-    if request.path_params['video_id'] not in ['null', None]:
+    if request.path_params['video_id'] not in ['null', None, 'undefined']:
         CameraManager.set_stream_id(request.path_params['video_id'])
     return JSONResponse({"selected_camera": request.path_params['video_id']})
 

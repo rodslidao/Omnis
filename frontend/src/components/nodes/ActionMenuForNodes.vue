@@ -67,6 +67,7 @@
 <script>
 import { mapState, mapActions, mapGetters } from 'vuex';
 import gql from 'graphql-tag';
+import saveNodeSheet from '@/graphql/nodes/SaveNodeSheet';
 
 export default {
   name: 'ActionMenuForNodes',
@@ -77,6 +78,7 @@ export default {
 
   data() {
     return {
+      saveNodeSheet,
       direction: 'top',
       fab: false,
       fling: false,
@@ -93,7 +95,7 @@ export default {
         {
           title: 'Salvar',
           icon: 'mdi-content-save',
-          method: 'saveClicked',
+          method: 'save',
         },
         { title: 'Download', icon: 'mdi-file-download', method: 'download' },
         // { title: 'Upload', icon: 'mdi-file-upload', method: 'upload' },
@@ -167,7 +169,7 @@ export default {
           this.$alertFeedback(
             'Não foi possível rodar programa',
             'error',
-            error,
+            error
           );
 
           // We restore the initial user input
@@ -210,7 +212,7 @@ export default {
           this.$alertFeedback(
             'Não foi possível parar a rotina',
             'error',
-            error,
+            error
           );
 
           // We restore the initial user input
@@ -256,7 +258,7 @@ export default {
           this.$alertFeedback(
             'Não foi possível rodar programa',
             'error',
-            error,
+            error
           );
 
           // We restore the initial user input
@@ -267,58 +269,58 @@ export default {
       this[name]();
     },
 
-    async saveClicked() {
-      if (this.tabList[this.selectedTabIndex].saved) {
-        await this.update();
-      } else {
-        await this.save();
-      }
-    },
+    // async saveClicked() {
+    //   if (this.tabList[this.selectedTabIndex].saved) {
+    //     await this.update();
+    //   } else {
+    //     await this.save();
+    //   }
+    // },
 
-    async update() {
-      console.log('update');
-      this.isLoading = true;
-      const tabToSave = this.tabList[this.selectedTabIndex];
+    // async update() {
+    //   console.log('update');
+    //   this.isLoading = true;
+    //   const tabToSave = this.tabList[this.selectedTabIndex];
 
-      await this.$apollo
-        .mutate({
-          mutation: gql`
-            mutation updateNodeSheet($id: ID!, $name: String, $content: JSON!) {
-              updateNodeSheet(_id: $id, name: $name, content: $content) {
-                data {
-                  _id
-                }
-              }
-            }
-          `,
-          variables: {
-            id: tabToSave.id,
-            content: this.editor.save(),
-          },
-          update: (store, { data: { updateNodeSheet } }) => {
-            console.log(updateNodeSheet.data);
-          },
-        })
-        .then((data) => {
-          // Result
-          console.log(data);
-          this.$alertFeedback('Arquivo salvo com sucesso', 'success');
-          this.isLoading = false;
-          // this.setSaved(this.selectedTabIndex);
-        })
-        .catch((error) => {
-          // Error
-          this.isLoading = false;
-          console.error('Não foi possível salvar o arquivo \n', error);
-          this.$alertFeedback(
-            'Não foi possível salvar o arquivo, erro ao conectar com servidor',
-            'error',
-            error,
-          );
+    //   await this.$apollo
+    //     .mutate({
+    //       mutation: gql`
+    //         mutation updateNodeSheet($id: ID!, $name: String, $content: JSON!) {
+    //           updateNodeSheet(_id: $id, name: $name, content: $content) {
+    //             data {
+    //               _id
+    //             }
+    //           }
+    //         }
+    //       `,
+    //       variables: {
+    //         id: tabToSave.id,
+    //         content: this.editor.save(),
+    //       },
+    //       update: (store, { data: { updateNodeSheet } }) => {
+    //         console.log(updateNodeSheet.data);
+    //       },
+    //     })
+    //     .then((data) => {
+    //       // Result
+    //       console.log(data);
+    //       this.$alertFeedback('Arquivo salvo com sucesso', 'success');
+    //       this.isLoading = false;
+    //       // this.setSaved(this.selectedTabIndex);
+    //     })
+    //     .catch((error) => {
+    //       // Error
+    //       this.isLoading = false;
+    //       console.error('Não foi possível salvar o arquivo \n', error);
+    //       this.$alertFeedback(
+    //         'Não foi possível salvar o arquivo, erro ao conectar com servidor',
+    //         'error',
+    //         error
+    //       );
 
-          // We restore the initial user input
-        });
-    },
+    //       // We restore the initial user input
+    //     });
+    // },
 
     async save() {
       console.log('save');
@@ -329,27 +331,7 @@ export default {
 
       await this.$apollo
         .mutate({
-          mutation: gql`
-            mutation createNodeSheet(
-              $id: ID!
-              $name: String
-              $saved: Boolean
-              $duplicated: Boolean
-              $content: JSON!
-            ) {
-              createNodeSheet(
-                _id: $id
-                name: $name
-                saved: $saved
-                duplicated: $duplicated
-                content: $content
-              ) {
-                data {
-                  _id
-                }
-              }
-            }
-          `,
+          mutation: this.saveNodeSheet,
           variables: {
             id: tabToSave.id,
             name: tabToSave.name,
@@ -357,8 +339,8 @@ export default {
             duplicated: tabToSave.duplicated,
             content: this.editor.save(),
           },
-          update: (store, { data: { createNodeSheet } }) => {
-            console.log(createNodeSheet);
+          update: (store, { data: { saveNodeSheet2 } }) => {
+            console.log(saveNodeSheet2);
           },
         })
         .then((data) => {
@@ -375,7 +357,7 @@ export default {
           this.$alertFeedback(
             'Não foi possível salvar o arquivo, erro ao conectar com servidor',
             'error',
-            error,
+            error
           );
 
           // We restore the initial user input
@@ -394,7 +376,7 @@ export default {
       download(
         JSON.stringify(this.editor.save()),
         `${fileName}.oms`,
-        'text/plain',
+        'text/oms'
       );
     },
 
@@ -404,14 +386,15 @@ export default {
 
     async upload({ target }) {
       this.fab = false;
+      console.log(target.files[0].name.split('.').pop());
 
       if (
-        target.files[0].name.split('.').pop() !== 'oms'
-        || target.files[0].name.split('.').pop() !== 'json'
+        target.files[0].name.split('.').pop() !== 'oms' &&
+        target.files[0].name.split('.').pop() !== 'json'
       ) {
         this.$alertFeedback(
           'Arquivo inválido, seu arquivo deve ser um .oms',
-          'error',
+          'error'
         );
 
         return;
@@ -435,53 +418,57 @@ export default {
         };
       }
 
-      this.isLoading = true;
-
       // Use time out to wait for the file to be read
       fr.readAsText(files[0]);
-
+      this.isLoading = true;
       loadFile(async () => {
-        await this.$apollo
-          .mutate({
-            mutation: gql`
-              mutation createNodeSheet($input: JSON!) {
-                createNodeSheet(input: $input) {
-                  data {
-                    _id
-                  }
-                }
-              }
-            `,
-            variables: {
-              input: json,
-            },
-            update: (store, { data: { createNodeSheet } }) => {
-              // eslint-disable-next-line no-underscore-dangle
-              console.log(createNodeSheet.data._id);
-            },
-          })
-          .then((data) => {
-            // Result
-            console.log(data);
-            this.$alertFeedback('Arquivo salvo com sucesso', 'success');
-            this.isLoading = false;
-          })
-          .catch((error) => {
-            // Error
-            this.isLoading = false;
-            console.error(
-              'Não foi possível fazer o UPLOAD do arquivo \n',
-              error,
-            );
-            this.$alertFeedback(
-              'Não foi possível fazer o upload do arquivo',
-              'error',
-            );
-
-            // We restore the initial user input
-          });
         console.log(json);
+        this.editor.load(json);
+        this.isLoading = false;
       });
+      // loadFile(async () => {
+      //   await this.$apollo
+      //     .mutate({
+      //       mutation: gql`
+
+      //         mutation createNodeSheet($input: JSON!) {
+      //           createNodeSheet(input: $input) {
+      //             data {
+      //               _id
+      //             }
+      //           }
+      //         }
+      //       `,
+      //       variables: {
+      //         input: json,
+      //       },
+      //       update: (store, { data: { createNodeSheet } }) => {
+      //         // eslint-disable-next-line no-underscore-dangle
+      //         console.log(createNodeSheet.data._id);
+      //       },
+      //     })
+      //     .then((data) => {
+      //       // Result
+      //       console.log(data);
+      //       this.$alertFeedback('Arquivo salvo com sucesso', 'success');
+      //       this.isLoading = false;
+      //     })
+      //     .catch((error) => {
+      //       // Error
+      //       this.isLoading = false;
+      //       console.error(
+      //         'Não foi possível fazer o UPLOAD do arquivo \n',
+      //         error
+      //       );
+      //       this.$alertFeedback(
+      //         'Não foi possível fazer o upload do arquivo',
+      //         'error'
+      //       );
+
+      //       // We restore the initial user input
+      //     });
+      //   console.log(json);
+      // });
     },
   },
 };

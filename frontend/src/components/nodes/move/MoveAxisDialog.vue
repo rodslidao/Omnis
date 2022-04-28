@@ -9,53 +9,67 @@
         <v-divider></v-divider>
         <v-card-text class="pt-4">
           <v-form v-model="valid">
-            <v-row>
-              <v-col
-                ><h3>Placa</h3>
-                <p>Selecione a placa que executara o movimento.</p></v-col
-              >
-              <v-col>
-                <v-select
-                  :items="boardListName"
-                  :label="
-                    boardCopy === null ? 'Selecione uma placa' : boardCopy
-                  "
-                  dense
-                  outlined
-                ></v-select>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col
-                ><h3>Distancias</h3>
-                <p>Distancia que a maquina vai se mexer em relação a origem da
-                maquina.</p></v-col
-              >
-              <v-col>
-               <v-row
-                v-for="(axis, index) in axisListCopy"
-                :key="index"
-                class="mb-4 mt-4"
-              >
+            <NodeConfigTitle
+              title="Placa"
+              description="Selecione a placa que executara o movimento."
+            >
+              <v-select
+                :items="boardList"
+                v-model="boardNameSelected"
+                item-text="name"
+                dense
+              ></v-select>
+            </NodeConfigTitle>
+            <NodeConfigTitle
+              title="Distancias"
+              description="Distancia que a maquina vai se mexer em relação a origem da maquina."
+            >
+              <div class="mb-n4">
+                <div
+                  v-for="(axis, index) in axisListCopy"
+                  :key="index"
+                  class="mb-4 d-flex"
+                >
+                  <v-checkbox
+                    class="mt-0"
+                    v-if="axis.name != 'F'"
+                    :label="axis.name"
+                    v-model="axis.isActive"
+                    hide-details
+                  ></v-checkbox>
+                  <v-text-field
+                    v-if="axis.name != 'F'"
+                    class="ml-3"
+                    v-model="axis.value"
+                    number
+                    :disabled="!axis.isActive"
+                    dense
+                    hide-details
+                  ></v-text-field>
+                </div>
+              </div>
+            </NodeConfigTitle>
+            <NodeConfigTitle
+              title="Velocidade"
+              description="Defina a Velocidade que todos os eixos irão se deslocar."
+            >
+              <div class="d-flex">
                 <v-checkbox
                   class="mt-0"
-                  :label="axis.name == 'F' ? 'Velocidade' : axis.name"
-                  v-model="axis.isActive"
+                  v-model="this.axisListCopy.at(-1).isActive"
                   hide-details
                 ></v-checkbox>
+
                 <v-text-field
                   class="ml-3"
-                  v-model="axis.value"
+                  v-model="this.axisListCopy.at(-1).value"
                   number
-                  :disabled="!axis.isActive"
-                  outlined
+                  :disabled="!this.axisListCopy.at(-1).isActive"
                   dense
                   hide-details
                 ></v-text-field>
-              </v-row>
-              </v-col>
-            </v-row>
-
+              </div>
+            </NodeConfigTitle>
           </v-form>
         </v-card-text>
         <v-divider></v-divider>
@@ -84,14 +98,15 @@ import EventBus from '@/event-bus';
 import { mapActions } from 'vuex';
 import gql from 'graphql-tag';
 import TextEditable from '@/components/nodes/dialogs/TextEditable.vue';
+import NodeConfigTitle from '@/components/nodes/NodeConfigTitle.vue';
 
 export default {
   data: () => ({
     dialog: false,
     nodeCopy: null,
     axisListCopy: null,
-    boardCopy: null,
-    boardListName: [],
+    boardNameSelected: null,
+    boardList: [],
     Description: '',
 
     rules: {
@@ -103,6 +118,7 @@ export default {
   }),
   components: {
     TextEditable,
+    NodeConfigTitle,
   },
 
   props: ['option', 'node', 'value'],
@@ -123,6 +139,12 @@ export default {
 
     save() {
       this.node.setOptionValue('axisList', this.axisListCopy);
+      const objectBoardSelected = this.boardList.find(
+        (obj) => obj.name === this.boardNameSelected
+      );
+
+      console.log(objectBoardSelected);
+      this.node.setOptionValue('board', objectBoardSelected);
       this.saveNodeConfig(this.node.id);
       // this.$store.commit('saveNodeConfig', this.node.id);
       this.dialog = false;
@@ -144,14 +166,18 @@ export default {
       // console.log(this.$apollo.store);
 
       // make a list of boards name from the response
-      response.data.getNodeInfo.data.options.forEach((item) => {
-        this.boardListName.push(item.name);
-      }, this);
+      this.boardList = [];
+      this.boardList = response.data.getNodeInfo.data.options;
+      console.log(this.boardList);
+      // response.data.getNodeInfo.data.options.forEach((item) => {
+      //   this.boardList.push(item.name);
+      // }, this);
     },
 
     async init() {
       this.nodeCopy = { ...this.node };
-      this.boardCopy = this.node.getOptionValue('board');
+      this.boardList = [];
+      this.boardList.push(this.node.getOptionValue('board'));
       this.axisListCopy = JSON.parse(
         JSON.stringify(this.node.getOptionValue('axisList'))
       );

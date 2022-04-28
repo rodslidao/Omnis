@@ -22,7 +22,15 @@ mutation = MutationType()
 @mutation.field("createNodeSheet")
 def createNodeSheet_resolver(obj, info, _id, **kwargs):
     """Create a new NodeSheet object and return it like a payload"""
-    returns = NodeSheet().createNodeSheet(_id, **kwargs)
+    returns = NodeSheet().create_node_sheet(_id, **kwargs)
+    return {"data": returns}
+
+
+@defaultException
+@mutation.field("saveNodeSheet")
+def saveNodeSheet_resolver(obj, info, _id, **kwargs):
+    """Create a new NodeSheet object and return it like a payload"""
+    returns = NodeSheet().save_node_sheet(_id, **kwargs)
     return {"data": returns}
 
 
@@ -30,7 +38,7 @@ def createNodeSheet_resolver(obj, info, _id, **kwargs):
 @mutation.field("updateNodeSheet")
 def updateNodeSheet_resolver(obj, info, _id, **kwargs):
     """Update a NodeSheet by id and return it like a payload"""
-    returns = NodeSheet().updateNodeSheet(_id, **kwargs)
+    returns = NodeSheet().update_node_sheet(_id, **kwargs)
     return {"data": returns}
 
 
@@ -38,7 +46,7 @@ def updateNodeSheet_resolver(obj, info, _id, **kwargs):
 @mutation.field("deleteNodeSheet")
 def deleteNodeSheet_resolver(obj, info, id):
     """Delete a NodeSheet by id and return it like a payload"""
-    returns = NodeSheet().deleteNodeSheet(id)
+    returns = NodeSheet().delete_node_sheet(id)
     return {"data": returns}
 
 
