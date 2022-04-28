@@ -66,5 +66,5 @@ imgRoute = [Route("/{img_name}", endpoint=frameReader)]
 
 videoRoute = [
     Route("/node_frame/{node_id}", endpoint=nodeVideoFeed),
-    Route("/{video_id}", endpoint=videoFeed),
+    Route("/{video_id}", endpoint=videoFeed, methods=['GET', 'POST']),
 ]

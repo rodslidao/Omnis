@@ -1,5 +1,7 @@
+import threading
 from api import logger
-
+import time
+from api import CameraStreamer
 try:
     from api import *
     from api.queries import query
@@ -20,6 +22,7 @@ try:
 
     from starlette.middleware.cors import CORSMiddleware
     from starlette.applications import Starlette
+    from starlette.middleware import Middleware
     from starlette.routing import Mount
 
     type_defs = ""
@@ -38,6 +41,7 @@ try:
     ]
 
     app = Starlette(debug=True, routes=routes, on_startup=[], on_shutdown=[dbo.close])
+
     app.mount(
         "/",
         CORSMiddleware(
@@ -46,10 +50,20 @@ try:
             allow_methods=["*"],
             allow_headers=["*"],
         ),
-        "Omnis"
+        "Omnis",
     )
+    CameraStreamer.middleware = [
+        Middleware(
+            CORSMiddleware,
+            allow_origins=["*"],
+            allow_credentials=True,
+            allow_methods=["*"],
+            allow_headers=["*"],
+        )
+]
 
     port = environ["SERVER_PORT"] if environ.get("SERVER_PORT") else 5000
+    stream = environ["STREAMING_PORT"] if environ.get("STREAMING_PORT") else 4000
     if environ.get("ENV_MODE") == "production":
         host = "0.0.0.0"
     else:
@@ -59,7 +73,13 @@ try:
         socketI.close()
 
     if __name__ == "__main__":
-        uvicorn.run("main:app", host=host, port=int(port), log_level=logger.level)
-        
+        b = threading.Thread(target=uvicorn.run, kwargs={ 'app':app, 'host':host, 'port':int(port), 'log_level':logger.level}, daemon=True)
+        a = threading.Thread(target=uvicorn.run, kwargs={ 'app':CameraStreamer(), 'host':host, 'port':int(stream), 'log_level':logger.level}, daemon=True)
+        a.start()
+        b.start()
+        while threading.active_count() > 1:
+            time.sleep(1)
 except Exception as e:
+    dbo.close()
+    CameraStreamer.shutdown()
     logger.critical(e)
