@@ -1,21 +1,21 @@
 export const descriptions = [
   // just use icons only from material design https://materialdesignicons.com/
-  {
-    name: 'Operações Matemáticas',
-    type: 'math',
-    text: `
-            Com esse node você será capaz de fazer operações matemáticas
-        `,
-    icon: 'calculator-variant',
-    examples: `Quando precisamos subtrair dar uma margem da lateral da maquina
-    `,
-    category: 'Utilidades',
-    tags: ['json', 'mapping', 'object'],
-    resettable: true,
-    stoppable: false,
-    configurable: true,
-    hasHistory: false,
-  },
+  // {
+  //   name: 'Operações Matemáticas',
+  //   type: 'math',
+  //   text: `
+  //           Com esse node você será capaz de fazer operações matemáticas
+  //       `,
+  //   icon: 'calculator-variant',
+  //   examples: `Quando precisamos subtrair dar uma margem da lateral da maquina
+  //   `,
+  //   category: 'Utilidades',
+  //   tags: ['json', 'mapping', 'object'],
+  //   resettable: true,
+  //   stoppable: false,
+  //   configurable: true,
+  //   hasHistory: false,
+  // },
   {
     name: 'Condicinal IF',
     type: 'if',
@@ -25,7 +25,7 @@ export const descriptions = [
     icon: 'call-merge',
     examples: `Se por exemplo a Entrada 'A' for maior que a 'B', você pode definir a saída de acordo com a condição
     `,
-    category: 'Utilidades',
+    category: 'Lógica',
     tags: ['if', 'condition', 'if-else', 'else'],
     resettable: true,
     stoppable: false,

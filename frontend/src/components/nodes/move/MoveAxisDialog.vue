@@ -75,10 +75,17 @@
         <v-divider></v-divider>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="dialog = false" rounded>
+          <v-btn
+            color="blue darken-1"
+            text
+            @click="dialog = false"
+            rounded
+            large
+          >
             Close
           </v-btn>
           <v-btn
+            large
             color="blue darken-1"
             :disabled="!valid"
             text

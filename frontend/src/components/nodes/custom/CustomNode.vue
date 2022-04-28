@@ -171,6 +171,10 @@ export default {
 
       let inputs = Object.entries(this.data.inputInterfaces);
       let outputs = Object.entries(this.data.outputInterfaces);
+      console.log(this.data);
+      console.log('inputs');
+      console.log(inputs);
+      console.log(outputs);
 
       for (let i = 0; i < Math.max(inputs.length, outputs.length); i++) {
         rows.push({
@@ -178,7 +182,7 @@ export default {
           output: outputs[i],
         });
       }
-
+      console.log(rows);
       return rows;
     },
     classes() {
@@ -227,7 +231,7 @@ export default {
 </script>
 
 <style scoped>
-.node{
+.node {
   padding-bottom: 2em;
 }
 

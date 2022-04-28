@@ -91,11 +91,12 @@
         <v-divider></v-divider>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="close()" rounded>
+          <v-btn color="blue darken-1" text @click="close()" rounded large>
             Close
           </v-btn>
           <v-btn
             color="blue darken-1"
+            large
             :disabled="!valid"
             text
             @click="save"
