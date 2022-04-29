@@ -16,7 +16,7 @@ export default class Camera extends Node {
       this.addInputInterface(input.name);
     });
 
-    this.addInputInterface('expressão');
+    this.addInputInterface('Expressão');
 
     this.addInputInterface('Verdadeiro', undefined, undefined, {
       description:
@@ -36,10 +36,11 @@ export default class Camera extends Node {
     this.addOutputInterface('Falha');
 
     this.addOption('expression', 'IfDialog', null);
-    this.addOption('true', undefined, null);
+    this.addOption('onFailure', undefined, null);
+    this.addOption('onSuccess', undefined, null);
     this.addOption('inputList', undefined, this.inputList);
 
-    this.addOption('color', undefined, '#FF9800');
+    this.addOption('color', undefined, '#ff3900');
     this.addOption('running', undefined, true);
   }
 }

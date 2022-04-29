@@ -58,8 +58,6 @@ export default {
   },
   beforeMount() {
     this.value = this.data.value;
-    console.log('beforeMount');
-    console.log(this.data);
     this.data.events.setValue.addListener(this, (v) => {
       this.value = v;
     });
@@ -93,7 +91,6 @@ export default {
         return;
       }
       let options = this.plugin.options[name];
-      console.log(options);
       return options;
     },
   },

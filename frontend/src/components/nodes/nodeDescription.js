@@ -17,6 +17,22 @@ export const descriptions = [
   //   hasHistory: false,
   // },
   {
+    name: 'Matriz',
+    type: 'matrix',
+    text: `Cria uma matriz apartir de um dados fornecidos na tela de cadastro de matrizes.
+    `,
+    icon: 'grid',
+    examples: `
+    Digamos que voce queira pegar um ovo em uma bandeja de 12 ovos e colocar em uma bandeja de 30 ovos.
+    `,
+    category: 'Utilidades',
+    tags: ['matrix', 'mapping', 'object', 'array', 'img'],
+    resettable: true,
+    stoppable: false,
+    configurable: true,
+    hasHistory: false,
+  },
+  {
     name: 'Condicinal IF',
     type: 'if',
     text: `
