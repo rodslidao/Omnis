@@ -23,7 +23,6 @@ class NodeChangeType(Enum):
 
 class NodeChange(object):
     # nodeId, nodeName, type, optionsOld, optionsNew, date
-    @exception(logger)
     def __init__(self, nodeId, nodeName, nodeType, optionsOld, optionsNew, date):
         self.nodeId = nodeId
         self.nodeName = nodeName
@@ -39,12 +38,6 @@ def getNodeByInterfaceId(nodeConfig, interfaceId):
         for i in n.get("interfaces"):
             if i[1]["id"] == interfaceId:
                 return n
-    # a = next(
-    #     n
-    #     for n in nodeConfig.get("nodes")
-    #     if any([i[1]["id"] == interfaceId for i in n.get("interfaces")])
-    # )
-    # return a
 
 
 @exception(logger)
@@ -137,7 +130,6 @@ def cleanNodeManager(nodeConfigs):
 
 @exception(logger)
 def loadConfig(NodeSheet, mode=LoadingMode):
-    print("loading config")
     numberOfNodesTotal = 0
     numberOfNodesChanged = 0
     numberOfNodesInit = 0
@@ -149,24 +141,19 @@ def loadConfig(NodeSheet, mode=LoadingMode):
         connectionList = list(extractConnections(nodeConfig))
         # print("connectionList: {}".format(list(connectionList)))
         for node in nodeConfig.get("nodes"):
-
-            try:
-                newCls = NodeRegistry.getNodeClassByName(node.get("type"))
-            except Exception:
-                print("Node type '{}' not found".format(node.get("type")))
+            newCls = NodeRegistry.getNodeClassByName(node.get("type"))
 
             options = extractOptionsFromNode(node)
             existingNode = NodeManager.getNodeById(node.get("id"))
 
-            # outputConnections is a list of connections that has same node.id in value from.id
-            outputConnections = list(
+            output_connections = list(
                 filter(
                     lambda connection: connection.get("from").get("nodeId")
                     == node.get("id"),
                     connectionList,
                 )
             )
-            inputConnections = list(
+            input_connections = list(
                 filter(
                     lambda connection: connection.get("to").get("nodeId")
                     == node.get("id"),
@@ -179,13 +166,12 @@ def loadConfig(NodeSheet, mode=LoadingMode):
                     node.get("name"),
                     node.get("id"),
                     options,
-                    outputConnections,
-                    inputConnections,
+                    output_connections,
+                    input_connections,
                 )
                 numberOfNodesInit += 1
 
                 if mode == LoadingMode.RUNNING:
-                    exit("PQ TA AQUI?")
                     saveNodeChange(
                         NodeChange(
                             node.get("id"),
@@ -199,13 +185,12 @@ def loadConfig(NodeSheet, mode=LoadingMode):
                 nodeSettingsChanged = existingNode.options.get(
                     "settings"
                 ) != options.get("settings")
-                outputChanged = existingNode.outputConnections != outputConnections
+                outputChanged = existingNode.output_connections != output_connections
                 nameChanged = existingNode.name != node.get("name")
 
-                # Input only relevant for existing nodes with inputConnections !== undefined
                 inputChanged = (
-                    existingNode.inputConnections is not None
-                    and existingNode.inputConnections != inputConnections
+                    existingNode.input_connections is not None
+                    and existingNode.input_connections != input_connections
                 )
 
                 if existingNode and (
@@ -227,27 +212,28 @@ def loadConfig(NodeSheet, mode=LoadingMode):
 
         numberOfNodesTotal += len(nodeConfig.get("nodes"))
 
+
 @exception(logger)
 def saveNodeChange(nodeChange):
-    print("saving node change")
     dbo = getDb()
-    # try insert nodeChange in node-history collection of dbo, if can't insert, by any reason, inform
-    try:
-        dbo.get_collection("node-history").insert_one(nodeChange)
-    except Exception as e:
-        print("Can't save node change: {}".format(e))
+    dbo.get_collection("node-history").insert_one(nodeChange)
+
 
 @exception(logger)
 def load(node_id=None):
     dbo = getDb()
-    #NodeManager.reset()
-    current_loaded_query = {"description":"current-config-loaded-id"}
+    NodeManager.clear()
+    current_loaded_query = {"description": "current-config-loaded-id"}
     if node_id is not None:
-        dbo.update_one("last-values", current_loaded_query, {"$set": {"sheet-id": ObjectId(node_id)}})
+        dbo.update_one(
+            "last-values",
+            current_loaded_query,
+            {"$set": {"sheet-id": ObjectId(node_id)}},
+        )
         sheet = NodeSheet().getNodeSheetById(node_id)["content"]
     else:
         _ = dbo.find_one("last-values", current_loaded_query)["sheet-id"]
-        print("auto_select id:", _)
-        sheet = NodeSheet().getNodeSheetById(dbo.find_one("last-values", current_loaded_query)["sheet-id"])["content"]
+        sheet = NodeSheet().getNodeSheetById(
+            dbo.find_one("last-values", current_loaded_query)["sheet-id"]
+        )["content"]
     loadConfig(sheet, LoadingMode)
-    

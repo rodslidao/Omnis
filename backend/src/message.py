@@ -1,8 +1,4 @@
-from api import logger, exception
-
-
 class Message:
-    @exception(logger)
     def __init__(
         self,
         sourceId,
@@ -23,6 +19,5 @@ class Message:
         self.payload = payload
         self.additional = additional
 
-    @exception(logger)
     def __str__(self) -> str:
         return f"[{self.sourceName}] -> [{self.targetNodeId}|{self.targetName}] : {self.payload}"

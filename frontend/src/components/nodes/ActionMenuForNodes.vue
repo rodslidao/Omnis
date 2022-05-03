@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="menuList"  v-on:keyup.ctrl.s="save">
+    <div class="menuList" v-on:keyup.ctrl.s="save">
       <v-btn class="button" color="primary" fab dark small @click="play">
         <v-icon> mdi-play </v-icon>
       </v-btn>
@@ -37,19 +37,24 @@
           <v-icon left dark>{{ item.icon }} </v-icon>{{ item.title }}
         </v-btn>
         <!-- <v-btn color="primary" class="" dark @change="upload"> -->
-          <input id="fileUpload" type="file" hidden @change="upload"  accept=".oms," />
-          <v-btn color="primary" class="" dark @click="chooseFiles()">
-            <v-icon left dark>mdi-upload</v-icon>Upload
-          </v-btn>
-          <!-- <v-file-input
+        <input
+          id="fileUpload"
+          type="file"
+          hidden
+          @change="upload"
+          accept=".oms,"
+        />
+        <v-btn color="primary" class="" dark @click="chooseFiles()">
+          <v-icon left dark>mdi-upload</v-icon>Upload
+        </v-btn>
+        <!-- <v-file-input
             hide-input
             truncate-length="15"
             v-model="files"
           ></v-file-input> -->
-        </v-btn>
       </v-speed-dial>
     </div>
-      <v-progress-linear
+    <v-progress-linear
       v-if="isLoading"
       fixed
       indeterminate
@@ -62,6 +67,7 @@
 <script>
 import { mapState, mapActions, mapGetters } from 'vuex';
 import gql from 'graphql-tag';
+import saveNodeSheet from '@/graphql/nodes/SaveNodeSheet';
 
 export default {
   name: 'ActionMenuForNodes',
@@ -72,6 +78,7 @@ export default {
 
   data() {
     return {
+      saveNodeSheet,
       direction: 'top',
       fab: false,
       fling: false,
@@ -88,7 +95,7 @@ export default {
         {
           title: 'Salvar',
           icon: 'mdi-content-save',
-          method: 'saveClicked',
+          method: 'save',
         },
         { title: 'Download', icon: 'mdi-file-download', method: 'download' },
         // { title: 'Upload', icon: 'mdi-file-upload', method: 'upload' },
@@ -103,6 +110,7 @@ export default {
       tabList: (state) => state.tabList,
       selectedTabId: (state) => state.selectedTabId,
     }),
+
     ...mapGetters('node', [
       'selectedTabName',
       'selectedTabObject', // -> this.getTabName
@@ -123,14 +131,13 @@ export default {
       console.log('play');
       this.isLoading = true;
 
-      const tabToSave = this.tabList[this.selectedTabIndex];
+      // aconst tabToPlay = this.tabList[this.selectedTabIndex];
 
       await this.$apollo
         .mutate({
           mutation: gql`
             mutation play($id: ID!) {
-              loadConfig(_id: $id) {
-              }
+              loadConfig(_id: $id)
               startProcess {
                 data {
                   error
@@ -139,10 +146,11 @@ export default {
             }
           `,
           variables: {
-            id: tabToSave.id,
+            id: '620c0b85b975eb564a701b5e',
+            // id: tabToPlay.id,
           },
-          update: (store, { data: { loadConfig } }) => {
-            console.log(loadConfig.data);
+          update: (store, { data: { startProcess } }) => {
+            console.log(startProcess.data);
           },
         })
 
@@ -171,7 +179,7 @@ export default {
     async stop() {
       console.log('stop');
       this.isLoading = true;
-      const tabToSave = this.tabList[this.selectedTabIndex];
+      // const tabToSave = this.tabList[this.selectedTabIndex];
 
       await this.$apollo
         .mutate({
@@ -261,106 +269,78 @@ export default {
       this[name]();
     },
 
-    async saveClicked() {
-      if (this.tabList[this.selectedTabIndex].saved) {
-        await this.update();
-      } else {
-        await this.save();
-      }
-    },
+    // async saveClicked() {
+    //   if (this.tabList[this.selectedTabIndex].saved) {
+    //     await this.update();
+    //   } else {
+    //     await this.save();
+    //   }
+    // },
 
-    async update() {
-      console.log('update');
-      this.isLoading = true;
-      const tabToSave = this.tabList[this.selectedTabIndex];
+    // async update() {
+    //   console.log('update');
+    //   this.isLoading = true;
+    //   const tabToSave = this.tabList[this.selectedTabIndex];
 
-      await this.$apollo
-        .mutate({
-          mutation: gql`
-            mutation updateNodeSheet(
-              $id: ID!
-              $sketchName: String
-              $content: JSON!
-            ) {
-              updateNodeSheet(
-                _id: $id
-                sketchName: $sketchName
-                content: $content
-              ) {
-                data {
-                  _id
-                }
-              }
-            }
-          `,
-          variables: {
-            id: tabToSave.id,
-            content: this.editor.save(),
-          },
-          update: (store, { data: { updateNodeSheet } }) => {
-            console.log(updateNodeSheet.data);
-          },
-        })
-        .then((data) => {
-          // Result
-          console.log(data);
-          this.$alertFeedback('Arquivo salvo com sucesso', 'success');
-          this.isLoading = false;
-          // this.setSaved(this.selectedTabIndex);
-        })
-        .catch((error) => {
-          // Error
-          this.isLoading = false;
-          console.error('Não foi possível salvar o arquivo \n', error);
-          this.$alertFeedback(
-            'Não foi possível salvar o arquivo, erro ao conectar com servidor',
-            'error',
-            error
-          );
+    //   await this.$apollo
+    //     .mutate({
+    //       mutation: gql`
+    //         mutation updateNodeSheet($id: ID!, $name: String, $content: JSON!) {
+    //           updateNodeSheet(_id: $id, name: $name, content: $content) {
+    //             data {
+    //               _id
+    //             }
+    //           }
+    //         }
+    //       `,
+    //       variables: {
+    //         id: tabToSave.id,
+    //         content: this.editor.save(),
+    //       },
+    //       update: (store, { data: { updateNodeSheet } }) => {
+    //         console.log(updateNodeSheet.data);
+    //       },
+    //     })
+    //     .then((data) => {
+    //       // Result
+    //       console.log(data);
+    //       this.$alertFeedback('Arquivo salvo com sucesso', 'success');
+    //       this.isLoading = false;
+    //       // this.setSaved(this.selectedTabIndex);
+    //     })
+    //     .catch((error) => {
+    //       // Error
+    //       this.isLoading = false;
+    //       console.error('Não foi possível salvar o arquivo \n', error);
+    //       this.$alertFeedback(
+    //         'Não foi possível salvar o arquivo, erro ao conectar com servidor',
+    //         'error',
+    //         error
+    //       );
 
-          // We restore the initial user input
-        });
-    },
+    //       // We restore the initial user input
+    //     });
+    // },
 
     async save() {
       console.log('save');
-
+      this.isLoading = true;
       console.log(" :salvo com sucesso!'");
 
       const tabToSave = this.tabList[this.selectedTabIndex];
 
       await this.$apollo
         .mutate({
-          mutation: gql`
-            mutation createNodeSheet(
-              $id: ID!
-              $sketchName: String
-              $saved: Boolean
-              $duplicated: Boolean
-              $content: JSON!
-            ) {
-              createNodeSheet(
-                _id: $id
-                sketchName: $sketchName
-                saved: $saved
-                duplicated: $duplicated
-                content: $content
-              ) {
-                data {
-                  _id
-                }
-              }
-            }
-          `,
+          mutation: this.saveNodeSheet,
           variables: {
             id: tabToSave.id,
-            sketchName: tabToSave.sketchName,
+            name: tabToSave.name,
             saved: tabToSave.saved,
             duplicated: tabToSave.duplicated,
             content: this.editor.save(),
           },
-          update: (store, { data: { createNodeSheet } }) => {
-            console.log(createNodeSheet);
+          update: (store, { data: { saveNodeSheet2 } }) => {
+            console.log(saveNodeSheet2);
           },
         })
         .then((data) => {
@@ -392,11 +372,11 @@ export default {
         a.download = fileName;
         a.click();
       }
-      const fileName = this.tabList[this.selectedTabIndex].sketchName;
+      const fileName = this.tabList[this.selectedTabIndex].name;
       download(
         JSON.stringify(this.editor.save()),
         `${fileName}.oms`,
-        'text/plain'
+        'text/oms'
       );
     },
 
@@ -406,9 +386,10 @@ export default {
 
     async upload({ target }) {
       this.fab = false;
+      console.log(target.files[0].name.split('.').pop());
 
       if (
-        target.files[0].name.split('.').pop() !== 'oms' ||
+        target.files[0].name.split('.').pop() !== 'oms' &&
         target.files[0].name.split('.').pop() !== 'json'
       ) {
         this.$alertFeedback(
@@ -424,7 +405,7 @@ export default {
       const fr = new FileReader();
       console.log(files);
       if (files.length <= 0) {
-        return false;
+        return;
       }
 
       let json;
@@ -437,52 +418,57 @@ export default {
         };
       }
 
-      this.isLoading = true;
-
       // Use time out to wait for the file to be read
       fr.readAsText(files[0]);
-
+      this.isLoading = true;
       loadFile(async () => {
-        await this.$apollo
-          .mutate({
-            mutation: gql`
-              mutation createNodeSheet($input: JSON!) {
-                createNodeSheet(input: $input) {
-                  data {
-                    _id
-                  }
-                }
-              }
-            `,
-            variables: {
-              input: json,
-            },
-            update: (store, { data: { createNodeSheet } }) => {
-              console.log(createNodeSheet.data._id);
-            },
-          })
-          .then((data) => {
-            // Result
-            console.log(data);
-            this.$alertFeedback('Arquivo salvo com sucesso', 'success');
-            this.isLoading = false;
-          })
-          .catch((error) => {
-            // Error
-            this.isLoading = false;
-            console.error(
-              'Não foi possível fazer o UPLOAD do arquivo \n',
-              error
-            );
-            this.$alertFeedback(
-              'Não foi possível fazer o upload do arquivo',
-              'error'
-            );
-
-            // We restore the initial user input
-          });
         console.log(json);
+        this.editor.load(json);
+        this.isLoading = false;
       });
+      // loadFile(async () => {
+      //   await this.$apollo
+      //     .mutate({
+      //       mutation: gql`
+
+      //         mutation createNodeSheet($input: JSON!) {
+      //           createNodeSheet(input: $input) {
+      //             data {
+      //               _id
+      //             }
+      //           }
+      //         }
+      //       `,
+      //       variables: {
+      //         input: json,
+      //       },
+      //       update: (store, { data: { createNodeSheet } }) => {
+      //         // eslint-disable-next-line no-underscore-dangle
+      //         console.log(createNodeSheet.data._id);
+      //       },
+      //     })
+      //     .then((data) => {
+      //       // Result
+      //       console.log(data);
+      //       this.$alertFeedback('Arquivo salvo com sucesso', 'success');
+      //       this.isLoading = false;
+      //     })
+      //     .catch((error) => {
+      //       // Error
+      //       this.isLoading = false;
+      //       console.error(
+      //         'Não foi possível fazer o UPLOAD do arquivo \n',
+      //         error
+      //       );
+      //       this.$alertFeedback(
+      //         'Não foi possível fazer o upload do arquivo',
+      //         'error'
+      //       );
+
+      //       // We restore the initial user input
+      //     });
+      //   console.log(json);
+      // });
     },
   },
 };

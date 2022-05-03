@@ -1,13 +1,17 @@
+from dotenv import load_dotenv
 from pymongo import MongoClient
 from pymongo.errors import ConnectionFailure
 from os import environ, getenv
 from api import logger, exception
+from api.decorators import for_all_methods
 from pandas import DataFrame
 
-# get environment variable "NODE_ENV"
-# environment = os.environ.get("NODE_ENV", "DEV")
-from dotenv import load_dotenv
-from os import popen
+from numpy import integer, floating, ndarray
+
+from json import loads, dumps, JSONEncoder
+
+from bson.errors import InvalidDocument
+from bson import ObjectId
 
 load_dotenv()
 
@@ -21,14 +25,21 @@ url = (
 )
 
 _db = None
-requiredCollections = ["node-configs", "node-templates", "last-values", "node-history"]
+requiredCollections = [
+    "node-sheets",
+    "camera-manager",
+    "serial-manager",
+    "blister-manager",
+    "last-values",
+    "log",
+]
 
 
 @exception(logger)
 def getDb():
     global _db
     if _db is None:
-        _db = MongoOBJ("Teste", url)
+        _db = MongoOBJ(environ.get("DB_NAME"), url)
     return _db
 
 
@@ -38,18 +49,32 @@ def connectToMongo(database="Teste"):
     for collectionName in requiredCollections:
         if collectionName not in _db.list_collection_names():
             _db.create_collection(collectionName)
-            logger.debug(f"Created collection {collectionName}")
+            logger.info(f"Created collection {collectionName}")
 
 
+@for_all_methods(exception(logger))
+class CustomEncoder(JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, integer):
+            return int(obj)
+        elif isinstance(obj, floating):
+            return float(obj)
+        elif isinstance(obj, ndarray):
+            return obj.tolist()
+        elif isinstance(obj, ObjectId):
+            return str(obj)
+        else:
+            return super(CustomEncoder, self).default(obj)
+
+
+@for_all_methods(exception(logger))
 class MongoOBJ:
-    @exception(logger)
     def __init__(self, db_name, db_url):
         self.dbo = self.connect(db_name, db_url)
 
-    @exception(logger)
     def connect(self, db_name, db_url):
         try:
-            logger.debug(f"Connecting to MongoDB using url: {db_url}")
+            logger.info(f"Connecting to MongoDB using url: {db_url}")
             self.client = MongoClient(db_url)
             self.client.admin.command("ismaster")
         except ConnectionFailure:
@@ -59,73 +84,67 @@ class MongoOBJ:
             logger.info("Connected to MongoDB")
             return self.client.get_database(db_name)
 
-    @exception(logger)
     def getDB(self):
         return self.dbo
 
-    @exception(logger)
     def list_collection_names(self):
         return self.dbo.list_collection_names()
 
-    @exception(logger)
     def get_collection(self, collectionName):
         return self.dbo.get_collection(collectionName)
 
-    @exception(logger)
     def create_collection(self, collectionName):
         return self.dbo.create_collection(collectionName)
 
-    @exception(logger)
     def insert_one(self, collection_name, data):
-        return self.dbo[collection_name].insert_one(data)
+        try:
+            return self.dbo[collection_name].insert_one(data)
+        except InvalidDocument:
+            return self.dbo[collection_name].insert_one(
+                loads(dumps(data, cls=CustomEncoder))
+            )
 
-    @exception(logger)
     def insert_many(self, collection_name, data):
-        return self.dbo[collection_name].insert_many(data)
+        try:
+            return self.dbo[collection_name].insert_many(data)
+        except InvalidDocument:
+            return self.dbo[collection_name].insert_many(dumps(data, cls=CustomEncoder))
 
-    @exception(logger)
     def find_one(self, collection_name, query={}):
         return self.dbo[collection_name].find_one(query)
 
-    @exception(logger)
     def find_many(self, collection_name, query={}, data={}):
         return self.dbo[collection_name].find(query, data)
 
-    @exception(logger)
     def update_one(self, collection_name, query, data):
         return self.dbo[collection_name].update_one(query, data)
 
-    @exception(logger)
     def update_many(self, collection_name, query, data):
         return self.dbo[collection_name].update_many(query, data)
 
-    @exception(logger)
     def delete_one(self, collection_name, query={}):
         return self.dbo[collection_name].delete_one(query)
 
-    @exception(logger)
     def delete_many(self, collection_name, query={}):
         return self.dbo[collection_name].delete_many(query)
 
-    @exception(logger)
     def find_one_and_update(self, collection_name, query, data):
         return self.dbo[collection_name].find_one_and_update(query, data)
 
-    @exception(logger)
     def find_one_and_delete(self, collection_name, query={}):
         return self.dbo[collection_name].find_one_and_delete(query)
 
-    @exception(logger)
     def find_one_and_replace(self, collection_name, query, data):
         return self.dbo[collection_name].find_one_and_replace(query, data)
-    
-    @exception(logger)
+
     def distinct(self, collection_name, query="_id"):
         return self.dbo[collection_name].distinct(query)
 
-    @exception(logger)
     def collection2csv(self, collection):
         arr = self.find_many(collection)
         variables = arr[0].keys()
         df = DataFrame([[i.get(j) for j in variables] for i in arr], columns=variables)
         return df.to_csv(index=False)
+
+    def close(self):
+        self.client.close()

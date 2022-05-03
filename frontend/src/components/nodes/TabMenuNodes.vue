@@ -16,26 +16,26 @@
             small
             dark
             color="green accent-3"
-            v-if="sketchNameRunning == item.sketchName"
+            v-if="nameRunning == item.name"
           >
             mdi-play
           </v-icon>
           <div class="mb-n5" v-if="renamingIndex === index">
             <v-text-field
-              :append-outer-icon="sketchName ? 'mdi-check' : null"
+              :append-outer-icon="name ? 'mdi-check' : null"
               @click:append-outer="rename(index)"
               autofocus
-              :value="tabList[index].sketchName"
-              v-model="sketchName"
+              :value="tabList[index].name"
+              v-model="name"
               @keyup.enter="
-                sketchName != '' ? rename(index) : tabList[index].sketchName
+                name != '' ? rename(index) : tabList[index].name
               "
               single-line
               full-width
             ></v-text-field>
           </div>
           <span v-else>{{
-            +!item.saved ? item.sketchName + '*' : item.sketchName
+            +!item.saved ? item.name + '*' : item.name
           }}</span>
         </div>
 
@@ -97,8 +97,8 @@ export default {
       tab: null,
       actualNode: null,
       length: 0,
-      sketchName: '',
-      sketchNameRunning: 'One',
+      name: '',
+      nameRunning: 'One',
       newTabCount: 1,
       lixo: null,
       tagAdded: {},
@@ -209,7 +209,7 @@ export default {
       const idGenerated = this.generateId();
       this.newTabCount += 1;
       const newTab = {
-        sketchName: tabSketchName,
+        name: tabSketchName,
         id: idGenerated,
         saved: false,
         duplicated: false,
@@ -244,8 +244,8 @@ export default {
 
     rename(index) {
       this.setRenamingIndex(null);
-      this.setSketchName({ sketchName: this.sketchName, index: index });
-      this.sketchName = '';
+      this.setSketchName({ name: this.name, index: index });
+      this.name = '';
     },
   },
 

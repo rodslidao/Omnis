@@ -1,0 +1,196 @@
+<template>
+  <v-row justify="center">
+    <v-dialog v-model="dialog" max-width="600px">
+      <v-card dark>
+        <v-card-title>
+          <TextEditable :text="node.name" @changeText="changeName" />
+          <!-- <span class="headline">{{ nodeCopy.name }}</span> -->
+        </v-card-title>
+        <v-divider></v-divider>
+        <v-card-text class="pt-4">
+          <v-form v-model="valid">
+            <NodeConfigTitle
+              title="Placa"
+              description="Selecione a placa que executara o movimento."
+            >
+              <v-select
+                :items="boardList"
+                v-model="boardNameSelected"
+                item-text="name"
+                dense
+              ></v-select>
+            </NodeConfigTitle>
+            <NodeConfigTitle
+              title="Distancias"
+              description="Distancia que a maquina vai se mexer em relação a origem da maquina."
+            >
+              <div class="mb-n4">
+                <div
+                  v-for="(axis, index) in axisListCopy"
+                  :key="index"
+                  class="mb-4 d-flex"
+                >
+                  <v-checkbox
+                    class="mt-0"
+                    v-if="axis.name != 'F'"
+                    :label="axis.name"
+                    v-model="axis.isActive"
+                    hide-details
+                  ></v-checkbox>
+                  <v-text-field
+                    v-if="axis.name != 'F'"
+                    class="ml-3"
+                    v-model="axis.value"
+                    number
+                    :disabled="!axis.isActive"
+                    dense
+                    hide-details
+                  ></v-text-field>
+                </div>
+              </div>
+            </NodeConfigTitle>
+            <NodeConfigTitle
+              title="Velocidade"
+              description="Defina a Velocidade que todos os eixos irão se deslocar."
+            >
+              <div class="d-flex">
+                <v-checkbox
+                  class="mt-0"
+                  v-model="this.axisListCopy.at(-1).isActive"
+                  hide-details
+                ></v-checkbox>
+
+                <v-text-field
+                  class="ml-3"
+                  v-model="this.axisListCopy.at(-1).value"
+                  number
+                  :disabled="!this.axisListCopy.at(-1).isActive"
+                  dense
+                  hide-details
+                ></v-text-field>
+              </div>
+            </NodeConfigTitle>
+          </v-form>
+        </v-card-text>
+        <v-divider></v-divider>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="blue darken-1" text @click="dialog = false" rounded>
+            Close
+          </v-btn>
+          <v-btn
+            color="blue darken-1"
+            :disabled="!valid"
+            text
+            @click="save"
+            rounded
+          >
+            Save
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+  </v-row>
+</template>
+
+<script>
+import EventBus from '@/event-bus';
+import { mapActions } from 'vuex';
+import gql from 'graphql-tag';
+import TextEditable from '@/components/nodes/dialogs/TextEditable.vue';
+import NodeConfigTitle from '@/components/nodes/NodeConfigTitle.vue';
+
+export default {
+  data: () => ({
+    dialog: false,
+    nodeCopy: null,
+    axisListCopy: null,
+    boardNameSelected: null,
+    boardList: [],
+    Description: '',
+
+    rules: {
+      required: (value) => !!value || 'Required.',
+      positive: (value) => value > 0 || 'Positive number required.',
+    },
+    valid: false,
+    type: null,
+  }),
+  components: {
+    TextEditable,
+    NodeConfigTitle,
+  },
+
+  props: ['option', 'node', 'value'],
+
+  created() {
+    this.init();
+    EventBus.$on('OPEN_SETTINGS', (nodeId) => {
+      if (nodeId === this.node.id) {
+        console.log(this.dialog);
+        this.dialog = true;
+        this.init();
+      }
+    });
+  },
+
+  methods: {
+    ...mapActions('node', ['saveNodeConfig']),
+
+    save() {
+      this.node.setOptionValue('axisList', this.axisListCopy);
+      const objectBoardSelected = this.boardList.find(
+        (obj) => obj.name === this.boardNameSelected
+      );
+
+      console.log(objectBoardSelected);
+      this.node.setOptionValue('board', objectBoardSelected);
+      this.saveNodeConfig(this.node.id);
+      // this.$store.commit('saveNodeConfig', this.node.id);
+      this.dialog = false;
+      this.init();
+    },
+
+    async getBoards() {
+      const response = await this.$apollo.query({
+        query: gql`
+          query {
+            getNodeInfo(node_type: "MOVEMENT") {
+              data {
+                options
+              }
+            }
+          }
+        `,
+      });
+      // console.log(this.$apollo.store);
+
+      // make a list of boards name from the response
+      this.boardList = [];
+      this.boardList = response.data.getNodeInfo.data.options;
+      console.log(this.boardList);
+      // response.data.getNodeInfo.data.options.forEach((item) => {
+      //   this.boardList.push(item.name);
+      // }, this);
+    },
+
+    async init() {
+      this.nodeCopy = { ...this.node };
+      this.boardList = [];
+      this.boardList.push(this.node.getOptionValue('board'));
+      this.axisListCopy = JSON.parse(
+        JSON.stringify(this.node.getOptionValue('axisList'))
+      );
+      await this.getBoards();
+    },
+
+    changeName(data) {
+      console.log(data);
+      this.node.name = data;
+      this.saveNodeConfig(this.node.id);
+    },
+  },
+};
+</script>
+<style scoped>
+</style>

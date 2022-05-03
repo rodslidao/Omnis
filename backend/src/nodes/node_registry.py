@@ -5,6 +5,7 @@ from src.nodes.[node_name_folder].[node_name] import [NodeName] ( node_name pack
 from os import listdir
 import importlib
 from api import logger, exception
+from api.decorators import for_all_methods
 
 
 class RegEntry:
@@ -13,15 +14,14 @@ class RegEntry:
     clss: class of the node
     """
 
-    @exception(logger)
     def __init__(self, name, clss):
         self.name = name
         self.clss = clss
 
 
+@for_all_methods(exception(logger))
 class NodeRegistry:
     @staticmethod
-    @exception(logger)
     def getNodeClassByName(name):
         """
         :param name: name of the node, e.g. 'identify'

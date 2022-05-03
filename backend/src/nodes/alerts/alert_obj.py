@@ -1,10 +1,12 @@
 from datetime import datetime
 from api.store import alerts
 from api import logger, exception
+from api.decorators import for_all_methods
 
 AlertLevel = {"INFO": "INFO", "WARNING": "WARNING", "ERROR": "ERROR", "LOG": "LOG"}
 
 
+@for_all_methods(exception(logger))
 class AlertManager:
     async def add(alert):
         """
@@ -21,12 +23,12 @@ class AlertManager:
             queue.put_nowait(alert)
 
 
+@for_all_methods(exception(logger))
 class Alert:
     """
     Add an alert object to all subscribed queue's.
     """
 
-    @exception(logger)
     def __init__(
         self,
         level,
@@ -46,8 +48,8 @@ class Alert:
         self.how2solve = how2solve
         self.buttonText = buttonText
         self.buttonAction = buttonAction
+        logger.debug(f"New alert created: {self}")
         AlertManager.put(self)
-        # await AlertManager.add(self)
 
     def __str__(self) -> str:
         """
@@ -57,6 +59,9 @@ class Alert:
         for k, v in self.__dict__.items():
             message += f"{k[0].upper()}{k[1:]}:\t{v}\n"
         return message
+
+    def __repr__(self) -> str:
+        return str(self)
 
     @classmethod
     def dict(self):

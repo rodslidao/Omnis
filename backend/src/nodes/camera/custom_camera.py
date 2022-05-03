@@ -1,202 +1,67 @@
 from bson import ObjectId
-import cv2
-from threading import Thread
-from time import sleep
 from src.manager.camera_manager import CameraManager
-from time import sleep
-
-import datetime
-from collections import deque
-
+from cv2 import line, putText, FONT_HERSHEY_SIMPLEX, rectangle, LINE_AA
 from api import logger, exception
+from api.decorators import for_all_methods
+from vidgear.gears import CamGear
 
 
-class FPS:
-    """
-    FPS class for calculating frames per second. \n
+@for_all_methods(exception(logger))
+class Camera(CamGear):
+    """_summary_
 
-    Usage: \n
-    \tFPS().start():\t-> returns FPS() itself and start the counter \n
-    \tFPS().update():\t returns None and updates the counter \n
-    \tFPS().fps():\t\t returns the current FPS
-
-    """
-
-    @exception(logger)
-    def __init__(self):
-        self._start = None
-        self._end = None
-        self._numFrames = 0
-
-    @exception(logger)
-    def start(self):
-        self._start = datetime.datetime.now()
-        return self
-
-    @exception(logger)
-    def update(self):
-        if self.elapsed() >= 5:
-            self._numFrames = 0
-            self.start()
-        self._numFrames += 1
-
-    @exception(logger)
-    def elapsed(self):
-        return (datetime.datetime.now() - self._start).total_seconds()
-
-    @exception(logger)
-    def fps(self):
-        return self._numFrames / self.elapsed()
-
-
-class camera:
-    """
-    Complex api for USB cameras.
-    When a new camera is started, it will be added to the CameraManager using camera._id as key.
-    When a camera is stopped, it will be removed from the CameraManager.
-
-    :set_property(name, value):
-        Set a property of the camera.
-        a list of properties can be found here: https://docs.opencv.org/4.x/d4/d15/group__videoio__flags__base.html
-
-    :get_property(name):
-        Get a property of the camera.
-
-    :get_properties():
-        Get all properties of the camera.
-
-    :start():
-        Start the camera.
-        returns self.
-
-    :stop():
-        Stop the camera.
-        returns self.
-
-    :reset():
-        Reset the camera.
-        returns self.
-
-    :read():
-        Read the current frame.
-        returns the current frame.
-
-    :to_dict():
-        Returns a dictionary representation of the camera.
-
-
+    Args:
+        CamGear (_type_): _description_
     """
 
-    @exception(logger)
-    def __init__(self, src=0, name="WebcamVideoStream"):
-        self.src = src
-        self.stream = cv2.VideoCapture(src, cv2.CAP_V4L2)
-        self.stream.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc("M", "J", "P", "G"))
+    def __init__(self, source=0, name="WebcamVideoStream", _id=None, **options):
+        super().__init__(source, **options)
+        self.start()
         self.name = name
-        self._id = ObjectId()
-        self.stopped = True
-        self.properties = {}
-        if self.stream.isOpened():
-            (self.grabbed, self.frame) = self.stream.read()
+        self.source = source
+        self.opt = options
+        self._id = ObjectId(_id)
         CameraManager.add(self)
 
-    @exception(logger)
-    def set_property(self, name, value):
-        self.stream.set(getattr(cv2, name) if isinstance(name, str) else name, value)
-
-    @exception(logger)
-    def set_properties(self, properties):
-        for name, value in properties.items():
-            self.set_property(name, value)
-
-    @exception(logger)
-    def reset(self):
-        print("Resetting camera...")
-        self.stopped = True
-        CameraManager.update()
-        self.start()
-        return self
-
-    @exception(logger)
-    def start(self):
-        """
-        Start the camera.
-        returns self.
-        """
-        self.fps = FPS().start()
-        self.stopped = False
-        self.t = Thread(target=self.updateFrame, name=self.name, args=(), daemon=True)
-        self.t.start()
-        CameraManager.update()
-        return self
-
-    @exception(logger)
-    def updateFrame(self):
-        """
-        Update the frame of the camera.
-        returns None.
-        """
-        while not self.stopped:
-            (self.grabbed, self.frame) = self.stream.read()
-            cv2.putText(
-                self.frame,
-                "FPS: {:.2f}".format(self.fps.fps()),
-                (10, 30),
-                cv2.FONT_HERSHEY_SIMPLEX,
-                0.7,
-                (0, 0, 255),
-                2,
-            )
-            self.fps.update()
-
-    @exception(logger)
-    def read(self):
-        """
-        Read the current frame.
-        returns the current frame.
-        """
-        return self.frame
-
-    @exception(logger)
-    def stop(self):
-        """
-        Stop the camera.
-        returns self.
-        """
-        self.stopped = True
-        try:
-            self.t.join()
-        except RuntimeError:
-            pass
+    def remove(self):
         CameraManager.remove(self)
-        return self
 
-    @exception(logger)
-    def __del__(self):
-        if not self.stopped:
-            self.stop()
-        self.stream.release()
-
-    @exception(logger)
     def to_dict(self):
         """
         Returns a dictionary representation of the camera.
         """
         return {
             "_id": str(self._id),
-            "src": self.src,
+            "src": self.source,
             "name": self.name,
-            "properties": self.properties,
-            "running": not self.stopped,
+            "properties": self.opt,
+            # "running": not self.__terminate.is_set(),
         }
 
+    def scale_lines_draw(self):
+        """
+        Draw lines to scale the image.
+        """
+        x_size = 20
+        line_qtd = 3
+        line_size = 150
 
-@exception(logger)
-def checker(src=2):
-    """
-    Checks if the camera is running.
-    """
-    cam = camera(src)
-    cam.start()
-    sleep(src)
-    cam.stop()
+        for i, n in enumerate(range(10, line_size + 1, int(line_size / line_qtd))):
+            line(
+                self.frame,
+                (int(320 - ((n) / 2)), int(240 + (i * x_size / 2))),
+                (int(320 + ((n) / 2)), int(240 + (i * x_size / 2))),
+                (255, 255, 255),
+                thickness=1,
+            )
+            putText(
+                self.frame,
+                f"{n}",
+                (int(320 - line_size / 2), int(240 + (i * x_size / 2))),
+                FONT_HERSHEY_SIMPLEX,
+                0.25,
+                (255, 255, 255),
+                1,
+                LINE_AA,
+            )
+            rectangle(self.frame, (120, 170), (520, 310), (255, 255, 255), 1)

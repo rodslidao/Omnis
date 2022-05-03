@@ -64,7 +64,10 @@
       </v-card-text>
       <v-card-text v-if="isUserAcessPermited(this.$options.name)">
         <UserTable v-if="isUserAcessPermited('UserTable')" />
-        <JsonEditor2 @update-loading="loading=false" v-if="isUserAcessPermited('JsonEditor2')" />
+        <!-- <JsonEditor2
+          @update-loading="loading = false"
+          v-if="isUserAcessPermited('JsonEditor2')"
+        /> -->
       </v-card-text>
       <!-- <JsonEditor2 /> -->
     </v-expansion-panel-content>
@@ -72,16 +75,16 @@
 </template>
 
 <script>
-import { mapState, mapMutations } from "vuex";
-import { actions } from "../../store/index";
-import UserTable from "./UserTable.vue";
-import JsonEditor2 from "./JsonEditor2.vue";
-import Mixins from "@/mixins/mixins";
+import Mixins from '@/mixins/mixins';
+import { mapState, mapMutations } from 'vuex';
+import { actions } from '../../store/index';
+import UserTable from './UserTable.vue';
+import JsonEditor2 from './JsonEditor2.vue';
 
 export default {
   components: { UserTable, JsonEditor2 },
   mixins: [Mixins],
-  name: "AdvancedSettings",
+  name: 'AdvancedSettings',
   data: () => ({
     show: false,
     idInput: null,
@@ -90,13 +93,13 @@ export default {
       //   required: (value) => !!value || "Required.",
       //   min: (v) => v.length >= 4 || "Min 4 caracteres numéricos",
     },
-    errorMessages: "",
+    errorMessages: '',
     formHasErrors: false,
     loading: false,
   }),
 
   computed: {
-    ...mapState(["configuration"]),
+    ...mapState(['configuration']),
 
     form() {
       return {
@@ -119,18 +122,20 @@ export default {
   },
 
   methods: {
-        ...mapMutations(["SEND_MESSAGE"]),
+    ...mapMutations(['SEND_MESSAGE']),
 
-     updateBack() {
-      this.SEND_MESSAGE({command: actions.UPDATE_USERS,  parameter: this.configuration.informations.users,});
+    updateBack() {
+      this.SEND_MESSAGE({
+        command: actions.UPDATE_USERS,
+        parameter: this.configuration.informations.users,
+      });
     },
-    
+
     logout() {
       this.configuration.informations.users.logged = false;
-      this.idInput = "";
-      this.updateBack()
+      this.idInput = '';
+      this.updateBack();
       console.log(this.configuration.informations.users.logged);
-
     },
     // logout() {
     //   this.configuration.logged = !this.configuration.logged;
@@ -144,8 +149,8 @@ export default {
           console.log(this.configuration.informations.users.logged);
           const currentDate = new Date();
           user.lastAcess = currentDate.getTime();
-          this.idInput = "";
-          this.updateBack()
+          this.idInput = '';
+          this.updateBack();
         }
       });
     },

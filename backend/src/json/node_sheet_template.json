@@ -1,0 +1,325 @@
+[
+    {
+        "_id": {
+            "$oid": "623cd4ef22b57fdf772f2c11"
+          },
+        "name":"default-node-sheet-v3.2.2",
+        "saved":true,
+        "duplicated":false,
+        "content":{
+            "connections":[
+                {
+                    "id":"1000000000",
+                    "from":"conectoctores_precoord_i_0_item",
+                    "to":"MovPrecords_X"
+                },
+                {
+                    "id":"1000000001",
+                    "from":"conectoctores_precoord_i_0_item",
+                    "to":"conectoctores_precoord_j_0_next"
+                },
+                {
+                    "id":"1000000011",
+                    "from":"conectoctores_precoord_j_0_item",
+                    "to":"MovPrecords_Y"
+                },
+                {
+                    "id":"1000000100",
+                    "from":"conectoctores_precoord_j_0_item",
+                    "to":"MovPrecords_trigger"
+                },
+                {
+                    "id":"1000000101",
+                    "from":"MovPrecords_success",
+                    "to":"conectoctores_precoord_j_0_next"
+                },  
+                {
+                    "id":"1000000111",
+                    "from":"conectoctores_precoord_j_0_end",
+                    "to":"conectoctores_precoord_i_0_next"
+                },
+                {
+                    "id":"1000001000",
+                    "from":"CAMERA_001_success",
+                    "to":"HSV_001_image"
+                },
+                {
+                    "id":"1000001001",
+                    "from":"CAMERA_001_success",
+                    "to":"DRAW_001_image"
+                },
+                {
+                    "id":"1000001010",
+                    "from":"HSV_001_success",
+                    "to":"IDENTIFY_001_image"
+                },
+                {
+                    "id":"1000001011",
+                    "from":"IDENTIFY_001_object",
+                    "to":"DRAW_001_dimensional_data"
+                },
+                {
+                    "id":"1000001100",
+                    "from":"IDENTIFY_001_center",
+                    "to":"COORDINATECORRECTION_001_coords"
+                },
+                {
+                    "id":"1000001101",
+                    "from":"COORDINATECORRECTION_001_success",
+                    "to":"MovPrecords_002_coordinates"   
+                },
+                {
+                    "id":"1000001110",
+                    "from":"COORDINATECORRECTION_001_success",
+                    "to":"MovPrecords_002_trigger"   
+                }
+
+
+
+            ],
+            "nodes":[
+                {
+                    "type": "FORLOOP",
+                    "id": "conectoctores_precoord_i_0",
+                    "name": "PreCords I",
+                    "options": [
+                    [
+                        "iterator",
+                        {"value":[0, 50, 100, 150, 210, 260, 310, 360]}
+                    ],
+                    [
+                        "auto_run",
+                        {"value": true}
+                    ]
+                    ],
+                    "interfaces": [
+                        ["onSuccess", { "id": "conectoctores_precoord_i_0_success", "value": null }],
+                        ["onFailure", { "id": "conectoctores_precoord_i_0_fail", "value": null }],
+                        ["next", {"id":"conectoctores_precoord_i_0_next", "value": null}],
+                        ["item", {"id":"conectoctores_precoord_i_0_item", "value": null}],
+                        ["end", {"id":"conectoctores_precoord_i_0_end", "value": null}]
+                    ]
+                },
+                {
+                    "type": "FORLOOP",
+                    "id": "conectoctores_precoord_j_0",
+                    "name": "PreCords J",
+                    "options": [
+                    [
+                        "iterator",
+                        {"value":[0, 50, 100, 150, 210, 260, 310, 360]}
+                    ],
+                    [
+                        "auto_run",
+                        {"value": false}
+                    ]
+                    ],
+                    "interfaces": [
+                        ["onSuccess", { "id": "conectoctores_precoord_j_0_success", "value": null }],
+                        ["onFailure", { "id": "conectoctores_precoord_j_0_fail", "value": null }],
+                        ["next", {"id":"conectoctores_precoord_j_0_next", "value": null}],
+                        ["item", {"id":"conectoctores_precoord_j_0_item", "value": null}],
+                        ["end", {"id":"conectoctores_precoord_j_0_end", "value": null}]
+                    ]
+                },
+                {
+                    "type": "MOVEMENT",
+                    "id": "MovPrecords",
+                    "name": "Premove",
+                    "options": [
+                    [
+                        "hardware",
+                        {
+                        "serial_id": "000000000000000000000000"
+                        }
+                    ],
+                    [
+                        "axis",
+                        {
+                            "list_of_axis": ["X", "Y", "Z", "A", "B", "C"],
+                            "values":{"X":0, "Y":0, "Z":0, "A":0, "B":0, "C":0}
+                        }
+                    ],
+                    [
+                        "auto_run",
+                        {"value": false}
+                    ]
+                    ],
+                    "interfaces": [
+                        ["onSuccess", { "id": "MovPrecords_success", "value": null }],
+                        ["onFailure", { "id": "MovPrecords_fail", "value": null }],
+                        ["X", {"id":"MovPrecords_X", "value":null}],
+                        ["Y", {"id":"MovPrecords_Y", "value":null}],
+                        ["Z", {"id":"MovPrecords_Z", "value":null}],
+                        ["A", {"id":"MovPrecords_A", "value":null}],
+                        ["B", {"id":"MovPrecords_B", "value":null}],
+                        ["C", {"id":"MovPrecords_C", "value":null}],
+                        ["trigger", {"id":"MovPrecords_trigger", "value":null}]
+
+                    ]
+                },
+                {
+                    "type": "CAMERA",
+                    "id": "CAMERA_001",
+                    "name": "CAMERA_FRAME_GEN",
+                    "options": [
+                    [
+                        "hardware",
+                        {
+                        "camera_id": "6242f6c748288fef012721f5"
+                        }
+                    ],
+                    [
+                        "auto_run",
+                        {"value": true}
+                    ]
+                    ],
+                    "interfaces": [
+                        ["onSuccess", {"id":"CAMERA_001_success", "value":null}]
+                    ]
+                },
+                {
+                    "type": "HSV",
+                    "id": "HSV_001",
+                    "name": "HSV_FRAME_RANGE",
+                    "options": [
+                    [
+                        "filter",
+                        {
+                        "upper": [328.9, 283.4, 169],
+                        "lower":[177.1, 152.6,  91]
+                        }
+                    ],
+                    [
+                        "auto_run",
+                        {"value": false}
+                    ]
+                    ],
+                    "interfaces": [
+                        ["onSuccess", {"id":"HSV_001_success", "value":null}],
+                        ["onFailure", {"id":"HSV_001_failure", "value":null}],
+                        ["image", {"id":"HSV_001_image", "value":null}]
+                    ]
+                },
+                {
+                    "type": "IDENTIFY",
+                    "id": "IDENTIFY_001",
+                    "name": "IDENTIFY_FRAME",
+                    "options": [
+                    [
+                        "filters",
+                        {
+                            "area":{
+                                "min":100,
+                                "max":4000
+                            }
+                        }
+                    ],
+                    [
+                        "propertie",
+                        [
+                            "center"
+                        ]
+                    ],
+                    [
+                        "auto_run",
+                        {"value": false}
+                    ]
+                    ],
+                    "interfaces": [
+                        ["onSuccess", {"id":"IDENTIFY_001_success", "value":null}],
+                        ["onFailure", {"id":"IDENTIFY_001_failure", "value":null}],
+                        ["image", {"id":"IDENTIFY_001_image", "value":null}],
+                        ["object", {"id":"IDENTIFY_001_object", "value":null}],
+                        ["center", {"id":"IDENTIFY_001_center", "value":null}]
+                    ]
+                },
+                {
+                    "type": "DRAW",
+                    "id": "DRAW_001",
+                    "name": "DRAW_FRAME",
+                    "options": [
+                    [
+                        "drawable_properties",
+                        [
+                            "center"
+                        ]
+                        
+                    ],
+                    [
+                        "auto_run",
+                        {"value": false}
+                    ]
+                    ],
+                    "interfaces": [
+                        ["onSuccess", { "id": "DRAW_001_success", "value": null }],
+                        ["onFailure", { "id": "DRAW_001_fail", "value": null }],
+                        ["dimensional_data", {"id":"DRAW_001_dimensional_data", "value": null}],
+                        ["image", {"id":"DRAW_001_image", "value": null}]
+                    ]
+                },
+                {
+                    "type":"COORDINATECORRECTION",
+                    "id":"COORDINATECORRECTION_001",
+                    "name":"Scale Center",
+                    "options":[
+                        [
+                            "scale",
+                            {
+                                "x":0.5,
+                                "y":0.5
+                            }
+                        ],
+                        [
+                            "offset",
+                            {
+                                "x":0,
+                                "y":0
+                            }
+                        ],
+                        [   
+                            "auto_run",
+                            {"value": false}
+                        ]
+                    ],
+                    "interfaces":[
+                        ["onSuccess", {"id":"COORDINATECORRECTION_001_success", "value":null}],
+                        ["onFailure", {"id":"COORDINATECORRECTION_001_fail", "value":null}],
+                        ["coords", {"id":"COORDINATECORRECTION_001_coords", "value":null}]
+                    ]
+                },
+                {
+                    "type": "MOVEMENT",
+                    "id": "MovPrecords_002",
+                    "name": "CenterMove",
+                    "options": [
+                    [
+                        "hardware",
+                        {
+                        "serial_id": "000000000000000000000000"
+                        }
+                    ],
+                    [
+                        "axis",
+                        {
+                            "list_of_axis": ["X", "Y"],
+                            "values":{"X":0, "Y":0}
+                        }
+                    ],
+                    [
+                        "auto_run",
+                        {"value": false}
+                    ]
+                    ],
+                    "interfaces": [
+                        ["onSuccess", { "id": "MovPrecords_002_success", "value": null }],
+                        ["onFailure", { "id": "MovPrecords_002_fail", "value": null }],
+                        ["coordinates", {"id":"MovPrecords_002_coordinates", "value":null}],
+                        ["trigger", {"id":"MovPrecords_002_trigger", "value":null}]
+
+                    ]
+                }
+            ]
+        }
+    }
+]

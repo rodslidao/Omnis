@@ -9,8 +9,9 @@ schema {
 }
 
 type Mutation {
-  createNodeSheet(_id: ID!,  sketchName: String, saved: Boolean, duplicated: Boolean, content: JSON!): NodeSheetResult!
-  updateNodeSheet(_id: ID!, sketchName:String, content: JSON): NodeSheetResult
+  createNodeSheet(_id: ID!,  name: String, sketchName: String, saved: Boolean, duplicated: Boolean, content: JSON!): NodeSheetResult!
+  saveNodeSheet(_id: ID!,  name: String, sketchName: String, saved: Boolean, duplicated: Boolean, content: JSON!): NodeSheetResult!
+  updateNodeSheet(_id: ID!, name:String, content: JSON): NodeSheetResult
   deleteNodeSheet(id: ID!): NodeSheetResult
 
   startProcess: ProcessResult
@@ -35,7 +36,7 @@ type Mutation {
   startSerial(_id: ID!): SerialResult!
   stopSerial(_id: ID!): SerialResult!
   resetSerial(_id: ID!): SerialResult!
-  communicateSerial(_id: ID!, payload:String!): SerialResult!
+  sendSerial(_id: ID!, payload:String!): SerialResult!
   setCameraProperty(_id: ID!, input: JSON): CameraResult!
 
   syncHostTime(timestamp: Int): Boolean!
@@ -59,6 +60,7 @@ type Query {
   allPhotos: [Photo]
 
   getManutention: ManutentionResult
+  getThr: [String]
 }
 
 type Subscription {
