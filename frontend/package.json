@@ -18,6 +18,8 @@
     "@baklavajs/plugin-interface-types": "1.8.3",
     "@baklavajs/plugin-options-vue": "1.8.3",
     "@baklavajs/plugin-renderer-vue": "1.8.3",
+    "@vue/composition-api": "^1.6.0",
+    "@vueuse/core": "^8.3.1",
     "apexcharts": "^3.27.3",
     "baklavajs": "1.8.3",
     "core-js": "^3.6.5",

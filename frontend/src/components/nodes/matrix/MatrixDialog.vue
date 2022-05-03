@@ -25,10 +25,19 @@
                 placeholder="Selecione uma Matriz"
               ></v-select>
             </NodeConfigTitle>
+            <div>Este blister comtem: {{ slots }}</div>
           </v-card-text>
         </v-form>
-
-        <MatrixViewer></MatrixViewer>
+        <div v-if="!matrixLoading && selectedMatrix && slots" class="mb-10">
+          <MatrixInfoResume
+            :slots="slots"
+            :subdivisions="subdivisions"
+          ></MatrixInfoResume>
+          <MatrixViewer
+            :slots="slots"
+            :subdivisions="subdivisions"
+          ></MatrixViewer>
+        </div>
         <!-- <v-form v-else ref="form" v-model="isValidAdvancedForm">
           <v-card-text class="pt-8">
             <NodeConfigTitle
@@ -70,6 +79,7 @@ import { mapActions } from 'vuex';
 import NodeConfigTitle from '@/components/nodes/NodeConfigTitle.vue';
 import TextEditable from '@/components/nodes/dialogs/TextEditable.vue';
 import MatrixViewer from '@/components/nodes/matrix/MatrixViewer.vue';
+import MatrixInfoResume from '@/components/nodes/matrix/MatrixInfoResume.vue';
 import gql from 'graphql-tag';
 
 export default {
@@ -84,12 +94,17 @@ export default {
     matrixCopy: null,
     matrixObjList: null,
     selectedMatrix: null,
+    slots: null,
+    subdivisions: null,
+
+    selectedMatrixInfos: {},
   }),
 
   components: {
     TextEditable,
     NodeConfigTitle,
     MatrixViewer,
+    MatrixInfoResume,
   },
 
   props: ['option', 'node', 'value'],
@@ -104,7 +119,16 @@ export default {
     });
   },
 
-  mounted() {},
+  watch: {
+    // whenever question changes, this function will run
+    selectedMatrix(newMatrix, oldMatrix) {
+      console.log('selectedMatrix', newMatrix, oldMatrix);
+      if (oldMatrix !== newMatrix) {
+        this.getMatrixPropertyValueByName('slots');
+        this.getMatrixPropertyValueByName('subdivisions');
+      }
+    },
+  },
 
   methods: {
     ...mapActions('node', ['saveNodeConfig']),
@@ -154,18 +178,19 @@ export default {
       // }, this);
     },
 
-    // getMatrixPropertyValueByName(property) {
-    //   const result = this.matrixObjList.find(
-    //     (matrix) => matrix.value === this.selectedInputMatrix
-    //   );
+    getMatrixPropertyValueByName(property) {
+      console.log(property);
+      const result = this.matrixObjList.find(
+        (matrix) => matrix.name == this.selectedMatrix
+      );
 
-    //   if (result) {
-    //     console.log(result[property]);
-    //     return result[property];
-    //     // return `mdi-${result.icon}`;
-    //   }
-    //   return '';
-    // },
+      if (result) {
+        console.log(property, result[property]);
+        this[property] = result[property];
+        console.log('aqui');
+        console.log(this[property]);
+      }
+    },
 
     close() {
       this.dialog = false;

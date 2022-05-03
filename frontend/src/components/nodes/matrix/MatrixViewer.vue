@@ -1,26 +1,37 @@
+/* eslint-disable vue/require-valid-default-prop */
 <template>
-  <div class="main">
-    <div class="blister">
-      <div class="row" v-for="index in subdivisions.quantityLine" :key="index"  v-bind:style="styleObject.row">
-        <div class="line">
+  <div class="">
+    {{ findSize }}
+    <div class="main">
+      <div class="warp primary">
+        <div class="blister" ref="blister">
           <div
-            class="subdivision"
-            v-bind:style="styleObject.subdivision"
-            v-for="index in subdivisions.quantityColumn"
+            class="row"
+            v-for="index in subdivisions.qtd.Y"
             :key="index"
+            v-bind:style="styleObject.row"
           >
-            <div
-              class="slotRow"
-              v-bind:style="styleObject.slotRow"
-              v-for="index in slot.quantityColumn"
-              :key="index"
-            >
+            <div class="line">
               <div
-                class="slot"
-                v-bind:style="styleObject.slot"
-                v-for="index in slot.quantityLine"
+                class="subdivision"
+                v-bind:style="styleObject.subdivision"
+                v-for="index in subdivisions.qtd.X"
                 :key="index"
-              ></div>
+              >
+                <div
+                  class="slotsRow"
+                  v-bind:style="styleObject.slotsRow"
+                  v-for="index in slots.qtd.X"
+                  :key="index"
+                >
+                  <div
+                    class="slots"
+                    v-bind:style="styleObject.slots"
+                    v-for="index in slots.qtd.Y"
+                    :key="index"
+                  ></div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -30,101 +41,172 @@
 </template>
 
 <script>
+import { ref } from '@vue/composition-api';
+import { useElementSize } from '@vueuse/core';
+
 export default {
+  setup() {
+    const blister = ref(null);
+    const { width, height } = useElementSize(blister);
+
+    return {
+      blister,
+      width,
+      height,
+    };
+  },
+
+  props: {
+    slots: Object,
+    subdivisions: Object,
+  },
+
+  mounted() {
+    console.log('mounted');
+    console.log(this.bla);
+  },
+
   data: () => ({
     checkbox: true,
     checkboxList: [],
-    slot: {
-      quantityLine: 5,
-      quantityColumn: 3,
-      offsetLeft: 1,
-      offsetHeight: 1,
-      height: 0,
-      width: 0,
-    },
-    subdivisions: {
-      quantityLine: 3,
-      quantityColumn: 3,
-      offsetLeft: 20,
-      offsetHeight: 26,
-    },
+
+    // slots: {
+    //   qtd: {
+    //     X: 6,
+    //     Y: 5,
+    //   },
+    //   margin: {
+    //     X: 5,
+    //     Y: 4.5,
+    //   },
+    //   size: { X: 38, Y: 38 },
+    // },
+    // subdivisions: {
+    //   // colunas, linhas
+    //   qtd: { X: 1, Y: 1 },
+    //   // largura, altura
+    //   margin: { X: 50, Y: 50 },
+    // },
+    constant: 1,
   }),
+
   methods: {},
 
   computed: {
     styleObject() {
-      return {
-        slot: {
-          height: `${this.slot.height}px`,
-          width: `${this.slot.width}px`,
-          marginTop: `${this.slot.offsetHeight}px`,
+      const updatedStyleObject = {
+        slots: {
+          height: `${this.slots.size.Y * this.constant.X}px`,
+          width: `${this.slots.size.X * this.constant.X}px`,
+          marginTop: `${this.slots.margin.Y * this.constant.X}px`,
         },
-        slotRow: {
-          marginLeft: `${this.slot.offsetLeft}px`,
+        slotsRow: {
+          marginLeft: `${this.slots.margin.X * this.constant.X}px`,
         },
         subdivision: {
-          marginLeft: `${this.subdivisions.offsetLeft}px`,
+          marginLeft: `${this.subdivisions.margin.X * this.constant.X}px`,
         },
         row: {
-          marginTop: `${this.subdivisions.offsetHeight}px`,
+          marginTop: `${this.subdivisions.margin.Y * this.constant.X}px`,
         },
       };
+      return updatedStyleObject;
+    },
+
+    findSize() {
+      // constant totalMainSize = this.frameWidth;
+      let counts = {
+        qtd: { X: 0, Y: 0 },
+        margin: { X: 0, Y: 0 },
+        size: { X: 0, Y: 0 },
+        total: { X: 0, Y: 0 },
+      };
+      Object.keys(counts.qtd).forEach((i) => {
+        counts.qtd[i] = this.slots.qtd[i] * this.subdivisions.qtd[i];
+        counts.size[i] = counts.qtd[i] * this.slots.size[i];
+        counts.margin[i] =
+          this.slots.margin[i] * (counts.qtd[i] - 1) +
+          this.subdivisions.margin[i] * (this.subdivisions.qtd[i] - 1);
+        counts.total[i] = this.width / (counts.size[i] + counts.margin[i]);
+        // constant total = size + padding;
+      });
+      this.constant = counts.total;
+
+      return null;
     },
   },
 };
 </script>
 
 <style lang="scss" scoped>
+@import '~vuetify/src/styles/main.sass';
+
 div {
-  padding: 8px;
-  border: solid 1px rgb(0, 0, 0);
+  // padding: 8px;
+  // border: solid 1px rgb(0, 0, 0);
 }
 .main {
+  padding: 0 1rem;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
   width: 100%;
-  padding: 2%;
+  // padding: 2%;
+  .warp {
+    margin-top: 1rem;
+    width: 100%;
+    padding: 4%;
+    box-shadow: 0 0 9px 6px rgb(0 0 0 / 18%);
+    background-color: var(--v-primary-base);
+    // background-color: white;
+    border-radius: 2%;
+  }
   .blister {
-    border-color: aqua;
+    // border-color: aqua;
+    width: 100%;
+    display: block;
+    // padding: 1rem;
     .row {
+      margin: 0;
       &:first-child {
         margin-top: 0 !important;
         // background-color: rgb(221, 126, 109);
       }
     }
     .line {
-      border-color: rgb(160, 152, 152);
+      //   border-color: rgb(160, 152, 152);
       display: flex;
       .subdivision {
-        border-color: rgb(243, 243, 243);
+        // border-color: rgb(243, 243, 243);
         display: flex;
         flex-direction: row;
         &:first-child {
           margin-left: 0 !important;
           margin-top: 0 !important;
-          background-color: rgb(170, 199, 166);
+          //   background-color: rgb(170, 199, 166);
         }
 
-        .slotRow {
+        .slotsRow {
           display: flex;
           flex-direction: column;
-          background-color: blue;
+          //   background-color: blue;
           &:first-child {
             margin-left: 0 !important;
             margin-top: 0 !important;
-            background-color: rgb(30, 155, 13);
+            // background-color: rgb(30, 155, 13);
           }
         }
 
-        .slot {
+        .slots {
           &:first-child {
             margin-left: 0 !important;
             margin-top: 0 !important;
-            background-color: rgb(0, 0, 0);
+            // background-color: rgb(0, 0, 0);
           }
-          border-color: rgb(255, 0, 85);
+          background-color: #1e1e1e;
+          box-shadow: inset 0 0 17px 2px rgb(0 0 0 / 18%);
+          border-radius: 8%;
         }
       }
     }

@@ -21,16 +21,16 @@
           <v-spacer></v-spacer>
 
           <p class="text--secondary mr-4">
-            <v-icon class="" color="blue lighten-2" small
-              >{{iconTypeAlternative? "mdi-check" : "mdi-arrow-up-thick"}}</v-icon
-            >
+            <v-icon class="" color="blue lighten-2" small>{{
+              iconTypeAlternative ? 'mdi-check' : 'mdi-arrow-up-thick'
+            }}</v-icon>
             {{ correct }}
           </p>
 
           <p class="text--secondary">
-            <v-icon class="" color="red lighten-2" small
-              >{{iconTypeAlternative? "mdi-close" : "mdi-arrow-down-thick"}}</v-icon
-            >
+            <v-icon class="" color="red lighten-2" small>{{
+              iconTypeAlternative ? 'mdi-close' : 'mdi-arrow-down-thick'
+            }}</v-icon>
             {{ wrong }}
           </p>
         </v-card-actions>
@@ -42,12 +42,12 @@
 <script>
 //import ProgressStatus from "../components/ProgressStatus";
 //import { mapGetters, mapMutations } from "vuex"; mapMutation não tem uso.
-import { mapGetters } from "vuex";
+import { mapGetters } from 'vuex';
 // import VideoProgress from "../components/VideoProgress"; Remove VideoProgress
 
 export default {
   // mixins: [mixins],
-  name: "TotalCard",
+  name: 'TotalCard',
 
   data: () => ({}),
 
@@ -60,8 +60,7 @@ export default {
     wrong: Number,
     icon: String,
     iconColor: String,
-    iconTypeAlternative: Boolean
-
+    iconTypeAlternative: Boolean,
   },
 
   components: {
@@ -70,7 +69,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters(["state"]),
+    ...mapGetters(['state']),
   },
 
   methods: {},
