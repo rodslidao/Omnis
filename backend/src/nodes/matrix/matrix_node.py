@@ -1,15 +1,18 @@
+import re
+from tkinter.font import BOLD
 from src.nodes.base_node import BaseNode
 from src.nodes.node_manager import NodeManager
-from src.nodes.blister.blister_obj import Blister, Slot
+from src.nodes.matrix.matrix_obj import Blister, Slot
 from bson import ObjectId
 from api import logger, exception, dbo
 from api.decorators import for_all_methods
+from numpy import array
 
-NODE_TYPE = "BLISTER"
+NODE_TYPE = "MATRIX"
 
 
 @for_all_methods(exception(logger))
-class BlisterNode(BaseNode):
+class MatrixNode(BaseNode):
     """
     Inputs:
         matrix - Receives a matrix of data.
@@ -66,8 +69,37 @@ class BlisterNode(BaseNode):
     def get_info():
         return {
             "options": list(
-                map(BaseNode.normalize_id_on_dict, dbo.find_many("blister-manager"))
+                map(
+                    MatrixNode.normalize_blister_get_info,
+                    dbo.find_many("blister-manager", {}),
+                )
             ),
+        }
+
+    @staticmethod
+    def normalize_blister_get_info(blister):
+        def set_X_Y(list_, sas=["X", "Y"]):
+            return dict(zip(sas, list_))
+
+        def verify(divisor):
+            if divisor[1] == 0:
+                return 1
+            return array(blister["shape"])[divisor[0]] / divisor[1]
+
+        sub = array(list(map(verify, enumerate(blister["slot_config"]["counter"]))))
+
+        return {
+            "_id": str(blister["_id"]),
+            "name": blister["name"],
+            "slot": {
+                "qtd": set_X_Y((array(blister["shape"]) / sub).astype(int).tolist()),
+                "margin": set_X_Y(blister["slot_config"]["borders"]),
+                "size": set_X_Y(blister["slot_config"]["sizes"][:2]),
+            },
+            "subdivision": {
+                "qtd": set_X_Y(sub.astype(int).tolist()),
+                "margin": set_X_Y(blister["slot_config"]["extra"]),
+            },
         }
 
 

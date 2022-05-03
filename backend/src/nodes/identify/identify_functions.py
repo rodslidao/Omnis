@@ -35,7 +35,7 @@ from numpy import angle, float32, int0, uint8, ndenumerate
 from bson.objectid import ObjectId
 from api import logger, exception
 from api.decorators import for_all_methods
-from src.nodes.blister.blister_obj import Blister
+from src.nodes.matrix.matrix_obj import Blister
 
 # Map of modes to use for the contour retrieval
 modes = {

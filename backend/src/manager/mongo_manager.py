@@ -8,10 +8,12 @@ from pandas import DataFrame
 
 from numpy import integer, floating, ndarray
 
-from json import load, loads, dumps, JSONEncoder
+from json import loads, dumps, JSONEncoder
+
+from bson.errors import InvalidDocument
+from bson import ObjectId
 
 load_dotenv()
-# from bson.errors import InvalidDocument
 
 db_port = environ.get("DB_PORT", "27017")
 db_ip = getenv("DB_HOST")
@@ -59,6 +61,8 @@ class CustomEncoder(JSONEncoder):
             return float(obj)
         elif isinstance(obj, ndarray):
             return obj.tolist()
+        elif isinstance(obj, ObjectId):
+            return str(obj)
         else:
             return super(CustomEncoder, self).default(obj)
 
@@ -93,17 +97,18 @@ class MongoOBJ:
         return self.dbo.create_collection(collectionName)
 
     def insert_one(self, collection_name, data):
-        # try:
-        return self.dbo[collection_name].insert_one(data)
-        # except InvalidDocument:
-        #     return self.dbo[collection_name].insert_one(
-        #       loads(dumps(data, cls=CustomEncoder)))
+        try:
+            return self.dbo[collection_name].insert_one(data)
+        except InvalidDocument:
+            return self.dbo[collection_name].insert_one(
+                loads(dumps(data, cls=CustomEncoder))
+            )
 
     def insert_many(self, collection_name, data):
-        # try:
-        return self.dbo[collection_name].insert_many(data)
-        # except InvalidDocument:
-        #     return self.dbo[collection_name].insert_many(dumps(data, cls=CustomEncoder))
+        try:
+            return self.dbo[collection_name].insert_many(data)
+        except InvalidDocument:
+            return self.dbo[collection_name].insert_many(dumps(data, cls=CustomEncoder))
 
     def find_one(self, collection_name, query={}):
         return self.dbo[collection_name].find_one(query)
