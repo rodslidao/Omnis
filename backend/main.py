@@ -3,7 +3,6 @@ import time
 
 from api import logger, dbo, CameraStreamer
 
-
 try:
     from api.queries import query
     from api.mutations import mutation
