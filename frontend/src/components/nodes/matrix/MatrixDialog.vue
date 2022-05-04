@@ -15,48 +15,32 @@
               description="Selecione a matriz que você cadastrou."
             >
               <v-select
+                @click="getMatrix()"
                 required
                 :loading="matrixLoading"
                 class="middle-select ml-5 mr-5"
                 :items="matrixObjList"
                 v-model="selectedMatrix"
                 item-text="name"
+                return-object
                 :rules="requiredRules"
                 placeholder="Selecione uma Matriz"
               ></v-select>
             </NodeConfigTitle>
-            <div>Este blister comtem: {{ slots }}</div>
+
+            <div v-if="!matrixLoading && selectedMatrix" class="mb-10">
+              <MatrixInfoResume
+                class="mb-5"
+                :slots="selectedMatrix.slots"
+                :subdivisions="selectedMatrix.subdivisions"
+              ></MatrixInfoResume>
+              <MatrixViewer
+                :slots="selectedMatrix.slots"
+                :subdivisions="selectedMatrix.subdivisions"
+              ></MatrixViewer>
+            </div>
           </v-card-text>
         </v-form>
-        <div v-if="!matrixLoading && selectedMatrix && slots" class="mb-10">
-          <MatrixInfoResume
-            :slots="slots"
-            :subdivisions="subdivisions"
-          ></MatrixInfoResume>
-          <MatrixViewer
-            :slots="slots"
-            :subdivisions="subdivisions"
-          ></MatrixViewer>
-        </div>
-        <!-- <v-form v-else ref="form" v-model="isValidAdvancedForm">
-          <v-card-text class="pt-8">
-            <NodeConfigTitle
-              title="Falha"
-              description="Caso a expressão seja verdadeira, o valor definido aqui sera colocado na saida de sucesso"
-            >
-              <v-select
-                required
-                class="middle-select ml-5 mr-5"
-                :items="operationObjList"
-                v-model="selectedInputOperation"
-                item-text="name"
-                :rules="requiredRules"
-                :placeholder="operationObjList.at(-1).name"
-              ></v-select>
-              ></NodeConfigTitle
-            >
-          </v-card-text>
-        </v-form> -->
         <v-divider></v-divider>
         <v-card-actions>
           <!-- <v-checkbox v-model="isAdvanced" label="Modo Avançado"></v-checkbox> -->
@@ -64,7 +48,14 @@
           <v-btn color="blue darken-1 " text @click="close()" large rounded>
             fechar
           </v-btn>
-          <v-btn color="blue darken-1" text @click="save" rounded large>
+          <v-btn
+            color="blue darken-1"
+            text
+            @click="save"
+            rounded
+            large
+            :disabled="!selectedMatrix"
+          >
             salvar
           </v-btn>
         </v-card-actions>
@@ -92,7 +83,7 @@ export default {
 
     matrixLoading: false,
     matrixCopy: null,
-    matrixObjList: null,
+    matrixObjList: [],
     selectedMatrix: null,
     slots: null,
     subdivisions: null,
@@ -119,16 +110,16 @@ export default {
     });
   },
 
-  watch: {
-    // whenever question changes, this function will run
-    selectedMatrix(newMatrix, oldMatrix) {
-      console.log('selectedMatrix', newMatrix, oldMatrix);
-      if (oldMatrix !== newMatrix) {
-        this.getMatrixPropertyValueByName('slots');
-        this.getMatrixPropertyValueByName('subdivisions');
-      }
-    },
-  },
+  // watch: {
+  //   // whenever question changes, this function will run
+  //   selectedMatrix(newMatrix, oldMatrix) {
+  //     console.log('selectedMatrix', newMatrix, oldMatrix);
+  //     if (oldMatrix !== newMatrix) {
+  //       this.selectedMatrix.slots;
+  //       this.selectedMatrix.subdivisions;
+  //     }
+  //   },
+  // },
 
   methods: {
     ...mapActions('node', ['saveNodeConfig']),
@@ -136,15 +127,14 @@ export default {
     save() {
       this.$refs.form.validate();
       if (
-        (this.isAdvanced && this.isValidAdvancedForm) ||
-        (!this.isAdvanced && this.isValidSimpleForm)
+        (this.isAdvanced && this.isValidAdvancedForm)
+        || (!this.isAdvanced && this.isValidSimpleForm)
       ) {
         if (this.isAdvanced) {
           // this.node.setOptionValue('expression', this.advancedExpression);
         } else {
-          let expression = '';
-          expression = `A${this.selectedInputMatrix}B`;
-          this.node.setOptionValue('selectedMatrix', expression);
+          console.log('save', this.selectedMatrix);
+          this.node.setOptionValue('matrix', this.selectedMatrix);
         }
 
         this.saveNodeConfig(this.node.id);
@@ -169,27 +159,16 @@ export default {
       });
       // console.log(this.$apollo.store);
       this.matrixObjList = [];
-      this.matrixObjList = response.data.getNodeInfo.data.options;
-      console.log(response.data.getNodeInfo.data.options);
-      this.matrixLoading = false;
-      // make a list of camera name from the response
-      // response.data.getNodeInfo.data.options.forEach((item) => {
-      //   this.cameraListName.push(item.name);
-      // }, this);
-    },
+      this.matrixObjList.push(...response.data.getNodeInfo.data.options);
 
-    getMatrixPropertyValueByName(property) {
-      console.log(property);
-      const result = this.matrixObjList.find(
-        (matrix) => matrix.name == this.selectedMatrix
-      );
+      if (!this.matrixCopy) {
+        console.log('entrei', this.matrixCopy);
 
-      if (result) {
-        console.log(property, result[property]);
-        this[property] = result[property];
-        console.log('aqui');
-        console.log(this[property]);
+        this.matrixObjList.push(this.matrixCopy);
+        this.selectedMatrix = this.matrixCopy;
       }
+
+      this.matrixLoading = false;
     },
 
     close() {
@@ -199,6 +178,8 @@ export default {
     async init() {
       this.nodeCopy = { ...this.node };
       this.matrixCopy = this.node.getOptionValue('matrix');
+
+      console.log('matrixCopy', this.matrixCopy);
       await this.getMatrix();
     },
 

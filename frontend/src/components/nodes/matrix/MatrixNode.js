@@ -12,7 +12,7 @@ export default class Camera extends Node {
 
     this.addInputInterface('Reset');
 
-    this.addInputInterface('Proximo', undefined, undefined, {
+    this.addInputInterface('Próximo', undefined, undefined, {
       description:
         'Toda vez que ele recebe uma informação, ele passa para a proxima posição da matriz ',
     });
@@ -26,7 +26,7 @@ export default class Camera extends Node {
       description: 'Passa o item da posição atual da matriz pra frente',
     });
 
-    this.addOutputInterface('Matrix', {
+    this.addOutputInterface('Matriz', {
       description: 'Sai uma matriz com a imagem cortada de cada pedacinho',
     });
 

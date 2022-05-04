@@ -8,14 +8,18 @@
           :key="item.text"
         >
           <div>
-            <span class="text-h5 text--primary">
-              <v-icon class="ml-4" :color="item.color" large>{{
-                item.icon
-              }}</v-icon>
+            <span class="text-h5">
+              <v-icon
+                class="ml-4"
+                :color="item.color"
+                large
+                :class="item.rotateIcon ? 'rotate90' : ''"
+                >{{ item.icon }}</v-icon
+              >
               {{ item.number }}</span
-            ><span class="text--secondary">{{ item.unit }}</span>
+            ><span class="">{{ item.unit }}</span>
             <!-- <v-divider class="ml-2"></v-divider> -->
-            <div class="text--secondary caption ml-3 d-flex justify-center">
+            <div class="caption ml-3 d-flex justify-center">
               {{ item.text }}
             </div>
           </div>
@@ -35,45 +39,42 @@ export default {
     slots: Object,
   },
 
-  methods: {},
-
   computed: {
-    infoList: () => {
-      console.log('infoList');
+    infoList() {
       const lines = this.slots.qtd.Y * this.subdivisions.qtd.Y;
       const column = this.slots.qtd.X * this.subdivisions.qtd.X;
       const total = lines * column;
-      console.log(lines);
-      console.log(column);
 
       const list = [
-        {
-          text: 'Colunas',
-          unit: '',
-          number: column,
-          icon: 'mdi-chart-timeline-variant',
-          color: 'blue lighten-2',
-        },
         {
           text: 'Linhas',
           unit: '',
           number: lines,
-          icon: 'mdi-check',
-          color: 'green lighten-2',
+          icon: 'mdi-table-column',
+          color: 'primary',
+          rotateIcon: true,
         },
         {
-          text: 'Subdivisões',
+          text: 'Colunas',
           unit: '',
-          number: this.subdivisions.qtd.X,
-          icon: 'mdi-close',
-          color: 'red lighten-2',
+          number: column,
+          icon: 'mdi-table-column',
+          color: 'primary',
         },
+
+        // {
+        //   text: 'Subdivisões',
+        //   unit: '',
+        //   number: this.subdivisions.qtd.X,
+        //   icon: 'mdi-table-settings',
+        //   color: 'primary',
+        // },
         {
           text: 'Total',
           unit: '',
           number: total,
-          icon: 'mdi-timer-outline',
-          color: 'blue lighten-2',
+          icon: 'mdi-table-large',
+          color: 'primary',
         },
       ];
       return list;
@@ -82,8 +83,12 @@ export default {
 };
 </script>
 
-<style lang="scss" scopped>
+<style lang="scss" scoped>
 p {
   margin-bottom: 0 !important;
+}
+
+.rotate90 {
+  transform: rotate(90deg);
 }
 </style>

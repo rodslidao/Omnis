@@ -3,7 +3,7 @@
   <div class="">
     {{ findSize }}
     <div class="main">
-      <div class="warp primary">
+      <div class="warp">
         <div class="blister" ref="blister">
           <div
             class="row"
@@ -60,11 +60,9 @@ export default {
     slots: Object,
     subdivisions: Object,
   },
-
-  mounted() {
-    console.log('mounted');
-    console.log(this.bla);
-  },
+  // mounted() {
+  //   console.log('mounted', this.slots, this.subdivisions);
+  // },
 
   data: () => ({
     checkbox: true,
@@ -158,8 +156,21 @@ div {
     width: 100%;
     padding: 4%;
     box-shadow: 0 0 9px 6px rgb(0 0 0 / 18%);
-    background-color: var(--v-primary-base);
-    // background-color: white;
+    background-image: linear-gradient(
+      to right top,
+      #a1ffff,
+      #80ecfc,
+      #65d8f9,
+      #54c2f4,
+      #53acec,
+      #509bde,
+      #4f8acf,
+      #4e79bf,
+      #3e6bab,
+      #2f5c97,
+      #1e4e84,
+      #0b4171
+    );
     border-radius: 2%;
   }
   .blister {
