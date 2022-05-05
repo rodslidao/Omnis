@@ -7,18 +7,17 @@ from .log import logger, exception
 from .decorators import for_all_methods
 
 from src.manager.mongo_manager import connectToMongo, getDb
-from src.manager.serial_manager import SerialManager
-from src.manager.camera_manager import CameraManager
-from src.nodes.serial.custom_serial import Serial
-from src.nodes.serial.gcode_obj import SerialGcodeOBJ
-from src.nodes.camera.custom_camera import Camera
-
 
 load_dotenv()
 environ.setdefault("SO", system())
 
 connectToMongo()
 dbo = getDb()
+from src.manager.serial_manager import SerialManager
+from src.manager.camera_manager import CameraManager
+from src.nodes.serial.custom_serial import Serial
+from src.nodes.serial.gcode_obj import SerialGcodeOBJ
+from src.nodes.camera.custom_camera import Camera
 
 
 @exception(logger)

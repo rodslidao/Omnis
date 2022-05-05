@@ -100,6 +100,7 @@ class MongoOBJ:
         try:
             return self.dbo[collection_name].insert_one(data)
         except InvalidDocument:
+            # logger.critical(f"Invalid document: {data}")
             return self.dbo[collection_name].insert_one(
                 loads(dumps(data, cls=CustomEncoder))
             )
@@ -108,7 +109,9 @@ class MongoOBJ:
         try:
             return self.dbo[collection_name].insert_many(data)
         except InvalidDocument:
-            return self.dbo[collection_name].insert_many(dumps(data, cls=CustomEncoder))
+            return self.dbo[collection_name].insert_many(
+                loads(dumps(data, cls=CustomEncoder))
+            )
 
     def find_one(self, collection_name, query={}):
         return self.dbo[collection_name].find_one(query)
@@ -116,8 +119,13 @@ class MongoOBJ:
     def find_many(self, collection_name, query={}, data={}):
         return self.dbo[collection_name].find(query, data)
 
-    def update_one(self, collection_name, query, data):
-        return self.dbo[collection_name].update_one(query, data)
+    def update_one(self, collection_name, query, data, options={}):
+        try:
+            return self.dbo[collection_name].update_one(query, data, **options)
+        except InvalidDocument:
+            return self.dbo[collection_name].update_one(
+                query, loads(dumps(data, cls=CustomEncoder)), **options
+            )
 
     def update_many(self, collection_name, query, data):
         return self.dbo[collection_name].update_many(query, data)

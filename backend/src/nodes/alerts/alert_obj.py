@@ -2,25 +2,11 @@ from datetime import datetime
 from api.store import alerts
 from api import logger, exception
 from api.decorators import for_all_methods
+from api.subscriptions import SubscriptionFeeder
 
 AlertLevel = {"INFO": "INFO", "WARNING": "WARNING", "ERROR": "ERROR", "LOG": "LOG"}
 
-
-@for_all_methods(exception(logger))
-class AlertManager:
-    async def add(alert):
-        """
-        Await to add alert to queue
-        """
-        for queue in alerts:
-            await queue.put(alert)
-
-    def put(alert):
-        """
-        Put alert to queue without await
-        """
-        for queue in alerts:
-            queue.put_nowait(alert)
+AlertManager = SubscriptionFeeder(alerts)
 
 
 @for_all_methods(exception(logger))

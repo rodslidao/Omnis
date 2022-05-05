@@ -1,9 +1,11 @@
 from bson import ObjectId
 from src.manager.camera_manager import CameraManager
 from cv2 import line, putText, FONT_HERSHEY_SIMPLEX, rectangle, LINE_AA
-from api import logger, exception
+from api import logger, exception, dbo
 from api.decorators import for_all_methods
 from vidgear.gears import CamGear
+from cv2 import undistort
+from numpy import array
 
 
 @for_all_methods(exception(logger))
@@ -21,7 +23,19 @@ class Camera(CamGear):
         self.source = source
         self.opt = options
         self._id = ObjectId(_id)
+        self.distortion_obj = dbo.find_one(
+            "camera-calibrations", {"_id": str(self._id)}
+        )
+        self.marker_len = self.distortion_obj.get("markerLength")
+        self.mtx, self.dist = array(self.distortion_obj.get("mtx")), array(
+            self.distortion_obj.get("dist")
+        )
         CameraManager.add(self)
+
+    def read(self):
+        if self.marker_len:
+            return undistort(super().read(), self.mtx, self.dist, None)
+        return super().read()
 
     def remove(self):
         CameraManager.remove(self)

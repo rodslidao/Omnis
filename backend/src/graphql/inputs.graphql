@@ -8,24 +8,24 @@ input CameraInput {
   _id: ID
 }
 
-input SerialInput{
-  baudrate:Int
-  bytesize:Int
-  description:Int
-  device:Int
-  dsrdtr:Boolean
-  is_gcode:Boolean
-  manufacturer:Int
-  parity:String
-  pid:Int
-  port:String
-  rtscts:Boolean
-  serial_number:Int
-  stopbits:Int
-  subsystem:Int
-  timeout:Int
-  vid:Int
-  xonxoff:Boolean
+input SerialInput {
+  baudrate: Int
+  bytesize: Int
+  description: Int
+  device: Int
+  dsrdtr: Boolean
+  is_gcode: Boolean
+  manufacturer: Int
+  parity: String
+  pid: Int
+  port: String
+  rtscts: Boolean
+  serial_number: Int
+  stopbits: Int
+  subsystem: Int
+  timeout: Int
+  vid: Int
+  xonxoff: Boolean
   _id: ID
 }
 
@@ -36,4 +36,19 @@ input AlertInput {
   how2solve: String
   buttonText: String
   buttonAction: String
+}
+
+input CalibrateRequestInput {
+  camera_id: ID!
+  frame_interval: Int!
+  data_set_size: Int!
+  min_blur: Int!
+  max_blur: Int!
+  show: Boolean
+  export_path: String!
+  squaresX: Int!
+  squaresY: Int!
+  squareLength: Int!
+  markerSize: Int!
+  dictionary_name: String!
 }

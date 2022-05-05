@@ -4,6 +4,8 @@ from src.nodes.node_registry import NodeRegistry
 from threading import enumerate as thread_enumerate
 from src.manager.camera_manager import CameraManager
 from src.manager.serial_manager import SerialManager
+from src.nodes.calibration.camera_calibration import CameraCalibration
+from threading import Thread
 
 query = QueryType()
 
@@ -59,3 +61,10 @@ def resolve_getManutention(obj, info):
 def resolve_getThr(obj, info):
     """Get a Node by id and return it like a payload"""
     return list([thread.name for thread in thread_enumerate()])
+
+
+@query.field("calibrateCamera")
+def resolve_calibrateCamera(obj, info, **kwargs):
+    Thread(target=CameraCalibration(**kwargs.get("input", {})).calibrate).start()
+    # CameraCalibration().calibrate()
+    return True

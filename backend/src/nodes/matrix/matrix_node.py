@@ -89,14 +89,14 @@ class MatrixNode(BaseNode):
         sub = array(list(map(verify, enumerate(blister["slot_config"]["counter"]))))
 
         return {
-            "_id": str(blister["_id"]),
+            "id": str(blister["_id"]),
             "name": blister["name"],
-            "slot": {
+            "slots": {
                 "qtd": set_X_Y((array(blister["shape"]) / sub).astype(int).tolist()),
                 "margin": set_X_Y(blister["slot_config"]["borders"]),
                 "size": set_X_Y(blister["slot_config"]["sizes"][:2]),
             },
-            "subdivision": {
+            "subdivisions": {
                 "qtd": set_X_Y(sub.astype(int).tolist()),
                 "margin": set_X_Y(blister["slot_config"]["extra"]),
             },

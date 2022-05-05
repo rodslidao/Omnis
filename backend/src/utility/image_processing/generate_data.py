@@ -40,7 +40,8 @@ def generate_data(
         data = []
 
     start = datetime.utcnow()
-    for counter in range(data_set_size):
+    counter = 0
+    while counter < data_set_size:
         frame = camera.read()
         if isinstance(frame, tuple):
             frame = frame[1]
@@ -49,6 +50,7 @@ def generate_data(
             waitKey(1)
         blur = variance_of_laplacian(frame)
         if (datetime.utcnow() - start) > timedelta(milliseconds=interval):
+            counter += 1
             print("blur:", blur)
             if not (min_blur < blur < max_blur):
                 continue

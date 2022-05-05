@@ -1,41 +1,41 @@
-type CameraResult { 
-  status:Boolean!
-  error:[String]
+type CameraResult {
+  status: Boolean!
+  error: [String]
   data: Camera
 }
 
 type CamerasResult {
-  status:Boolean!
-  error:[String]
+  status: Boolean!
+  error: [String]
   data: [Camera]
 }
 
-type SerialResult{
-  status:Boolean!
-  error:[String]
+type SerialResult {
+  status: Boolean!
+  error: [String]
   data: Serial
 }
 
-type SerialsResult{
-  status:Boolean!
-  error:[String]
+type SerialsResult {
+  status: Boolean!
+  error: [String]
   data: [Serial]
 }
 
 type FileResult {
-  status:Boolean!
-  error:[String]
+  status: Boolean!
+  error: [String]
 }
 
-type NodeSheetResult{
-  status:Boolean!
-  error:[String]
+type NodeSheetResult {
+  status: Boolean!
+  error: [String]
   data: NodeSheet
 }
 
-type ProcessResult{
-  status:Boolean!
-  error:[String]
+type ProcessResult {
+  status: Boolean!
+  error: [String]
   data: Process
 }
 
@@ -50,19 +50,27 @@ type AlertResult {
 }
 
 type SketchListResult {
-  status:Boolean!
-  error:[String]
+  status: Boolean!
+  error: [String]
   data: [NodeSheet]
 }
 
 type NodeInfoResult {
   status: Boolean!
-  error:[String]
+  error: [String]
   data: NodeInfo
 }
 
 type ManutentionResult {
   status: Boolean!
-  error:[String]
+  error: [String]
   data: [Manutention]
+}
+
+type StepResult {
+  step: Int!
+  total_steps: Int!
+  step_description: String
+  step_title: String
+  estimated_time: Int
 }
