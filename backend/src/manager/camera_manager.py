@@ -14,10 +14,10 @@ class CameraObjectManager(BaseManager):
         super().add(payload)
 
         self.stream[str(payload._id)] = self.get_by_id(payload._id)
-        self.stream_id = str(payload._id)
 
+    #  This function is used to update the camera object.
+    #  When something hits the url @ip:@port/videos/<camera_id>
     def set_stream_id(self, stream_id):
-        print("Updating stream id", stream_id)
         self.stream_id = str(stream_id)
 
     def __dell__(self):

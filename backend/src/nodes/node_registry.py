@@ -32,7 +32,7 @@ class NodeRegistry:
             if entry.name == name:
                 return entry.clss
         else:
-            raise Exception("Class " + name + " not registered")
+            raise Exception("Class " + str(name) + " not registered")
 
 
 package_nodes = []  # list of package names and classes

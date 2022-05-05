@@ -2,12 +2,13 @@ import threading
 import time
 
 from api import logger, dbo, CameraStreamer
+from json import loads
 
 try:
     from api.queries import query
     from api.mutations import mutation
     from api.subscriptions import subscription
-    from src.imageStream import imgRoute, videoRoute
+    from src.end_points import imgRoute, videoRoute
 
     from os import environ
     import uvicorn
@@ -24,6 +25,7 @@ try:
     from starlette.applications import Starlette
     from starlette.middleware import Middleware
     from starlette.routing import Mount
+    from starlette.websockets import WebSocketDisconnect
 
     type_defs = ""
     for _file in ["schema", "inputs", "types", "results"]:
@@ -41,6 +43,24 @@ try:
     ]
 
     app = Starlette(debug=True, routes=routes, on_startup=[], on_shutdown=[dbo.close])
+
+    @app.websocket_route("/ws")
+    async def websocket_endpoint(websocket):
+        await websocket.accept()
+        # Process incoming messages
+        try:
+            while True:
+                msg = await websocket.receive_text()
+                msg = loads(msg)
+                node = msg.get("nodeType")
+                data = msg.get("data")
+                if node:
+                    print(data)
+                #     Stream.node.set_external_data(**data)
+                await websocket.send_text("ok")
+        except WebSocketDisconnect:
+            print("Disconnected!")
+            # await websocket.close()
 
     app.mount(
         "/",
