@@ -88,7 +88,7 @@ export const descriptions = [
     text: `
     Esse filtro é usado para pegar regiões com uma determinada cor em uma imagem.
     `,
-    icon: 'color-hue-saturation',
+    icon: 'palette',
     examples: `
      Digamos que você queira ver se os ovos estão na cor vermelhos ou brancos, sabendo quais são os ovos vermelhos, saberemos os bancos`,
     category: 'Filtros',
@@ -123,7 +123,7 @@ export const descriptions = [
         `,
     icon: 'camera',
     examples: `
-            Esse node é capaz de capturar uma imagem da camera
+            Digamos que você queira capturar uma imagem da camera para fazer a identificação de algum ovo em uma bandeja de ovos.
         `,
     category: 'Hardware',
     tags: ['camera', 'hardware', 'comunicação', 'comunicacao'],
