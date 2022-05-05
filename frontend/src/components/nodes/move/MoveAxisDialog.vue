@@ -14,10 +14,14 @@
               description="Selecione a placa que executara o movimento."
             >
               <v-select
+                @click="getBoards()"
                 :items="boardList"
-                v-model="boardNameSelected"
+                v-model="selectedBoard"
                 item-text="name"
+                return-object
                 dense
+                required
+                :rules="requiredRules"
               ></v-select>
             </NodeConfigTitle>
             <NodeConfigTitle
@@ -41,7 +45,7 @@
                     v-if="axis.name != 'F'"
                     class="ml-3"
                     v-model="axis.value"
-                    number
+                    type="number"
                     :disabled="!axis.isActive"
                     dense
                     hide-details
@@ -56,15 +60,16 @@
               <div class="d-flex">
                 <v-checkbox
                   class="mt-0"
-                  v-model="this.axisListCopy.at(-1).isActive"
+                  v-model="axisListCopy.at(-1).isActive"
                   hide-details
                 ></v-checkbox>
 
                 <v-text-field
                   class="ml-3"
-                  v-model="this.axisListCopy.at(-1).value"
+                  v-model="axisListCopy.at(-1).value"
                   number
-                  :disabled="!this.axisListCopy.at(-1).isActive"
+                  :disabled="!axisListCopy.at(-1).isActive"
+                  type="number"
                   dense
                   hide-details
                 ></v-text-field>
@@ -75,10 +80,17 @@
         <v-divider></v-divider>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="dialog = false" rounded>
+          <v-btn
+            color="blue darken-1"
+            text
+            @click="dialog = false"
+            rounded
+            large
+          >
             Close
           </v-btn>
           <v-btn
+            large
             color="blue darken-1"
             :disabled="!valid"
             text
@@ -105,13 +117,14 @@ export default {
     dialog: false,
     nodeCopy: null,
     axisListCopy: null,
-    boardNameSelected: null,
+    selectedBoard: null,
+    boardCopy: null,
     boardList: [],
     Description: '',
+    requiredRules: [(v) => !!v || 'Esse campo não pode ficar em branco'],
 
     rules: {
-      required: (value) => !!value || 'Required.',
-      positive: (value) => value > 0 || 'Positive number required.',
+      positive: (value) => value >= 0 || 'voce só pode inserir numeros',
     },
     valid: false,
     type: null,
@@ -127,7 +140,6 @@ export default {
     this.init();
     EventBus.$on('OPEN_SETTINGS', (nodeId) => {
       if (nodeId === this.node.id) {
-        console.log(this.dialog);
         this.dialog = true;
         this.init();
       }
@@ -139,12 +151,7 @@ export default {
 
     save() {
       this.node.setOptionValue('axisList', this.axisListCopy);
-      const objectBoardSelected = this.boardList.find(
-        (obj) => obj.name === this.boardNameSelected
-      );
-
-      console.log(objectBoardSelected);
-      this.node.setOptionValue('board', objectBoardSelected);
+      this.node.setOptionValue('board', this.selectedBoard);
       this.saveNodeConfig(this.node.id);
       // this.$store.commit('saveNodeConfig', this.node.id);
       this.dialog = false;
@@ -164,20 +171,18 @@ export default {
         `,
       });
       // console.log(this.$apollo.store);
-
-      // make a list of boards name from the response
       this.boardList = [];
-      this.boardList = response.data.getNodeInfo.data.options;
-      console.log(this.boardList);
-      // response.data.getNodeInfo.data.options.forEach((item) => {
-      //   this.boardList.push(item.name);
-      // }, this);
+      // make a list of boards name from the response
+      this.boardList.push(...response.data.getNodeInfo.data.options);
+      if (!this.boardCopy) {
+        this.boardList.push(this.boardCopy);
+        this.selectedBoard = this.boardCopy;
+      }
     },
 
     async init() {
       this.nodeCopy = { ...this.node };
-      this.boardList = [];
-      this.boardList.push(this.node.getOptionValue('board'));
+      this.boardCopy = this.node.getOptionValue('board');
       this.axisListCopy = JSON.parse(
         JSON.stringify(this.node.getOptionValue('axisList'))
       );
@@ -185,7 +190,6 @@ export default {
     },
 
     changeName(data) {
-      console.log(data);
       this.node.name = data;
       this.saveNodeConfig(this.node.id);
     },

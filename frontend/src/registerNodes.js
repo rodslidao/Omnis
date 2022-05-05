@@ -21,12 +21,22 @@ import CameraNode from '@/components/nodes/camera/CameraNode';
 import IfDialog from '@/components/nodes/if/IfDialog.vue';
 import IfNode from '@/components/nodes/if/IfNode';
 
+// MatrixNode
+import MatrixDialog from '@/components/nodes/matrix/MatrixDialog.vue';
+import MatrixNode from '@/components/nodes/matrix/MatrixNode';
+
+// HsvFilterNode
+import HsvFilterDialog from '@/components/nodes/filters/hsv/HsvFilterDialog.vue';
+import HsvFilterNode from '@/components/nodes/filters/hsv/HsvFilterNode';
+
 export function registerOptions(viewPlugin) {
   viewPlugin.registerOption('EventButtonOption', EventButtonOption);
   viewPlugin.registerOption('TextTemplateDialog', TextTemplateDialog);
   viewPlugin.registerOption('MoveAxisDialog', MoveAxisDialog);
   viewPlugin.registerOption('CameraDialog', CameraDialog);
   viewPlugin.registerOption('IfDialog', IfDialog);
+  viewPlugin.registerOption('MatrixDialog', MatrixDialog);
+  viewPlugin.registerOption('HsvFilterDialog', HsvFilterDialog);
 }
 
 export function registerNodes(editorInstance) {
@@ -42,4 +52,8 @@ export function registerNodes(editorInstance) {
   editorInstance.registerNodeType('camera', CameraNode, 'Img');
 
   editorInstance.registerNodeType('if', IfNode, 'Output');
+
+  editorInstance.registerNodeType('matrix', MatrixNode, 'Matrix');
+
+  editorInstance.registerNodeType('hsv-filter', HsvFilterNode, 'Hsv');
 }

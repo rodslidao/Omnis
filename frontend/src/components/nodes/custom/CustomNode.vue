@@ -178,7 +178,6 @@ export default {
           output: outputs[i],
         });
       }
-
       return rows;
     },
     classes() {
@@ -227,7 +226,7 @@ export default {
 </script>
 
 <style scoped>
-.node{
+.node {
   padding-bottom: 2em;
 }
 

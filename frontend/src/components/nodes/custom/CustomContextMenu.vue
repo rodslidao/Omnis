@@ -75,11 +75,15 @@
             </v-list>
           </v-col>
           <v-col v-if="hoveredItem" class="mt-4">
-            <div class="text-h5 ">{{ hoveredItem.name }}</div>
+            <div class="text-h5">{{ hoveredItem.name }}</div>
             <v-divider></v-divider>
-            <p class="text-subtitle-1 text--grey lighten-4" >{{ hoveredItem.text }}</p>
+            <p class="text-subtitle-1 text--grey lighten-4">
+              {{ hoveredItem.text }}
+            </p>
             <br />
-            <div class="font-italic text-subtitle-1 text--grey lighten-5">Exemplo:</div>
+            <div class="font-italic text-subtitle-1 text--grey lighten-5">
+              Exemplo:
+            </div>
             <p class="text--grey lighten-4">{{ hoveredItem.examples }}</p>
           </v-col>
         </v-row>
@@ -200,7 +204,6 @@ export default {
           this.traverseSubmenues(submenu);
         });
       } else {
-        //console.log(`${submenu.label} -> ${submenu.value}`)
         this.nodeList.push({
           type: submenu.label,
           callstr: submenu.value,
@@ -213,18 +216,14 @@ export default {
       return [document.querySelector('.included')];
     },
 
-    add() {
-      console.log(this.hoveredItem);
-    },
+    add() {},
 
     addNode() {
       if (this.selected != null) {
         this.onChildClick(`addNode:${this.hoveredItem.type}`);
-        console.log('entrei');
       } else this.addTemplate();
     },
     addTemplate() {
-      console.log('entrei tamplate');
       let template = this.templates[this.selectedTemplate];
 
       template.position.x =
@@ -243,7 +242,6 @@ export default {
       // });
     },
     keyPressed(event) {
-      console.log(event);
       this.addNode();
     },
     keyPressedItem(node, index) {

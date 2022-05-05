@@ -27,9 +27,9 @@ export default class MoveAxis extends Node {
     // this.addInputInterface('X');
     // this.addInputInterface('Y');
     // this.addInputInterface('Z');
-    this.addInputInterface('Trigger');
-    this.addOutputInterface('onSuccess');
-    this.addOutputInterface('onFailure');
+    this.addInputInterface('Gatilho');
+    this.addOutputInterface('Sucesso');
+    this.addOutputInterface('Falha');
     this.axisList.forEach((axis) => {
       // if (axis.isActive) {
       if (axis.name === 'F') {
