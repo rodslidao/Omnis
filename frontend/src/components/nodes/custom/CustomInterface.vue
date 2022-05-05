@@ -1,9 +1,35 @@
 <template>
-  <div :id="data.id" :class="classes" >
-    <div class="__port" @mouseover="startHover" @mouseout="endHover" :style="color"></div>
-    <span v-if="data.connectionCount > 0 || !data.option || !getOptionComponent(data.option)" class="align-middle" >
-      {{ displayName }}
-    </span>
+  <div :id="data.id" :class="classes">
+    <div
+      class="__port"
+      @mouseover="startHover"
+      @mouseout="endHover"
+      :style="color"
+    ></div>
+    <v-tooltip
+      :left="this.data.isInput"
+      :right="!this.data.isInput"
+      open-delay="400"
+      max-width="200"
+      transition="fade-transition"
+      :disabled="!data.description"
+    >
+      <template v-slot:activator="{ on, attrs }">
+        <span
+          v-bind="attrs"
+          v-on="on"
+          v-if="
+            data.connectionCount > 0 ||
+            !data.option ||
+            !getOptionComponent(data.option)
+          "
+          class="align-middle"
+        >
+          {{ displayName }}
+        </span>
+      </template>
+      <span>{{ displayDescription }}</span>
+    </v-tooltip>
   </div>
 </template>
 
@@ -21,6 +47,7 @@ export default {
   props: {
     data: Object,
     name: String,
+    description: String,
     type: Object,
   },
   mounted() {
@@ -31,12 +58,16 @@ export default {
   },
   beforeMount() {
     this.value = this.data.value;
-    this.data.events.setValue.addListener(this, (v) => { this.value = v; });
+    this.data.events.setValue.addListener(this, (v) => {
+      this.value = v;
+    });
     this.data.events.setConnectionCount.addListener(this, (c) => {
       this.$forceUpdate();
       this.isConnected = c > 0;
     });
-    this.data.events.updated.addListener(this, () => { this.$forceUpdate(); });
+    this.data.events.updated.addListener(this, () => {
+      this.$forceUpdate();
+    });
     this.isConnected = this.data.connectionCount > 0;
   },
   created() {
@@ -56,9 +87,10 @@ export default {
       this.editor.hoveredOver(undefined);
     },
     getOptionComponent(name) {
-      if (!name || !this.plugin.options) { return; }
+      if (!name || !this.plugin.options) {
+        return;
+      }
       let options = this.plugin.options[name];
-      console.log(options);
       return options;
     },
   },
@@ -69,32 +101,39 @@ export default {
         '--input': this.data.isInput,
         '--output': !this.data.isInput,
         '--connected': this.isConnected,
-        'labelActive': this.isActive,
+        labelActive: this.isActive,
       };
     },
     displayName() {
       return this.data.displayName || this.name;
     },
+    displayDescription() {
+      return this.data.description || this.description;
+    },
     color() {
       if (this.data.type === 'JSON') return { 'background-color': 'orange' };
       if (this.data.type === 'XML') return { 'background-color': 'blue' };
       if (this.data.type === 'Message') return { 'background-color': 'blue' };
-      else return { 'background-color': 'white' };
-    }
+      return { 'background-color': 'white' };
+    },
   },
   watch: {
     'data.type': {
       handler(newValue) {
-        this.plugin.hooks.renderInterface.execute(this);  
+        this.plugin.hooks.renderInterface.execute(this);
       },
-      deep: true
+      deep: true,
     },
-  }
-}
+  },
+};
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .labelActive {
-  color: limegreen
+  color: limegreen;
+}
+
+.v-tooltip ::v-deep {
+  opacity: 1;
 }
 </style>

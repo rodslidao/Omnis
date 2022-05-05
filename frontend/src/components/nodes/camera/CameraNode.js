@@ -11,12 +11,12 @@ export default class Camera extends Node {
 
   constructor() {
     super();
-    this.addInputInterface('Trigger');
+    this.addInputInterface('Gatilho');
     this.addOutputInterface('Imagem');
 
     this.addOption('camera', 'CameraDialog', this.selectedCamera);
 
-    this.addOption('color', undefined, '#FF9800');
+    this.addOption('color', undefined, '#cc00ff');
     this.addOption('running', undefined, true);
   }
 }
