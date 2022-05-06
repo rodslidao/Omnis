@@ -19,7 +19,7 @@ export default class Camera extends Node {
 
     this.addInputInterface('Cor 2', undefined, undefined, {
       description:
-        'Imagine uma escala do preto(Cor 1) para branco (Cor 2). o filtro ira pegar todos as cores no intervalo entre as duas cores, o cinza por exemplo ',
+        'Imagine uma escala do preto(Cor 1) para branco (Cor 2). O filtro ira pegar todos as cores no intervalo entre as duas cores, do preto passando pelo cinza até o branco',
     });
 
     this.addOutputInterface('Imagem', {

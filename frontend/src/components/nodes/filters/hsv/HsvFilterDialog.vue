@@ -4,7 +4,6 @@
       <v-card dark>
         <v-card-title>
           <TextEditable :text="node.name" @changeText="changeName" />
-          <!-- <span class="headline">{{ nodeCopy.name }}</span> -->
         </v-card-title>
         <v-divider></v-divider>
         <v-card-text class="pt-4">
@@ -26,6 +25,19 @@
                   required
                 ></v-select>
               </NodeConfigTitle>
+              <NodeConfigTitle
+                title="Cores"
+                description="Selecione as duas cores que serão filtradas,
+                lembrando que o filtro pegara todo o intervalo entre as duas cores.
+                Digamos que você coloque preto e branco, o filtro pegara o preto passando
+                pelo cinza até chegar no branco"
+                no-content
+              >
+              </NodeConfigTitle>
+              <ColorPikerHSV
+                v-if="dialog"
+                @colors="sendMessage"
+              ></ColorPikerHSV>
               <v-row>
                 <v-col>
                   <v-progress-linear
@@ -76,6 +88,7 @@ import { mapActions } from 'vuex';
 import NodeConfigTitle from '@/components/nodes/NodeConfigTitle.vue';
 import gql from 'graphql-tag';
 import TextEditable from '@/components/nodes/dialogs/TextEditable.vue';
+import ColorPikerHSV from '@/components/nodes/filters/hsv/ColorPikerHSV.vue';
 
 export default {
   data: () => ({
@@ -87,6 +100,8 @@ export default {
     Description: '',
     cameraLoading: true,
     frameLoaded: false,
+    WebSocket: null,
+    isConnected: false,
     requiredRules: [(v) => !!v || 'Campo não pode ficar em branco'],
 
     rules: {
@@ -101,12 +116,14 @@ export default {
   components: {
     TextEditable,
     NodeConfigTitle,
+    ColorPikerHSV,
     // 'vue-webrtc': WebRTC,
   },
 
   props: ['option', 'node', 'value'],
 
   created() {
+    this.connectToWebsocket();
     this.init();
     EventBus.$on('OPEN_SETTINGS', (nodeId) => {
       if (nodeId === this.node.id) {
@@ -121,6 +138,28 @@ export default {
 
   methods: {
     ...mapActions('node', ['saveNodeConfig']),
+
+    async init() {
+      this.nodeCopy = { ...this.node };
+      this.cameraCopy = this.node.getOptionValue('camera');
+      await this.getCamera();
+    },
+
+    connectToWebsocket() {
+      console.log('Starting WebSocket to WebSocket Server');
+      this.WebSocket = new WebSocket(
+        `ws://${process.env.VUE_APP_URL_API_IP}:${process.env.VUE_APP_URL_API_PORT}/ws`
+      );
+
+      this.WebSocket.onmessage = (event) => {
+        console.log(event);
+      };
+
+      this.WebSocket.onopen = (event) => {
+        console.log(event);
+        console.log('Successfully connected to the echo websocket server...');
+      };
+    },
 
     save() {
       this.node.setOptionValue('camera', this.selectedCamera);
@@ -161,12 +200,6 @@ export default {
       this.cameraLoading = false;
     },
 
-    async init() {
-      this.nodeCopy = { ...this.node };
-      this.cameraCopy = this.node.getOptionValue('camera');
-      await this.getCamera();
-    },
-
     delay(time) {
       setTimeout(() => {
         this.frameLoaded = true;
@@ -179,7 +212,7 @@ export default {
       const { id } = this.selectedCamera.id;
       if (id !== null) {
         navigator.sendBeacon(
-          `http://${process.env.VUE_APP_URL_API_IP}:${process.env.VUE_APP_URL_API_PORT}/videos/${id}`
+          `http://${process.env.VUE_APP_URL_API_IP}:${process.env.VUE_APP_URL_API_IP}/videos/${id}`
         );
       }
       console.log(url);
@@ -191,6 +224,23 @@ export default {
       this.node.name = data;
       this.saveNodeConfig(this.node.id);
     },
+
+    sendMessage(data) {
+      if (this.WebSocket.readyState === 1) {
+        const editedData = {
+          nodeId: this.node.id,
+          nodeType: this.node.type,
+          ...data,
+        };
+        console.log(editedData);
+        this.WebSocket.send(JSON.stringify(editedData));
+      }
+    },
+  },
+
+  beforeDestroy() {
+    this.WebSocket.close();
+    console.log('Closed WebSocket to WebSocket Server');
   },
 };
 </script>

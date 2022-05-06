@@ -45,9 +45,7 @@
             <div :class="selectedColor1 ? 'colorName' : 'colorNameSelected'">
               <div class="d-flex align-center mb-6">
                 Cor 2<br />
-                {{
-                  color2
-                }}
+                {{ color2 }}
               </div>
             </div>
           </div>
@@ -80,8 +78,7 @@
             SEND_MESSAGE({
               command: actions.UPDATE_CAMERA,
               parameter: configuration.camera,
-              },
-            );
+            });
           }
         "
       >
@@ -166,67 +163,61 @@
 </template>
 
 <script>
-import ColorPicker from "vue-color-picker-wheel";
-//import { mapState, mapMutations, mapActions } from "vuex"; mapActions sem uso.
-import { mapState, mapMutations} from "vuex";
-import { actions } from "@/store/index";
+import ColorPicker from 'vue-color-picker-wheel';
+import { mapState, mapMutations } from 'vuex';
+import { actions } from '@/store/index';
 
 export default {
-  name: "ColorPikerHSV",
+  name: 'ColorPikerHSV',
   components: {
     ColorPicker,
   },
+
   data: () => ({
     actions,
-    selected: "",
+    selected: '',
     selectedColor1: true,
     dialog: false,
-    area_max:1000,
-    area_min:0
+    area_max: 1000,
+    area_min: 0,
   }),
 
   methods: {
-    ...mapMutations(["SEND_MESSAGE"]),
+    ...mapMutations(['SEND_MESSAGE']),
     // ...mapActions(["sendMessage"]),
   },
 
-  computed: {
-    ...mapState(["configuration", "selectedFilter"]),
+  created() {
+    console.log('created fghhhhhhhhhhhhhhhhhhhhhhh');
+  },
 
-    color1: function () {
-      let colorA = this.configuration.camera.filters.hole.gradient.color;
-      console.log("camera");
+  computed: {
+    ...mapState(['configuration', 'selectedFilter']),
+
+    color1() {
+      const colorA = this.configuration.camera.filters.hole.gradient.color;
+      console.log('camera');
 
       this.$store.dispatch('sendMessage', {
         command: this.actions.UPDATE_CAMERA,
         parameter: this.configuration.camera,
       });
 
-      // this.sendMessage({
-      //   command: this.actions.UPDATE_CAMERA,
-      //   parameter: this.configuration.camera,
-      // })
-
-      console.log("end camera");
-      return colorA
+      console.log('end camera');
+      return colorA;
     },
 
-    color2: function () {
-      let colorB = this.configuration.camera.filters.hole.gradient.color2;
-      console.log("camera2");
+    color2() {
+      const colorB = this.configuration.camera.filters.hole.gradient.color2;
+      console.log('camera2');
 
       this.$store.dispatch('sendMessage', {
         command: this.actions.UPDATE_CAMERA,
         parameter: this.configuration.camera,
       });
 
-      // this.sendMessage({
-      //   command: this.actions.UPDATE_CAMERA,
-      //   parameter: this.configuration.camera,
-      // })
-
-      console.log("end camera2");
-      return colorB
+      console.log('end camera2');
+      return colorB;
     },
   },
 };

@@ -7,7 +7,7 @@
         </div>
         <p>{{ description }}</p></v-col
       >
-      <v-col>
+      <v-col v-if="!noContent">
         <slot></slot>
       </v-col>
     </v-row>
@@ -19,6 +19,7 @@ export default {
   props: {
     title: String,
     description: String,
+    noContent: Boolean,
   },
 };
 </script>
