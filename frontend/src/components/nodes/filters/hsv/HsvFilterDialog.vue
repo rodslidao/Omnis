@@ -10,22 +10,6 @@
           <v-form ref="title" v-model="valid">
             <v-col class="">
               <NodeConfigTitle
-                title="Camera"
-                description="Selecione a camera que deseja pegar a imagem."
-              >
-                <v-select
-                  @click="getCamera()"
-                  :items="cameraList"
-                  v-model="selectedCamera"
-                  item-text="name"
-                  return-object
-                  dense
-                  :loading="cameraLoading"
-                  :rules="requiredRules"
-                  required
-                ></v-select>
-              </NodeConfigTitle>
-              <NodeConfigTitle
                 title="Cores"
                 description="Selecione as duas cores que serão filtradas,
                 lembrando que o filtro pegara todo o intervalo entre as duas cores.
@@ -84,9 +68,9 @@
 <script>
 import EventBus from '@/event-bus';
 // import WebRTC from 'vue-webrtc';
-import { mapActions } from 'vuex';
+import { mapActions, mapState } from 'vuex';
 import NodeConfigTitle from '@/components/nodes/NodeConfigTitle.vue';
-import gql from 'graphql-tag';
+// import gql from 'graphql-tag';
 import TextEditable from '@/components/nodes/dialogs/TextEditable.vue';
 import ColorPikerHSV from '@/components/nodes/filters/hsv/ColorPikerHSV.vue';
 
@@ -94,7 +78,6 @@ export default {
   data: () => ({
     dialog: false,
     nodeCopy: null,
-    cameraCopy: [],
     selectedCamera: null,
     cameraList: [],
     Description: '',
@@ -117,7 +100,6 @@ export default {
     TextEditable,
     NodeConfigTitle,
     ColorPikerHSV,
-    // 'vue-webrtc': WebRTC,
   },
 
   props: ['option', 'node', 'value'],
@@ -134,15 +116,37 @@ export default {
     });
   },
 
+  computed: {
+    ...mapState('node', {
+      editor: (state) => state.editor,
+    }),
+  },
+
   mounted() {},
 
   methods: {
     ...mapActions('node', ['saveNodeConfig']),
 
-    async init() {
+    init() {
       this.nodeCopy = { ...this.node };
-      this.cameraCopy = this.node.getOptionValue('camera');
-      await this.getCamera();
+      this.selectedCamera = this.node.getOptionValue('camera');
+      console.log('dawdawd', this.selectedCamera);
+
+      // await this.getCamera();
+    },
+
+    sendMessage(data) {
+      if (this.WebSocket.readyState === 1) {
+        const editedData = {
+          nodeId: this.node.id,
+          nodeType: this.node.type,
+          selectedCamera: null,
+          ...data,
+        };
+        // this.node.getInterface('Imagem').value = 2;
+        this.WebSocket.send(JSON.stringify(editedData));
+        console.log('send:', editedData);
+      }
     },
 
     connectToWebsocket() {
@@ -173,31 +177,14 @@ export default {
       this.dialog = false;
     },
 
-    async getCamera() {
-      this.cameraLoading = true;
-      const response = await this.$apollo.query({
-        query: gql`
-          query {
-            getNodeInfo(node_type: "CAMERA") {
-              data {
-                options
-              }
-            }
-          }
-        `,
+    getNodeInfos() {
+      let a = null;
+      this.editor.save().nodes.forEach((node) => {
+        if (node.id === this.node.id) {
+          a = node;
+        }
       });
-      // console.log(this.$apollo.store);
-
-      this.cameraList = [];
-      this.cameraList.push(...response.data.getNodeInfo.data.options);
-
-      if (!this.cameraCopy) {
-        this.cameraList.push(this.cameraCopy);
-        this.selectedCamera = this.cameraCopy;
-      }
-      console.log(this.cameraList);
-
-      this.cameraLoading = false;
+      return a;
     },
 
     delay(time) {
@@ -214,27 +201,15 @@ export default {
         navigator.sendBeacon(
           `http://${process.env.VUE_APP_URL_API_IP}:${process.env.VUE_APP_URL_API_IP}/videos/${id}`
         );
+        console.log(url);
+        return url;
       }
-      console.log(url);
-
-      return url;
+      return '';
     },
 
     changeName(data) {
       this.node.name = data;
       this.saveNodeConfig(this.node.id);
-    },
-
-    sendMessage(data) {
-      if (this.WebSocket.readyState === 1) {
-        const editedData = {
-          nodeId: this.node.id,
-          nodeType: this.node.type,
-          ...data,
-        };
-        console.log(editedData);
-        this.WebSocket.send(JSON.stringify(editedData));
-      }
     },
   },
 

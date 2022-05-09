@@ -14,7 +14,7 @@
             :id="nodeData.id"
             class="name"
             style="text-align: center"
-            @click.middle="deleteNode()"
+            @click.middle="openSettings()"
             @mousedown.self.prevent.stop="$emit('start-drag')"
             @mouseup.self.prevent.stop="$emit('stop-drag', $event)"
           >
@@ -259,7 +259,6 @@ export default {
       // });
     },
     openSettings() {
-      console.log('openSettings');
       EventBus.$emit('OPEN_SETTINGS', this.nodeData.id);
       this.menu = false;
     },

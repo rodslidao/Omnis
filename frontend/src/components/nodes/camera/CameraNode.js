@@ -19,4 +19,9 @@ export default class Camera extends Node {
     this.addOption('color', undefined, '#cc00ff');
     this.addOption('running', undefined, true);
   }
+
+  calculate() {
+    console.log('CameraNode');
+    this.getInterface('Imagem').value = 2;
+  }
 }

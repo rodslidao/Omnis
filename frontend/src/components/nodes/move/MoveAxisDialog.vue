@@ -8,6 +8,7 @@
         </v-card-title>
         <v-divider></v-divider>
         <v-card-text class="pt-4">
+          <!-- <v-btn @click="removeX()"> removeInterface </v-btn> -->
           <v-form v-model="valid">
             <NodeConfigTitle
               title="Placa"
@@ -148,6 +149,11 @@ export default {
 
   methods: {
     ...mapActions('node', ['saveNodeConfig']),
+
+    removeX() {
+      this.node.addOutputInterface('g');
+      this.node.calculate();
+    },
 
     save() {
       this.node.setOptionValue('axisList', this.axisListCopy);
