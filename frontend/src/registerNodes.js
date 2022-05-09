@@ -43,17 +43,17 @@ export function registerNodes(editorInstance) {
   // editorInstance.registerNodeType('MoveNode', MoveNode);
 
   // User input
-  editorInstance.registerNodeType('button', ButtonNode, 'Input');
+  editorInstance.registerNodeType('ButtonNode', ButtonNode, 'Input');
 
-  editorInstance.registerNodeType('text-template', TextTemplateNode, 'Text');
+  editorInstance.registerNodeType('TextTemplateNode', TextTemplateNode, 'Text');
 
-  editorInstance.registerNodeType('move-axis', MoveAxisNode, 'Move');
+  editorInstance.registerNodeType('MoveAxisNode', MoveAxisNode, 'Move');
 
-  editorInstance.registerNodeType('camera', CameraNode, 'Img');
+  editorInstance.registerNodeType('CameraNode', CameraNode, 'Img');
 
-  editorInstance.registerNodeType('if', IfNode, 'Output');
+  editorInstance.registerNodeType('IfNode', IfNode, 'Output');
 
-  editorInstance.registerNodeType('matrix', MatrixNode, 'Matrix');
+  editorInstance.registerNodeType('MatrixNode', MatrixNode, 'Matrix');
 
-  editorInstance.registerNodeType('hsv-filter', HsvFilterNode, 'Hsv');
+  editorInstance.registerNodeType('HsvFilterNode', HsvFilterNode, 'Hsv');
 }

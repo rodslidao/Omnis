@@ -1,8 +1,8 @@
 import { Node } from '@baklavajs/core';
 // import { store } from '../../main';
 
-export default class Camera extends Node {
-  type = 'hsv-filter';
+export default class HsvFilterNode extends Node {
+  type = 'HsvFilterNode';
   // twoColumn = true;
 
   name = 'Filtro de Cor';
@@ -39,7 +39,9 @@ export default class Camera extends Node {
   }
 
   calculate() {
-    this.setOptionValue('camera', this.getInterface('Imagem').value);
+    this.setOptionValue('camera', 2);
     console.log('onCalculate - dfsfsdafasdfasdfasfasdfsafdasd');
+    console.log(this.getInterface('Imagem').value);
+    console.log(this.getOptionValue('camera'));
   }
 }

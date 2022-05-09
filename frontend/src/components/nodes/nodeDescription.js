@@ -18,7 +18,7 @@ export const descriptions = [
   // },
   {
     name: 'Matriz',
-    type: 'matrix',
+    type: 'MatrixNode',
     text: `Cria uma matriz apartir de um dados fornecidos na tela de cadastro de matrizes.
     `,
     icon: 'grid',
@@ -34,7 +34,7 @@ export const descriptions = [
   },
   {
     name: 'Condicinal IF',
-    type: 'if',
+    type: 'IfNode',
     text: `
             Com esse node você será capaz de fazer operações condicionais
         `,
@@ -84,7 +84,7 @@ export const descriptions = [
   // },
   {
     name: 'Cor (HSV)',
-    type: 'hsv-filter',
+    type: 'HsvFilterNode',
     text: `
     Esse filtro é usado para pegar regiões com uma determinada cor em uma imagem.
     `,
@@ -117,7 +117,7 @@ export const descriptions = [
   // },
   {
     name: 'Camera',
-    type: 'camera',
+    type: 'CameraNode',
     text: `
             Esse node é capaz de capturar uma imagem da camera
         `,
@@ -193,7 +193,7 @@ export const descriptions = [
   // },
   {
     name: 'Mover Eixo',
-    type: 'move-axis',
+    type: 'MoveAxisNode',
     text: 'Esse node é capaz de mover um eixo',
     icon: 'axis-arrow',
     examples: 'A ação vai iniciar assim que o botão  for clicado',
