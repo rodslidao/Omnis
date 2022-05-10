@@ -1,8 +1,8 @@
 import { Node } from '@baklavajs/core';
 // import { store } from '../../main';
 
-export default class If extends Node {
-  type = 'if';
+export default class IfNode extends Node {
+  type = 'IfNode';
   // twoColumn = true;
 
   name = 'Condicional IF';

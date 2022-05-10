@@ -211,6 +211,7 @@ export default {
     this.color = this.nodeData.getOptionValue('color');
     this.running = this.nodeData.getOptionValue('running');
     this.description = getDescription(this.nodeData.type);
+    console.log('description', this.description);
   },
   methods: {
     ...mapActions('node', ['deletedNode', 'saveNodeConfig']),
@@ -258,6 +259,7 @@ export default {
       //   console.log(err);
       // });
     },
+
     openSettings() {
       EventBus.$emit('OPEN_SETTINGS', this.nodeData.id);
       this.menu = false;

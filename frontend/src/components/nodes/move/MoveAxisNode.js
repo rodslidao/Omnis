@@ -1,8 +1,8 @@
 import { Node } from '@baklavajs/core';
 // import { store } from '../../main';
 
-export default class MoveAxis extends Node {
-  type = 'move-axis';
+export default class MoveAxisNode extends Node {
+  type = 'MoveAxisNode';
   twoColumn = true;
 
   height = 800;

@@ -19,7 +19,7 @@ export const descriptions = [
   {
     name: 'Matriz',
     type: 'MatrixNode',
-    text: `Cria uma matriz apartir de um dados fornecidos na tela de cadastro de matrizes.
+    text: `Cria uma matriz a partir de um dados fornecidos na tela de cadastro de matrizes.
     `,
     icon: 'grid',
     examples: `
@@ -27,6 +27,23 @@ export const descriptions = [
     `,
     category: 'Utilidades',
     tags: ['matrix', 'mapping', 'object', 'array', 'img'],
+    resettable: true,
+    stoppable: false,
+    configurable: true,
+    hasHistory: false,
+  },
+  {
+    name: 'Identificação',
+    type: 'IdentifyNode',
+    text: `
+    Esse node irá identificar o objeto que está na imagem extraindo o máximo de informações possíveis, como; area, perímetro, diâmetro, raio, centro de massa, altura, largura e diagonal.
+    `,
+    icon: 'eye',
+    examples: `
+    Digamos que você queira saber o tamanho das manchas nos ovos
+    `,
+    category: 'Utilidades',
+    tags: ['identification', 'mapping', 'object', 'array', 'img'],
     resettable: true,
     stoppable: false,
     configurable: true,

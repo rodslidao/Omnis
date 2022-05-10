@@ -29,6 +29,10 @@ import MatrixNode from '@/components/nodes/matrix/MatrixNode';
 import HsvFilterDialog from '@/components/nodes/filters/hsv/HsvFilterDialog.vue';
 import HsvFilterNode from '@/components/nodes/filters/hsv/HsvFilterNode';
 
+// IdentifyNode
+import IdentifyDialog from '@/components/nodes/identify/IdentifyDialog.vue';
+import IdentifyNode from '@/components/nodes/identify/IdentifyNode';
+
 export function registerOptions(viewPlugin) {
   viewPlugin.registerOption('EventButtonOption', EventButtonOption);
   viewPlugin.registerOption('TextTemplateDialog', TextTemplateDialog);
@@ -37,6 +41,7 @@ export function registerOptions(viewPlugin) {
   viewPlugin.registerOption('IfDialog', IfDialog);
   viewPlugin.registerOption('MatrixDialog', MatrixDialog);
   viewPlugin.registerOption('HsvFilterDialog', HsvFilterDialog);
+  viewPlugin.registerOption('IdentifyDialog', IdentifyDialog);
 }
 
 export function registerNodes(editorInstance) {
@@ -56,4 +61,6 @@ export function registerNodes(editorInstance) {
   editorInstance.registerNodeType('MatrixNode', MatrixNode, 'Matrix');
 
   editorInstance.registerNodeType('HsvFilterNode', HsvFilterNode, 'Hsv');
+
+  editorInstance.registerNodeType('IdentifyNode', IdentifyNode, 'Matrix');
 }

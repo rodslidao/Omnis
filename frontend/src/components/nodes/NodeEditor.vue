@@ -122,7 +122,6 @@ export default {
 
     // console.log(this.editor.save());
     this.engine.calculate();
-    this.engine.calculateOnChange(true);
   },
 
   methods: {
