@@ -20,7 +20,8 @@ function createWindow() {
     width: 720,
     height: 1280,
     // transparent: true,
-    frame: false,
+    frame: true,
+    // titleBarStyle: 'hidden',
     webPreferences: {
       nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
     },
