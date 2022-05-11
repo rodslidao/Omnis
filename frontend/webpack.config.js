@@ -1,8 +1,8 @@
 module.exports = {
   // ... other options
-  node: {
-    fs: 'empty',
-  },
+  // node: {
+  //   fs: 'empty',
+  // },
   module: {
     rules: [
       {
@@ -13,10 +13,10 @@ module.exports = {
       },
     ],
   },
-  resolve: {
-    fallback: {
-      path: require.resolve('path-browserify'),
-      // path: false,
-    },
-  },
+  // resolve: {
+  //   fallback: {
+  //     path: require.resolve('path-browserify'),
+  //     // path: false,
+  //   },
+  // },
 };
