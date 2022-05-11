@@ -42,7 +42,6 @@ jobs:
         path: |
           ./frontend/dist
     - uses: actions/checkout@v3
-    - name: Commiting artifacts
       with:
         ref: ${{ github.head_ref }}
     - name: Commit report
