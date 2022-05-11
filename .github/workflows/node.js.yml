@@ -41,4 +41,11 @@ jobs:
         name: saving dist files
         path: |
           ./frontend/dist
+            - name: Commit report
+        run: |
+          git config --global user.name 'Omnis'
+          git config --global user.email 'Omnis-Actions@users.noreply.github.com'
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
+          git commit -am "Automated report"
+          git push
     
