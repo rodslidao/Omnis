@@ -35,3 +35,10 @@ jobs:
     - name: Deploy
       run: npm run build
       working-directory: ./frontend
+    - name: Archive production files
+      uses: actions/upload-artifact@v3
+      with:
+        name: saving dist files
+        path: |
+          dist
+    
