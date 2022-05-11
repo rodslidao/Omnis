@@ -10,6 +10,67 @@ from numpy import array
 
 NODE_TYPE = "MATRIX"
 
+"""
+            [
+            "matrix",
+            {
+              "id": "6256d313daaa135378e4cb27",
+              "name": "Blister_0",
+              "slots": {
+                "qtd": {
+                  "X": 5,
+                  "Y": 10
+                },
+                "margin": {
+                  "X": 3,
+                  "Y": 3
+                },
+                "size": {
+                  "X": 41,
+                  "Y": 24
+                }
+              },
+              "subdivisions": {
+                "qtd": {
+                  "X": 1,
+                  "Y": 1
+                },
+                "margin": {
+                  "X": 0,
+                  "Y": 0
+                }
+              }
+            }
+          ],
+
+          {
+
+  "shape": [
+    slot['qtd'][x-y
+    ] * subdivisions['qtd'][x->y],
+  ],
+  "slot_config": {
+    "sizes": [
+      slot['size'][x-y],
+    ],
+    "borders": [
+        slot['margin'][x-y],
+    ],
+    "origin": [
+        ??? 800,
+        ??? 200
+    ]
+    "counter": [
+      config[shape][x-y]/slot['qtd'][x-y],
+    ],
+    "extra": [
+      subdvision['margin'][x-y],
+    ]
+    ]
+  },
+          }
+"""
+
 
 @for_all_methods(exception(logger))
 class MatrixNode(BaseNode):
@@ -26,37 +87,48 @@ class MatrixNode(BaseNode):
     def __init__(self, name, id, options, output_connections, input_connections):
         super().__init__(name, NODE_TYPE, id, options, output_connections)
         self.input_connections = input_connections
-        self.blister_id = options["blister_id"]["value"]
-        self.blister = Blister(
-            **dbo.find_one("blister-manager", {"_id": ObjectId(self.blister_id)})
-        )
 
+        slots = array(options["matrix"]["slots"])
+        subdivisions = array(options["matrix"]["subdivisions"])
+        shape = slots["qtd"] * subdivisions["qtd"]
+        slot_config = {
+            "sizes": slots["size"],
+            "borders": slots["margin"],
+            "origin": slots["origin"],
+            "counter": shape / slots["qtd"],
+            "extra": subdivisions["margin"],
+        }
+        self.blister = Blister(shape=shape, slot_config=slot_config)
         self.auto_run = options["auto_run"]["value"]
         NodeManager.addNode(self)
 
     def __next__(self):
         garbage = next(self.blister)
-        self.on("item", garbage)
+        self.on("Item", garbage)
         return garbage
 
     def execute(self, message):
         target = message.targetName.lower()
         match target:
-            case "reset":
+            case "Reset":
                 self.reset()
-            case "next":
+            case "Próximo":
                 return next(self)
-            case "in_roi":
+            case "Imagem":
                 garbage = self.blister.roi(message.payload)
                 self.on(
-                    "out_roi", garbage
+                    "Matriz", garbage
                 )  # ! Send data, or blister object? what is the best way?
                 return garbage()
-            case "end":
-                self.reset()
-                self.on("end", True)
-            case "draw":
-                self.blister.draw(message.payload)
+            case "Matriz":
+                self.blister.update_data(message.payload)
+                return next(self)
+
+            # case "end":
+            #     self.reset()
+            #     self.on("end", True)
+            # case "draw":
+            #     self.blister.draw(message.payload)
             case _:
                 return self.onFailure(message)
         if self.auto_run:

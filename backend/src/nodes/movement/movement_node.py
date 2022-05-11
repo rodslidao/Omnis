@@ -88,5 +88,4 @@ class MovementNode(BaseNode):
         super().pause()
 
     def get_info():
-        print(SerialManager.get_info())
         return {"options": SerialManager.get_info()}

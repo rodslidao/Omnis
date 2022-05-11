@@ -155,4 +155,5 @@ class MongoOBJ:
         return df.to_csv(index=False)
 
     def close(self):
+        logger.info("Closing connection to MongoDB")
         self.client.close()

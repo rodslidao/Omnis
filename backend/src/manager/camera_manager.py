@@ -4,7 +4,6 @@ from src.manager.base_manager import BaseManager
 class CameraObjectManager(BaseManager):
     def __init__(self):
         super().__init__()
-        self.stream = {}
 
     def broadCast(self, message):
         for ser in self.store:
@@ -12,8 +11,6 @@ class CameraObjectManager(BaseManager):
 
     def add(self, payload):
         super().add(payload)
-
-        self.stream[str(payload._id)] = self.get_by_id(payload._id)
 
     #  This function is used to update the camera object.
     #  When something hits the url @ip:@port/videos/<camera_id>
@@ -25,7 +22,7 @@ class CameraObjectManager(BaseManager):
             v.stop()
 
     def read(self):
-        return self.stream[self.stream_id].read()
+        return self.store[self.stream_id].read()
 
     def stop(self):
         for v in self.stream.values():
