@@ -29,11 +29,11 @@ module.exports = {
     },
   },
 
-  // pluginOptions: {
-  //   apollo: {
-  //     lintGQL: false,
-  //   },
-  // },
+  pluginOptions: {
+    apollo: {
+      lintGQL: false,
+    },
+  },
 
   transpileDependencies: ['vuetify'],
 };
