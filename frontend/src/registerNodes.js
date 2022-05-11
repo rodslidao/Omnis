@@ -29,6 +29,10 @@ import MatrixNode from '@/components/nodes/matrix/MatrixNode';
 import HsvFilterDialog from '@/components/nodes/filters/hsv/HsvFilterDialog.vue';
 import HsvFilterNode from '@/components/nodes/filters/hsv/HsvFilterNode';
 
+// IdentifyNode
+import IdentifyDialog from '@/components/nodes/identify/IdentifyDialog.vue';
+import IdentifyNode from '@/components/nodes/identify/IdentifyNode';
+
 export function registerOptions(viewPlugin) {
   viewPlugin.registerOption('EventButtonOption', EventButtonOption);
   viewPlugin.registerOption('TextTemplateDialog', TextTemplateDialog);
@@ -37,23 +41,26 @@ export function registerOptions(viewPlugin) {
   viewPlugin.registerOption('IfDialog', IfDialog);
   viewPlugin.registerOption('MatrixDialog', MatrixDialog);
   viewPlugin.registerOption('HsvFilterDialog', HsvFilterDialog);
+  viewPlugin.registerOption('IdentifyDialog', IdentifyDialog);
 }
 
 export function registerNodes(editorInstance) {
   // editorInstance.registerNodeType('MoveNode', MoveNode);
 
   // User input
-  editorInstance.registerNodeType('button', ButtonNode, 'Input');
+  editorInstance.registerNodeType('ButtonNode', ButtonNode, 'Input');
 
-  editorInstance.registerNodeType('text-template', TextTemplateNode, 'Text');
+  editorInstance.registerNodeType('TextTemplateNode', TextTemplateNode, 'Text');
 
-  editorInstance.registerNodeType('move-axis', MoveAxisNode, 'Move');
+  editorInstance.registerNodeType('MoveAxisNode', MoveAxisNode, 'Move');
 
-  editorInstance.registerNodeType('camera', CameraNode, 'Img');
+  editorInstance.registerNodeType('CameraNode', CameraNode, 'Img');
 
-  editorInstance.registerNodeType('if', IfNode, 'Output');
+  editorInstance.registerNodeType('IfNode', IfNode, 'Output');
 
-  editorInstance.registerNodeType('matrix', MatrixNode, 'Matrix');
+  editorInstance.registerNodeType('MatrixNode', MatrixNode, 'Matrix');
 
-  editorInstance.registerNodeType('hsv-filter', HsvFilterNode, 'Hsv');
+  editorInstance.registerNodeType('HsvFilterNode', HsvFilterNode, 'Hsv');
+
+  editorInstance.registerNodeType('IdentifyNode', IdentifyNode, 'Matrix');
 }

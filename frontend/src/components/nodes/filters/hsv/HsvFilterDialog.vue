@@ -4,28 +4,24 @@
       <v-card dark>
         <v-card-title>
           <TextEditable :text="node.name" @changeText="changeName" />
-          <!-- <span class="headline">{{ nodeCopy.name }}</span> -->
         </v-card-title>
         <v-divider></v-divider>
         <v-card-text class="pt-4">
           <v-form ref="title" v-model="valid">
             <v-col class="">
               <NodeConfigTitle
-                title="Camera"
-                description="Selecione a camera que deseja pegar a imagem."
+                title="Cores"
+                description="Selecione as duas cores que serão filtradas,
+                lembrando que o filtro pegara todo o intervalo entre as duas cores.
+                Digamos que você coloque preto e branco, o filtro pegara o preto passando
+                pelo cinza até chegar no branco"
+                no-content
               >
-                <v-select
-                  @click="getCamera()"
-                  :items="cameraList"
-                  v-model="selectedCamera"
-                  item-text="name"
-                  return-object
-                  dense
-                  :loading="cameraLoading"
-                  :rules="requiredRules"
-                  required
-                ></v-select>
               </NodeConfigTitle>
+              <ColorPikerHSV
+                v-if="dialog"
+                @colors="sendMessage"
+              ></ColorPikerHSV>
               <v-row>
                 <v-col>
                   <v-progress-linear
@@ -72,21 +68,23 @@
 <script>
 import EventBus from '@/event-bus';
 // import WebRTC from 'vue-webrtc';
-import { mapActions } from 'vuex';
+import { mapActions, mapState } from 'vuex';
 import NodeConfigTitle from '@/components/nodes/NodeConfigTitle.vue';
-import gql from 'graphql-tag';
+// import gql from 'graphql-tag';
 import TextEditable from '@/components/nodes/dialogs/TextEditable.vue';
+import ColorPikerHSV from '@/components/nodes/filters/hsv/ColorPikerHSV.vue';
 
 export default {
   data: () => ({
     dialog: false,
     nodeCopy: null,
-    cameraCopy: [],
     selectedCamera: null,
     cameraList: [],
     Description: '',
     cameraLoading: true,
     frameLoaded: false,
+    WebSocket: null,
+    isConnected: false,
     requiredRules: [(v) => !!v || 'Campo não pode ficar em branco'],
 
     rules: {
@@ -101,12 +99,13 @@ export default {
   components: {
     TextEditable,
     NodeConfigTitle,
-    // 'vue-webrtc': WebRTC,
+    ColorPikerHSV,
   },
 
   props: ['option', 'node', 'value'],
 
   created() {
+    this.connectToWebsocket();
     this.init();
     EventBus.$on('OPEN_SETTINGS', (nodeId) => {
       if (nodeId === this.node.id) {
@@ -117,10 +116,54 @@ export default {
     });
   },
 
+  computed: {
+    ...mapState('node', {
+      editor: (state) => state.editor,
+    }),
+  },
+
   mounted() {},
 
   methods: {
     ...mapActions('node', ['saveNodeConfig']),
+
+    init() {
+      this.nodeCopy = { ...this.node };
+      this.selectedCamera = this.node.getOptionValue('camera');
+      console.log('dawdawd', this.selectedCamera);
+
+      // await this.getCamera();
+    },
+
+    sendMessage(data) {
+      if (this.WebSocket.readyState === 1) {
+        const editedData = {
+          nodeId: this.node.id,
+          nodeType: this.node.type,
+          selectedCamera: null,
+          ...data,
+        };
+        // this.node.getInterface('Imagem').value = 2;
+        this.WebSocket.send(JSON.stringify(editedData));
+        console.log('send:', editedData);
+      }
+    },
+
+    connectToWebsocket() {
+      console.log('Starting WebSocket to WebSocket Server');
+      this.WebSocket = new WebSocket(
+        `ws://${process.env.VUE_APP_URL_API_IP}:${process.env.VUE_APP_URL_API_PORT}/ws`
+      );
+
+      this.WebSocket.onmessage = (event) => {
+        console.log(event);
+      };
+
+      this.WebSocket.onopen = (event) => {
+        console.log(event);
+        console.log('Successfully connected to the echo websocket server...');
+      };
+    },
 
     save() {
       this.node.setOptionValue('camera', this.selectedCamera);
@@ -134,37 +177,14 @@ export default {
       this.dialog = false;
     },
 
-    async getCamera() {
-      this.cameraLoading = true;
-      const response = await this.$apollo.query({
-        query: gql`
-          query {
-            getNodeInfo(node_type: "CAMERA") {
-              data {
-                options
-              }
-            }
-          }
-        `,
+    getNodeInfos() {
+      let a = null;
+      this.editor.save().nodes.forEach((node) => {
+        if (node.id === this.node.id) {
+          a = node;
+        }
       });
-      // console.log(this.$apollo.store);
-
-      this.cameraList = [];
-      this.cameraList.push(...response.data.getNodeInfo.data.options);
-
-      if (!this.cameraCopy) {
-        this.cameraList.push(this.cameraCopy);
-        this.selectedCamera = this.cameraCopy;
-      }
-      console.log(this.cameraList);
-
-      this.cameraLoading = false;
-    },
-
-    async init() {
-      this.nodeCopy = { ...this.node };
-      this.cameraCopy = this.node.getOptionValue('camera');
-      await this.getCamera();
+      return a;
     },
 
     delay(time) {
@@ -179,18 +199,23 @@ export default {
       const { id } = this.selectedCamera.id;
       if (id !== null) {
         navigator.sendBeacon(
-          `http://${process.env.VUE_APP_URL_API_IP}:${process.env.VUE_APP_URL_API_PORT}/videos/${id}`
+          `http://${process.env.VUE_APP_URL_API_IP}:${process.env.VUE_APP_URL_API_IP}/videos/${id}`
         );
+        console.log(url);
+        return url;
       }
-      console.log(url);
-
-      return url;
+      return '';
     },
 
     changeName(data) {
       this.node.name = data;
       this.saveNodeConfig(this.node.id);
     },
+  },
+
+  beforeDestroy() {
+    this.WebSocket.close();
+    console.log('Closed WebSocket to WebSocket Server');
   },
 };
 </script>

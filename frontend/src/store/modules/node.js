@@ -1,9 +1,11 @@
 /* eslint-disable no-underscore-dangle */
 // import { Editor } from '@baklavajs/core';
+import { Editor } from '@baklavajs/core';
 
 export default {
   namespaced: true,
   state: {
+    editor: new Editor(),
     counter: 0,
     tabList: [
       // {

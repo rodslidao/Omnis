@@ -124,6 +124,8 @@ export default {
 
     save() {
       this.node.setOptionValue('camera', this.selectedCamera);
+      this.node.getInterface('Imagem').value = this.selectedCamera;
+      console.log('camera define ', this.node.getInterface('Imagem').value);
       this.saveNodeConfig(this.node.id);
       // this.$store.commit('saveNodeConfig', this.node.id);
       this.dialog = false;
@@ -181,10 +183,10 @@ export default {
         navigator.sendBeacon(
           `http://${process.env.VUE_APP_URL_API_IP}:${process.env.VUE_APP_URL_API_PORT}/videos/${id}`
         );
+        return url;
       }
-      console.log(url);
 
-      return url;
+      console.log(url);
     },
 
     changeName(data) {

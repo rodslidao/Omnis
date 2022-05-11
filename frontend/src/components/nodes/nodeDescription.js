@@ -18,8 +18,8 @@ export const descriptions = [
   // },
   {
     name: 'Matriz',
-    type: 'matrix',
-    text: `Cria uma matriz apartir de um dados fornecidos na tela de cadastro de matrizes.
+    type: 'MatrixNode',
+    text: `Cria uma matriz a partir de um dados fornecidos na tela de cadastro de matrizes.
     `,
     icon: 'grid',
     examples: `
@@ -33,8 +33,25 @@ export const descriptions = [
     hasHistory: false,
   },
   {
+    name: 'Identificação',
+    type: 'IdentifyNode',
+    text: `
+    Esse node irá identificar o objeto que está na imagem extraindo o máximo de informações possíveis, como; area, perímetro, diâmetro, raio, centro de massa, altura, largura e diagonal.
+    `,
+    icon: 'eye',
+    examples: `
+    Digamos que você queira saber o tamanho das manchas nos ovos
+    `,
+    category: 'Utilidades',
+    tags: ['identification', 'mapping', 'object', 'array', 'img'],
+    resettable: true,
+    stoppable: false,
+    configurable: true,
+    hasHistory: false,
+  },
+  {
     name: 'Condicinal IF',
-    type: 'if',
+    type: 'IfNode',
     text: `
             Com esse node você será capaz de fazer operações condicionais
         `,
@@ -84,11 +101,11 @@ export const descriptions = [
   // },
   {
     name: 'Cor (HSV)',
-    type: 'hsv-filter',
+    type: 'HsvFilterNode',
     text: `
     Esse filtro é usado para pegar regiões com uma determinada cor em uma imagem.
     `,
-    icon: 'color-hue-saturation',
+    icon: 'palette',
     examples: `
      Digamos que você queira ver se os ovos estão na cor vermelhos ou brancos, sabendo quais são os ovos vermelhos, saberemos os bancos`,
     category: 'Filtros',
@@ -117,13 +134,13 @@ export const descriptions = [
   // },
   {
     name: 'Camera',
-    type: 'camera',
+    type: 'CameraNode',
     text: `
             Esse node é capaz de capturar uma imagem da camera
         `,
     icon: 'camera',
     examples: `
-            Esse node é capaz de capturar uma imagem da camera
+            Digamos que você queira capturar uma imagem da camera para fazer a identificação de algum ovo em uma bandeja de ovos.
         `,
     category: 'Hardware',
     tags: ['camera', 'hardware', 'comunicação', 'comunicacao'],
@@ -193,7 +210,7 @@ export const descriptions = [
   // },
   {
     name: 'Mover Eixo',
-    type: 'move-axis',
+    type: 'MoveAxisNode',
     text: 'Esse node é capaz de mover um eixo',
     icon: 'axis-arrow',
     examples: 'A ação vai iniciar assim que o botão  for clicado',

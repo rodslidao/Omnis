@@ -1,8 +1,8 @@
 import { Node } from '@baklavajs/core';
 // import { store } from '../../main';
 
-export default class Camera extends Node {
-  type = 'matrix';
+export default class MatrixNode extends Node {
+  type = 'MatrixNode';
   // twoColumn = true;
 
   name = 'Matriz';
