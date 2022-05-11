@@ -22,6 +22,12 @@ class NodeManager:
         if BaseNode.auto_run:
             auto_run_nodes[BaseNode._id] = BaseNode._id
 
+    def removeNode(nodeId):
+        global nodes, auto_run_nodes
+        del nodes[nodeId]
+        if nodeId in auto_run_nodes:
+            del auto_run_nodes[nodeId]
+
     def getActiveNodes():
         return nodes
 

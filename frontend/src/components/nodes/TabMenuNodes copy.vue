@@ -95,7 +95,7 @@ export default {
         // Result hook
         // Don't forget to destructure `data`
         result({ data }) {
-          console.log(data.alerts);
+          // console.log(data.alerts);
           this.tagAdded = data.alerts;
         },
       },
@@ -116,7 +116,7 @@ export default {
 
     tab() {
       this.selectTabByIndex(this.tab);
-      console.log('length changed:', this.tab);
+      // console.log('length changed:', this.tab);
     },
   },
 
@@ -134,7 +134,7 @@ export default {
     },
 
     async apollo() {
-      console.time('apollo');
+      // console.time('apollo');
       const response = await this.$apollo.query({
         query: gql`
           query {
@@ -148,7 +148,7 @@ export default {
       });
       console.log(this.$apollo.store);
       this.lixo = response.data.getProcess.data.status;
-      console.timeEnd('apollo');
+      // console.timeEnd('apollo');
     },
 
     // functcion to gerate unique id based in timestamp
@@ -157,7 +157,7 @@ export default {
     },
 
     close(index) {
-      console.log('aba fechada, index: ', index);
+      // console.log('aba fechada, index: ', index);
       this.removeTabByIndex(index);
     },
 

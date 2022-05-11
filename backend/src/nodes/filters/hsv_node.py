@@ -14,7 +14,7 @@ from cv2 import (
 
 from numpy import array
 
-NODE_TYPE = "HSV"
+NODE_TYPE = "hsv-filter"
 
 
 @for_all_methods(exception(logger))
@@ -31,7 +31,7 @@ class HsvNode(BaseNode):
         super().__init__(name, NODE_TYPE, id, options, output_connections)
         self.color_range = {
             "lower": options["filter"]["lower"],
-            "upper": options["filter"]["upper"],
+            "upper": ["filter"]["upper"],
         }
         self.auto_run = options["auto_run"]["value"]
         NodeManager.addNode(self)
@@ -79,3 +79,7 @@ class HsvNode(BaseNode):
             (0, 0, 255),
             2,
         )
+
+    @staticmethod
+    def stream_frame(frame, lower, upper):
+        return HsvNode.convert_frame(frame, lower, upper)

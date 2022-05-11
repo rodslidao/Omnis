@@ -13,6 +13,8 @@ from src.manager.serial_manager import SerialManager
 
 from src.nodes.process.process import process
 
+# from src.nodes.streaming_node.stream import Stream
+
 from src.utility.system.date import set_system_date
 
 mutation = MutationType()
@@ -213,3 +215,9 @@ def syncHostTime_resolver(obj, info, timestamp):
     except Exception:
         return False
     return True
+
+
+# # *  ----------- NodeStream ----------- * #
+# @mutation.field("updateStreamNode")
+# def updateStreamNode_resolver(obj, info, camera_id, node_type):
+#     return Stream.source_update(camera_id, node_type)

@@ -4,6 +4,7 @@ from src.nodes.base_node import BaseNode
 from .identify_functions import identifyObjects
 from api import logger, exception
 from api.decorators import for_all_methods
+from api import dbo
 
 NODE_TYPE = "IDENTIFY"
 
@@ -35,3 +36,7 @@ class IdentifyNode(BaseNode):
 
         # self.on("object", object_data)
         # self.onSuccess(object_data())
+
+    @staticmethod
+    def get_info():
+        return {"options": list(dbo.find_many("identify_node_info", {}, {"_id": 0}))}

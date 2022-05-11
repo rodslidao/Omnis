@@ -156,7 +156,7 @@ export default {
     },
 
     async apollo() {
-      console.time('apollo');
+      // console.time('apollo');
       const response = await this.$apollo.query({
         query: gql`
           query {
@@ -168,9 +168,9 @@ export default {
           }
         `,
       });
-      console.log(this.$apollo.store);
+      // console.log(this.$apollo.store);
       this.lixo = response.data.getProcess.data.status;
-      console.timeEnd('apollo');
+      // console.timeEnd('apollo');
     },
 
     selectTab(index) {
@@ -217,7 +217,7 @@ export default {
       };
 
       this.addTab(newTab);
-      console.log('tab length: ', tabLength);
+      // console.log('tab length: ', tabLength);
       this.updateSelectedTab(tabLength);
       this.tab = tabLength;
     },

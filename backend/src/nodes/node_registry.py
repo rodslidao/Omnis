@@ -32,7 +32,7 @@ class NodeRegistry:
             if entry.name == name:
                 return entry.clss
         else:
-            raise Exception("Class " + name + " not registered")
+            raise Exception("Class " + str(name) + " not registered")
 
 
 package_nodes = []  # list of package names and classes
@@ -55,7 +55,8 @@ for _dir in list(
         )
     )
 
-# import all the nodes in the list 'package_nodes', and store them in the list 'nodeRegistry' using the RegEntry class
+# import all the nodes in the list 'package_nodes',
+# and store them in the list 'nodeRegistry' using the RegEntry class
 for mod in package_nodes:
     mod["package_name"] = importlib.import_module(mod["package_name"], __package__)
     nodeRegistry.append(
