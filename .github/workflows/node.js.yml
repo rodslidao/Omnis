@@ -40,5 +40,5 @@ jobs:
       with:
         name: saving dist files
         path: |
-          dist
+          ./frontend/dist
     
