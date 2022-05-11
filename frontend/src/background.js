@@ -17,10 +17,13 @@ protocol.registerSchemesAsPrivileged([
 function createWindow() {
   // Create the browser window.
   win = new BrowserWindow({
-    width: 720,
-    height: 1280,
+    width: 1000,
+    height: 750,
+    // width: 720,
+    // height: 1280,
     // transparent: true,
-    frame: false,
+    frame: true,
+    // titleBarStyle: 'hidden',
     webPreferences: {
       nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
     },
