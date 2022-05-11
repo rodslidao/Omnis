@@ -24,6 +24,7 @@
     "baklavajs": "1.8.3",
     "core-js": "^3.6.5",
     "electron-builder": "^22.14.5",
+    "eslint-plugin-graphql": "^4.0.0",
     "graphql-tag": "^2.9.0",
     "python-shell": "^2.0.1",
     "register-service-worker": "^1.7.1",
