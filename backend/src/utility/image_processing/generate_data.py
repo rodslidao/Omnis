@@ -42,7 +42,7 @@ def generate_data(
     start = datetime.utcnow()
     counter = 0
     while counter < data_set_size:
-        frame = camera.read()
+        frame = camera.read(remove_distortion=False)
         if isinstance(frame, tuple):
             frame = frame[1]
         if show:

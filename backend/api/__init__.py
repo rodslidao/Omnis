@@ -27,13 +27,9 @@ def Managers_Import(definitions):
             if not config.get("disabled", False):
                 match config.get("is_gcode"):
                     case True:
-                        manager_class["manager"].add(
-                            manager_class["class"][1](**config)
-                        )
+                        manager_class["class"][1](**config, **config.get("options"))
                     case _:
-                        manager_class["manager"].add(
-                            manager_class["class"][0](**config)
-                        )
+                        manager_class["class"][0](**config, **config.get("options"))
 
 
 mangers = {

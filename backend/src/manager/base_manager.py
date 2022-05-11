@@ -10,7 +10,7 @@ class BaseManager:
         self.queues = []
 
     def add(self, payload):
-        self.store[payload._id] = payload
+        self.store[str(payload._id)] = payload
         self.update()
 
     def update(self):

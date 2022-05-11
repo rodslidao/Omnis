@@ -73,7 +73,6 @@ class Process(threading.Thread):
         self.endTiming = self.Chronometer.cron_End.timestamp()
         if wait:
             self.join()
-            print(1 / 0)
         # Alert("INFO", "Process Stopped", str(self.getStatus()))
 
     def getStatus(self):
@@ -96,6 +95,7 @@ class sample_process:
         self.kwargs = kwargs
         self.status = Process.STOPPED
         self.process = Process(self.st, *self.args, **self.kwargs)
+        self.process.daemon = True
 
     def load(self, _id=None):
         if self.status == Process.STOPPED:

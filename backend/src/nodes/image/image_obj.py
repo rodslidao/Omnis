@@ -57,11 +57,12 @@ class Image:
             rgb_base_img[:, :, c] = zeros([200, 200]) + rgb_base[c]
 
         hsv_bkg = cvtColor(rgb_base_img, COLOR_BGR2HSV_FULL)
-        return mean(array(hsv_bkg), axis=(1, 0)).tolist()
+        return mean(array(hsv_bkg), axis=(1, 0))
 
-    def dominant_color_range(self, variance=0.3):
+    def dominant_color_range(self, variance=[0.3, 0.3, 0.3]):
         color_array = self.dominant_color_array()
-        hsv_bkg_median_max = array(list(map(lambda x: x + (x * variance), color_array)))
-        hsv_bkg_median_min = array(list(map(lambda x: x - (x * variance), color_array)))
+        variant = color_array * variance
+        hsv_bkg_median_max = color_array + variant
+        hsv_bkg_median_min = color_array - variant
 
         return hsv_bkg_median_min, hsv_bkg_median_max

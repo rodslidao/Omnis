@@ -1,3 +1,4 @@
+# from tkinter import Scale
 from bson import ObjectId
 from src.manager.mongo_manager import CustomEncoder
 from numpy import ndarray, ndenumerate, generic, array, reshape
@@ -9,6 +10,15 @@ import cv2
 
 class Slot:
     """
+    @position,
+    @origin,
+    @sizes,
+    @borders,
+    @counter=[0, 0],
+    @extra=[0, 0],
+    @item=None,
+    @_id=None,
+
     Slot is a class that represents a slot in a grid/blister of slots.
     all the attributes except (item, empty, counter and _id) are dimensions in an unit 'x'
     or coordinates in a world of this unit. eg.
@@ -68,16 +78,16 @@ class Slot:
         _id=None,
         **kwargs,
     ):
-        scale = 3
         self._id = ObjectId(_id)
+        scale = kwargs.get("scale", 1)
         self.sizes = array(sizes) * scale
         self.borders = array(borders) * scale
-        self.width, self.height = sizes[:2]
+        self.extra = array(extra) * scale
         self.origin = array(origin)
-        self.item = item
         self.position = array(position)
         self.counter = array(counter)
-        self.extra = array(extra)
+        self.item = item
+        self.width, self.height = sizes[:2]
 
         M = array(
             list(
@@ -250,18 +260,21 @@ class Blister:
         else:
             return self.data
 
-    def draw(self, image=None):
+    def draw(self, image=None, thickness=1, color=(0, 0, 0), **kwargs):
         for _, slot in ndenumerate(self.data):
-            cv2.drawMarker(image, tuple((slot.center[:2].astype(int))), (0, 0, 255))
-            cv2.rectangle(image, slot.start, slot.end, (255, 255, 255), 1)
+            cv2.drawMarker(image, tuple((slot.center[:2].astype(int))), (0, 0, 255), thickness=thickness)
+            cv2.rectangle(image, slot.start, slot.end, color, thickness)
             cv2.putText(
                 image,
                 str(slot.position[:2]),
-                tuple((slot.center[:2].astype(int)) + [5, -5]),
+                tuple(
+                    (slot.center[:2].astype(int))
+                    + [int((slot.width * -1) / 2) + 5, int(slot.height / 4) - 5]
+                ),
                 cv2.FONT_HERSHEY_SIMPLEX,
-                0.35,
-                (255, 255, 255),
-                1,
+                1.2,
+                color,
+                thickness,
                 lineType=cv2.LINE_AA,
             )
         return image
@@ -275,7 +288,7 @@ class Blister:
         Returns:
             Blister: An blister with the same shape and slot_config, but with the items as the respective crop.
         """
-        temp = Blister(shape=self.shape, slot_config=self.slot_config)
+        temp = Blister(shape=self.shape, name=self.name, slot_config=self.slot_config)
         for _, slot in ndenumerate(self.data):
             pos = image[slot.start[1] : slot.end[1], slot.start[0] : slot.end[0]]
             if pointer:

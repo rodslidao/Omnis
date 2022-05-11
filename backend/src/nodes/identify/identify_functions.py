@@ -90,7 +90,7 @@ class dimensional_data(object):
         AD=None,
         center=None,
         edges=None,
-        corners=None,
+        # corners=None,
         countour=None,
         box=None,
         center_dist=None,
@@ -104,11 +104,11 @@ class dimensional_data(object):
         self.AD = AD
         self.center = center
         self.edges = edges
-        self.corners = corners
+        # self.corners = corners
         self.countour = countour
         self.box = box
         self.center_dist = center_dist
-        self.angle = self.getAngle()[1]
+        # self.angle = self.getAngle()[1]
 
     def getAngle(self, pivot="A"):
         if pivot in ["A", "B", "C", "D"]:
@@ -202,6 +202,7 @@ def identifyObjects(
     ):
         dimensional_object_list = []
         image = slot.item
+        slot.item = [False]
         # Find the contours in the image
         contours, _ = findContours(image, md, mt)
         for contour in contours:
@@ -239,16 +240,16 @@ def identifyObjects(
             edges = {"A": A, "B": B, "C": C, "D": D}
 
             # Improve corners detection
-            n = 10  # px off-set from image boundaries to avoid errors.
-            corners = [
-                [cord[0] + A[0] - n, cord[1] + B[1] - n]
-                for cord in find_corners(
-                    image[
-                        A[1] - n if A[1] >= n else 0 : D[1] + n,
-                        B[0] - n if B[0] >= n else 0 : C[0] + n,
-                    ]
-                )
-            ]
+            # n = 10  # px off-set from image boundaries to avoid errors.
+            # corners = [
+            #     [cord[0] + A[0] - n, cord[1] + B[1] - n]
+            #     for cord in find_corners(
+            #         image[
+            #             A[1] - n if A[1] >= n else 0 : D[1] + n,
+            #             B[0] - n if B[0] >= n else 0 : C[0] + n,
+            #         ]
+            #     )
+            # ]
 
             # calculate diagonals, and reject contours that are too small or too large
             def distance(p1, p2):
@@ -279,14 +280,18 @@ def identifyObjects(
                 "X": int(cx - (image.shape[1] / 2)),
                 "Y": int(cy - (image.shape[0] / 2)),
             }
+            if not verify(center["Y"], "center_y"):
+                continue
+            if not verify(center["X"], "center_x"):
+                continue
 
-            if len(corners) == 0:
-                corners = [
-                    [int(center["X"] - (diameter / 2)), center["Y"]],
-                    [center["X"], int(center["Y"] - (diameter / 2))],
-                    [int(center["X"] + (diameter / 2)), center["Y"]],
-                    [center["X"], int(center["Y"] + (diameter / 2))],
-                ]
+            # if len(corners) == 0:
+            #     corners = [
+            #         [int(center["X"] - (diameter / 2)), center["Y"]],
+            #         [center["X"], int(center["Y"] - (diameter / 2))],
+            #         [int(center["X"] + (diameter / 2)), center["Y"]],
+            #         [center["X"], int(center["Y"] + (diameter / 2))],
+            #     ]
 
             # ! Define an output shape, and pre-allocate an array for the result.
             # ! shape is used to define a ROI of the image.
@@ -303,7 +308,7 @@ def identifyObjects(
                     AD,
                     center,
                     edges,
-                    corners,
+                    # corners,
                     contour,
                     box,
                     center_dist,

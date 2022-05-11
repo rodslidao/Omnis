@@ -125,7 +125,15 @@ async def uploadPhoto_resolver(obj, info, **kwargs):
     img = imdecode(frombuffer(kwargs.get("photo").file.read(), uint8), 1)
     print(p.export(path, img))
     return {"filename": p.id, "path": p.path}
-
+    
+@mutation.field("takePhoto")
+async def takePhoto_resolver(obj, info, **kwargs):
+    camera_id = kwargs.get("camera_id")
+    p = Picture(str(camera_id))
+    path = f"{abspath('./src')}/{p.path}{p.name}.jpeg"
+    img = CameraManager.get_by_id(camera_id).read()
+    print(p.export(path, img))
+    return {"filename": p._id, "path": p.path}
 
 # *  ----------- Cameras ----------- * #
 @mutation.field("createCamera")

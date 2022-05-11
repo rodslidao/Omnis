@@ -70,6 +70,13 @@ class MorphoperationNode(BaseNode):
         return self.image
 
     @staticmethod
+    def apply_morph(image, operation_type, element_type, k_size, iterations=1):
+        kernel = getStructuringElement(element_types[element_type], (k_size, k_size))
+        return morphologyEx(
+            image, operations_types[operation_type], kernel, iterations=iterations
+        )
+
+    @staticmethod
     def get_info():
         return {
             "options": {

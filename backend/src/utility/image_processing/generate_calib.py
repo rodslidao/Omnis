@@ -86,7 +86,7 @@ def generate_charuco_board(
 
 
 def sort_images(path):
-    images = np.array([path + f for f in os.listdir(path) if f.endswith(".png")])
+    images = np.array([path + f for f in os.listdir(path) if f.endswith(".jpg")])
     order = np.argsort([int(p.split(".")[-2].split("_")[-1]) for p in images])
     return list(map(cv2.imread, images[order]))
 
