@@ -1,5 +1,8 @@
 module.exports = {
   // ... other options
+  node: {
+    fs: 'empty',
+  },
   module: {
     rules: [
       {
@@ -9,5 +12,11 @@ module.exports = {
         exclude: /node_modules/,
       },
     ],
+  },
+  resolve: {
+    fallback: {
+      path: require.resolve('path-browserify'),
+      // path: false,
+    },
   },
 };
