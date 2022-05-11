@@ -4,3 +4,4 @@ r.txt
 *.*.json
 core
 *.pckl
+*Test.py

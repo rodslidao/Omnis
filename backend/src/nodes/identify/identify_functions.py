@@ -380,3 +380,9 @@ def identifyObjects(
 #         "max":100
 #     },
 # }
+
+
+100 = 360
+Y= X
+
+X = (Y*360)/100

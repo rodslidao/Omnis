@@ -1,7 +1,6 @@
-import math
-import colorsys
 from api import logger, exception
 from api.decorators import for_all_methods
+from src.nodes.color.color_functions import hex2int, any2hex, rgb2hsv, hsv2rgb
 
 
 @for_all_methods(exception(logger))
@@ -33,81 +32,40 @@ class ColorOBJ:
         match mode:
             case self.HEX:
                 self.HEX_V = value
-                self.RGB_V = self.hex2int(value)
-                self.HSV_V = self.rgb2hsv(*self.rgb)
+                self.RGB_V = hex2int(value)
+                self.HSV_V = rgb2hsv(*self.RGB_V)
                 self.CV2_HSV_V = [
-                    self.hsv[0],
-                    (self.hsv[1] * 255) / 100,
-                    (self.hsv[2] * 255) / 100,
+                    self.HSV_V[0],
+                    (self.HSV_V[1] * 255) / 100,
+                    (self.HSV_V[2] * 255) / 100,
                 ]
             case self.RGB:
                 self.RGB_V = value
-                self.HEX_V = self.any2hex(value)
-                self.HSV_V = self.rgb2hsv(*self.rgb)
+                self.HEX_V = any2hex(value)
+                self.HSV_V = rgb2hsv(*self.RGB_V)
                 self.CV2_HSV_V = [
-                    self.hsv[0],
-                    (self.hsv[1] * 255) / 100,
-                    (self.hsv[2] * 255) / 100,
+                    self.HSV_V[0],
+                    (self.HSV_V[1] * 255) / 100,
+                    (self.HSV_V[2] * 255) / 100,
                 ]
             case self.HSV:
                 self.HSV_V = value
-                self.RGB_V = self.hsv2rgb(*self.hsv)
-                self.HEX_V = self.any2hex(self.rgb)
+                self.RGB_V = hsv2rgb(*self.HSV_V)
+                self.HEX_V = any2hex(self.RGB_V)
                 self.CV2_HSV_V = [
-                    self.hsv[0],
-                    (self.hsv[1] * 255) / 100,
-                    (self.hsv[2] * 255) / 100,
+                    self.HSV_V[0],
+                    (self.HSV_V[1] * 255) / 100,
+                    (self.HSV_V[2] * 255) / 100,
                 ]
             case self.CV2_HSV:
                 self.CV2_HSV_V = value
                 self.HSV_V = [
-                    self.cv2_hsv[0],
-                    (self.cv2_hsv[1] * 100) / 255,
-                    (self.cv2_hsv[2] * 100) / 255,
+                    self.CV2_HSV_V[0],
+                    (self.CV2_HSV_V[1] * 100) / 255,
+                    (self.CV2_HSV_V[2] * 100) / 255,
                 ]
-                self.RGB_V = self.hsv2rgb(*self.hsv)
-                self.HEX_V = self.any2hex(self.rgb)
+                self.RGB_V = hsv2rgb(*self.HSV_V)
+                self.HEX_V = any2hex(self.RGB_V)
 
     def get(self, mode):
         return getattr(self, f"{mode}_V")
-
-    def hsv2rgb(self, h, s_, v_):
-        s = s_ / 100
-        v = v_ / 100
-        c = v * s
-        x = c * (1 - abs(math.fmod(h / 60.0, 2) - 1))
-        m = v - c
-        if 0 <= h < 60:
-            r, g, b = c, x, 0
-        elif 60 <= h < 120:
-            r, g, b = x, c, 0
-        elif 120 <= h < 180:
-            r, g, b = 0, c, x
-        elif 180 <= h < 240:
-            r, g, b = 0, x, c
-        elif 240 <= h < 300:
-            r, g, b = x, 0, c
-        else:
-            r, g, b = c, 0, x
-        return (int((r + m) * 255), int((g + m) * 255), int((b + m) * 255))
-
-    def rgb2hsv(self, r, g, b):
-        red_percentage = r / 255
-        green_percentage = g / 255
-        blue_percentage = b / 255
-        color_hsv_percentage = colorsys.rgb_to_hsv(
-            red_percentage, green_percentage, blue_percentage
-        )
-
-        color_h = round(360 * color_hsv_percentage[0])
-        color_s = round(100 * color_hsv_percentage[1])
-        color_v = round(100 * color_hsv_percentage[2])
-
-        color_hsv = (color_h, color_s, color_v)
-        return color_hsv
-
-    def any2hex(self, hsv_):
-        return tuple(map(hex, hsv_))
-
-    def hex2int(self, hex_):
-        return tuple(map(lambda x: int(x, 16), hex_))

@@ -1,9 +1,11 @@
-from src.nodes.node_manager import NodeManager
-from src.nodes.base_node import BaseNode
-from api import logger, exception
-from api.decorators import for_all_methods
+# from src.nodes.node_manager import NodeManager
+# from src.nodes.base_node import BaseNode
+
+# from api import logger, exception
+# from api.decorators import for_all_methods
 
 from cv2 import (
+    COLOR_BGR2HSV_FULL,
     inRange,
     cvtColor,
     COLOR_BGR2HSV,
@@ -17,8 +19,8 @@ from numpy import array
 NODE_TYPE = "hsv-filter"
 
 
-@for_all_methods(exception(logger))
-class HsvNode(BaseNode):
+# @for_all_methods(exception(logger))
+class HsvNode:
     """
     HsvNode is a class to convert an image to HSV color space and filter it by a color range.
 
@@ -28,13 +30,13 @@ class HsvNode(BaseNode):
     """
 
     def __init__(self, name, id, options, output_connections, input_connections):
-        super().__init__(name, NODE_TYPE, id, options, output_connections)
+        # super().__init__(name, NODE_TYPE, id, options, output_connections)
         self.color_range = {
             "lower": options["filter"]["lower"],
             "upper": ["filter"]["upper"],
         }
         self.auto_run = options["auto_run"]["value"]
-        NodeManager.addNode(self)
+        # NodeManager.addNode(self)
 
     def execute(self, message):
         target = message.targetName.lower()
@@ -53,7 +55,7 @@ class HsvNode(BaseNode):
     @staticmethod
     def convert_frame(image, lower, upper):
         return inRange(
-            cvtColor(image, COLOR_BGR2HSV),
+            cvtColor(image, COLOR_BGR2HSV_FULL),
             array(lower),
             array(upper),
         )

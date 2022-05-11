@@ -178,7 +178,7 @@ export default {
     UrlMaker() {
       const url = `http://${process.env.VUE_APP_URL_API_IP}:${process.env.VUE_APP_URL_API_STREAMING_PORT}`;
 
-      const { id } = this.selectedCamera.id;
+      const  id  = this.selectedCamera.id;
       if (id !== null) {
         navigator.sendBeacon(
           `http://${process.env.VUE_APP_URL_API_IP}:${process.env.VUE_APP_URL_API_PORT}/videos/${id}`

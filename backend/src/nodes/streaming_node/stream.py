@@ -1,4 +1,3 @@
-from api.mutations import pauseProcess_resolver
 from src.manager.camera_manager import CameraManager
 from src.nodes.node_manager import NodeManager
 from bson import ObjectId
@@ -29,7 +28,7 @@ class StreamNode:
         return self.node.stream_frame(self.camera.read())
 
     def stop(self):
-        pauseProcess_resolver()
+        self.camera.stop()
 
 
 Stream = StreamNode()

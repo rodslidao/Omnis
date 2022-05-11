@@ -1,11 +1,12 @@
 from numpy import unravel_index, bincount, zeros, uint8, mean, array
 from cv2 import imread, cvtColor, COLOR_BGR2HSV_FULL
 from numexpr import evaluate
-from api import logger, exception
-from api.decorators import for_all_methods
+
+# from api import logger, exception
+# from api.decorators import for_all_methods
 
 
-@for_all_methods(exception(logger))
+# @for_all_methods(exception(logger))
 class Image:
     def __init__(self, path=None, image=None) -> None:
         self.path = path
@@ -37,7 +38,7 @@ class Image:
     def area(self):
         return self.width() * self.height()
 
-    def dominant_color(self):
+    def dominant_BGR_color(self):
         a2D = self.image.reshape(-1, self.image.shape[-1])
         col_range = (256, 256, 256)
         eval_params = {
@@ -50,8 +51,8 @@ class Image:
         a1D = evaluate("a0*s0*s1+a1*s0+a2", eval_params)
         return unravel_index(bincount(a1D).argmax(), col_range)
 
-    def dominant_color_array(self):
-        rgb_base = self.dominant_color()
+    def dominant_HSV_color(self):
+        rgb_base = self.dominant_BGR_color()
         rgb_base_img = zeros([200, 200, 3], uint8)
         for c in range(0, 3):
             rgb_base_img[:, :, c] = zeros([200, 200]) + rgb_base[c]
@@ -59,9 +60,10 @@ class Image:
         hsv_bkg = cvtColor(rgb_base_img, COLOR_BGR2HSV_FULL)
         return mean(array(hsv_bkg), axis=(1, 0))
 
-    def dominant_color_range(self, variance=[0.3, 0.3, 0.3]):
-        color_array = self.dominant_color_array()
-        variant = color_array * variance
+    def dominant_HSV_range(self, variance=[0.3, 0.3, 0.3]):
+        color_array = self.dominant_HSV_color()
+        variant = (variance * array([360, 255, 255])) / 100
+        # variant = color_array * variance
         hsv_bkg_median_max = color_array + variant
         hsv_bkg_median_min = color_array - variant
 

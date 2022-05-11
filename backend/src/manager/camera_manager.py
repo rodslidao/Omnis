@@ -18,14 +18,14 @@ class CameraObjectManager(BaseManager):
         self.stream_id = str(stream_id)
 
     def __dell__(self):
-        for v in self.stream.values():
+        for v in self.store.values():
             v.stop()
 
     def read(self):
         return self.store[self.stream_id].read()
 
     def stop(self):
-        for v in self.stream.values():
+        for v in self.store.values():
             v.stop()
 
 

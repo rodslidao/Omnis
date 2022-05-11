@@ -9,7 +9,12 @@
           >
             <div class="d-flex align-right mb-6 text-h6 d-flex flex-column">
               Cor 1<br />
-              <span class="text-subtitle-2"> {{ myMessage.a }}</span>
+              <span v-show="false" class="text-subtitle-2"> {{ myMessage.a }}</span>
+              <v-text-field
+                    v-model="configuration.camera.filters.hole.gradient.color"
+                    dense
+                    hide-details
+              ></v-text-field>
             </div>
           </div>
           <div
@@ -43,7 +48,12 @@
           <div :class="selectedColor1 ? 'colorName' : 'colorNameSelected'">
             <div class="d-flex mb-6 text-h6 d-flex flex-column">
               Cor 2<br />
-              <span class="text-subtitle-2">{{ myMessage.b }}</span>
+              <span v-show="false" class="text-subtitle-2">{{ myMessage.b }}</span>
+              <v-text-field
+                    v-model="configuration.camera.filters.hole.gradient.color2"
+                    dense
+                    hide-details
+              ></v-text-field>
             </div>
           </div>
         </div>
