@@ -14,9 +14,10 @@ export default class IdentifyNode extends Node {
       description: 'Costuma receber uma matriz de imagens ja tratadas com filtros',
     });
 
-    this.addOutputInterface('Matrix', {
+    this.addOutputInterface('MatrizOut', {
       description:
         'Sai uma matriz com a imagem cortada de cada pedacinho com as informações de identificação dos filtros configurados',
+      alias: 'Matriz',
     });
 
     this.addOption('filters', 'IdentifyDialog', null);

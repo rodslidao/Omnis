@@ -30,7 +30,12 @@ export default class MatrixNode extends Node {
       description: 'Sai uma matriz com a imagem cortada de cada pedacinho',
     });
 
-    this.addOutputInterface('Falha');
+    this.addOutputInterface('Fim', {
+      description: 'Essa saida é ativada quando o ultimo item da matriz é selecionado',
+    });
+    this.addOutputInterface('Erro', {
+      description: 'Quando ele tenta rodar e por algum motivo não deu certo, essa saida recebe o erro',
+    });
 
     this.addOption('matrix', 'MatrixDialog', null);
 

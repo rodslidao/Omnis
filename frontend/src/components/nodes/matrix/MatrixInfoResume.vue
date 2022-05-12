@@ -37,15 +37,30 @@ export default {
   props: {
     subdivisions: Object,
     slots: Object,
+    origem: Object,
   },
 
   computed: {
     infoList() {
-      const lines = this.slots.qtd.Y * this.subdivisions.qtd.Y;
-      const column = this.slots.qtd.X * this.subdivisions.qtd.X;
+      const lines = this.slots.qtd.y * this.subdivisions.qtd.y;
+      const column = this.slots.qtd.x * this.subdivisions.qtd.x;
       const total = lines * column;
 
       const list = [
+        {
+          text: 'Origem X',
+          unit: '',
+          number: this.origem.x,
+          icon: 'mdi-alpha-x-circle',
+          color: 'primary',
+        },
+        {
+          text: 'Origem Y',
+          unit: '',
+          number: this.origem.y,
+          icon: 'mdi-alpha-y-circle',
+          color: 'primary',
+        },
         {
           text: 'Linhas',
           unit: '',
