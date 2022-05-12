@@ -20,4 +20,4 @@ class Message:
         self.additional = additional
 
     def __str__(self) -> str:
-        return f"[{self.sourceName}] -> [{self.targetNodeId}|{self.targetName}] : {self.payload}"
+        return f"([{self.targetNodeId}|{self.targetName}] : {self.payload if len(self.payload)<20 else self.payload[:10]})"

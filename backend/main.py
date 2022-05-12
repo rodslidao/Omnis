@@ -136,7 +136,7 @@ if __name__ == "__main__":
             time.sleep(1)
     except KeyboardInterrupt:
         CameraStreamer.shutdown()
-        image_stream_server.join(5)
+        image_stream_server.join(1)
     finally:
-        app_server.join(5)
+        app_server.join(1)
         dbo.close()

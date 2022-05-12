@@ -6,7 +6,7 @@ from api import logger, exception
 from api.decorators import for_all_methods
 from api import dbo
 
-NODE_TYPE = "IDENTIFY"
+NODE_TYPE = "IdentifyNode"
 
 
 @for_all_methods(exception(logger))
@@ -22,8 +22,8 @@ class IdentifyNode(BaseNode):
         super().__init__(name, NODE_TYPE, id, options, output_connections)
         self.input_connections = input_connections
         self.filters = options["filters"]
-        self.propertie = options["propertie"]
-        self.auto_run = options["auto_run"]["value"]
+        # self.propertie = options["propertie"]
+        self.auto_run = False #options["auto_run"]["value"]
         NodeManager.addNode(self)
 
     def execute(self, message):

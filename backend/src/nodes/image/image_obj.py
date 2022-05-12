@@ -2,11 +2,11 @@ from numpy import unravel_index, bincount, zeros, uint8, mean, array
 from cv2 import imread, cvtColor, COLOR_BGR2HSV_FULL
 from numexpr import evaluate
 
-# from api import logger, exception
-# from api.decorators import for_all_methods
+from api import logger, exception
+from api.decorators import for_all_methods
 
 
-# @for_all_methods(exception(logger))
+@for_all_methods(exception(logger))
 class Image:
     def __init__(self, path=None, image=None) -> None:
         self.path = path

@@ -78,7 +78,7 @@ class BaseNode:
             )
             while not self.running:
                 pass
-            logger.info(f"{self} -> {message}")
+            logger.info(f"{self}({message.sourceName}) -> {message}")
             node_ro_run = NodeManager.getNodeById(target.get("to").get("nodeId"))
             node_ro_run.execute(message)
 
@@ -125,7 +125,7 @@ class BaseNode:
         }
 
     def __str__(self) -> str:
-        return f"[{self._id}] ({self.type}) {self.name}"
+        return f"[{self.type}|{self._id}|{self.name}]"
 
     @staticmethod
     def normalize_id_on_dict(dictionary):

@@ -28,7 +28,8 @@ class StreamNode:
         return self.node.stream_frame(self.camera.read())
 
     def stop(self):
-        self.camera.stop()
+        pass
+        # self.camera.stop()
 
 
 Stream = StreamNode()

@@ -6,9 +6,9 @@ from src.nodes.matrix.matrix_obj import Blister, Slot
 from bson import ObjectId
 from api import logger, exception, dbo
 from api.decorators import for_all_methods
-from numpy import array
+import numpy as np
 
-NODE_TYPE = "MATRIX"
+NODE_TYPE = "MatrixNode"
 
 """
             [
@@ -71,6 +71,8 @@ NODE_TYPE = "MATRIX"
           }
 """
 
+def convert_to_array(dict_, type_=float):
+    return np.fromiter(dict_.values(), dtype=type_)
 
 @for_all_methods(exception(logger))
 class MatrixNode(BaseNode):
@@ -88,22 +90,23 @@ class MatrixNode(BaseNode):
         super().__init__(name, NODE_TYPE, id, options, output_connections)
         self.input_connections = input_connections
 
-        slots = array(options["matrix"]["slots"])
-        subdivisions = array(options["matrix"]["subdivisions"])
-        shape = slots["qtd"] * subdivisions["qtd"]
+        slots = options["matrix"]["slots"]
+        subdivisions = options["matrix"]["subdivisions"]
+        shape = convert_to_array(slots["qtd"], int) * convert_to_array(subdivisions["qtd"], int)
         slot_config = {
-            "sizes": slots["size"],
-            "borders": slots["margin"],
-            "origin": slots["origin"],
-            "counter": shape / slots["qtd"],
-            "extra": subdivisions["margin"],
+            "sizes": convert_to_array(slots["size"]),
+            "borders": convert_to_array(slots["margin"]),
+            "origin": convert_to_array(slots["origin"]),
+            "counter": shape / convert_to_array(slots["qtd"], int),
+            "extra": convert_to_array(subdivisions["margin"]),
         }
-        self.blister = Blister(shape=shape, slot_config=slot_config)
-        self.auto_run = options["auto_run"]["value"]
+        self.blister = Blister(shape=shape, name=options["matrix"]["name"], _id=options["matrix"]["id"],  slot_config=slot_config)
+        self.auto_run = False #options["auto_run"]["value"]
         NodeManager.addNode(self)
 
     def __next__(self):
         garbage = next(self.blister)
+        print(garbage)
         self.on("Item", garbage)
         return garbage
 
@@ -111,7 +114,12 @@ class MatrixNode(BaseNode):
         target = message.targetName.lower()
         match target:
             case "Reset":
-                self.reset()
+                if isinstance(message.payload, Blister):
+                    self.blister.update_data(message.payload.data)
+                else:
+                    print(message.payload)
+                    exit(1)
+                # self.reset()
             case "Próximo":
                 return next(self)
             case "Imagem":
