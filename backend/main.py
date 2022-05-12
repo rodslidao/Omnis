@@ -102,6 +102,8 @@ port = environ["SERVER_PORT"] if environ.get("SERVER_PORT") else 5000
 stream = environ["STREAMING_PORT"] if environ.get("STREAMING_PORT") else 4000
 if environ.get("ENV_MODE") == "production":
     host = "0.0.0.0"
+elif environ.get("SERVER_IP"):
+    host = environ["SERVER_IP"]
 else:
     socketI = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     socketI.connect(("8.8.8.8", 80))
@@ -136,7 +138,7 @@ if __name__ == "__main__":
             time.sleep(1)
     except KeyboardInterrupt:
         CameraStreamer.shutdown()
-        image_stream_server.join(1)
+        image_stream_server.join(2)
     finally:
         app_server.join(1)
         dbo.close()

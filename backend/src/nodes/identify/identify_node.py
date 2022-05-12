@@ -28,14 +28,7 @@ class IdentifyNode(BaseNode):
 
     def execute(self, message):
         object_data_list = identifyObjects(message.payload, **self.filters)
-        self.onSuccess(object_data_list)
-        # for object_data in object_data_list:
-        #     for prop_key in self.propertie:
-        #         if object_data.get(prop_key) is not None:
-        #             self.on(prop_key, object_data.get(prop_key))
-
-        # self.on("object", object_data)
-        # self.onSuccess(object_data())
+        self.on("Matrix", object_data_list)
 
     @staticmethod
     def get_info():

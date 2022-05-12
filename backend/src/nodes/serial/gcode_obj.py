@@ -85,7 +85,7 @@ class SerialGcodeOBJ(Serial):
                 pos.append(info[info.index(cut) + len(cut) : len(info)])
                 key.append(info[: info.index(cut)])
             except ValueError as e:  # ! Why this error?
-                logger.critical(f"{self.name} - {info} : {e}")
+                logger.error(f"{self.name} - {info} : {e}")
         return dict(zip(key, pos))
 
     @verify

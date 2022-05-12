@@ -15,7 +15,7 @@ class SwitchNode(BaseNode):
     def __init__(self, name, id, options, output_connections, input_connections):
         super().__init__(name, NODE_TYPE, id, options, output_connections)
         self.input_connections = input_connections
-        self.auto_run = False #options["auto_run"]["value"]
+        self.auto_run = False # options["auto_run"]["value"]
         print(options)
         self.variables = list(map(lambda x: x["name"], options["inputlist"]))#[chr(i) for i in range(ord("a"), ord("z") + 1)]
         self.inputs = {}
@@ -28,13 +28,15 @@ class SwitchNode(BaseNode):
         target = message.targetName
         if target in self.variables:
             self.inputs[str(target)] = message.payload
+            logger.info("{} received {}".format(self.name, message.payload[1].item is not None))
         elif target in ["True", "False"]:
             setattr(self, target, self.inputs.get(message.payload, message.payload))
-        elif target == "expression":
-            result = eval(self.expression, self.inputs.copy())
-            opt_result = getattr(self, str(result))
-            self.on(str(result), opt_result if opt_result is not None else result)
-            return opt_result if opt_result is not None else result
+        # elif target == "expression":
+        result = eval(self.expression, self.inputs.copy())
+        # if result != False:
+        #     logger.warning(list(map(type, self.inputs['A'][1].item)))
+        # opt_result = getattr(self, str(result))
+        # self.on("Sucesso" if result else "Falha", opt_result if opt_result is not None else result)
 
     @staticmethod
     def get_info():
