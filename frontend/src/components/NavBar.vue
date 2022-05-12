@@ -127,9 +127,9 @@ export default {
   height: 1.4em;
   margin-top: 0.5em;
 }
-v-app-bar {
-  z-index: 999;
-}
+// v-app-bar {
+//   z-index: 999;
+// }
 
 .alert {
   // position: absolute;

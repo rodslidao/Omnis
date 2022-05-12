@@ -22,7 +22,8 @@ class ColorOBJ:
         :methods: ->\n
             get_color(mode) returns the color in the specified mode.\n
             \n
-            -- when a instance is created, the color is automatically converted to all other modes, the following methods does need be called --\n
+            -- when a instance is created, the color is automatically converted to all
+            other modes, the following methods does need be called --\n
             \n
             rgb2hsv(r, g, b) returns the hsv value of the rgb value.\n
             any2hex(hsv_) returns the hex value of the hsv value.\n

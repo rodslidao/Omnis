@@ -141,7 +141,7 @@ export default {
       const response = await this.$apollo.query({
         query: gql`
           query {
-            getNodeInfo(node_type: "CAMERA") {
+            getNodeInfo(node_type: "CameraNode") {
               data {
                 options
               }

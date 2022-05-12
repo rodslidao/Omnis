@@ -191,7 +191,7 @@ export default {
       const response = await this.$apollo.query({
         query: gql`
           query {
-            getNodeInfo(node_type: "IDENTIFY") {
+            getNodeInfo(node_type: "IdentifyNode") {
               data {
                 options
               }
