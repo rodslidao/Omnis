@@ -3,7 +3,7 @@ from src.nodes.base_node import BaseNode
 from api import logger, exception
 from api.decorators import for_all_methods
 
-NODE_TYPE = "SWITCH"
+NODE_TYPE = "IfNode"
 
 
 @for_all_methods(exception(logger))
@@ -15,12 +15,13 @@ class SwitchNode(BaseNode):
     def __init__(self, name, id, options, output_connections, input_connections):
         super().__init__(name, NODE_TYPE, id, options, output_connections)
         self.input_connections = input_connections
-        self.auto_run = options["auto_run"]["value"]
-        self.variables = [chr(i) for i in range(ord("a"), ord("z") + 1)]
+        self.auto_run = False #options["auto_run"]["value"]
+        print(options)
+        self.variables = list(map(lambda x: x["name"], options["inputlist"]))#[chr(i) for i in range(ord("a"), ord("z") + 1)]
         self.inputs = {}
-        setattr(self, "True", options["true"]["value"])
-        setattr(self, "False", options["false"]["value"])
-        self.expression = options["expression"]["value"]
+        setattr(self, "True", options["onsuccess"])
+        setattr(self, "False", options["onfailure"])
+        self.expression = options["expression"]
         NodeManager.addNode(self)
 
     def execute(self, message=""):

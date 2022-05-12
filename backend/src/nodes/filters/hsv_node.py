@@ -1,8 +1,8 @@
-# from src.nodes.node_manager import NodeManager
-# from src.nodes.base_node import BaseNode
+from src.nodes.node_manager import NodeManager
+from src.nodes.base_node import BaseNode
 
-# from api import logger, exception
-# from api.decorators import for_all_methods
+from api import logger, exception
+from api.decorators import for_all_methods
 
 from cv2 import (
     COLOR_BGR2HSV_FULL,
@@ -16,11 +16,11 @@ from cv2 import (
 
 from numpy import array
 
-NODE_TYPE = "hsv-filter"
+NODE_TYPE = "HsvFilterNode"
 
 
-# @for_all_methods(exception(logger))
-class HsvNode:
+@for_all_methods(exception(logger))
+class HsvNode(BaseNode):
     """
     HsvNode is a class to convert an image to HSV color space and filter it by a color range.
 
@@ -30,21 +30,22 @@ class HsvNode:
     """
 
     def __init__(self, name, id, options, output_connections, input_connections):
-        # super().__init__(name, NODE_TYPE, id, options, output_connections)
+        super().__init__(name, NODE_TYPE, id, options, output_connections)
         self.color_range = {
-            "lower": options["filter"]["lower"],
-            "upper": ["filter"]["upper"],
+            "lower": options["lower"],
+            "upper": options["upper"],
         }
-        self.auto_run = options["auto_run"]["value"]
-        # NodeManager.addNode(self)
+        self.auto_run = False #options["auto_run"]["value"]
+        NodeManager.addNode(self)
 
     def execute(self, message):
         target = message.targetName.lower()
         if target == "color_range":
             self.color_range = message.payload
-        elif target == "image":
+        elif target == "imagem":
+            logger.info("image")
             self.message = message
-            self.onSuccess(
+            self.on("Saida",
                 self.convert_frame(
                     message.payload,
                     self.color_range["lower"],
