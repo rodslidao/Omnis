@@ -29,8 +29,8 @@ export default class HsvFilterNode extends Node {
       description: 'Sai uma imagem preto e branco, com a cor escolhida em branco e o resto preto',
     });
 
-    this.addOption('lower', 'HsvFilterDialog');
-    this.addOption('upper');
+    this.addOption('lower', 'HsvFilterDialog', this.lower);
+    this.addOption('upper', undefined, this.upper);
 
     this.addOption('camera', undefined, this.getInterface('Imagem').value);
 
