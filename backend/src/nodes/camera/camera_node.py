@@ -6,7 +6,6 @@ from api.decorators import for_all_methods
 
 NODE_TYPE = "CameraNode"
 
-
 @for_all_methods(exception(logger))
 class CameraNode(BaseNode):
     """

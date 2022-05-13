@@ -34,6 +34,7 @@ class Process(threading.Thread):
             while self.paused.is_set():
                 self.resumed.wait()
                 self.resumed.clear()
+        # for i in range(2):
             if not self.stopped.is_set() and not self.paused.is_set():
                 self.target(*self.args, **self.kwargs)
         logger.info("Process Thread Stopped")

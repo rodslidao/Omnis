@@ -4,7 +4,8 @@ from src.manager.mongo_manager import CustomEncoder
 from numpy import ndarray, ndenumerate, generic, array, reshape
 from json import loads, dumps
 import cv2
-
+from api import logger
+from datetime import datetime
 # ! Slot should be a self-contained class or Node?
 
 
@@ -245,17 +246,12 @@ class Blister:
         return self.iterator
 
     def __next__(self):
-        try:
-            return next(self.iterator)
-        except StopIteration:
-            self.reset_iterator()
-            raise StopIteration
+        return next(self.iterator)
 
     def __call__(self, y=None, x=None, v=None):
         if y is not None and x is not None:
             if v is not None:
                 self.update_item(v, [y, x])
-                self.reset_iterator()
             return self.get_slot([y, x])
         else:
             return self.data

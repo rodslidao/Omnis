@@ -78,7 +78,7 @@ class MongoOBJ:
             self.client = MongoClient(db_url)
             self.client.admin.command("ismaster")
         except ConnectionFailure:
-            logger.critical(f"Could not connect to MongoDB using url: {db_url}")
+            logger.error(f"Could not connect to MongoDB using url: {db_url}")
             raise
         else:
             logger.info("Connected to MongoDB")

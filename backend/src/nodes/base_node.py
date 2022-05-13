@@ -4,6 +4,7 @@ from api import logger, exception
 from api.decorators import for_all_methods
 from threading import Event
 
+from threading import Thread
 NODE_TYPE = "BASE_NODE"
 
 
@@ -78,9 +79,14 @@ class BaseNode:
             )
             while not self.running:
                 pass
-            logger.info(f"{self}({message.sourceName}) -> {message}")
+            # logger.info(f"{self}({message.sourceName}) -> {message}")
             node_ro_run = NodeManager.getNodeById(target.get("to").get("nodeId"))
-            node_ro_run.execute(message)
+            # try:
+            Thread(target=node_ro_run.execute, args=(message,), name=f"{str(self)}({message.sourceName}) -> {message}", daemon=True).start()
+            # T.join()
+            # except Exception as e:
+            #     logger.error(f"{node_ro_run}({message.targetName}) -> {e}")
+            #     return False
 
     def AutoRun(self):
         message = Message(

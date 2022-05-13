@@ -104,43 +104,29 @@ class MatrixNode(BaseNode):
         self.auto_run = False #options["auto_run"]["value"]
         NodeManager.addNode(self)
 
-    def __next__(self):
-        garbage = next(self.blister)
-        print(garbage)
-        self.on("Item", garbage)
-        return garbage
-
     def execute(self, message):
         target = message.targetName.lower()
+    
         match target:
-            case "Reset":
+            case "reset":
                 if isinstance(message.payload, Blister):
                     self.blister.update_data(message.payload.data)
-                else:
-                    print(message.payload)
-                    exit(1)
-                # self.reset()
-            case "Próximo":
-                return next(self)
-            case "Imagem":
-                garbage = self.blister.roi(message.payload)
-                self.on(
-                    "Matriz", garbage
-                )  # ! Send data, or blister object? what is the best way?
-                return garbage()
-            case "Matriz":
-                self.blister.update_data(message.payload)
-                return next(self)
+                    return self.item()
 
-            # case "end":
-            #     self.reset()
-            #     self.on("end", True)
-            # case "draw":
-            #     self.blister.draw(message.payload)
-            case _:
-                return self.onFailure(message)
-        if self.auto_run:
-            return next(self)
+            case "próximo":
+                return self.item()
+
+            case "imagem":
+                self.on(
+                    "Matriz", self.blister.roi(message.payload)
+                )
+
+    def item(self):
+        try:
+            return self.on("Item", next(self.blister))
+        except StopIteration:
+            self.on("Fim", True)
+            self.reset()
 
     def reset(self):
         self.blister.reset_iterator()

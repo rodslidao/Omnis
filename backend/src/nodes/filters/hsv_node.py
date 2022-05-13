@@ -43,7 +43,6 @@ class HsvNode(BaseNode):
         if target == "color_range":
             self.color_range = message.payload
         elif target == "imagem":
-            logger.info("image")
             self.message = message
             self.on("Saida",
                 self.convert_frame(

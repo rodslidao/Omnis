@@ -35,7 +35,7 @@ class NodeManager:
         ths = {}
         for node_id in auto_run_nodes.keys():
             node = NodeManager.getNodeById(node_id)
-            logger.info(f"[{node}] STARTED WITHOUT REQUEST.")
+            # logger.info(f"[{node}] STARTED WITHOUT REQUEST.")
             ths[node._id] = threading.Thread(
                 name=f"{node._id}_auto_run_start", target=node.AutoRun
             )
