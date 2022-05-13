@@ -10,7 +10,8 @@
 </template>
 
 <script>
-import { socketio } from '@/main';
+// import { socketio } from '@/main';
+import gql from 'graphql-tag';
 
 export default {
   props: {
@@ -30,25 +31,25 @@ export default {
   },
   watch: {
     'connection.from.parent.position': {
-      handler: function () {
+      handler() {
         this.updateCoords();
       },
       deep: true,
     },
     'connection.to.parent.position': {
-      handler: function () {
+      handler() {
         this.updateCoords();
       },
       deep: true,
     },
     'plugin.scaling': {
-      handler: function () {
+      handler() {
         this.updateCoords();
       },
       deep: true,
     },
     'plugin.panning': {
-      handler: function () {
+      handler() {
         this.updateCoords();
       },
       deep: true,
@@ -63,13 +64,10 @@ export default {
     updateCoords() {
       const from = this.resolveDom(this.connection.from);
       const to = this.resolveDom(this.connection.to);
-
       const [x1, y1] = this.getPortCoordinates(from);
       const [x2, y2] = this.getPortCoordinates(to);
-
       const [tx1, ty1] = this.transform(x1, y1);
       const [tx2, ty2] = this.transform(x2, y2);
-
       const dx = 0.3 * Math.abs(tx1 - tx2);
       this.d = `M ${tx1} ${ty1} C ${tx1 + dx} ${ty1}, ${
         tx2 - dx
@@ -78,24 +76,22 @@ export default {
     getPortCoordinates(resolved) {
       if (resolved.node && resolved.interface && resolved.port) {
         return [
-          resolved.node.offsetLeft +
-            resolved.interface.offsetLeft +
-            resolved.port.offsetLeft +
-            resolved.port.clientWidth / 2,
-          resolved.node.offsetTop +
-            resolved.interface.offsetTop +
-            resolved.port.offsetTop +
-            resolved.port.clientHeight / 2,
+          resolved.node.offsetLeft
+            + resolved.interface.offsetLeft
+            + resolved.port.offsetLeft
+            + resolved.port.clientWidth / 2,
+          resolved.node.offsetTop
+            + resolved.interface.offsetTop
+            + resolved.port.offsetTop
+            + resolved.port.clientHeight / 2,
         ];
-      } else {
-        return [0, 0];
       }
+      return [0, 0];
     },
     resolveDom(ni) {
       const nodeDOM = document.getElementById(ni.parent.id);
       const interfaceDOM = document.getElementById(ni.id);
       const portDOM = interfaceDOM?.getElementsByClassName('__port');
-
       return {
         node: nodeDOM,
         interface: interfaceDOM,
@@ -114,36 +110,60 @@ export default {
       };
     },
   },
+
+  apollo: {
+    // Subscriptions
+    $subscribe: {
+      // When a tag is added
+      tagAdded: {
+        query: gql`
+          subscription {
+            nodes {
+              type
+              id
+              info{
+                message{
+                  to
+                  from
+                }
+              }
+            }
+          }
+        `,
+        // Result hook
+        // Don't forget to destructure `data`
+        result({ data }) {
+          console.log('nodes', data.nodes);
+          let timeOut = null;
+          if (
+            data.nodes.info.message.from === this.connection.from.id
+            && data.nodes.info.message.to === this.connection.to.id
+          ) {
+            this.connectionActive = true; // Activate animation
+            clearTimeout(timeOut); // Reset timeout if called
+            timeOut = setTimeout(() => {
+              this.connectionActive = false; // Deactivate animation if method is not called within interval.
+            }, 750);
+          }
+        },
+      },
+    },
+  },
+
   created() {
     window.addEventListener('resize', () => {
       this.updateCoords();
     });
-
-    let timeOut = null;
-    socketio.on('CONNECTION_EXEC', (data) => {
-      if (
-        data.data.from === this.connection.from.id &&
-        data.data.to === this.connection.to.id
-      ) {
-        this.connectionActive = true; // Activate animation
-
-        clearTimeout(timeOut); // Reset timeout if called
-        timeOut = setTimeout(() => {
-          this.connectionActive = false; // Deactivate animation if method is not called within interval.
-        }, 750);
-      }
-    });
+    const timeOut = null;
   },
 };
 </script>
-
 <style scoped>
 .active {
   stroke-dasharray: 15;
   stroke-width: 3px;
   animation: dash 5s linear infinite;
 }
-
 @keyframes dash {
   to {
     stroke-dashoffset: -1000;

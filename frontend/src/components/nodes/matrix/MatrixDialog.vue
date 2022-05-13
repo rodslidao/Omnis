@@ -38,7 +38,6 @@
               <MatrixViewer
                 :slots="selectedMatrix.slots"
                 :subdivisions="selectedMatrix.subdivisions"
-                :origin="selectedMatrix.origin"
               ></MatrixViewer>
             </div>
           </v-card-text>
@@ -162,6 +161,8 @@ export default {
       // console.log(this.$apollo.store);
       this.matrixObjList = [];
       this.matrixObjList.push(...response.data.getNodeInfo.data.options);
+
+      console.log('response.data', ...response.data.getNodeInfo.data.options);
 
       if (!this.matrixCopy) {
         console.log('entrei', this.matrixCopy);

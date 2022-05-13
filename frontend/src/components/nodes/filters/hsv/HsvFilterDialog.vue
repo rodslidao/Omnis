@@ -26,8 +26,6 @@
                   return-object
                   dense
                   :loading="cameraLoading"
-                  :rules="requiredRules"
-                  required
                 ></v-select>
               <ColorPikerHSV
                 v-if="dialog"

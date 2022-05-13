@@ -37,7 +37,7 @@ export default {
   props: {
     subdivisions: Object,
     slots: Object,
-    origem: Object,
+    origin: Object,
   },
 
   computed: {
@@ -50,14 +50,14 @@ export default {
         {
           text: 'Origem X',
           unit: '',
-          number: this.origem.x,
+          number: this.origin.x,
           icon: 'mdi-alpha-x-circle',
           color: 'primary',
         },
         {
           text: 'Origem Y',
           unit: '',
-          number: this.origem.y,
+          number: this.origin.y,
           icon: 'mdi-alpha-y-circle',
           color: 'primary',
         },

@@ -29,6 +29,7 @@ import { mapActions, mapState } from 'vuex';
 import CustomContextMenu from '@/components/nodes/custom/CustomContextMenu.vue';
 import CustomNode from '@/components/nodes/custom/CustomNode.vue';
 import CustomInterface from '@/components/nodes/custom/CustomInterface.vue';
+import CustomConnection from '@/components/nodes/custom/CustomConnection.vue';
 
 export default {
   // mixins: [mixins],
@@ -149,6 +150,7 @@ export default {
       this.viewPlugin.components.contextMenu = CustomContextMenu;
       this.viewPlugin.components.node = CustomNode;
       this.viewPlugin.components.nodeInterface = CustomInterface;
+      this.viewPlugin.components.connection = CustomConnection;
 
       const intfTypePlugin = new InterfaceTypePlugin();
       this.editor.use(intfTypePlugin);
