@@ -12,7 +12,6 @@
       @mousedown.self.prevent.stop="startDrag"
       @contextmenu.prevent.capture=""
     >
-    
       <NodeContextMenu
         :menu="showMenu"
         :nodeData="data"
@@ -22,7 +21,7 @@
         @stop-drag="mouseUp"
       />
     </div>
-    <div class="line-color" :class="classes"></div>
+    <div class="line-color" :class="classes" :style="defaultColor"></div>
 
     <div class="__content">
       <div v-for="(row, i) in rows" :key="i" class="interface-row">
@@ -79,6 +78,9 @@ export default {
         backgroundColor: '#0F0F0F',
         // borderBottom: '3px solid',
         // borderColor: this.data.getOptionValue('color'),
+      },
+      defaultColor: {
+        backgroundColor: this.data.getOptionValue('color'),
       },
       pulse: false,
       pulseColor: 'cyan',
