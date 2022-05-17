@@ -221,6 +221,19 @@ export const descriptions = [
     configurable: true,
     hasHistory: false,
   },
+  {
+    name: 'Portas I/O',
+    type: 'IoNode',
+    text: 'Com esse nó você consegue acionar uma porta I/O',
+    icon: 'electric-switch',
+    examples: 'Digamos que você queira acionar uma porta para acionar a solenoide de uma garra',
+    category: 'Hardware',
+    tags: ['io', 'hardware'],
+    resettable: true,
+    stoppable: false,
+    configurable: true,
+    hasHistory: false,
+  },
 ];
 
 export function getCategoryList() {
