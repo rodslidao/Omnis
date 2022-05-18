@@ -27,7 +27,14 @@ export default class MoveAxisNode extends Node {
     // this.addInputInterface('X');
     // this.addInputInterface('Y');
     // this.addInputInterface('Z');
-    this.addInputInterface('Gatilho');
+    this.addInputInterface('Gatilho', undefined, undefined, {
+      description:
+        'Entrada que fará o acionamento do nó',
+    });
+    this.addInputInterface('XY', undefined, undefined, {
+      description:
+        'Recebe uma lista de coordenadas para executar o movimento',
+    });
     this.addOutputInterface('Sucesso');
     this.addOutputInterface('Falha');
     this.axisList.forEach((axis) => {
@@ -39,6 +46,8 @@ export default class MoveAxisNode extends Node {
         // }
       }
     });
+   
+
     // this.axisList.forEach((axis) => {
     //   this.addOption(axis[0], 'CheckboxOption');
     // });

@@ -20,7 +20,6 @@ export default class IoNode extends Node {
     });
 
     this.addOption('port', 'IoDialog', null);
-    this.addOption('board', undefined, null);
 
     this.addOption('color', undefined, '#ff3800');
     this.addOption('running', undefined, true);

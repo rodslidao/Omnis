@@ -29,6 +29,9 @@ export default class MatrixNode extends Node {
     this.addOutputInterface('Matriz', {
       description: 'Sai uma matriz com a imagem cortada de cada pedacinho',
     });
+    this.addOutputInterface('XY', {
+      description: 'Sai as coordenadas normalmente usadas no nó de "Mover Eixo"',
+    });
 
     this.addOutputInterface('Fim', {
       description: 'Essa saida é ativada quando o ultimo item da matriz é selecionado',

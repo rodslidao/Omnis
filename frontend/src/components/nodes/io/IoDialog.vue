@@ -122,7 +122,7 @@ export default {
     pwmRules: [
       (v) => (v >= 0 && v <= 100) || 'Valor tem que ser entre 0 e 100',
     ],
-    portCopy: null, 
+    portCopy: null,
     selectedPort: null,
     boardCopy: null,
     boardListCopy: [],
@@ -213,6 +213,8 @@ export default {
         } else {
           let port = this.selectedPort;
 
+          port.selectedBoard = this.selectedBoard;
+
           switch (this.selectedPortType) {
             case true:
               port.pwm = 255;
@@ -241,7 +243,11 @@ export default {
     async init() {
       this.nodeCopy = { ...this.node };
       this.portListCopy = this.node.getOptionValue('port');
-      this.boardListCopy = this.node.getOptionValue('board');
+      if (this.node.getOptionValue('port')) {
+        this.selectedBoard = this.node.getOptionValue('port').board;
+        this.selectedPort = this.node.getOptionValue('port');
+        this.selectedPortType = this.node.getOptionValue('port').pwm;
+      }
     },
 
     changeName(data) {
