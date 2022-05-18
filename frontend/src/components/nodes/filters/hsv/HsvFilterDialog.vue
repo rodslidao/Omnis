@@ -18,15 +18,15 @@
                 no-content
               >
               </NodeConfigTitle>
-                <v-select
-                  @click="getCamera()"
-                  :items="cameraList"
-                  v-model="selectedCamera"
-                  item-text="name"
-                  return-object
-                  dense
-                  :loading="cameraLoading"
-                ></v-select>
+              <!-- <v-select
+                @click="getCamera()"
+                :items="cameraList"
+                v-model="selectedCamera"
+                item-text="name"
+                return-object
+                dense
+                :loading="cameraLoading"
+              ></v-select> -->
               <ColorPikerHSV
                 v-if="dialog"
                 @colors="sendMessage"
@@ -137,6 +137,23 @@ export default {
 
   mounted() {},
 
+  // apollo: {
+  //   getSerials: {
+  //     query: gql`
+  //       query {
+  //         getSerials {
+  //           data {
+  //             _id
+  //             name
+  //           }
+  //         }
+  //       }
+  //     `,
+  //     update: () => data.getSerials.data;
+  //     },
+  //   },
+  // },
+
   methods: {
     ...mapActions('node', ['saveNodeConfig']),
 
@@ -179,12 +196,13 @@ export default {
         const editedData = {
           nodeId: this.node.id,
           nodeType: this.node.type,
-          camera_id: this.selectedCamera?.id,
-          ...data,
+          options: this.optionsMaker(data),
         };
-        console.log('data', data);
+
         this.lower = data.rgb.lower;
         this.upper = data.rgb.upper;
+
+        console.log('data', data);
         // this.node.getInterface('Imagem').value = 2;
         this.WebSocket.send(JSON.stringify(editedData));
         console.log('send:', editedData);
@@ -237,10 +255,19 @@ export default {
       }, time);
     },
 
+    optionsMaker(data) {
+      const options = [
+        ['lower', data.rgb.lower],
+        ['upper', data.rgb.upper],
+      ];
+      return options;
+    },
+
+    // eslint-disable-next-line consistent-return
     UrlMaker() {
       const url = `http://${process.env.VUE_APP_URL_API_IP}:${process.env.VUE_APP_URL_API_STREAMING_PORT}`;
 
-      const  id  = this.selectedCamera.id;
+      const { id } = this.selectedCamera;
       if (id !== null) {
         navigator.sendBeacon(
           `http://${process.env.VUE_APP_URL_API_IP}:${process.env.VUE_APP_URL_API_PORT}/videos/${id}`
