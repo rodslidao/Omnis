@@ -57,14 +57,14 @@ type Mutation {
   setCameraProperty(_id: ID!, input: JSON): CameraResult!
 
   syncHostTime(timestamp: Int): Boolean!
-  updateStreamNode(camera_id: ID!, node_type: String!): Boolean!
+  updateStreamNode(node_id: ID!): Boolean!
 }
 
 type Query {
   getNodeSheet(_id: ID!): NodeSheetResult!
   getSketchList: SketchListResult!
 
-  getNodeInfo(node_type: ID!): NodeInfoResult!
+  getNodeInfo(node_type: ID!, kwargs: JSON): NodeInfoResult!
 
   getCamera(_id: ID!): CameraResult!
   getCameras: CamerasResult!
@@ -81,6 +81,7 @@ type Query {
   getThr: [String]
 
   calibrateCamera(input: CalibrateRequestInput!): Boolean
+  getLoadedNodes: [Node_Status]
 }
 
 type Subscription {
@@ -88,4 +89,5 @@ type Subscription {
   cameras: Camera
   serials: Serial
   calibrations: StepResult
+  nodes: Node_Status
 }

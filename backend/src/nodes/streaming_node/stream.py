@@ -19,13 +19,12 @@ class StreamNode:
     def update_camera(camera_id):
         return CameraManager.get_by_id(camera_id)
 
-    def source_update(self, camera_id, node_id):
-        self.camera = StreamNode.update_camera(camera_id)
+    def source_update(self, node_id, *args, **kwargs):
         self.node = StreamNode.update_node(node_id)
-        return bool(self.camera and self.node)
+        return bool(self.node)
 
     def read(self):
-        return self.node.stream_frame(self.camera.read())
+        return self.node.read()
 
     def stop(self):
         pass

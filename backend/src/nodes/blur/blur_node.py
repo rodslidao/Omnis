@@ -22,7 +22,7 @@ class BlurNode(BaseNode):
         self.input_connections = input_connections
         self.type = options["blur_type"]
         self.k_size = options["blur_intensity"]
-        self.auto_run = options["auto_run"]["value"]
+        self.auto_run = options.get(["auto_run"], False)
         NodeManager.addNode(self)
 
     def execute(self, message=""):
@@ -40,7 +40,7 @@ class BlurNode(BaseNode):
         return self.image
 
     @staticmethod
-    def get_info():
+    def get_info(**kwargs):
         return {
             "options": {
                 "blur_types": list(blur_types.keys()),

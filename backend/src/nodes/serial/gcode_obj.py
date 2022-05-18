@@ -1,7 +1,7 @@
 from .custom_serial import Serial
 from api import logger, exception
 from api.decorators import for_all_methods
-
+from api import logger
 
 @for_all_methods(exception(logger))
 class SerialGcodeOBJ(Serial):
@@ -19,6 +19,7 @@ class SerialGcodeOBJ(Serial):
         rtscts=False,
         dsrdtr=False,
         is_gcode=True,
+        disabled=False,
         _id=None,
     ):
         super().__init__(

@@ -15,13 +15,12 @@ class SwitchNode(BaseNode):
     def __init__(self, name, id, options, output_connections, input_connections):
         super().__init__(name, NODE_TYPE, id, options, output_connections)
         self.input_connections = input_connections
-        self.auto_run = False # options["auto_run"]["value"]
-        print(options)
         self.variables = list(map(lambda x: x["name"], options["inputlist"]))#[chr(i) for i in range(ord("a"), ord("z") + 1)]
         self.inputs = {}
         setattr(self, "True", options["onsuccess"])
         setattr(self, "False", options["onfailure"])
         self.expression = options["expression"]
+        self.auto_run = options.get(["auto_run"], False)
         NodeManager.addNode(self)
 
     def execute(self, message=""):
@@ -36,10 +35,10 @@ class SwitchNode(BaseNode):
         # if result != False:
         #     logger.warning(list(map(type, self.inputs['A'][1].item)))
         # opt_result = getattr(self, str(result))
-        # self.on("Sucesso" if result else "Falha", opt_result if opt_result is not None else result)
+        self.on("Sucesso" if result else "Falha", True)
 
     @staticmethod
-    def get_info():
+    def get_info(**kwargs):
         return {
             "options": {
                 "option_name": "option_accepted_values",

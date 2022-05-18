@@ -20,7 +20,7 @@ class CompareNode(BaseNode):
         self.value1 = options["value1"]
         self.value2 = options["value2"]
         self.value3 = options["value3"]
-        self.auto_run = options["auto_run"]["value"]
+        self.auto_run = options.get(["auto_run"], False)
         NodeManager.addNode(self)
 
     def execute(self, message=""):

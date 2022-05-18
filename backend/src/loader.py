@@ -5,8 +5,8 @@ from api.models import NodeSheet
 
 from .nodes.node_manager import NodeManager
 from .nodes.node_registry import NodeRegistry
-from src.manager.mongo_manager import getDb
-from api import logger, exception
+# from src.manager.mongo_manager import getDb
+from api import logger, exception, dbo
 
 
 class LoadingMode(Enum):
@@ -170,7 +170,6 @@ def loadConfig(NodeSheet, mode=LoadingMode):
                     input_connections,
                 )
                 numberOfNodesInit += 1
-
                 if mode == LoadingMode.RUNNING:
                     saveNodeChange(
                         NodeChange(
@@ -182,6 +181,7 @@ def loadConfig(NodeSheet, mode=LoadingMode):
                         )
                     )
             else:
+                logger.warning("Node {} EXIST!".format(node.get("name")))
                 nodeSettingsChanged = existingNode.options.get(
                     "settings"
                 ) != options.get("settings")
@@ -215,14 +215,11 @@ def loadConfig(NodeSheet, mode=LoadingMode):
 
 @exception(logger)
 def saveNodeChange(nodeChange):
-    dbo = getDb()
     dbo.get_collection("node-history").insert_one(nodeChange)
 
 
 @exception(logger)
 def load(node_id=None):
-    dbo = getDb()
-    NodeManager.clear()
     current_loaded_query = {"description": "current-config-loaded-id"}
     if node_id is not None:
         dbo.update_one(
@@ -232,8 +229,8 @@ def load(node_id=None):
         )
         sheet = NodeSheet().getNodeSheetById(node_id)["content"]
     else:
-        _ = dbo.find_one("last-values", current_loaded_query)["sheet-id"]
         sheet = NodeSheet().getNodeSheetById(
             dbo.find_one("last-values", current_loaded_query)["sheet-id"]
         )["content"]
+    NodeManager.clear()
     loadConfig(sheet, LoadingMode)

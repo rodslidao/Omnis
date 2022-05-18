@@ -3,7 +3,7 @@ from src.utility.image_processing.generate_calib import charuco_calibration
 from src.utility.image_processing.guess_aruco_type import ARUCO_DICT
 from src.manager.camera_manager import CameraManager
 from api.store import calibrations
-from api.subscriptions import SubscriptionFeeder
+from api.subscriptions import SubscriptionFactory
 from api import dbo
 from datetime import datetime as dt, timedelta
 from cv2.aruco import Dictionary_get, DetectorParameters_create, detectMarkers
@@ -36,7 +36,7 @@ class Steps:
         return self.status
 
 
-CalibrationManager = SubscriptionFeeder(calibrations)
+CalibrationManager = SubscriptionFactory(calibrations, 'calibrations')
 
 
 class CameraCalibration:
