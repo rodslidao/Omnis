@@ -23,13 +23,13 @@ class IdentifyNode(BaseNode):
         self.input_connections = input_connections
         self.filters = options["filters"]
         # self.propertie = options["propertie"]
-        self.auto_run = False #options["auto_run"]["value"]
+        self.auto_run = options.get(["auto_run"], False)
         NodeManager.addNode(self)
 
     def execute(self, message):
         object_data_list = identifyObjects(message.payload, **self.filters)
-        self.on("Matrix", object_data_list)
+        self.on("MatrizOut", object_data_list)
 
     @staticmethod
-    def get_info():
+    def get_info(**kwargs):
         return {"options": list(dbo.find_many("identify_node_info", {}, {"_id": 0}))}

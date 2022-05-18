@@ -4,7 +4,6 @@ from api.decorators import for_all_methods
 # from src.enums import loadConfig, LoadingMode
 import threading
 
-
 nodes = {}
 auto_run_nodes = {}
 
@@ -29,13 +28,12 @@ class NodeManager:
             del auto_run_nodes[nodeId]
 
     def getActiveNodes():
-        return nodes
+        return [node.who_am_i() for node in nodes.values()]
 
     def start():
         ths = {}
         for node_id in auto_run_nodes.keys():
             node = NodeManager.getNodeById(node_id)
-            # logger.info(f"[{node}] STARTED WITHOUT REQUEST.")
             ths[node._id] = threading.Thread(
                 name=f"{node._id}_auto_run_start", target=node.AutoRun
             )
@@ -65,9 +63,7 @@ class NodeManager:
             node.resume()
 
     def reset():
-        global nodes, auto_run_nodes
-        # NodeManager.stop()
-        # nodes, auto_run_nodes = {}, []
+        pass
 
     def clear():
         global nodes, auto_run_nodes

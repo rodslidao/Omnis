@@ -2,11 +2,15 @@ from src.message import Message
 from src.nodes.node_manager import NodeManager
 from api import logger, exception
 from api.decorators import for_all_methods
+from api.store import nodes
+from api.subscriptions import SubscriptionFactory
 from threading import Event
 
 from threading import Thread
 NODE_TYPE = "BASE_NODE"
+rtc_status = SubscriptionFactory(nodes, 'nodes')
 
+from time import sleep
 
 @for_all_methods(exception(logger))
 class BaseNode:
@@ -44,6 +48,10 @@ class BaseNode:
         self.output_connections = output_connections
         self.running = True
         self.stop_event = Event()
+        self.update_status({
+            "status": "LOADED"
+        })
+        logger.info("[%s] Node loaded", self)
 
     def onSuccess(self, payload, additional=None):
         self.on("onSuccess", payload, additional)
@@ -67,6 +75,7 @@ class BaseNode:
             self.sendConnectionExec(
                 target.get("from").get("id"), target.get("to").get("id")
             )
+
             message = Message(
                 target.get("from").get("id"),
                 target.get("to").get("id"),
@@ -77,16 +86,21 @@ class BaseNode:
                 payload,
                 additional,
             )
+
+            if not self.running:
+                node_to_run.update_status({"status": "PAUSED"})
+
             while not self.running:
                 pass
-            # logger.info(f"{self}({message.sourceName}) -> {message}")
-            node_ro_run = NodeManager.getNodeById(target.get("to").get("nodeId"))
-            # try:
-            Thread(target=node_ro_run.execute, args=(message,), name=f"{str(self)}({message.sourceName}) -> {message}", daemon=True).start()
-            # T.join()
-            # except Exception as e:
-            #     logger.error(f"{node_ro_run}({message.targetName}) -> {e}")
-            #     return False
+
+            node_to_run = NodeManager.getNodeById(target.get("to").get("nodeId"))
+            if node_to_run and not self.stop_event.isSet():
+                logger.info(f'Trigger: {node_to_run}')
+                sleep(0.5)
+                self.update_status({"status": "SENDING", "message":{"from":target.get("from").get("id"), "to":target.get("to").get("id")}})
+                Thread(target=node_to_run.execute, args=(message,), name=f"{str(self)}({message.sourceName}) -> {message}", daemon=True).start()
+                self.update_status({"status": "RUNNING", "message":{"from":None, "to":None}})
+                node_to_run.update_status({"status": "RUNNING", "message":{"from":None, "to":None}})
 
     def AutoRun(self):
         message = Message(
@@ -100,6 +114,21 @@ class BaseNode:
         )
         self.reset()
         self.execute(message)
+
+    def who_am_i(self):
+        self.info = {
+            "name": self.name,
+            "type": self.type,
+            "id": self._id,
+            "info": self.status,
+        }
+        rtc_status.put(self.info)
+        return self.info
+        
+    
+    def update_status(self, info):
+        self.status = info
+        self.who_am_i()
 
     def pause(self):
         self.running = False

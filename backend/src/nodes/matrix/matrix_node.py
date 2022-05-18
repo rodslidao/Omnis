@@ -96,12 +96,12 @@ class MatrixNode(BaseNode):
         slot_config = {
             "sizes": convert_to_array(slots["size"]),
             "borders": convert_to_array(slots["margin"]),
-            "origin": convert_to_array(slots["origin"]),
+            "origin": convert_to_array(options["matrix"]["origin"]),
             "counter": shape / convert_to_array(slots["qtd"], int),
             "extra": convert_to_array(subdivisions["margin"]),
         }
         self.blister = Blister(shape=shape, name=options["matrix"]["name"], _id=options["matrix"]["id"],  slot_config=slot_config)
-        self.auto_run = False #options["auto_run"]["value"]
+        self.auto_run = options.get(["auto_run"], False)
         NodeManager.addNode(self)
 
     def execute(self, message):
@@ -132,7 +132,7 @@ class MatrixNode(BaseNode):
         self.blister.reset_iterator()
 
     @staticmethod
-    def get_info():
+    def get_info(**kwargs):
         return {
             "options": list(
                 map(
@@ -144,28 +144,29 @@ class MatrixNode(BaseNode):
 
     @staticmethod
     def normalize_blister_get_info(blister):
-        def set_X_Y(list_, sas=["X", "Y"]):
+        def set_X_Y(list_, sas=["x", "y"]):
             return dict(zip(sas, list_))
 
         def verify(divisor):
             if divisor[1] == 0:
                 return 1
-            return array(blister["shape"])[divisor[0]] / divisor[1]
+            return np.array(blister["shape"])[divisor[0]] / divisor[1]
 
-        sub = array(list(map(verify, enumerate(blister["slot_config"]["counter"]))))
+        sub = np.array(list(map(verify, enumerate(blister["slot_config"]["counter"]))))
 
         return {
             "id": str(blister["_id"]),
             "name": blister["name"],
             "slots": {
-                "qtd": set_X_Y((array(blister["shape"]) / sub).astype(int).tolist()),
+                "qtd": set_X_Y((np.array(blister["shape"]) / sub).astype(int).tolist()),
                 "margin": set_X_Y(blister["slot_config"]["borders"]),
-                "size": set_X_Y(blister["slot_config"]["sizes"][:2]),
+                "size": set_X_Y(blister["slot_config"]["sizes"][:2])
             },
             "subdivisions": {
                 "qtd": set_X_Y(sub.astype(int).tolist()),
                 "margin": set_X_Y(blister["slot_config"]["extra"]),
             },
+            "origin": set_X_Y(blister["slot_config"]["origin"][:2])
         }
 
 

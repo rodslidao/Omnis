@@ -1,5 +1,6 @@
 from .models import NodeSheet, grok
 from ariadne import QueryType
+from src.nodes.node_manager import NodeManager
 from src.nodes.node_registry import NodeRegistry
 from threading import enumerate as thread_enumerate
 from src.manager.camera_manager import CameraManager
@@ -45,9 +46,9 @@ def resolve_get_sketch_list(obj, info):
 
 
 @query.field("getNodeInfo")
-def resolve_getNodeInfo(obj, info, node_type):
+def resolve_getNodeInfo(obj, info, node_type, **kwargs):
     """Get a Node by id and return it like a payload"""
-    result = (NodeRegistry.getNodeClassByName(node_type)).get_info()
+    result = (NodeRegistry.getNodeClassByName(node_type)).get_info(**kwargs.get("kwargs", {}))
     return {"status": True, "data": result}
 
 
@@ -68,3 +69,8 @@ def resolve_calibrateCamera(obj, info, **kwargs):
     Thread(target=CameraCalibration(**kwargs.get("input", {})).calibrate).start()
     # CameraCalibration().calibrate()
     return True
+
+@query.field("getLoadedNodes")
+def resolve_getLoadedNodes(obj, info):
+    """Get a Node by id and return it like a payload"""
+    return NodeManager.getActiveNodes()

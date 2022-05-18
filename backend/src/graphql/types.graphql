@@ -91,3 +91,20 @@ type Manutention{
   url: String
   port: String
 }
+
+type Node_Status{
+  name: String!
+  type: String!
+  id: ID!
+  info: node_status_info!
+}
+
+type node_status_info{
+  status: String!
+  message: target_message
+}
+
+type target_message{
+  from: ID
+  to: ID
+}

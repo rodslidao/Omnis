@@ -12,6 +12,7 @@ from cv2 import (
     bitwise_and,
     FONT_HERSHEY_SIMPLEX,
     putText,
+    imread,
 )
 
 from numpy import array
@@ -32,10 +33,11 @@ class HsvNode(BaseNode):
     def __init__(self, name, id, options, output_connections, input_connections):
         super().__init__(name, NODE_TYPE, id, options, output_connections)
         self.color_range = {
-            "lower": options["lower"],
-            "upper": options["upper"],
+            "lower": list(options["lower"].values()),
+            "upper": list(options["upper"].values()),
         }
-        self.auto_run = False #options["auto_run"]["value"]
+        self.auto_run = options.get(["auto_run"], False)
+        self.image = imread("./src/imgs/no_image.jpg")
         NodeManager.addNode(self)
 
     def execute(self, message):
@@ -43,14 +45,8 @@ class HsvNode(BaseNode):
         if target == "color_range":
             self.color_range = message.payload
         elif target == "imagem":
-            self.message = message
-            self.on("Saida",
-                self.convert_frame(
-                    message.payload,
-                    self.color_range["lower"],
-                    self.color_range["upper"],
-                )
-            )
+            self.image = message.payload
+            self.on("Saida", self.read())
 
     @staticmethod
     def convert_frame(image, lower, upper):
@@ -60,17 +56,12 @@ class HsvNode(BaseNode):
             array(upper),
         )
 
-    def get_frame(self):
-
-        _ = bitwise_and(
-            self.message.payload,
-            self.message.payload,
-            mask=self.convert_frame(
-                self.message.payload,
-                self.color_range["lower"],
-                self.color_range["upper"],
-            ),
-        )
+    def read(self):
+        return self.convert_frame(
+                    self.image,
+                    self.color_range["lower"],
+                    self.color_range["upper"],
+                )
 
         return putText(
             _,
@@ -81,6 +72,12 @@ class HsvNode(BaseNode):
             (0, 0, 255),
             2,
         )
+
+    def update_options(self, *args, **kwargs):
+        if kwargs.get("lower") and kwargs.get("upper"):
+            self.color_range["lower"] = list(kwargs["lower"].values())
+            self.color_range["upper"] = list(kwargs["upper"].values())
+        
 
     @staticmethod
     def stream_frame(frame, lower, upper):

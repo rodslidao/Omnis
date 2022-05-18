@@ -20,15 +20,15 @@ class CameraNode(BaseNode):
         self.input_connections = input_connections
         self.camera_id = options["camera"]["id"]
         self.camera = CameraManager.get_by_id(self.camera_id).start()
-        self.auto_run = options.get("auto_run", True)
+        self.auto_run = options.get("auto_run", {"value":False})["value"]
         NodeManager.addNode(self)
 
     def execute(self, message=""):
-        self.on("Imagem", self.get_frame())
+        self.on("Imagem", self.read())
 
-    def get_frame(self):
+    def read(self):
         return self.camera.read()
 
     @staticmethod
-    def get_info():
+    def get_info(**kwargs):
         return {"options": CameraManager.get_info()}

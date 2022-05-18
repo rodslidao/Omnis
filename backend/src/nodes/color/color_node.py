@@ -23,7 +23,7 @@ class ColorNode(BaseNode):
         self.color_mode = options["color_name"]
 
         self.color = color(self.color_code, self.color_mode)
-        self.auto_run = options["auto_run"]["value"]
+        self.auto_run = options.get(["auto_run"], False)
 
         NodeManager.addNode(self)
 
@@ -34,7 +34,7 @@ class ColorNode(BaseNode):
             self.on(output, self.color.get(output))
 
     @staticmethod
-    def get_info():
+    def get_info(**kwargs):
         return {
             "options": {
                 "color_modes": color_modes,

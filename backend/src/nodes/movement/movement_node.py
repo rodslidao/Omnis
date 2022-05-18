@@ -33,7 +33,7 @@ class MovementNode(BaseNode):
             for k, v in options["axis"]["values"].items()
             if k.lower() in self.axis
         }
-        self.auto_run = options["auto_run"]["value"]
+        self.auto_run = options.get(["auto_run"], False)
         NodeManager.addNode(self)
 
     def execute(self, message):
@@ -87,5 +87,5 @@ class MovementNode(BaseNode):
     def pause(self):
         super().pause()
 
-    def get_info():
+    def get_info(**kwargs):
         return {"options": SerialManager.get_info()}

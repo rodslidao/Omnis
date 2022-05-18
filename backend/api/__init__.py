@@ -3,7 +3,7 @@ from platform import system
 from dotenv import load_dotenv
 from vidgear.gears.asyncio import WebGear_RTC
 
-from .log import logger, exception
+from .log import logger, exception, custom_handler, logger, levels, lvl
 from .decorators import for_all_methods
 
 from src.manager.mongo_manager import connectToMongo, getDb
@@ -13,6 +13,8 @@ environ.setdefault("SO", system())
 
 connectToMongo()
 dbo = getDb()
+# custom_handler(logger, "mongo", "json", dbo, levels[lvl])
+
 from src.manager.serial_manager import SerialManager
 from src.manager.camera_manager import CameraManager
 from src.nodes.serial.custom_serial import Serial
@@ -25,9 +27,10 @@ def Managers_Import(definitions):
     for collection, manager_class in definitions.items():
         for config in dbo.find_many(collection, {}):
             if not config.get("disabled", False):
+                print(config)
                 match config.get("is_gcode"):
                     case True:
-                        manager_class["class"][1](**config, **config.get("options"))
+                        manager_class["class"][1](**config)
                     case _:
                         manager_class["class"][0](**config, **config.get("options"))
 

@@ -13,9 +13,10 @@ from src.manager.serial_manager import SerialManager
 
 from src.nodes.process.process import process
 
-# from src.nodes.streaming_node.stream import Stream
+from src.nodes.streaming_node.stream import Stream
 
 from src.utility.system.date import set_system_date
+from api import logger
 
 mutation = MutationType()
 
@@ -82,7 +83,9 @@ def resumeProcess_resolver(obj, info):
 
 @mutation.field("loadConfig")
 def loadConfig_resolver(obj, info, _id):
-    return process.load(_id)
+    a = process.load(_id)
+    logger.info("Loaded config with id {}. {}".format(_id, a))
+    return True
 
 
 @mutation.field("getLoadedConfig")
@@ -218,6 +221,18 @@ def syncHostTime_resolver(obj, info, timestamp):
 
 
 # # *  ----------- NodeStream ----------- * #
-# @mutation.field("updateStreamNode")
-# def updateStreamNode_resolver(obj, info, camera_id, node_type):
-#     return Stream.source_update(camera_id, node_type)
+@mutation.field("updateStreamNode")
+def updateStreamNode_resolver(obj, info, node_id):
+    return Stream.source_update(node_id=node_id)
+
+
+# Process is Running? Has this Node-id? 
+    #YES:
+        # updateStreamNode(node_id)
+        # @ip:@port/videos/<camera_id>
+
+        #Websocket (updateNode, node_id,  *args **kwargs)
+        #exaple: updateNode(node_id, **{range:{lower:{r:0, g:0, b:0}, upper:{r:255, g:255, b:255}}})
+    #NO:
+        #fail.
+

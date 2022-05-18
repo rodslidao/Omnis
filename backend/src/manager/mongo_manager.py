@@ -113,8 +113,8 @@ class MongoOBJ:
                 loads(dumps(data, cls=CustomEncoder))
             )
 
-    def find_one(self, collection_name, query={}):
-        return self.dbo[collection_name].find_one(query)
+    def find_one(self, collection_name, query={}, data={}):
+        return self.dbo[collection_name].find_one(query, data)
 
     def find_many(self, collection_name, query={}, data={}):
         return self.dbo[collection_name].find(query, data)
