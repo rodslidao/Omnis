@@ -47,6 +47,10 @@
         <v-btn color="primary" class="" dark @click="chooseFiles()">
           <v-icon left dark>mdi-upload</v-icon>Upload
         </v-btn>
+        <v-btn color="primary" class="" dark @click="folderDialog = true">
+          <v-icon left dark>mdi-folder</v-icon>Arquivos
+        </v-btn>
+
         <!-- <v-file-input
             hide-input
             truncate-length="15"
@@ -61,6 +65,16 @@
       color="cyan"
       bottom
     ></v-progress-linear>
+    <v-dialog
+      v-model="folderDialog"
+      fullscreen
+      hide-overlay
+      transition="dialog-bottom-transition"
+    >
+      <div class="pa-12" >
+        <sketch-explorer></sketch-explorer>
+      </div>
+    </v-dialog>
   </div>
 </template>
 
@@ -68,17 +82,21 @@
 import { mapState, mapActions, mapGetters } from 'vuex';
 import gql from 'graphql-tag';
 import saveNodeSheet from '@/graphql/nodes/SaveNodeSheet';
+import SketchExplorer from '@/components/nodes/SketchExplorer.vue';
 
 export default {
   name: 'ActionMenuForNodes',
   props: {
     editor: Object,
   },
-  components: {},
+  components: {
+    SketchExplorer,
+  },
 
   data() {
     return {
       saveNodeSheet,
+      folderDialog: false,
       direction: 'top',
       fab: false,
       fling: false,
