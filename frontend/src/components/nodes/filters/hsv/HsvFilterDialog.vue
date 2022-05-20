@@ -41,12 +41,7 @@
                     rounded
                     height="4"
                   ></v-progress-linear>
-                  <iframe
-                    v-if="selectedCamera"
-                    v-show="frameLoaded"
-                    :src="UrlMaker()"
-                  >
-                  </iframe>
+                  <iframe :src="UrlMaker()"> </iframe>
                 </v-col>
               </v-row>
             </v-col>
@@ -137,59 +132,52 @@ export default {
 
   mounted() {},
 
-  // apollo: {
-  //   getSerials: {
-  //     query: gql`
-  //       query {
-  //         getSerials {
-  //           data {
-  //             _id
-  //             name
-  //           }
-  //         }
-  //       }
-  //     `,
-  //     update: () => data.getSerials.data;
-  //     },
-  //   },
-  // },
+  apollo: {
+    getStreamNodeId: {
+      query: gql`
+        query {
+          getStreamNodeId
+        }
+      `,
+    },
+  },
 
   methods: {
     ...mapActions('node', ['saveNodeConfig']),
 
-    async init() {
+    init() {
       this.nodeCopy = { ...this.node };
       this.cameraCopy = this.node.getOptionValue('camera');
 
-      await this.getCamera();
+      // await this.getCamera();
     },
 
-    async getCamera() {
-      this.cameraLoading = true;
-      const response = await this.$apollo.query({
-        query: gql`
-          query {
-            getNodeInfo(node_type: "CameraNode") {
-              data {
-                options
-              }
-            }
-          }
-        `,
-      });
-      // console.log(this.$apollo.store);
+    // async getCamera() {
+    //   this.cameraLoading = true;
+    //   const response = await this.$apollo.query({
+    //     query: gql`
+    //       query {
+    //         getNodeInfo(node_type: "CameraNode") {
+    //           data {
+    //             options
+    //           }
+    //         }
+    //       }
+    //     `,
+    //   });
+    //   // console.log(this.$apollo.store);
 
-      this.cameraList = [];
-      this.cameraList.push(...response.data.getNodeInfo.data.options);
+    //   this.cameraList = [];
+    //   this.cameraList.push(...response.data.getNodeInfo.data.options);
 
-      if (!this.cameraCopy) {
-        this.cameraList.push(this.cameraCopy);
-        this.selectedCamera = this.cameraCopy;
-      }
-      console.log(this.cameraList);
+    //   if (!this.cameraCopy) {
+    //     this.cameraList.push(this.cameraCopy);
+    //     this.selectedCamera = this.cameraCopy;
+    //   }
+    //   console.log(this.cameraList);
 
-      this.cameraLoading = false;
-    },
+    //   this.cameraLoading = false;
+    // },
 
     sendMessage(data) {
       if (this.WebSocket.readyState === 1) {
@@ -267,11 +255,12 @@ export default {
     UrlMaker() {
       const url = `http://${process.env.VUE_APP_URL_API_IP}:${process.env.VUE_APP_URL_API_STREAMING_PORT}`;
 
-      const { id } = this.selectedCamera;
+      const { id } = this.node;
       if (id !== null) {
         navigator.sendBeacon(
           `http://${process.env.VUE_APP_URL_API_IP}:${process.env.VUE_APP_URL_API_PORT}/videos/${id}`
         );
+        console.log('url', url);
         return url;
       }
 

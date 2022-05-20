@@ -133,7 +133,7 @@ export default {
         // Result hook
         // Don't forget to destructure `data`
         result({ data }) {
-          console.log('nodes', data.nodes);
+          // console.log('nodes', data.nodes);
           let timeOut = null;
           if (
             data.nodes.info.message.from === this.connection.from.id
