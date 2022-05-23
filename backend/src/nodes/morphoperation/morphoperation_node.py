@@ -55,7 +55,7 @@ class MorphoperationNode(BaseNode):
             element_types[self.element_type], (self.k_size, self.k_size)
         )
 
-        self.auto_run = options["auto_run"]["value"]
+        self.auto_run = options.get("auto_run", False)
         NodeManager.addNode(self)
 
     def execute(self, message):
@@ -70,7 +70,14 @@ class MorphoperationNode(BaseNode):
         return self.image
 
     @staticmethod
-    def get_info():
+    def apply_morph(image, operation_type, element_type, k_size, iterations=1):
+        kernel = getStructuringElement(element_types[element_type], (k_size, k_size))
+        return morphologyEx(
+            image, operations_types[operation_type], kernel, iterations=iterations
+        )
+
+    @staticmethod
+    def get_info(**kwargs):
         return {
             "options": {
                 "operations_types": list(operations_types.keys()),

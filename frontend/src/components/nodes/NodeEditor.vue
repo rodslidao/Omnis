@@ -1,5 +1,5 @@
 <template>
-  <div class="background">
+  <div class="background" ref="container">
     <span style="display: none">{{ selectedTabIndex }}</span>
     <baklava-editor :plugin="viewPlugin" />
     <ActionMenuForNodes
@@ -10,31 +10,28 @@
 </template>
 
 <script>
-//import ProgressStatus from "../components/ProgressStatus";
+// import ProgressStatus from "../components/ProgressStatus";
 // import { mapState, mapMutations } from "vuex";
 // import { actions } from "../store/index";
 
-import { Editor } from '@baklavajs/core';
+// import { Editor } from '@baklavajs/core';
 import { ViewPlugin } from '@baklavajs/plugin-renderer-vue';
 import { OptionPlugin } from '@baklavajs/plugin-options-vue';
 import { Engine } from '@baklavajs/plugin-engine';
 import { registerOptions, registerNodes } from '@/registerNodes';
 
-import { MoveNode } from '@/components/nodes/MoveNode';
-import { IdentifyNode } from '@/components/nodes/IdentifyNode';
-import { DelayNode } from '@/components/nodes/DelayNode';
-import { VariableNode } from '@/components/nodes/VariableNode';
-import { IoNode } from '@/components/nodes/IoNode';
 import { InterfaceTypePlugin } from '@baklavajs/plugin-interface-types';
 import ActionMenuForNodes from '@/components/nodes/ActionMenuForNodes.vue';
-import VideoStreamingOption from '@/components/nodes/options/VideoStreamingOption.vue';
 
 import { mapActions, mapState } from 'vuex';
+
+import StartNode from '@/components/nodes/inputs/StartNode';
 
 // Custom Baklava Components
 import CustomContextMenu from '@/components/nodes/custom/CustomContextMenu.vue';
 import CustomNode from '@/components/nodes/custom/CustomNode.vue';
 import CustomInterface from '@/components/nodes/custom/CustomInterface.vue';
+import CustomConnection from '@/components/nodes/custom/CustomConnection.vue';
 
 export default {
   // mixins: [mixins],
@@ -42,10 +39,10 @@ export default {
   props: {},
 
   data: () => ({
-    editor: new Editor(),
+    // editor: new Editor(),
     viewPlugin: new ViewPlugin(),
     engine: new Engine(true),
-    optionPlugin: new OptionPlugin(),
+    // optionPlugin: new OptionPlugin(),
 
     tablist2: 2,
   }),
@@ -56,6 +53,7 @@ export default {
 
   computed: {
     ...mapState('node', {
+      editor: (state) => state.editor,
       selectedTabIndex: (state) => state.selectedTabIndex,
       tabList: (state) => state.tabList,
       contentDefault: (state) => state.contentDefault,
@@ -108,15 +106,7 @@ export default {
 
     // register the nodes we have defined, so they can be
     // added by the user as well as saved & loaded.
-    this.editor.registerNodeType('MoveNode', MoveNode);
-    this.editor.registerNodeType('IdentifyNode', IdentifyNode);
-    this.editor.registerNodeType('IoNode', IoNode);
-    this.editor.registerNodeType('DelayNode', DelayNode);
-    this.editor.registerNodeType('VariableNode', VariableNode);
-    this.viewPlugin.registerOption(
-      'VideoStreamingOption',
-      VideoStreamingOption
-    );
+
     // this.viewPlugin.registerOption(
     //   'EventButtonOption',
     //   EventButtonOption
@@ -134,6 +124,7 @@ export default {
     // this.intfTypePlugin.addType('int', '#ff0055');
 
     // console.log(this.editor.save());
+    this.engine.calculate();
   },
 
   methods: {
@@ -146,11 +137,22 @@ export default {
 
     init() {
       this.editor.use(this.viewPlugin);
-      this.editor.use(this.optionPlugin);
+      this.editor.use(new OptionPlugin());
+      // this.engine.events.calculated.addListener(this, (r) => {
+      //   for (const v of r.values()) {
+      //     // tslint:disable-next-line:no-console
+      //     console.log(v);
+      //     console.log('wtfuckk');
+      //   }
+      // });
+      // this.engine.hooks.gatherCalculationData.tap(this, () => 'def');
+      this.editor.use(this.engine);
+      console.log(this.engine);
 
       this.viewPlugin.components.contextMenu = CustomContextMenu;
       this.viewPlugin.components.node = CustomNode;
       this.viewPlugin.components.nodeInterface = CustomInterface;
+      this.viewPlugin.components.connection = CustomConnection;
 
       const intfTypePlugin = new InterfaceTypePlugin();
       this.editor.use(intfTypePlugin);
@@ -176,16 +178,22 @@ export default {
     if (Object.values(this.updateContentDefault).length == 0) {
       this.updateContentDefault(this.editor.save());
     }
-    console.log(this.contentDefault);
+
+    this.addNodeWithCoordinates(
+      StartNode,
+      this.$refs.container.clientWidth / 2 - 100,
+      this.$refs.container.clientHeight / 2 - 100,
+    );
+    // console.log(this.contentDefault);
   },
 
   watch: {
-    "$store.state.node.deletedNode": {
+    '$store.state.node.deletedNode': {
       handler(newValue) {
         if (newValue) {
           this.editor.removeNode(newValue);
         }
-      }
+      },
     },
     '$store.state.node.selectedTabIndex': {
       handler(newValue, oldValue) {
@@ -219,6 +227,18 @@ export default {
   },
 };
 </script>
+
+<style lang="scss">
+// Colors
+
+.node-editor .background {
+  background-image: radial-gradient(
+    circle,
+    rgb(67 69 80) 3%,
+    rgba(252, 70, 10, 0) 3%
+  ) !important;
+}
+</style>
 
 <style lang="scss" scoped >
 .node.--type-MoveNode {

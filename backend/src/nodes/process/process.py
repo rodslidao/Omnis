@@ -5,7 +5,7 @@ from src.nodes.timer.timer import Chronometer
 from src.nodes.alerts.alert_obj import Alert
 from api import logger, exception
 from api.decorators import for_all_methods
-from src.loader import load
+from src.loader import load as load_conf
 
 
 @for_all_methods(exception(logger))
@@ -34,9 +34,10 @@ class Process(threading.Thread):
             while self.paused.is_set():
                 self.resumed.wait()
                 self.resumed.clear()
+        # for i in range(2):
             if not self.stopped.is_set() and not self.paused.is_set():
                 self.target(*self.args, **self.kwargs)
-        logger.info("Process Thread Stopped")
+        logger.info("Process Thread Stopped - Normally")
 
     def start(self):
         logger.info("Process Started")
@@ -73,7 +74,6 @@ class Process(threading.Thread):
         self.endTiming = self.Chronometer.cron_End.timestamp()
         if wait:
             self.join()
-            print(1 / 0)
         # Alert("INFO", "Process Stopped", str(self.getStatus()))
 
     def getStatus(self):
@@ -96,12 +96,22 @@ class sample_process:
         self.kwargs = kwargs
         self.status = Process.STOPPED
         self.process = Process(self.st, *self.args, **self.kwargs)
+        self.process.daemon = True
 
     def load(self, _id=None):
         if self.status == Process.STOPPED:
-            load(_id)
+            self.unload()
+            load_conf(_id)
             self.loaded_id = _id
-            Alert("INFO", "Process Loaded", str(self.process.getStatus()))
+            #Alert("INFO", "Process Loaded", str(self.process.getStatus()))
+            return True
+        return False
+
+    def unload(self):
+        if self.loaded_id is not None:
+            NodeManager.stop()
+            NodeManager.clear()
+            self.loaded_id = None
             return True
         return False
 
@@ -113,22 +123,23 @@ class sample_process:
             self.load()
         self.process = Process(self.st, *self.args, **self.kwargs)
         self.process.start()
-        Alert("INFO", "Process Started", str(self.process.getStatus()))
+        #Alert("INFO", "Process Started", str(self.process.getStatus()))
+
 
     def pause(self):
         NodeManager.pause()
         self.process.pause()
-        Alert("INFO", "Process Paused", str(self.process.getStatus()))
+        #Alert("INFO", "Process Paused", str(self.process.getStatus()))
 
     def resume(self):
         NodeManager.resume()
         self.process.resume()
-        Alert("INFO", "Process Resumed", str(self.process.getStatus()))
+        #Alert("INFO", "Process Resumed", str(self.process.getStatus()))
 
     def stop(self, wait=True):
         NodeManager.stop()
         self.process.stop(wait)
-        Alert("INFO", "Process Stopped", str(self.process.getStatus()))
+        #Alert("INFO", "Process Stopped", str(self.process.getStatus()))
 
     def dict(self):
         return self.process.getStatus()

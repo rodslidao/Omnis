@@ -31,7 +31,7 @@ class ImageNode(BaseNode):
         self.input_connections = input_connections
         self.image = None  # ? Maybe we should use a Image object instead of None ?
         self.properties = options.image.get("properties", [])
-        self.auto_run = options["auto_run"]["value"]
+        self.auto_run = options.get("auto_run", False)
         NodeManager.addNode(self)
 
     def execute(self, message=""):
@@ -46,5 +46,5 @@ class ImageNode(BaseNode):
         return self.image()
 
     @staticmethod
-    def get_info():
+    def get_info(**kwargs):
         return {"options": {"properties": properties}}

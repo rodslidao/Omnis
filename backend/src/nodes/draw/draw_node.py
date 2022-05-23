@@ -27,7 +27,7 @@ class DrawNode(BaseNode):
         super().__init__(name, NODE_TYPE, id, options, output_connections)
         self.input_connections = input_connections
         self.proplist = options["drawable_properties"]
-        self.auto_run = options["auto_run"]["value"]
+        self.auto_run = options.get("auto_run", False)
         self.image = None
         self.obj = None
         NodeManager.addNode(self)
@@ -59,7 +59,7 @@ class DrawNode(BaseNode):
                         self.onFailure("No such drawable property: {}".format(n))
 
     @staticmethod
-    def get_info():
+    def get_info(**kwargs):
         return {
             "options": {
                 "drawable_properties": list(draw_options.keys()),

@@ -2,7 +2,6 @@
   <div
     :id="data.id"
     class="node"
-    :class="classes"
     :style="styles"
     @wheel.stop=""
     @contextmenu.prevent.capture=""
@@ -22,6 +21,7 @@
         @stop-drag="mouseUp"
       />
     </div>
+    <div class="line-color" :class="classes" :style="defaultColor"></div>
 
     <div class="__content">
       <div v-for="(row, i) in rows" :key="i" class="interface-row">
@@ -55,6 +55,7 @@
 import EventBus from '@/event-bus';
 import { Components } from '@baklavajs/plugin-renderer-vue';
 import { mapActions } from 'vuex';
+import gql from 'graphql-tag';
 import NodeContextMenu from '@/components/nodes/dialogs/NodeContextMenu.vue';
 import CustomInterface from './CustomInterface.vue';
 // import { socketio } from '@/main';
@@ -74,9 +75,12 @@ export default {
       x: 0,
       y: 0,
       myStyle: {
-        backgroundColor: '#1e1e1e',
-        borderBottom: '3px solid',
-        borderColor: this.data.getOptionValue('color'),
+        backgroundColor: '#0F0F0F',
+        // borderBottom: '3px solid',
+        // borderColor: this.data.getOptionValue('color'),
+      },
+      defaultColor: {
+        backgroundColor: this.data.getOptionValue('color'),
       },
       pulse: false,
       pulseColor: 'cyan',
@@ -105,6 +109,30 @@ export default {
       }
     });
   },
+
+  apollo: {
+    // Subscriptions
+    $subscribe: {
+      // When a tag is added
+      tagAdded: {
+        query: gql`
+          subscription {
+            nodes {
+              id
+            }
+          }
+        `,
+        // Result hook
+        // Don't forget to destructure `data`
+        result({ data }) {
+          if (data.nodes.id === this.data.id) {
+            this.triggerPulse(this.data.getOptionValue('color'));
+          }
+        },
+      },
+    },
+  },
+
   methods: {
     ...mapActions('node', ['saveNodeConfig', 'deletedNode']),
 
@@ -178,7 +206,6 @@ export default {
           output: outputs[i],
         });
       }
-
       return rows;
     },
     classes() {
@@ -227,7 +254,7 @@ export default {
 </script>
 
 <style scoped>
-.node{
+.node {
   padding-bottom: 2em;
 }
 
@@ -235,12 +262,19 @@ export default {
   display: flex;
 }
 
+.line-color {
+  width: 100%;
+  height: 0.1rem;
+  background-color: var(--pulseColor);
+}
+
 .interface-row div {
   flex: 1;
 }
 
 .colorpulse {
-  animation: colorpulse 2s ease-out infinite;
+  animation: colorpulse 3s ease-out infinite;
+  background-clip: padding-box;
 }
 
 .grabbed {
@@ -251,12 +285,23 @@ export default {
   cursor: grab;
 }
 
+/* @-webkit-keyframes colorpulse {
+  0% {
+    border-bottom-color: var(--pulseColor);
+  }
+  50% {
+    border-bottom-color: white;
+  }
+  100% {
+    border-bottom-color: var(--pulseColor);
+  }
+} */
 @-webkit-keyframes colorpulse {
   0% {
     box-shadow: 0 0 0 var(--pulseColor);
   }
   50% {
-    box-shadow: 0 0 40px var(--pulseColor);
+    box-shadow: 0 0 1rem var(--pulseColor);
   }
   100% {
     box-shadow: 0 0 0 var(--pulseColor);

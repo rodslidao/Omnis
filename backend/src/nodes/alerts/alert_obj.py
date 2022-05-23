@@ -2,25 +2,11 @@ from datetime import datetime
 from api.store import alerts
 from api import logger, exception
 from api.decorators import for_all_methods
+from api.subscriptions import SubscriptionFactory
 
 AlertLevel = {"INFO": "INFO", "WARNING": "WARNING", "ERROR": "ERROR", "LOG": "LOG"}
 
-
-@for_all_methods(exception(logger))
-class AlertManager:
-    async def add(alert):
-        """
-        Await to add alert to queue
-        """
-        for queue in alerts:
-            await queue.put(alert)
-
-    def put(alert):
-        """
-        Put alert to queue without await
-        """
-        for queue in alerts:
-            queue.put_nowait(alert)
+AlertManager = SubscriptionFactory(alerts, 'alerts')
 
 
 @for_all_methods(exception(logger))
@@ -41,14 +27,14 @@ class Alert:
         """
         Create a new Alert object.
         """
-        self.level = level
+        self.level = level 
         self.date = float(datetime.now().timestamp())
         self.title = title
         self.description = description
         self.how2solve = how2solve
         self.buttonText = buttonText
         self.buttonAction = buttonAction
-        logger.debug(f"New alert created: {self}")
+        getattr(logger, self.level)(self.dict())
         AlertManager.put(self)
 
     def __str__(self) -> str:

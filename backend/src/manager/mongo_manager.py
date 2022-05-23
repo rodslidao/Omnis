@@ -78,7 +78,7 @@ class MongoOBJ:
             self.client = MongoClient(db_url)
             self.client.admin.command("ismaster")
         except ConnectionFailure:
-            logger.critical(f"Could not connect to MongoDB using url: {db_url}")
+            logger.error(f"Could not connect to MongoDB using url: {db_url}")
             raise
         else:
             logger.info("Connected to MongoDB")
@@ -100,6 +100,7 @@ class MongoOBJ:
         try:
             return self.dbo[collection_name].insert_one(data)
         except InvalidDocument:
+            # logger.critical(f"Invalid document: {data}")
             return self.dbo[collection_name].insert_one(
                 loads(dumps(data, cls=CustomEncoder))
             )
@@ -108,16 +109,23 @@ class MongoOBJ:
         try:
             return self.dbo[collection_name].insert_many(data)
         except InvalidDocument:
-            return self.dbo[collection_name].insert_many(dumps(data, cls=CustomEncoder))
+            return self.dbo[collection_name].insert_many(
+                loads(dumps(data, cls=CustomEncoder))
+            )
 
-    def find_one(self, collection_name, query={}):
-        return self.dbo[collection_name].find_one(query)
+    def find_one(self, collection_name, query={}, data={}):
+        return self.dbo[collection_name].find_one(query, data)
 
     def find_many(self, collection_name, query={}, data={}):
         return self.dbo[collection_name].find(query, data)
 
-    def update_one(self, collection_name, query, data):
-        return self.dbo[collection_name].update_one(query, data)
+    def update_one(self, collection_name, query, data, options={}):
+        try:
+            return self.dbo[collection_name].update_one(query, data, **options)
+        except InvalidDocument:
+            return self.dbo[collection_name].update_one(
+                query, loads(dumps(data, cls=CustomEncoder)), **options
+            )
 
     def update_many(self, collection_name, query, data):
         return self.dbo[collection_name].update_many(query, data)
@@ -147,4 +155,5 @@ class MongoOBJ:
         return df.to_csv(index=False)
 
     def close(self):
+        logger.info("Closing connection to MongoDB")
         self.client.close()

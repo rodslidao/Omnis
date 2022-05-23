@@ -1,10 +1,9 @@
 from src.manager.base_manager import BaseManager
-
+from api import logger
 
 class CameraObjectManager(BaseManager):
     def __init__(self):
         super().__init__()
-        self.stream = {}
 
     def broadCast(self, message):
         for ser in self.store:
@@ -12,23 +11,18 @@ class CameraObjectManager(BaseManager):
 
     def add(self, payload):
         super().add(payload)
-
-        self.stream[str(payload._id)] = self.get_by_id(payload._id)
-        self.stream_id = str(payload._id)
-
-    def set_stream_id(self, stream_id):
-        print("Updating stream id", stream_id)
-        self.stream_id = str(stream_id)
+        if len(self.store) == 1:
+            self.store['default'] = payload
 
     def __dell__(self):
-        for v in self.stream.values():
+        for v in self.store.values():
             v.stop()
 
-    def read(self):
-        return self.stream[self.stream_id].read()
+    def read(self, stream_id='default'):
+        return self.store.get(stream_id, self.store['default']).read()
 
     def stop(self):
-        for v in self.stream.values():
+        for v in self.store.values():
             v.stop()
 
 

@@ -10,7 +10,7 @@ class BaseManager:
         self.queues = []
 
     def add(self, payload):
-        self.store[payload._id] = payload
+        self.store[str(payload._id)] = payload
         self.update()
 
     def update(self):
@@ -32,7 +32,7 @@ class BaseManager:
         return [{"name": V.name, "id": str(V._id)} for V in self.store.values()]
 
     def get_by_id(self, id):
-        return self.store.get(ObjectId(id))
+        return self.store.get(id)
 
     def __str__(self) -> str:
         message = "" if len(self.store) != 0 else "None Object Detected!"

@@ -6,10 +6,73 @@ from src.nodes.matrix.matrix_obj import Blister, Slot
 from bson import ObjectId
 from api import logger, exception, dbo
 from api.decorators import for_all_methods
-from numpy import array
+import numpy as np
 
-NODE_TYPE = "MATRIX"
+NODE_TYPE = "MatrixNode"
 
+"""
+            [
+            "matrix",
+            {
+              "id": "6256d313daaa135378e4cb27",
+              "name": "Blister_0",
+              "slots": {
+                "qtd": {
+                  "X": 5,
+                  "Y": 10
+                },
+                "margin": {
+                  "X": 3,
+                  "Y": 3
+                },
+                "size": {
+                  "X": 41,
+                  "Y": 24
+                }
+              },
+              "subdivisions": {
+                "qtd": {
+                  "X": 1,
+                  "Y": 1
+                },
+                "margin": {
+                  "X": 0,
+                  "Y": 0
+                }
+              }
+            }
+          ],
+
+          {
+
+  "shape": [
+    slot['qtd'][x-y
+    ] * subdivisions['qtd'][x->y],
+  ],
+  "slot_config": {
+    "sizes": [
+      slot['size'][x-y],
+    ],
+    "borders": [
+        slot['margin'][x-y],
+    ],
+    "origin": [
+        ??? 800,
+        ??? 200
+    ]
+    "counter": [
+      config[shape][x-y]/slot['qtd'][x-y],
+    ],
+    "extra": [
+      subdvision['margin'][x-y],
+    ]
+    ]
+  },
+          }
+"""
+
+def convert_to_array(dict_, type_=float):
+    return np.fromiter(dict_.values(), dtype=type_)
 
 @for_all_methods(exception(logger))
 class MatrixNode(BaseNode):
@@ -26,47 +89,49 @@ class MatrixNode(BaseNode):
     def __init__(self, name, id, options, output_connections, input_connections):
         super().__init__(name, NODE_TYPE, id, options, output_connections)
         self.input_connections = input_connections
-        self.blister_id = options["blister_id"]["value"]
-        self.blister = Blister(
-            **dbo.find_one("blister-manager", {"_id": ObjectId(self.blister_id)})
-        )
 
-        self.auto_run = options["auto_run"]["value"]
+        slots = options["matrix"]["slots"]
+        subdivisions = options["matrix"]["subdivisions"]
+        shape = convert_to_array(slots["qtd"], int) * convert_to_array(subdivisions["qtd"], int)
+        slot_config = {
+            "sizes": convert_to_array(slots["size"]),
+            "borders": convert_to_array(slots["margin"]),
+            "origin": convert_to_array(options["matrix"]["origin"]),
+            "counter": shape / convert_to_array(slots["qtd"], int),
+            "extra": convert_to_array(subdivisions["margin"]),
+        }
+        self.blister = Blister(shape=shape, name=options["matrix"]["name"], _id=options["matrix"]["id"],  slot_config=slot_config)
+        self.auto_run = options.get("auto_run", False)
         NodeManager.addNode(self)
-
-    def __next__(self):
-        garbage = next(self.blister)
-        self.on("item", garbage)
-        return garbage
-
     def execute(self, message):
         target = message.targetName.lower()
+    
         match target:
             case "reset":
-                self.reset()
-            case "next":
-                return next(self)
-            case "in_roi":
-                garbage = self.blister.roi(message.payload)
+                if isinstance(message.payload, Blister):
+                    self.blister.update_data(message.payload.data)
+                    return self.item()
+
+            case "próximo":
+                return self.item()
+
+            case "imagem":
                 self.on(
-                    "out_roi", garbage
-                )  # ! Send data, or blister object? what is the best way?
-                return garbage()
-            case "end":
-                self.reset()
-                self.on("end", True)
-            case "draw":
-                self.blister.draw(message.payload)
-            case _:
-                return self.onFailure(message)
-        if self.auto_run:
-            return next(self)
+                    "Matriz", self.blister.roi(message.payload)
+                )
+
+    def item(self):
+        try:
+            return self.on("Item", next(self.blister)[1]) # Send only the slot. Maybe another node is required to split item and slot data.
+        except StopIteration:
+            self.on("Fim", True)
+            self.reset()
 
     def reset(self):
         self.blister.reset_iterator()
 
     @staticmethod
-    def get_info():
+    def get_info(**kwargs):
         return {
             "options": list(
                 map(
@@ -78,28 +143,29 @@ class MatrixNode(BaseNode):
 
     @staticmethod
     def normalize_blister_get_info(blister):
-        def set_X_Y(list_, sas=["X", "Y"]):
+        def set_X_Y(list_, sas=["x", "y"]):
             return dict(zip(sas, list_))
 
         def verify(divisor):
             if divisor[1] == 0:
                 return 1
-            return array(blister["shape"])[divisor[0]] / divisor[1]
+            return np.array(blister["shape"])[divisor[0]] / divisor[1]
 
-        sub = array(list(map(verify, enumerate(blister["slot_config"]["counter"]))))
+        sub = np.array(list(map(verify, enumerate(blister["slot_config"]["counter"]))))
 
         return {
-            "_id": str(blister["_id"]),
+            "id": str(blister["_id"]),
             "name": blister["name"],
-            "slot": {
-                "qtd": set_X_Y((array(blister["shape"]) / sub).astype(int).tolist()),
+            "slots": {
+                "qtd": set_X_Y((np.array(blister["shape"]) / sub).astype(int).tolist()),
                 "margin": set_X_Y(blister["slot_config"]["borders"]),
-                "size": set_X_Y(blister["slot_config"]["sizes"][:2]),
+                "size": set_X_Y(blister["slot_config"]["sizes"][:2])
             },
-            "subdivision": {
+            "subdivisions": {
                 "qtd": set_X_Y(sub.astype(int).tolist()),
                 "margin": set_X_Y(blister["slot_config"]["extra"]),
             },
+            "origin": set_X_Y(blister["slot_config"]["origin"][:2])
         }
 
 

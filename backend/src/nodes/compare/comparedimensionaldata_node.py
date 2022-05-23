@@ -18,7 +18,7 @@ class ComparedimensionaldataNode(BaseNode):
         self.operation = options["operation"]
         self.value2 = options["value2"]
         self.value3 = options["value3"]
-        self.auto_run = options["auto_run"]["value"]
+        self.auto_run = options.get("auto_run", False)
         NodeManager.addNode(self)
 
     def execute(self, message=""):

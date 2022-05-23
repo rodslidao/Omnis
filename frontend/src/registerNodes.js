@@ -21,25 +21,71 @@ import CameraNode from '@/components/nodes/camera/CameraNode';
 import IfDialog from '@/components/nodes/if/IfDialog.vue';
 import IfNode from '@/components/nodes/if/IfNode';
 
+// MatrixNode
+import MatrixDialog from '@/components/nodes/matrix/MatrixDialog.vue';
+import MatrixNode from '@/components/nodes/matrix/MatrixNode';
+
+// HsvFilterNode
+import HsvFilterDialog from '@/components/nodes/filters/hsv/HsvFilterDialog.vue';
+import HsvFilterNode from '@/components/nodes/filters/hsv/HsvFilterNode';
+
+// IdentifyNode
+import IdentifyDialog from '@/components/nodes/identify/IdentifyDialog.vue';
+import IdentifyNode from '@/components/nodes/identify/IdentifyNode';
+
+// IoNode
+import IoNode from '@/components/nodes/io/IoNode';
+import IoDialog from '@/components/nodes/io/IoDialog.vue';
+
+// input nodes
+import StartNode from '@/components/nodes/inputs/StartNode';
+import PauseNode from '@/components/nodes/inputs/PauseNode';
+import StopNode from '@/components/nodes/inputs/StopNode';
+import RestartNode from '@/components/nodes/inputs/RestartNode';
+
+// AlertNode
+import AlertNode from '@/components/nodes/alert/AlertNode';
+import AlertDialog from '@/components/nodes/alert/AlertDialog.vue';
+
 export function registerOptions(viewPlugin) {
   viewPlugin.registerOption('EventButtonOption', EventButtonOption);
   viewPlugin.registerOption('TextTemplateDialog', TextTemplateDialog);
   viewPlugin.registerOption('MoveAxisDialog', MoveAxisDialog);
   viewPlugin.registerOption('CameraDialog', CameraDialog);
   viewPlugin.registerOption('IfDialog', IfDialog);
+  viewPlugin.registerOption('MatrixDialog', MatrixDialog);
+  viewPlugin.registerOption('HsvFilterDialog', HsvFilterDialog);
+  viewPlugin.registerOption('IdentifyDialog', IdentifyDialog);
+  viewPlugin.registerOption('IoDialog', IoDialog);
+  viewPlugin.registerOption('AlertDialog', AlertDialog);
 }
 
 export function registerNodes(editorInstance) {
   // editorInstance.registerNodeType('MoveNode', MoveNode);
 
   // User input
-  editorInstance.registerNodeType('button', ButtonNode, 'Input');
+  editorInstance.registerNodeType('ButtonNode', ButtonNode, 'Input');
 
-  editorInstance.registerNodeType('text-template', TextTemplateNode, 'Text');
+  editorInstance.registerNodeType('TextTemplateNode', TextTemplateNode, 'Text');
 
-  editorInstance.registerNodeType('move-axis', MoveAxisNode, 'Move');
+  editorInstance.registerNodeType('MoveAxisNode', MoveAxisNode, 'Move');
 
-  editorInstance.registerNodeType('camera', CameraNode, 'Img');
+  editorInstance.registerNodeType('CameraNode', CameraNode, 'Img');
 
-  editorInstance.registerNodeType('if', IfNode, 'Output');
+  editorInstance.registerNodeType('IfNode', IfNode, 'Output');
+
+  editorInstance.registerNodeType('MatrixNode', MatrixNode, 'Matrix');
+
+  editorInstance.registerNodeType('HsvFilterNode', HsvFilterNode, 'Hsv');
+
+  editorInstance.registerNodeType('IdentifyNode', IdentifyNode, 'Matrix');
+
+  editorInstance.registerNodeType('IoNode', IoNode, 'Io');
+
+  editorInstance.registerNodeType('StartNode', StartNode, 'Input');
+  editorInstance.registerNodeType('PauseNode', PauseNode, 'Input');
+  editorInstance.registerNodeType('StopNode', StopNode, 'Input');
+  editorInstance.registerNodeType('RestartNode', RestartNode, 'Input');
+
+  editorInstance.registerNodeType('AlertNode', AlertNode, 'Alert');
 }

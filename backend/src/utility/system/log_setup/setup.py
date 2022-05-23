@@ -14,7 +14,7 @@ def custom_handler(logger, handler_name, formatter_name, destination, level):
 
 def default_setup(logger, logfilepath, timedlogfilepath, level=DEBUG):
     # custom_handler(logger, "file", "json", logfilepath, level)
-    custom_handler(logger, "time_file", "json", timedlogfilepath, level)
+    # custom_handler(logger, "time_file", "json", timedlogfilepath, level)
     # custom_handler(logger, "stream", "console", None, level)
     # custom_handler(logger,"time_file", "json", nodelogfilepath, level)
     return logger

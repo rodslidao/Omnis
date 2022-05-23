@@ -9,9 +9,25 @@ schema {
 }
 
 type Mutation {
-  createNodeSheet(_id: ID!,  name: String, sketchName: String, saved: Boolean, duplicated: Boolean, content: JSON!): NodeSheetResult!
-  saveNodeSheet(_id: ID!,  name: String, sketchName: String, saved: Boolean, duplicated: Boolean, content: JSON!): NodeSheetResult!
-  updateNodeSheet(_id: ID!, name:String, content: JSON): NodeSheetResult
+  createNodeSheet(
+    _id: ID!
+    name: String
+    sketchName: String
+    saved: Boolean
+    duplicated: Boolean
+    content: JSON!
+  ): NodeSheetResult!
+
+  saveNodeSheet(
+    _id: ID!
+    name: String
+    sketchName: String
+    saved: Boolean
+    duplicated: Boolean
+    content: JSON!
+  ): NodeSheetResult!
+
+  updateNodeSheet(_id: ID!, name: String, content: JSON): NodeSheetResult
   deleteNodeSheet(id: ID!): NodeSheetResult
 
   startProcess: ProcessResult
@@ -26,6 +42,7 @@ type Mutation {
 
   uploadFile(file: Upload!): FileResult!
   uploadPhoto(photo: Upload!): Photo!
+  takePhoto(camera_id: ID!): Photo!
 
   createCamera(input: CameraInput!): CameraResult!
   startCamera(_id: ID!): CameraResult!
@@ -36,7 +53,7 @@ type Mutation {
   startSerial(_id: ID!): SerialResult!
   stopSerial(_id: ID!): SerialResult!
   resetSerial(_id: ID!): SerialResult!
-  sendSerial(_id: ID!, payload:String!): SerialResult!
+  sendSerial(_id: ID!, payload: String!): SerialResult!
   setCameraProperty(_id: ID!, input: JSON): CameraResult!
 
   syncHostTime(timestamp: Int): Boolean!
@@ -44,9 +61,9 @@ type Mutation {
 
 type Query {
   getNodeSheet(_id: ID!): NodeSheetResult!
-  getSketchList:SketchListResult!
+  getSketchList: SketchListResult!
 
-  getNodeInfo(node_type: ID!): NodeInfoResult!
+  getNodeInfo(node_type: ID!, kwargs: JSON): NodeInfoResult!
 
   getCamera(_id: ID!): CameraResult!
   getCameras: CamerasResult!
@@ -61,10 +78,15 @@ type Query {
 
   getManutention: ManutentionResult
   getThr: [String]
+
+  calibrateCamera(input: CalibrateRequestInput!): Boolean
+  getLoadedNodes: [Node_Status]
 }
 
 type Subscription {
   alerts: AlertResult
   cameras: Camera
   serials: Serial
+  calibrations: StepResult
+  nodes: Node_Status
 }

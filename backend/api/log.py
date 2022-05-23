@@ -1,6 +1,6 @@
 
 from logging import getLogger, DEBUG, INFO, WARNING, ERROR, CRITICAL
-from src.utility.system.log_setup.setup import default_setup
+from src.utility.system.log_setup.setup import default_setup, custom_handler
 from src.utility.system.log_setup.decorators import exception
 
 levels = {
@@ -10,12 +10,10 @@ levels = {
     "error": ERROR,
     "critical": CRITICAL,
 }
-lvl = "info"
+lvl = "debug"
 
 log_paths = ["src/logs/untimed_log.json", "src/logs/timed_log.json"]
 logger = default_setup(getLogger(str(__name__)), *log_paths, level=levels[lvl])
-
-# custom_handler(logger, "mongo", "json", dbo, levels[lvl])
 
 if __name__ == "__main__":
 

@@ -1,8 +1,8 @@
 import { Node } from '@baklavajs/core';
 // import { store } from '../../main';
 
-export default class MoveAxis extends Node {
-  type = 'move-axis';
+export default class MoveAxisNode extends Node {
+  type = 'MoveAxisNode';
   twoColumn = true;
 
   height = 800;
@@ -27,9 +27,16 @@ export default class MoveAxis extends Node {
     // this.addInputInterface('X');
     // this.addInputInterface('Y');
     // this.addInputInterface('Z');
-    this.addInputInterface('Trigger');
-    this.addOutputInterface('onSuccess');
-    this.addOutputInterface('onFailure');
+    this.addInputInterface('Gatilho', undefined, undefined, {
+      description:
+        'Entrada que fará o acionamento do nó',
+    });
+    this.addInputInterface('XY', undefined, undefined, {
+      description:
+        'Recebe uma lista de coordenadas para executar o movimento',
+    });
+    this.addOutputInterface('Sucesso');
+    this.addOutputInterface('Falha');
     this.axisList.forEach((axis) => {
       // if (axis.isActive) {
       if (axis.name === 'F') {
@@ -39,6 +46,8 @@ export default class MoveAxis extends Node {
         // }
       }
     });
+   
+
     // this.axisList.forEach((axis) => {
     //   this.addOption(axis[0], 'CheckboxOption');
     // });
