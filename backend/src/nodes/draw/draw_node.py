@@ -27,7 +27,7 @@ class DrawNode(BaseNode):
         super().__init__(name, NODE_TYPE, id, options, output_connections)
         self.input_connections = input_connections
         self.proplist = options["drawable_properties"]
-        self.auto_run = options.get(["auto_run"], False)
+        self.auto_run = options.get("auto_run", False)
         self.image = None
         self.obj = None
         NodeManager.addNode(self)

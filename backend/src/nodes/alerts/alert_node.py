@@ -1,4 +1,6 @@
 from src.nodes.alerts.alert_obj import Alert
+from src.nodes.node_manager import NodeManager
+from src.nodes.base_node import BaseNode
 
 NODE_TYPE = "AlertNode"
 
@@ -17,7 +19,3 @@ class AlertNode(BaseNode):
 
     def execute(self, message=""):
         Alert(self.tile, self.level, self.title, self.description, self.how2solve, self.buttonText, self.buttonAction)
-
-    @staticmethod
-    def get_info(**kwargs):
-        return {"options": CameraManager.get_info()}

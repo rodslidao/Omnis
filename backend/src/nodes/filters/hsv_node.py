@@ -3,7 +3,8 @@ from src.nodes.base_node import BaseNode
 
 from api import logger, exception
 from api.decorators import for_all_methods
-
+from src.manager.camera_manager import CameraManager
+from src.nodes.color.color_obj import ColorOBJ
 from cv2 import (
     COLOR_BGR2HSV_FULL,
     inRange,
@@ -13,6 +14,7 @@ from cv2 import (
     FONT_HERSHEY_SIMPLEX,
     putText,
     imread,
+    resize
 )
 
 from numpy import array
@@ -32,13 +34,12 @@ class HsvNode(BaseNode):
 
     def __init__(self, name, id, options, output_connections, input_connections):
         super().__init__(name, NODE_TYPE, id, options, output_connections)
-        self.color_range = {
-            "lower": list(options["lower"].values()),
-            "upper": list(options["upper"].values()),
-        }
-        self.auto_run = options.get(["auto_run"], False)
+        self.update_options(options)
+        self.auto_run = options.get("auto_run", False)
         self.image = imread("./src/imgs/no_image.jpg")
+        logger.warning(f"name: {name}, options: {options}")
         NodeManager.addNode(self)
+        CameraManager.add(self)
 
     def execute(self, message):
         target = message.targetName.lower()
@@ -53,31 +54,26 @@ class HsvNode(BaseNode):
         return inRange(
             cvtColor(image, COLOR_BGR2HSV_FULL),
             array(lower),
-            array(upper),
+            array(upper)
         )
 
     def read(self):
-        return self.convert_frame(
+        return bitwise_and(self.image, self.image, mask=self.convert_frame(
                     self.image,
                     self.color_range["lower"],
                     self.color_range["upper"],
-                )
+                ))
 
-        return putText(
-            _,
-            f"HSV Range: {self.color_range}",
-            (10, 30),
-            FONT_HERSHEY_SIMPLEX,
-            0.5,
-            (0, 0, 255),
-            2,
-        )
+    def update_options(self, options):
+        self.color_range = {
+            "lower": ColorOBJ(options["lower"].values(), "RGB").get("CV2_HSV"),
+            "upper": ColorOBJ(options["upper"].values(), "RGB").get("CV2_HSV"),
+        }
+        logger.info(self.color_range)
 
-    def update_options(self, *args, **kwargs):
-        if kwargs.get("lower") and kwargs.get("upper"):
-            self.color_range["lower"] = list(kwargs["lower"].values())
-            self.color_range["upper"] = list(kwargs["upper"].values())
-        
+    def stop(self):
+        super().stop()
+        CameraManager.remove(self)
 
     @staticmethod
     def stream_frame(frame, lower, upper):

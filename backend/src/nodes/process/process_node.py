@@ -5,7 +5,7 @@ from api import logger, exception
 from api.decorators import for_all_methods
 from threading import Thread
 
-NODE_TYPE = "PROCESS"
+NODE_TYPE = "ProcessNode"
 
 process_options = {"stop": process.stop, "pause": process.pause, "start": process.start}
 
@@ -28,13 +28,14 @@ class ProcessNode(BaseNode):
     def __init__(self, name, id, options, output_connections, input_connections):
         super().__init__(name, NODE_TYPE, id, options, output_connections)
         self.input_connections = input_connections
-        self.function = process_options.[options["action"]]
-        self.auto_run = options["auto_run"].get("value", False)
+        logger.info(f"name: {name}, options: {options}")
+        self.function = process_options[options["action"]]
+        self.auto_run = options.get("auto_run", False)
         NodeManager.addNode(self)
 
     def execute(self, message=""):
         if self.auto_run:
-            self.on("Sinal", True)
+            self.on("Gatilho", True)
         else:
             Thread(target=self.function).start()
 

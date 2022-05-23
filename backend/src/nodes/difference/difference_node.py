@@ -16,7 +16,7 @@ class DifferenceNode(BaseNode):
         super().__init__(name, NODE_TYPE, id, options, output_connections)
         self.input_connections = input_connections
 
-        self.auto_run = options.get(["auto_run"], False)
+        self.auto_run = options.get("auto_run", False)
         NodeManager.addNode(self)
 
     def execute(self, message=""):

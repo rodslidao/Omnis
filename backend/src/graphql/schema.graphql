@@ -57,7 +57,6 @@ type Mutation {
   setCameraProperty(_id: ID!, input: JSON): CameraResult!
 
   syncHostTime(timestamp: Int): Boolean!
-  updateStreamNode(node_id: ID!): Boolean!
 }
 
 type Query {

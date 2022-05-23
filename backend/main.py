@@ -4,16 +4,17 @@ import uvicorn
 import socket
 import time
 
-from api import logger, dbo, CameraStreamer
+from api import logger, dbo, stremer
 from api.queries import query
 from api.subscriptions import subscription
 from api.mutations import mutation
 
-from src.nodes.streaming_node.stream import Stream
 from src.nodes.node_registry import NodeRegistry
-from src.end_points import imgRoute, videoRoute
+from src.end_points import imgRoute, videoRoute, custom_video_response, frame_producer
 from src.nodes.node_manager import NodeManager
 from src.loader import extractOptionsFromNode
+
+from starlette.routing import Route
 
 from ariadne.asgi import GraphQL
 from ariadne import (
@@ -47,36 +48,26 @@ class Echo(WebSocketEndpoint):
         await websocket.accept()
 
     async def on_receive(self, websocket, data):
-        if data.get("node") and data.get("id"):
-            node = data["node"]
-            options = extractOptionsFromNode(node)
-            newCls = NodeRegistry.getNodeClassByName(node.get("type"))
-            Temp_Node = newCls(
-                node.get("name"),
-                node.get("id"),
-                options,
-                [],
-                [],
-            )
-            Echo._id = Temp_Node._id
-            Stream.source_update(data["camera_id"], Temp_Node._id)
-            websocket.send_json({"camera_id": Stream._id})
-
+        node_id = data.get("nodeId")
+        if node_id:
+            node_type = data.get("nodeType")
+            running_node = NodeManager.getNodeById(node_id)
+            if running_node:
+                running_node.update_options(extractOptionsFromNode(data))
+        await websocket.send_json({"a": "b"})
     async def on_disconnect(self, websocket, close_code=100):
-        if Echo._id is not None:
-            NodeManager.removeNode(Echo._id)
-            Echo._id = None
         print("disconnected")
-        pass
 
 
-routes = [
+routes_app = [
     Mount("/imgs", routes=imgRoute),
-    Mount("/videos", routes=videoRoute),
     WebSocketRoute("/ws", endpoint=Echo),
 ]
 
-app = Starlette(debug=True, routes=routes, on_startup=[], on_shutdown=[dbo.close])
+stremer.routes.append(Route("/videos/{video_id}", endpoint=custom_video_response, methods=["GET", "POST"]))
+stremer.config["generator"] = frame_producer
+
+app = Starlette(debug=True, routes=routes_app, on_startup=[], on_shutdown=[dbo.close])
 
 app.mount(
     "/",
@@ -88,7 +79,8 @@ app.mount(
     ),
     "Omnis",
 )
-CameraStreamer.middleware = [
+
+stremer.middleware = [
     Middleware(
         CORSMiddleware,
         allow_credentials=True,
@@ -97,6 +89,7 @@ CameraStreamer.middleware = [
         allow_headers=["*"],
     )
 ]
+
 
 port = environ["SERVER_PORT"] if environ.get("SERVER_PORT") else 5000
 stream = environ["STREAMING_PORT"] if environ.get("STREAMING_PORT") else 4000
@@ -124,7 +117,7 @@ if __name__ == "__main__":
     image_stream_server = threading.Thread(
         target=uvicorn.run,
         kwargs={
-            "app": CameraStreamer(),
+            "app": stremer(),
             "host": host,
             "port": int(stream),
             "log_level": logger.level,
@@ -137,7 +130,7 @@ if __name__ == "__main__":
         while threading.active_count() > 1:
             time.sleep(1)
     except KeyboardInterrupt:
-        CameraStreamer.shutdown()
+        stremer.shutdown()
         image_stream_server.join(2)
     finally:
         app_server.join(1)

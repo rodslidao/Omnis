@@ -22,7 +22,7 @@ class BlurNode(BaseNode):
         self.input_connections = input_connections
         self.type = options["blur_type"]
         self.k_size = options["blur_intensity"]
-        self.auto_run = options.get(["auto_run"], False)
+        self.auto_run = options.get("auto_run", False)
         NodeManager.addNode(self)
 
     def execute(self, message=""):

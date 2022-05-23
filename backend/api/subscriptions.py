@@ -40,20 +40,3 @@ class SubscriptionFactory:
         """
         for queue in self.store:
             queue.put_nowait(alert)
-
-    
-
-# def source_decorator(method):
-#     def inner(ref):
-#         @subscription.source(ref.name)
-#         async def ref_source(self, obj, info):
-#                 queue = asyncio.Queue()
-#                 self.store.append(queue)
-#                 try:
-#                     while True:
-#                         yield await queue.get()
-#                 except asyncio.CancelledError:
-#                     self.store.remove(queue)
-#                     raise
-#         return ref_source(ref)
-#     return inner

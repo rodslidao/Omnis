@@ -33,7 +33,7 @@ class MovementNode(BaseNode):
             for k, v in options["axis"]["values"].items()
             if k.lower() in self.axis
         }
-        self.auto_run = options.get(["auto_run"], False)
+        self.auto_run = options.get("auto_run", False)
         NodeManager.addNode(self)
 
     def execute(self, message):

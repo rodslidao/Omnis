@@ -14,7 +14,7 @@ class ProductionNode(BaseNode):
         self.model = options["model"]["value"]
         self.status = None
         self.production_obj = ProductionOBJ(**options)
-        self.auto_run = options.get(["auto_run"], False)
+        self.auto_run = options.get("auto_run", False)
         NodeManager.addNode(self)
 
     def execute(self, message):

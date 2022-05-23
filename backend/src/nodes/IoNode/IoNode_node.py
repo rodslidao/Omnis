@@ -20,7 +20,7 @@ class IoNodeNode(BaseNode):
         self.config = options["port"]
         self.board = SerialManager.get_by_id(self.config["board"])
         self.command = self.config["command"].replace("<pin>", str(self.config["port"])).replace("<pwm>", str(255 if self.config["pwm"] else 0))
-        self.auto_run = options.get(["auto_run"], False)
+        self.auto_run = options.get("auto_run", False)
         NodeManager.addNode(self)
 
 

@@ -55,7 +55,7 @@ class MorphoperationNode(BaseNode):
             element_types[self.element_type], (self.k_size, self.k_size)
         )
 
-        self.auto_run = options.get(["auto_run"], False)
+        self.auto_run = options.get("auto_run", False)
         NodeManager.addNode(self)
 
     def execute(self, message):

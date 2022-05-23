@@ -107,8 +107,7 @@ class Serial(_Serial):
         try:
             logger.info(f"{self.name} send: {message}")
             _ = self.write(message)
-            if echo:
-                return _
+            return  _ if echo else self
         except serialutil.PortNotOpenError:
             self.open()
             return self.send(message, echo)

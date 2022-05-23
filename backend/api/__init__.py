@@ -1,8 +1,7 @@
 from os import environ
 from platform import system
 from dotenv import load_dotenv
-from vidgear.gears.asyncio import WebGear_RTC
-
+from vidgear.gears.asyncio import WebGear_RTC, WebGear
 from .log import logger, exception, custom_handler, logger, levels, lvl
 from .decorators import for_all_methods
 
@@ -40,12 +39,13 @@ mangers = {
     "serial-manager": {"manager": SerialManager, "class": [Serial, SerialGcodeOBJ]},
 }
 
-options = {
-    "custom_stream": CameraManager,
-    "custom_data_location": "./",
-    "frame_size_reduction": 50,
-    "jpeg_compression_quality": 21,
-}
-
 Managers_Import(mangers)
-CameraStreamer = WebGear_RTC(logging=True, **options)
+stremer = WebGear(logging=True)
+
+# options = {
+#     "custom_stream": CameraManager,
+#     "custom_data_location": "./",
+#     "frame_size_reduction": 50,
+#     "jpeg_compression_quality": 21,
+# }
+# stremer = WebGear_RTC(logging=True, **options)

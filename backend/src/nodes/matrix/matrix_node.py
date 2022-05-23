@@ -101,9 +101,8 @@ class MatrixNode(BaseNode):
             "extra": convert_to_array(subdivisions["margin"]),
         }
         self.blister = Blister(shape=shape, name=options["matrix"]["name"], _id=options["matrix"]["id"],  slot_config=slot_config)
-        self.auto_run = options.get(["auto_run"], False)
+        self.auto_run = options.get("auto_run", False)
         NodeManager.addNode(self)
-
     def execute(self, message):
         target = message.targetName.lower()
     
@@ -123,7 +122,7 @@ class MatrixNode(BaseNode):
 
     def item(self):
         try:
-            return self.on("Item", next(self.blister))
+            return self.on("Item", next(self.blister)[1]) # Send only the slot. Maybe another node is required to split item and slot data.
         except StopIteration:
             self.on("Fim", True)
             self.reset()

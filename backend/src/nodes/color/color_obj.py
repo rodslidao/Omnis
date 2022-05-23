@@ -1,6 +1,6 @@
 from api import logger, exception
 from api.decorators import for_all_methods
-from src.nodes.color.color_functions import hex2int, any2hex, rgb2hsv, hsv2rgb
+from src.nodes.color.color_functions import hex2int, any2hex, rgb2hsv, hsv2rgb, hsv2cv2_hsv
 
 
 @for_all_methods(exception(logger))
@@ -35,29 +35,17 @@ class ColorOBJ:
                 self.HEX_V = value
                 self.RGB_V = hex2int(value)
                 self.HSV_V = rgb2hsv(*self.RGB_V)
-                self.CV2_HSV_V = [
-                    self.HSV_V[0],
-                    (self.HSV_V[1] * 255) / 100,
-                    (self.HSV_V[2] * 255) / 100,
-                ]
+                self.CV2_HSV_V = hsv2cv2_hsv(self.HSV_V)
             case self.RGB:
                 self.RGB_V = value
                 self.HEX_V = any2hex(value)
                 self.HSV_V = rgb2hsv(*self.RGB_V)
-                self.CV2_HSV_V = [
-                    self.HSV_V[0],
-                    (self.HSV_V[1] * 255) / 100,
-                    (self.HSV_V[2] * 255) / 100,
-                ]
+                self.CV2_HSV_V = hsv2cv2_hsv(self.HSV_V)
             case self.HSV:
                 self.HSV_V = value
                 self.RGB_V = hsv2rgb(*self.HSV_V)
                 self.HEX_V = any2hex(self.RGB_V)
-                self.CV2_HSV_V = [
-                    self.HSV_V[0],
-                    (self.HSV_V[1] * 255) / 100,
-                    (self.HSV_V[2] * 255) / 100,
-                ]
+                self.CV2_HSV_V = hsv2cv2_hsv(self.HSV_V)
             case self.CV2_HSV:
                 self.CV2_HSV_V = value
                 self.HSV_V = [

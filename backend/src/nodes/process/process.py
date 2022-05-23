@@ -30,14 +30,14 @@ class Process(threading.Thread):
         self.kwargs = kwargs
 
     def run(self):
-        while not self.stopped.is_set():
-            while self.paused.is_set():
-                self.resumed.wait()
-                self.resumed.clear()
+        # while not self.stopped.is_set():
+        #     while self.paused.is_set():
+        #         self.resumed.wait()
+        #         self.resumed.clear()
         # for i in range(2):
-            if not self.stopped.is_set() and not self.paused.is_set():
-                self.target(*self.args, **self.kwargs)
-        logger.info("Process Thread Stopped")
+        if not self.stopped.is_set() and not self.paused.is_set():
+            self.target(*self.args, **self.kwargs)
+        logger.info("Process Thread Stopped - Normally")
 
     def start(self):
         logger.info("Process Started")

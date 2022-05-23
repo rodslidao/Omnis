@@ -75,6 +75,7 @@ class BaseNode:
             self.sendConnectionExec(
                 target.get("from").get("id"), target.get("to").get("id")
             )
+            node_to_run = NodeManager.getNodeById(target.get("to").get("nodeId"))
 
             message = Message(
                 target.get("from").get("id"),
@@ -93,14 +94,12 @@ class BaseNode:
             while not self.running:
                 pass
 
-            node_to_run = NodeManager.getNodeById(target.get("to").get("nodeId"))
             if node_to_run and not self.stop_event.isSet():
-                logger.info(f'Trigger: {node_to_run}')
-                sleep(0.5)
+                # logger.info(f'Trigger: {node_to_run}')
                 self.update_status({"status": "SENDING", "message":{"from":target.get("from").get("id"), "to":target.get("to").get("id")}})
                 Thread(target=node_to_run.execute, args=(message,), name=f"{str(self)}({message.sourceName}) -> {message}", daemon=True).start()
-                self.update_status({"status": "RUNNING", "message":{"from":None, "to":None}})
                 node_to_run.update_status({"status": "RUNNING", "message":{"from":None, "to":None}})
+                self.update_status({"status": "RUNNING", "message":{"from":None, "to":None}})
 
     def AutoRun(self):
         message = Message(
@@ -162,6 +161,14 @@ class BaseNode:
     def __str__(self) -> str:
         return f"[{self.type}|{self._id}|{self.name}]"
 
+    def to_dict(self):
+        return {
+            "name": self.name,
+            "id": self._id,
+            "options": self.options,
+            "output_connections": self.output_connections,
+        }
+        
     @staticmethod
     def normalize_id_on_dict(dictionary):
         temp = dictionary.copy()

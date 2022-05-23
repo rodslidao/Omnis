@@ -20,7 +20,7 @@ class CoordinateCorrectionNode(BaseNode):
         self.scale = options["scale"]
         self.offset = options["offset"]
 
-        self.auto_run = options.get(["auto_run"], False)
+        self.auto_run = options.get("auto_run", False)
         NodeManager.addNode(self)
 
     def execute(self, message=""):

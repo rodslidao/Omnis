@@ -13,8 +13,6 @@ from src.manager.serial_manager import SerialManager
 
 from src.nodes.process.process import process
 
-from src.nodes.streaming_node.stream import Stream
-
 from src.utility.system.date import set_system_date
 from api import logger
 
@@ -205,9 +203,7 @@ def stopSerial_resolver(obj, info, _id):
 @mutation.field("sendSerial")
 def sendSerial_resolver(obj, info, _id, payload):
     """Communicate a serial by id and return it like a payload"""
-    serial = SerialManager.get_by_id(_id)
-    serial.send(payload)
-    return {"status": True, "data": serial.to_dict()}
+    return {"status": True, "data": SerialManager.get_by_id(_id).send(payload).to_dict()}
 
 
 @mutation.field("syncHostTime")
@@ -218,21 +214,3 @@ def syncHostTime_resolver(obj, info, timestamp):
     except Exception:
         return False
     return True
-
-
-# # *  ----------- NodeStream ----------- * #
-@mutation.field("updateStreamNode")
-def updateStreamNode_resolver(obj, info, node_id):
-    return Stream.source_update(node_id=node_id)
-
-
-# Process is Running? Has this Node-id? 
-    #YES:
-        # updateStreamNode(node_id)
-        # @ip:@port/videos/<camera_id>
-
-        #Websocket (updateNode, node_id,  *args **kwargs)
-        #exaple: updateNode(node_id, **{range:{lower:{r:0, g:0, b:0}, upper:{r:255, g:255, b:255}}})
-    #NO:
-        #fail.
-

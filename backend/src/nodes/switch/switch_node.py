@@ -20,14 +20,13 @@ class SwitchNode(BaseNode):
         setattr(self, "True", options["onsuccess"])
         setattr(self, "False", options["onfailure"])
         self.expression = options["expression"]
-        self.auto_run = options.get(["auto_run"], False)
+        self.auto_run = options.get("auto_run", False)
         NodeManager.addNode(self)
 
     def execute(self, message=""):
         target = message.targetName
         if target in self.variables:
             self.inputs[str(target)] = message.payload
-            logger.info("{} received {}".format(self.name, message.payload[1].item is not None))
         elif target in ["True", "False"]:
             setattr(self, target, self.inputs.get(message.payload, message.payload))
         # elif target == "expression":

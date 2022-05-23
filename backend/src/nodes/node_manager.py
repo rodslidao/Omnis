@@ -11,7 +11,7 @@ auto_run_nodes = {}
 @for_all_methods(exception(logger))
 class NodeManager:
     def getNodeById(nodeId):
-        return nodes.get(nodeId, None)
+        return nodes.get(nodeId)
 
     def getNodesByType(nodeType):
         return list(filter(lambda node: node.get("type") == nodeType, nodes))

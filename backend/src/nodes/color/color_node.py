@@ -23,7 +23,7 @@ class ColorNode(BaseNode):
         self.color_mode = options["color_name"]
 
         self.color = color(self.color_code, self.color_mode)
-        self.auto_run = options.get(["auto_run"], False)
+        self.auto_run = options.get("auto_run", False)
 
         NodeManager.addNode(self)
 

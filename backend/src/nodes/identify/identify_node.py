@@ -23,7 +23,7 @@ class IdentifyNode(BaseNode):
         self.input_connections = input_connections
         self.filters = options["filters"]
         # self.propertie = options["propertie"]
-        self.auto_run = options.get(["auto_run"], False)
+        self.auto_run = options.get("auto_run", False)
         NodeManager.addNode(self)
 
     def execute(self, message):
