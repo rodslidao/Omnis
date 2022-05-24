@@ -26,7 +26,6 @@ def Managers_Import(definitions):
     for collection, manager_class in definitions.items():
         for config in dbo.find_many(collection, {}):
             if not config.get("disabled", False):
-                print(config)
                 match config.get("is_gcode"):
                     case True:
                         manager_class["class"][1](**config)

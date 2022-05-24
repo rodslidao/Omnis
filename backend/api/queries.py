@@ -41,8 +41,7 @@ def resolve_getCameras(obj, info, **kwargs):
 
 @query.field("getSketchList")
 def resolve_get_sketch_list(obj, info):
-    returns = list(NodeSheet().get_sketch_list())
-    return {"status": True, "data": returns}
+    return {"status": True, "data": list(NodeSheet().get_sketch_list())}
 
 
 @query.field("getNodeInfo")
@@ -67,10 +66,14 @@ def resolve_getThr(obj, info):
 @query.field("calibrateCamera")
 def resolve_calibrateCamera(obj, info, **kwargs):
     Thread(target=CameraCalibration(**kwargs.get("input", {})).calibrate).start()
-    # CameraCalibration().calibrate()
     return True
 
 @query.field("getLoadedNodes")
 def resolve_getLoadedNodes(obj, info):
     """Get a Node by id and return it like a payload"""
     return NodeManager.getActiveNodes()
+
+@query.field("getLoadedConfig")
+def resolve_getLoadedConfig(obj, info):
+    """Get a Node by id and return it like a payload"""
+    return NodeSheet().getNodeSheetById(process.loaded_id)

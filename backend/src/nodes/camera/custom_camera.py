@@ -38,6 +38,7 @@ class Camera(CamGear):
         self.opt = options
         self.config = options.get("config")
         if not disable:
+            print(options.get("props"))
             self.distortion_obj = dbo.find_one(
                 "camera-calibrations", {"_id": str(self._id)}
             )
@@ -51,8 +52,8 @@ class Camera(CamGear):
             CameraManager.add(self)
 
     def read(self):
-        if self.marker_len:
-            return undistort(super().read(), self.mtx, self.dist, None)
+        # if self.marker_len:
+        #     return undistort(super().read(), self.mtx, self.dist, None)
         return super().read()
 
     def remove(self):
@@ -76,6 +77,7 @@ class Camera(CamGear):
         :param aruco_size: size of the aruco marker
         :return: pixel to cm ratio
         """
+        print(len(corners))
 
         return mean([arcLength(corner, True) / (aruco_size * 4) for corner in corners])
 

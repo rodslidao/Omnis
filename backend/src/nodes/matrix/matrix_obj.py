@@ -80,16 +80,15 @@ class Slot:
         **kwargs,
     ):
         self._id = ObjectId(_id)
-        scale = kwargs.get("scale", 1)
-        self.sizes = array(sizes) * scale
-        self.borders = array(borders) * scale
-        self.extra = array(extra) * scale
+        self.scale = kwargs.get("scale", 1)
+        self.sizes = array(sizes)     * self.scale
+        self.borders = array(borders) * self.scale
+        self.extra = array(extra)     * self.scale
         self.origin = array(origin)
         self.position = array(position)
         self.counter = array(counter)
         self.item = item
         self.width, self.height = sizes[:2]
-
         M = array(
             list(
                 (p / c) if c > 0 else 0
@@ -108,10 +107,12 @@ class Slot:
 
         self.start = tuple((self.center[:2] - (self.sizes[:2] / 2)).astype(int))
         self.end = tuple((self.center[:2] + (self.sizes[:2] / 2)).astype(int))
+
+        self.unscaled = Slot(position, origin, sizes, borders, counter, extra, item, _id, **{**kwargs, "scale": 1, "copy": False}) if (self.scale != 1 and kwargs.get('copy', self.scale!=1)) else self
         # (BN * P)+(O + (S / 2)) + int((BE * (P / C)) - (BN * (P / C)))
 
     def __call__(self):
-        return {i: getattr(self, i) for i in vars(self) if i != "_id"}
+        return {i: getattr(self, i) for i in vars(self) if i not in ["_id", "unscaled"] }
 
     def __str__(self) -> str:
         return f"((item slot) {self.item} at center:{self.center}, position:{self.position[::-1]})"
@@ -123,8 +124,9 @@ class Slot:
         return bool(self.item)
 
     def export(self):
-        _ = loads(dumps(self(), cls=CustomEncoder))
+        _ = loads(dumps(self.unscaled(), cls=CustomEncoder))
         _["_id"] = self._id
+        _["scale"] = self.scale
         return _
 
 

@@ -13,6 +13,7 @@ from src.nodes.node_registry import NodeRegistry
 from src.end_points import imgRoute, videoRoute, custom_video_response, frame_producer
 from src.nodes.node_manager import NodeManager
 from src.loader import extractOptionsFromNode
+from src.manager.camera_manager import CameraManager
 
 from starlette.routing import Route
 
@@ -130,6 +131,7 @@ if __name__ == "__main__":
         while threading.active_count() > 1:
             time.sleep(1)
     except KeyboardInterrupt:
+        CameraManager.stop()
         stremer.shutdown()
         image_stream_server.join(2)
     finally:

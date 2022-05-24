@@ -41,9 +41,9 @@ def updateNodeSheet_resolver(obj, info, _id, **kwargs):
 
 
 @mutation.field("deleteNodeSheet")
-def deleteNodeSheet_resolver(obj, info, id):
+def deleteNodeSheet_resolver(obj, info, _id):
     """Delete a NodeSheet by id and return it like a payload"""
-    returns = NodeSheet().delete_node_sheet(id)
+    returns = NodeSheet().delete_node_sheet(_id)
     return {"data": returns}
 
 
@@ -81,9 +81,9 @@ def resumeProcess_resolver(obj, info):
 
 @mutation.field("loadConfig")
 def loadConfig_resolver(obj, info, _id):
-    a = process.load(_id)
-    logger.info("Loaded config with id {}. {}".format(_id, a))
-    return True
+    process.load(_id)
+    logger.info("Loaded config with id {}".format(_id))
+    return NodeSheet().getNodeSheetById(_id)
 
 
 @mutation.field("getLoadedConfig")

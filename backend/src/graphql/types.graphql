@@ -4,6 +4,10 @@ type NodeSheet {
   saved: Boolean
   duplicated:Boolean
   content: NDS
+  last_access: Int
+  description: String
+  node_qtd: Int
+  author: String
 }
 
 type NDS {

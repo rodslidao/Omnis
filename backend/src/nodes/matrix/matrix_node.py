@@ -122,7 +122,9 @@ class MatrixNode(BaseNode):
 
     def item(self):
         try:
-            return self.on("Item", next(self.blister)[1]) # Send only the slot. Maybe another node is required to split item and slot data.
+            _ = next(self.blister)[1]
+            self.on("Item", _) # Send only the slot. Maybe another node is required to split item and slot data.
+            self.on("XY", dict(zip(['X', 'Y'], _.center ))) #! Thats is not the best option ...
         except StopIteration:
             self.on("Fim", True)
             self.reset()
@@ -181,3 +183,4 @@ if __name__ == "__main__":
     )
 
     print(vars(Blister(shape=[6, 6, 0], slot_config=S2)))
+
