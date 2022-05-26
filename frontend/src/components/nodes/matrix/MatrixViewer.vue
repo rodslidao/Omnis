@@ -7,7 +7,7 @@
         <div class="blister" ref="blister">
           <div
             class="row"
-            v-for="index in subdivisions.qtd.Y"
+            v-for="index in subdivisions.qtd.y"
             :key="index"
             v-bind:style="styleObject.row"
           >
@@ -15,19 +15,19 @@
               <div
                 class="subdivision"
                 v-bind:style="styleObject.subdivision"
-                v-for="index in subdivisions.qtd.X"
+                v-for="index in subdivisions.qtd.x"
                 :key="index"
               >
                 <div
                   class="slotsRow"
                   v-bind:style="styleObject.slotsRow"
-                  v-for="index in slots.qtd.X"
+                  v-for="index in slots.qtd.x"
                   :key="index"
                 >
                   <div
                     class="slots"
                     v-bind:style="styleObject.slots"
-                    v-for="index in slots.qtd.Y"
+                    v-for="index in slots.qtd.y"
                     :key="index"
                   ></div>
                 </div>
@@ -94,18 +94,18 @@ export default {
     styleObject() {
       const updatedStyleObject = {
         slots: {
-          height: `${this.slots.size.Y * this.constant.X}px`,
-          width: `${this.slots.size.X * this.constant.X}px`,
-          marginTop: `${this.slots.margin.Y * this.constant.X}px`,
+          height: `${this.slots.size.y * this.constant.x}px`,
+          width: `${this.slots.size.x * this.constant.x}px`,
+          marginTop: `${this.slots.margin.y * this.constant.x}px`,
         },
         slotsRow: {
-          marginLeft: `${this.slots.margin.X * this.constant.X}px`,
+          marginLeft: `${this.slots.margin.x * this.constant.x}px`,
         },
         subdivision: {
-          marginLeft: `${this.subdivisions.margin.X * this.constant.X}px`,
+          marginLeft: `${this.subdivisions.margin.x * this.constant.x}px`,
         },
         row: {
-          marginTop: `${this.subdivisions.margin.Y * this.constant.X}px`,
+          marginTop: `${this.subdivisions.margin.y * this.constant.x}px`,
         },
       };
       return updatedStyleObject;
@@ -114,10 +114,10 @@ export default {
     findSize() {
       // constant totalMainSize = this.frameWidth;
       let counts = {
-        qtd: { X: 0, Y: 0 },
-        margin: { X: 0, Y: 0 },
-        size: { X: 0, Y: 0 },
-        total: { X: 0, Y: 0 },
+        qtd: { x: 0, y: 0 },
+        margin: { x: 0, y: 0 },
+        size: { x: 0, y: 0 },
+        total: { x: 0, y: 0 },
       };
       Object.keys(counts.qtd).forEach((i) => {
         counts.qtd[i] = this.slots.qtd[i] * this.subdivisions.qtd[i];

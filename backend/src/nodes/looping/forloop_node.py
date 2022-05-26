@@ -23,7 +23,7 @@ class ForloopNode(BaseNode):
         super().__init__(name, NODE_TYPE, id, options, output_connections)
         self.iterator = enumerate(options["iterator"]["value"])
         self.backup = options["iterator"]["value"][:]
-        self.auto_run = options["auto_run"]["value"]
+        self.auto_run = options.get("auto_run", False)
         NodeManager.addNode(self)
 
     def execute(self, message):

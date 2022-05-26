@@ -1,6 +1,7 @@
 scalar JSON
 scalar Decimal
 scalar Upload
+scalar timestamptz
 
 schema {
   mutation: Mutation
@@ -12,30 +13,36 @@ type Mutation {
   createNodeSheet(
     _id: ID!
     name: String
-    sketchName: String
     saved: Boolean
-    duplicated: Boolean
+    duplicated:Boolean
+    last_access: Int
+    description: String
+    node_qtd: Int
+    author: String
     content: JSON!
-  ): NodeSheetResult!
+  ): SketchListResult!
 
   saveNodeSheet(
     _id: ID!
     name: String
-    sketchName: String
     saved: Boolean
-    duplicated: Boolean
-    content: JSON!
-  ): NodeSheetResult!
+    duplicated:Boolean
+    last_access: Int
+    description: String
+    node_qtd: Int
+    author: String
+    content: JSON
+  ): SketchListResult!
 
-  updateNodeSheet(_id: ID!, name: String, content: JSON): NodeSheetResult
-  deleteNodeSheet(id: ID!): NodeSheetResult
+  updateNodeSheet(_id: ID!, name: String, content: JSON): SketchListResult!
+  deleteNodeSheet(_id: ID!): SketchListResult!
 
   startProcess: ProcessResult
   stopProcess: ProcessResult
   resumeProcess: ProcessResult
   pauseProcess: ProcessResult
 
-  loadConfig(_id: ID!): Boolean!
+  loadConfig(_id: ID!): NodeSheet!
   getLoadedConfig: ID!
 
   createAlert(input: AlertInput!): AlertResult!
@@ -57,14 +64,13 @@ type Mutation {
   setCameraProperty(_id: ID!, input: JSON): CameraResult!
 
   syncHostTime(timestamp: Int): Boolean!
-  updateStreamNode(camera_id: ID!, node_type: String!): Boolean!
 }
 
 type Query {
   getNodeSheet(_id: ID!): NodeSheetResult!
   getSketchList: SketchListResult!
 
-  getNodeInfo(node_type: ID!): NodeInfoResult!
+  getNodeInfo(node_type: ID!, kwargs: JSON): NodeInfoResult!
 
   getCamera(_id: ID!): CameraResult!
   getCameras: CamerasResult!
@@ -81,6 +87,8 @@ type Query {
   getThr: [String]
 
   calibrateCamera(input: CalibrateRequestInput!): Boolean
+  getLoadedNodes: [Node_Status]
+  getLoadedConfig: NodeSheet
 }
 
 type Subscription {
@@ -88,4 +96,5 @@ type Subscription {
   cameras: Camera
   serials: Serial
   calibrations: StepResult
+  nodes: Node_Status
 }

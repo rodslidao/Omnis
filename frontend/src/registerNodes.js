@@ -33,6 +33,20 @@ import HsvFilterNode from '@/components/nodes/filters/hsv/HsvFilterNode';
 import IdentifyDialog from '@/components/nodes/identify/IdentifyDialog.vue';
 import IdentifyNode from '@/components/nodes/identify/IdentifyNode';
 
+// IoNode
+import IoNode from '@/components/nodes/io/IoNode';
+import IoDialog from '@/components/nodes/io/IoDialog.vue';
+
+// input nodes
+import StartNode from '@/components/nodes/inputs/StartNode';
+import PauseNode from '@/components/nodes/inputs/PauseNode';
+import StopNode from '@/components/nodes/inputs/StopNode';
+import RestartNode from '@/components/nodes/inputs/RestartNode';
+
+// AlertNode
+import AlertNode from '@/components/nodes/alert/AlertNode';
+import AlertDialog from '@/components/nodes/alert/AlertDialog.vue';
+
 export function registerOptions(viewPlugin) {
   viewPlugin.registerOption('EventButtonOption', EventButtonOption);
   viewPlugin.registerOption('TextTemplateDialog', TextTemplateDialog);
@@ -42,6 +56,8 @@ export function registerOptions(viewPlugin) {
   viewPlugin.registerOption('MatrixDialog', MatrixDialog);
   viewPlugin.registerOption('HsvFilterDialog', HsvFilterDialog);
   viewPlugin.registerOption('IdentifyDialog', IdentifyDialog);
+  viewPlugin.registerOption('IoDialog', IoDialog);
+  viewPlugin.registerOption('AlertDialog', AlertDialog);
 }
 
 export function registerNodes(editorInstance) {
@@ -63,4 +79,13 @@ export function registerNodes(editorInstance) {
   editorInstance.registerNodeType('HsvFilterNode', HsvFilterNode, 'Hsv');
 
   editorInstance.registerNodeType('IdentifyNode', IdentifyNode, 'Matrix');
+
+  editorInstance.registerNodeType('IoNode', IoNode, 'Io');
+
+  editorInstance.registerNodeType('StartNode', StartNode, 'Input');
+  editorInstance.registerNodeType('PauseNode', PauseNode, 'Input');
+  editorInstance.registerNodeType('StopNode', StopNode, 'Input');
+  editorInstance.registerNodeType('RestartNode', RestartNode, 'Input');
+
+  editorInstance.registerNodeType('AlertNode', AlertNode, 'Alert');
 }

@@ -7,7 +7,7 @@ libxext6
 
 RUN /usr/local/bin/python -m pip install --upgrade pip
 COPY requirements.txt .
-RUN pip install --user -r requirements.txt
+RUN pip install --user --no-warn-script-location -r requirements.txt
 
 FROM python:latest
 RUN apt-get update && apt-get install -y \
@@ -17,10 +17,6 @@ COPY --from=builder /root/.local /root/.local
 WORKDIR /app
 
 COPY . .
-
-EXPOSE 3000 3001
-EXPOSE 4000 4001
-EXPOSE 5000 5001
 
 ENV PATH=/root/.local:$PATH
 

@@ -33,11 +33,12 @@ class NodeSheet:
     def save_node_sheet(self, _id, **kwargs):
         """Save a NodeSheet object"""
         target = dbo.find_one("node-sheets", {"_id": ObjectId(_id)}) is None
+        kwargs_whiout_empty = {k: v for k, v in kwargs.items() if v}
         if target:
-            self.create_node_sheet(_id, **kwargs)
+            self.create_node_sheet(_id, **kwargs_whiout_empty)
         else:
-            self.update_node_sheet(_id, **kwargs)
-        return self.getNodeSheetById(kwargs.get("_id"))
+            self.update_node_sheet(_id, **kwargs_whiout_empty)
+        return self.get_sketch_list() #self.getNodeSheetById(kwargs.get("_id"))
 
     def create_node_sheet(self, _id, **kwargs):
         """Create a new NodeSheet object"""
@@ -60,13 +61,12 @@ class NodeSheet:
     def delete_node_sheet(self, _id):
         """Delete a NodeSheet by id"""
         logger.info(f"Deleting NodeSheet [{_id}]")
-        deleted_sheet = self.getNodeSheetById(_id)
         dbo.delete_one("node-sheets", {"_id": ObjectId(_id)})
-        return deleted_sheet
+        return self.get_sketch_list()
 
     def get_sketch_list(self):
         """Get a list of all sketches"""
-        return dbo.find_many("NodeSheets", data={"content": 0})
+        return dbo.find_many("node-sheets", data={"content": 0})
 
     def _format(self):
         """Format the NodeSheet object"""

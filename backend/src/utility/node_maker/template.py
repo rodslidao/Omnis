@@ -15,14 +15,14 @@ class class_name(BaseNode):
     def __init__(self, name, id, options, output_connections, input_connections):
         super().__init__(name, NODE_TYPE, id, options, output_connections)
         self.input_connections = input_connections
-        self.auto_run = options["auto_run"]["value"]
+        self.auto_run = options.get("auto_run", False)
         NodeManager.addNode(self)
 
     def execute(self, message=""):
         self.onSuccess()
 
     @staticmethod
-    def get_info():
+    def get_info(**kwargs):
         return {
             "options": {
                 "option_name": "option_accepted_values",

@@ -1,7 +1,7 @@
 /* eslint-disable max-len */
 <template>
   <v-row justify="center">
-    <v-dialog v-model="dialog" max-width="600px">
+    <v-dialog v-model="dialog" max-width="650px">
       <v-card dark>
         <v-card-title>
           <TextEditable :text="node.name" @changeText="changeName" />
@@ -33,6 +33,7 @@
                 class="mb-5"
                 :slots="selectedMatrix.slots"
                 :subdivisions="selectedMatrix.subdivisions"
+                :origin="selectedMatrix.origin"
               ></MatrixInfoResume>
               <MatrixViewer
                 :slots="selectedMatrix.slots"
@@ -127,8 +128,8 @@ export default {
     save() {
       this.$refs.form.validate();
       if (
-        (this.isAdvanced && this.isValidAdvancedForm)
-        || (!this.isAdvanced && this.isValidSimpleForm)
+        (this.isAdvanced && this.isValidAdvancedForm) ||
+        (!this.isAdvanced && this.isValidSimpleForm)
       ) {
         if (this.isAdvanced) {
           // this.node.setOptionValue('expression', this.advancedExpression);
@@ -160,6 +161,8 @@ export default {
       // console.log(this.$apollo.store);
       this.matrixObjList = [];
       this.matrixObjList.push(...response.data.getNodeInfo.data.options);
+
+      console.log('response.data', ...response.data.getNodeInfo.data.options);
 
       if (!this.matrixCopy) {
         console.log('entrei', this.matrixCopy);

@@ -105,9 +105,9 @@ class Serial(_Serial):
     def send(self, message, echo=False):
         send_lock.acquire()
         try:
+            logger.info(f"{self.name} send: {message}")
             _ = self.write(message)
-            if echo:
-                return _
+            return  _ if echo else self
         except serialutil.PortNotOpenError:
             self.open()
             return self.send(message, echo)

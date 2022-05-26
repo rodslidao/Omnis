@@ -1,5 +1,5 @@
 <template>
-  <div class="background">
+  <div class="background" ref="container">
     <span style="display: none">{{ selectedTabIndex }}</span>
     <baklava-editor :plugin="viewPlugin" />
     <ActionMenuForNodes
@@ -10,7 +10,7 @@
 </template>
 
 <script>
-//import ProgressStatus from "../components/ProgressStatus";
+// import ProgressStatus from "../components/ProgressStatus";
 // import { mapState, mapMutations } from "vuex";
 // import { actions } from "../store/index";
 
@@ -25,10 +25,13 @@ import ActionMenuForNodes from '@/components/nodes/ActionMenuForNodes.vue';
 
 import { mapActions, mapState } from 'vuex';
 
+import StartNode from '@/components/nodes/inputs/StartNode';
+
 // Custom Baklava Components
 import CustomContextMenu from '@/components/nodes/custom/CustomContextMenu.vue';
 import CustomNode from '@/components/nodes/custom/CustomNode.vue';
 import CustomInterface from '@/components/nodes/custom/CustomInterface.vue';
+import CustomConnection from '@/components/nodes/custom/CustomConnection.vue';
 
 export default {
   // mixins: [mixins],
@@ -149,6 +152,7 @@ export default {
       this.viewPlugin.components.contextMenu = CustomContextMenu;
       this.viewPlugin.components.node = CustomNode;
       this.viewPlugin.components.nodeInterface = CustomInterface;
+      this.viewPlugin.components.connection = CustomConnection;
 
       const intfTypePlugin = new InterfaceTypePlugin();
       this.editor.use(intfTypePlugin);
@@ -174,6 +178,12 @@ export default {
     if (Object.values(this.updateContentDefault).length == 0) {
       this.updateContentDefault(this.editor.save());
     }
+
+    this.addNodeWithCoordinates(
+      StartNode,
+      this.$refs.container.clientWidth / 2 - 100,
+      this.$refs.container.clientHeight / 2 - 100,
+    );
     // console.log(this.contentDefault);
   },
 
@@ -217,6 +227,18 @@ export default {
   },
 };
 </script>
+
+<style lang="scss">
+// Colors
+
+.node-editor .background {
+  background-image: radial-gradient(
+    circle,
+    rgb(67 69 80) 3%,
+    rgba(252, 70, 10, 0) 3%
+  ) !important;
+}
+</style>
 
 <style lang="scss" scoped >
 .node.--type-MoveNode {

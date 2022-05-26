@@ -6,7 +6,7 @@ from api import logger, exception
 from api.decorators import for_all_methods
 from api import dbo
 
-NODE_TYPE = "IDENTIFY"
+NODE_TYPE = "IdentifyNode"
 
 
 @for_all_methods(exception(logger))
@@ -22,21 +22,14 @@ class IdentifyNode(BaseNode):
         super().__init__(name, NODE_TYPE, id, options, output_connections)
         self.input_connections = input_connections
         self.filters = options["filters"]
-        self.propertie = options["propertie"]
-        self.auto_run = options["auto_run"]["value"]
+        # self.propertie = options["propertie"]
+        self.auto_run = options.get("auto_run", False)
         NodeManager.addNode(self)
 
     def execute(self, message):
         object_data_list = identifyObjects(message.payload, **self.filters)
-        self.onSuccess(object_data_list)
-        # for object_data in object_data_list:
-        #     for prop_key in self.propertie:
-        #         if object_data.get(prop_key) is not None:
-        #             self.on(prop_key, object_data.get(prop_key))
-
-        # self.on("object", object_data)
-        # self.onSuccess(object_data())
+        self.on("MatrizOut", object_data_list)
 
     @staticmethod
-    def get_info():
+    def get_info(**kwargs):
         return {"options": list(dbo.find_many("identify_node_info", {}, {"_id": 0}))}

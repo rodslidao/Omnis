@@ -20,7 +20,7 @@ db_ip = getenv("DB_HOST")
 
 url = (
     f"mongodb://{db_ip}:{db_port}/"
-    if environ.get("ENV_MODE") != "cloud"
+    if environ.get("DB_MODE") != "cloud"
     else f"mongodb+srv://{getenv('DB_USER')}:{getenv('DB_PASS')}@cluster0.diykb.mongodb.net/test?retryWrites=true&w=majority"
 )
 
@@ -78,7 +78,7 @@ class MongoOBJ:
             self.client = MongoClient(db_url)
             self.client.admin.command("ismaster")
         except ConnectionFailure:
-            logger.critical(f"Could not connect to MongoDB using url: {db_url}")
+            logger.error(f"Could not connect to MongoDB using url: {db_url}")
             raise
         else:
             logger.info("Connected to MongoDB")
@@ -113,8 +113,8 @@ class MongoOBJ:
                 loads(dumps(data, cls=CustomEncoder))
             )
 
-    def find_one(self, collection_name, query={}):
-        return self.dbo[collection_name].find_one(query)
+    def find_one(self, collection_name, query={}, data={}):
+        return self.dbo[collection_name].find_one(query, data)
 
     def find_many(self, collection_name, query={}, data={}):
         return self.dbo[collection_name].find(query, data)

@@ -82,6 +82,7 @@ import EventBus from '@/event-bus';
 import { mapActions } from 'vuex';
 import NodeConfigTitle from '@/components/nodes/NodeConfigTitle.vue';
 import gql from 'graphql-tag';
+import { getNodeInfo } from '@/graphql/nodes/GetInfos.js';
 import TextEditable from '@/components/nodes/dialogs/TextEditable.vue';
 
 export default {
@@ -145,6 +146,8 @@ export default {
 
     async getCamera() {
       this.cameraLoading = true;
+      // const response = await getNodeInfo(this.node.type);
+      // console.log(response);
       const response = await this.$apollo.query({
         query: gql`
           query {
@@ -156,7 +159,8 @@ export default {
           }
         `,
       });
-      // console.log(this.$apollo.store);
+
+      console.log(this.$apollo.store);
 
       this.cameraList = [];
       this.cameraList.push(...response.data.getNodeInfo.data.options);

@@ -37,7 +37,7 @@ class ColorspaceNode(BaseNode):
         self.input_connections = input_connections
         self.operation = options.color_space["value"]
         self.image = None
-        self.auto_run = options["auto_run"]["value"]
+        self.auto_run = options.get("auto_run", False)
         NodeManager.addNode(self)
 
     def execute(self, message):
@@ -52,5 +52,5 @@ class ColorspaceNode(BaseNode):
         return self.image
 
     @staticmethod
-    def get_info():
+    def get_info(**kwargs):
         return {"options": {"color_space": list(color_operations.keys())}}

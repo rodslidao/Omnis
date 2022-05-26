@@ -202,7 +202,6 @@ def identifyObjects(
     ):
         dimensional_object_list = []
         image = slot.item
-        slot.item = [False]
         # Find the contours in the image
         contours, _ = findContours(image, md, mt)
         for contour in contours:
@@ -317,7 +316,7 @@ def identifyObjects(
         # return list of dimensional objects that passed all tests
         # ? dimensional_object_list if parm.get("return_list", False) else dimensional_object_list[0]
 
-        slot.item = dimensional_object_list if not parm.get("boolean", False) else True
+        slot.item = dimensional_object_list if any(dimensional_object_list) else None
     return images_array
 
 
@@ -380,9 +379,3 @@ def identifyObjects(
 #         "max":100
 #     },
 # }
-
-
-100 = 360
-Y= X
-
-X = (Y*360)/100

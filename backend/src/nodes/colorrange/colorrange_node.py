@@ -17,7 +17,7 @@ class ColorrangeNode(BaseNode):
         self.input_connections = input_connections
         self.lower = None
         self.upper = None
-        # self.auto_run = options["auto_run"]["value"]
+        # self.auto_run = options.get("auto_run", False)
         NodeManager.addNode(self)
 
     def execute(self, message=None):
@@ -29,7 +29,7 @@ class ColorrangeNode(BaseNode):
             self.lower, self.upper = None, None
 
     @staticmethod
-    def get_info():
+    def get_info(**kwargs):
         return {
             "options": {
                 "option_name": "option_accepted_values",

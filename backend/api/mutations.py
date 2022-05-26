@@ -13,9 +13,8 @@ from src.manager.serial_manager import SerialManager
 
 from src.nodes.process.process import process
 
-# from src.nodes.streaming_node.stream import Stream
-
 from src.utility.system.date import set_system_date
+from api import logger
 
 mutation = MutationType()
 
@@ -42,9 +41,9 @@ def updateNodeSheet_resolver(obj, info, _id, **kwargs):
 
 
 @mutation.field("deleteNodeSheet")
-def deleteNodeSheet_resolver(obj, info, id):
+def deleteNodeSheet_resolver(obj, info, _id):
     """Delete a NodeSheet by id and return it like a payload"""
-    returns = NodeSheet().delete_node_sheet(id)
+    returns = NodeSheet().delete_node_sheet(_id)
     return {"data": returns}
 
 
@@ -82,7 +81,9 @@ def resumeProcess_resolver(obj, info):
 
 @mutation.field("loadConfig")
 def loadConfig_resolver(obj, info, _id):
-    return process.load(_id)
+    process.load(_id)
+    logger.info("Loaded config with id {}".format(_id))
+    return NodeSheet().getNodeSheetById(_id)
 
 
 @mutation.field("getLoadedConfig")
@@ -202,9 +203,7 @@ def stopSerial_resolver(obj, info, _id):
 @mutation.field("sendSerial")
 def sendSerial_resolver(obj, info, _id, payload):
     """Communicate a serial by id and return it like a payload"""
-    serial = SerialManager.get_by_id(_id)
-    serial.send(payload)
-    return {"status": True, "data": serial.to_dict()}
+    return {"status": True, "data": SerialManager.get_by_id(_id).send(payload).to_dict()}
 
 
 @mutation.field("syncHostTime")
@@ -215,9 +214,3 @@ def syncHostTime_resolver(obj, info, timestamp):
     except Exception:
         return False
     return True
-
-
-# # *  ----------- NodeStream ----------- * #
-# @mutation.field("updateStreamNode")
-# def updateStreamNode_resolver(obj, info, camera_id, node_type):
-#     return Stream.source_update(camera_id, node_type)

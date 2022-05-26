@@ -25,7 +25,7 @@
           "
           class="align-middle"
         >
-          {{ displayName }}
+          {{data.alias?data.alias:displayName }}
         </span>
       </template>
       <span>{{ displayDescription }}</span>

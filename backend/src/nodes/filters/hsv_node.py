@@ -1,9 +1,10 @@
-# from src.nodes.node_manager import NodeManager
-# from src.nodes.base_node import BaseNode
+from src.nodes.node_manager import NodeManager
+from src.nodes.base_node import BaseNode
 
-# from api import logger, exception
-# from api.decorators import for_all_methods
-
+from api import logger, exception
+from api.decorators import for_all_methods
+from src.manager.camera_manager import CameraManager
+from src.nodes.color.color_obj import ColorOBJ
 from cv2 import (
     COLOR_BGR2HSV_FULL,
     inRange,
@@ -12,15 +13,17 @@ from cv2 import (
     bitwise_and,
     FONT_HERSHEY_SIMPLEX,
     putText,
+    imread,
+    resize
 )
 
 from numpy import array
 
-NODE_TYPE = "hsv-filter"
+NODE_TYPE = "HsvFilterNode"
 
 
-# @for_all_methods(exception(logger))
-class HsvNode:
+@for_all_methods(exception(logger))
+class HsvNode(BaseNode):
     """
     HsvNode is a class to convert an image to HSV color space and filter it by a color range.
 
@@ -30,57 +33,47 @@ class HsvNode:
     """
 
     def __init__(self, name, id, options, output_connections, input_connections):
-        # super().__init__(name, NODE_TYPE, id, options, output_connections)
-        self.color_range = {
-            "lower": options["filter"]["lower"],
-            "upper": ["filter"]["upper"],
-        }
-        self.auto_run = options["auto_run"]["value"]
-        # NodeManager.addNode(self)
+        super().__init__(name, NODE_TYPE, id, options, output_connections)
+        self.update_options(options)
+        self.auto_run = options.get("auto_run", False)
+        self.image = imread("./src/imgs/no_image.jpg")
+        logger.warning(f"name: {name}, options: {options}")
+        NodeManager.addNode(self)
+        CameraManager.add(self)
 
     def execute(self, message):
         target = message.targetName.lower()
         if target == "color_range":
             self.color_range = message.payload
-        elif target == "image":
-            self.message = message
-            self.onSuccess(
-                self.convert_frame(
-                    message.payload,
-                    self.color_range["lower"],
-                    self.color_range["upper"],
-                )
-            )
+        elif target == "imagem":
+            self.image = message.payload
+            self.on("Saida", self.read())
 
     @staticmethod
     def convert_frame(image, lower, upper):
         return inRange(
             cvtColor(image, COLOR_BGR2HSV_FULL),
             array(lower),
-            array(upper),
+            array(upper)
         )
 
-    def get_frame(self):
+    def read(self):
+        return bitwise_and(self.image, self.image, mask=self.convert_frame(
+                    self.image,
+                    self.color_range["lower"],
+                    self.color_range["upper"],
+                ))
 
-        _ = bitwise_and(
-            self.message.payload,
-            self.message.payload,
-            mask=self.convert_frame(
-                self.message.payload,
-                self.color_range["lower"],
-                self.color_range["upper"],
-            ),
-        )
+    def update_options(self, options):
+        self.color_range = {
+            "lower": ColorOBJ(options["lower"].values(), "RGB").get("CV2_HSV"),
+            "upper": ColorOBJ(options["upper"].values(), "RGB").get("CV2_HSV"),
+        }
+        logger.info(self.color_range)
 
-        return putText(
-            _,
-            f"HSV Range: {self.color_range}",
-            (10, 30),
-            FONT_HERSHEY_SIMPLEX,
-            0.5,
-            (0, 0, 255),
-            2,
-        )
+    def stop(self):
+        super().stop()
+        CameraManager.remove(self)
 
     @staticmethod
     def stream_frame(frame, lower, upper):

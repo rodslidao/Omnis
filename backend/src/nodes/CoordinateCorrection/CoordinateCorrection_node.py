@@ -20,7 +20,7 @@ class CoordinateCorrectionNode(BaseNode):
         self.scale = options["scale"]
         self.offset = options["offset"]
 
-        self.auto_run = options["auto_run"]["value"]
+        self.auto_run = options.get("auto_run", False)
         NodeManager.addNode(self)
 
     def execute(self, message=""):
@@ -38,5 +38,5 @@ class CoordinateCorrectionNode(BaseNode):
         self.onSuccess(self.output)
 
     @staticmethod
-    def get_info():
+    def get_info(**kwargs):
         return {"options": {}}

@@ -4,7 +4,8 @@ from src.manager.mongo_manager import CustomEncoder
 from numpy import ndarray, ndenumerate, generic, array, reshape
 from json import loads, dumps
 import cv2
-
+from api import logger
+from datetime import datetime
 # ! Slot should be a self-contained class or Node?
 
 
@@ -79,16 +80,15 @@ class Slot:
         **kwargs,
     ):
         self._id = ObjectId(_id)
-        scale = kwargs.get("scale", 1)
-        self.sizes = array(sizes) * scale
-        self.borders = array(borders) * scale
-        self.extra = array(extra) * scale
+        self.scale = kwargs.get("scale", 1)
+        self.sizes = array(sizes)     * self.scale
+        self.borders = array(borders) * self.scale
+        self.extra = array(extra)     * self.scale
         self.origin = array(origin)
         self.position = array(position)
         self.counter = array(counter)
         self.item = item
         self.width, self.height = sizes[:2]
-
         M = array(
             list(
                 (p / c) if c > 0 else 0
@@ -107,10 +107,12 @@ class Slot:
 
         self.start = tuple((self.center[:2] - (self.sizes[:2] / 2)).astype(int))
         self.end = tuple((self.center[:2] + (self.sizes[:2] / 2)).astype(int))
+
+        self.unscaled = Slot(position, origin, sizes, borders, counter, extra, item, _id, **{**kwargs, "scale": 1, "copy": False}) if (self.scale != 1 and kwargs.get('copy', self.scale!=1)) else self
         # (BN * P)+(O + (S / 2)) + int((BE * (P / C)) - (BN * (P / C)))
 
     def __call__(self):
-        return {i: getattr(self, i) for i in vars(self) if i != "_id"}
+        return {i: getattr(self, i) for i in vars(self) if i not in ["_id", "unscaled"] }
 
     def __str__(self) -> str:
         return f"((item slot) {self.item} at center:{self.center}, position:{self.position[::-1]})"
@@ -122,8 +124,9 @@ class Slot:
         return bool(self.item)
 
     def export(self):
-        _ = loads(dumps(self(), cls=CustomEncoder))
+        _ = loads(dumps(self.unscaled(), cls=CustomEncoder))
         _["_id"] = self._id
+        _["scale"] = self.scale
         return _
 
 
@@ -165,7 +168,7 @@ class Blister:
     def __init__(self, shape, name, slot_config, _id=None, **kwargs) -> None:
         self._id = ObjectId(_id)
         self.slot_config = (
-            slot_config if not isinstance(slot_config, Slot) else slot_config()
+            slot_config if not isinstance(slot_config, Slot) else slot_config.export()
         )
         self.name = name
         self.shape = shape
@@ -230,6 +233,7 @@ class Blister:
                         counter=counter,
                         extra=extra,
                         item=kwargs.get("new_item", kwargs.get("item", None)),
+                        scale=kwargs.get("scale", 1),
                     )
                     for x in range(shape[0])
                 ]
@@ -245,17 +249,12 @@ class Blister:
         return self.iterator
 
     def __next__(self):
-        try:
-            return next(self.iterator)
-        except StopIteration:
-            self.reset_iterator()
-            raise StopIteration
+        return next(self.iterator)
 
     def __call__(self, y=None, x=None, v=None):
         if y is not None and x is not None:
             if v is not None:
                 self.update_item(v, [y, x])
-                self.reset_iterator()
             return self.get_slot([y, x])
         else:
             return self.data
@@ -308,6 +307,7 @@ class Blister:
                 {
                     "shape": self.shape,
                     "slot_config": self.slot_config,
+                    "name":self.name,
                     "kwargs": self.kwargs,
                 },
                 cls=CustomEncoder,
