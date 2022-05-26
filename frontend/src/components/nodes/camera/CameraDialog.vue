@@ -36,6 +36,13 @@
                     rounded
                     height="4"
                   ></v-progress-linear>
+                  <v-img
+                    :lazy-src="require(`@/assets/img/estribo-pattern-low.jpg`)"
+                    class="cameraImg"
+                    alt="camera"
+                    :src="`http://192.168.1.55:5000/videos2/6244b07d3a8338aceae46cee?${Math.floor(Math.random() * 1000) + 1}`"
+                  >
+                  </v-img>
                   <iframe
                     v-if="selectedCamera"
                     v-show="frameLoaded"
@@ -178,7 +185,7 @@ export default {
     UrlMaker() {
       const url = `http://${process.env.VUE_APP_URL_API_IP}:${process.env.VUE_APP_URL_API_STREAMING_PORT}`;
 
-      const  id  = this.selectedCamera.id;
+      const id = this.selectedCamera.id;
       if (id !== null) {
         navigator.sendBeacon(
           `http://${process.env.VUE_APP_URL_API_IP}:${process.env.VUE_APP_URL_API_PORT}/videos/${id}`

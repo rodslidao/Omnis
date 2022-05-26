@@ -66,14 +66,23 @@
       bottom
     ></v-progress-linear>
     <v-dialog
+    dark
       v-model="folderDialog"
       fullscreen
       hide-overlay
       transition="dialog-bottom-transition"
-    >
-      <div class="pa-12" >
-        <sketch-explorer></sketch-explorer>
-      </div>
+      ><v-card>
+        <v-toolbar dark color="primary">
+          <v-btn icon dark @click="folderDialog = false">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+          <v-toolbar-title>Arquivos</v-toolbar-title>
+          <v-spacer></v-spacer>
+        </v-toolbar>
+        <div class="pa-12" v-if="folderDialog">
+          <sketch-explorer></sketch-explorer>
+        </div>
+      </v-card>
     </v-dialog>
   </div>
 </template>

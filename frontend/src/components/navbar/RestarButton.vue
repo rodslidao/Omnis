@@ -44,26 +44,27 @@
 </template>
 
 <script>
-import { actions } from "@/store/index";
-import { mapMutations } from "vuex";
+import { mapMutations } from 'vuex';
+import { actions } from '@/store/index';
+
 export default {
-  name: "RestartButton",
+  name: 'RestartButton',
 
   data: () => ({
     actions,
     restartDialog: false,
     dilogText: {
-      title: "Tem certeza que quer reiniciar o sistema?",
+      title: 'Tem certeza que quer reiniciar o sistema?',
       description:
-        "Isso pode ajudar a resolver alguns problemas! Esse processo levará cerca de 1 min.",
-      button: "cancelar",
+        'Isso pode ajudar a resolver alguns problemas! Esse processo levará cerca de 1 min.',
+      button: 'cancelar',
     },
 
     isDisconected: {
-      title: "Tablet desconectado!",
+      title: 'Tablet desconectado!',
       description:
-        "Não foi possível acessar o servidor! Caso queira reiniciar, faça a operação manualmente. Desligando e e religando no botão físico na maquina!",
-      button: "entendi",
+        'Não foi possível acessar o servidor! Caso queira reiniciar, faça a operação manualmente. Desligando e e religando no botão físico na maquina!',
+      button: 'entendi',
     },
   }),
 
@@ -72,14 +73,14 @@ export default {
   },
 
   methods: {
-    ...mapMutations(["SEND_MESSAGE"]),
+    ...mapMutations(['SEND_MESSAGE']),
     request() {
       fetch(
-        "http://" +
-          this.configuration.informations.ip +
-          ":" +
-          this.configuration.informations.portStream +
-          "/exit"
+        `http://${
+          this.configuration.informations.ip
+        }:${
+          this.configuration.informations.portStream
+        }/exit`,
       );
     },
   },
