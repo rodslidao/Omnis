@@ -41,6 +41,11 @@ jobs:
       working-directory: ./frontend
     - name: Deploy
       run: npm run build
+      env:
+        NODE_ENV: production
+        VUE_APP_URL_API_IP: backend
+        VUE_APP_URL_API_PORT: 5200
+        VUE_APP_URL_API_STREAMING_PORT: 5000
       working-directory: ./frontend
     - name: Commit report
       run: |

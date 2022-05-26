@@ -4,12 +4,15 @@ from cv2 import line, putText, FONT_HERSHEY_SIMPLEX, rectangle, LINE_AA
 from api import logger, exception, dbo
 from api.decorators import for_all_methods
 from vidgear.gears import CamGear
-from cv2 import undistort, cvtColor, COLOR_BGR2GRAY, arcLength
+from cv2 import undistort, cvtColor, COLOR_BGR2GRAY, arcLength, VideoWriter_fourcc
 
 from cv2.aruco import (
     DetectorParameters_create,
     Dictionary_get,
     detectMarkers,
+    drawAxis,
+    drawDetectedMarkers,
+    estimatePoseSingleMarkers,
 )
 
 from numpy import array, mean
@@ -37,6 +40,8 @@ class Camera(CamGear):
         self.source = source
         self.opt = options
         self.config = options.get("config")
+        self.aruco_parms = DetectorParameters_create()
+        self.aruco_dict = Dictionary_get(ARUCO_DICT.get(self.config.get("marker_type")))
         if not disable:
             print(options.get("props"))
             self.distortion_obj = dbo.find_one(
@@ -47,28 +52,52 @@ class Camera(CamGear):
                 self.mtx, self.dist = array(self.distortion_obj.get("mtx")), array(
                     self.distortion_obj.get("dist")
                 )
+            if options.get("props", {}).get("CAP_PROP_FOURCC"):
+                options["props"]["CAP_PROP_FOURCC"] = VideoWriter_fourcc(
+                    *options["props"]["CAP_PROP_FOURCC"][:4]
+                )
             super().__init__(source, **options.get("props"))
             self.start()
             CameraManager.add(self)
 
     def read(self):
-        # if self.marker_len:
-        #     return undistort(super().read(), self.mtx, self.dist, None)
+        if self.marker_len:
+            return undistort(super().read(), self.mtx, self.dist, None)
         return super().read()
 
     def remove(self):
         CameraManager.remove(self)
 
     def get_scale(self):
-        parameters = DetectorParameters_create()
-        aruco_dict = Dictionary_get(ARUCO_DICT.get(self.config.get("marker_type")))
-        corners, _, _ = detectMarkers(
-            cvtColor(self.read(), COLOR_BGR2GRAY),
-            aruco_dict,
-            parameters=parameters,
-        )
+        corners, _, _ = self.detect_markers()
         return self.estimate_pixel_cm_ratio(corners, self.config.get("marker_size"))
 
+    def detect_markers(self):
+        return detectMarkers(
+            cvtColor(self.read(), COLOR_BGR2GRAY),
+            self.aruco_dict,
+            parameters=self.aruco_parms,
+        )
+
+    def draw_markers(self, size_of_marker=0.010):
+        corners, ids, rejected = self.detect_markers()
+        rvecs, tvecs, _ = estimatePoseSingleMarkers(
+            corners, size_of_marker, self.mtx, self.dist
+        )
+        length_of_axis = size_of_marker / 2
+        frame = drawDetectedMarkers(self.read().copy(), corners, ids)
+        
+        if tvecs is not None:
+            for r, t in zip(rvecs, tvecs):
+                frame = drawAxis(
+                    frame,
+                    self.mtx,
+                    self.dist,
+                    r,
+                    t,
+                    length_of_axis,
+                )
+        return frame
     @staticmethod
     def estimate_pixel_cm_ratio(corners, aruco_size):
         """
@@ -77,7 +106,7 @@ class Camera(CamGear):
         :param aruco_size: size of the aruco marker
         :return: pixel to cm ratio
         """
-        print(len(corners))
+        print(arcLength(corners[0], True)/4)
 
         return mean([arcLength(corner, True) / (aruco_size * 4) for corner in corners])
 

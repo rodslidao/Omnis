@@ -168,7 +168,7 @@ class Blister:
     def __init__(self, shape, name, slot_config, _id=None, **kwargs) -> None:
         self._id = ObjectId(_id)
         self.slot_config = (
-            slot_config if not isinstance(slot_config, Slot) else slot_config()
+            slot_config if not isinstance(slot_config, Slot) else slot_config.export()
         )
         self.name = name
         self.shape = shape
@@ -233,6 +233,7 @@ class Blister:
                         counter=counter,
                         extra=extra,
                         item=kwargs.get("new_item", kwargs.get("item", None)),
+                        scale=kwargs.get("scale", 1),
                     )
                     for x in range(shape[0])
                 ]
@@ -306,6 +307,7 @@ class Blister:
                 {
                     "shape": self.shape,
                     "slot_config": self.slot_config,
+                    "name":self.name,
                     "kwargs": self.kwargs,
                 },
                 cls=CustomEncoder,

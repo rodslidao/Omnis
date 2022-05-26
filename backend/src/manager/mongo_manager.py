@@ -20,7 +20,7 @@ db_ip = getenv("DB_HOST")
 
 url = (
     f"mongodb://{db_ip}:{db_port}/"
-    if environ.get("ENV_MODE") != "cloud"
+    if environ.get("DB_MODE") != "cloud"
     else f"mongodb+srv://{getenv('DB_USER')}:{getenv('DB_PASS')}@cluster0.diykb.mongodb.net/test?retryWrites=true&w=majority"
 )
 

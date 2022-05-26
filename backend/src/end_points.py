@@ -26,9 +26,8 @@ def encode(frame):
     return simplejpeg.encode_jpeg(frame, colorspace="BGR", quality=90, fastdct=True)
 
 async def frame_producer(_id='default'):
-    # CameraManager.set_stream_id(_id)
     while True:
-        yield (b"--frame\r\nContent-Type:video/jpeg2000\r\n\r\n" + imencode(".jpg", await reducer(CameraManager.read(_id), percentage=30))[1].tobytes() + b"\r\n")
+        yield (b"--frame\r\nContent-Type:video/jpeg2000\r\n\r\n" + imencode(".jpg", await reducer(CameraManager.read(_id), percentage=75))[1].tobytes() + b"\r\n")
         await asyncio.sleep(0.00001)
     logger.warning("FECHANDO STREAM")
 

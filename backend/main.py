@@ -56,84 +56,43 @@ class Echo(WebSocketEndpoint):
             if running_node:
                 running_node.update_options(extractOptionsFromNode(data))
         await websocket.send_json({"a": "b"})
+
     async def on_disconnect(self, websocket, close_code=100):
         print("disconnected")
 
-
 routes_app = [
     Mount("/imgs", routes=imgRoute),
+    Mount(
+        "/",
+        app=CORSMiddleware(
+            GraphQL(schema, debug=True),
+            allow_origins=["*"],
+            allow_methods=["*"],
+            allow_headers=["*"],
+        ),
+    ),
     WebSocketRoute("/ws", endpoint=Echo),
+    Route(
+        "/videos/{video_id}", endpoint=custom_video_response, methods=["GET", "POST"]
+    ),
 ]
-
-stremer.routes.append(Route("/videos/{video_id}", endpoint=custom_video_response, methods=["GET", "POST"]))
-stremer.config["generator"] = frame_producer
 
 app = Starlette(debug=True, routes=routes_app, on_startup=[], on_shutdown=[dbo.close])
 
-app.mount(
-    "/",
-    CORSMiddleware(
-        GraphQL(schema, debug=True),
-        allow_origins=["*"],
-        allow_methods=["*"],
-        allow_headers=["*"],
-    ),
-    "Omnis",
-)
-
-stremer.middleware = [
-    Middleware(
-        CORSMiddleware,
-        allow_credentials=True,
-        allow_origins=["*"],
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
-]
-
-
-port = environ["SERVER_PORT"] if environ.get("SERVER_PORT") else 5000
-stream = environ["STREAMING_PORT"] if environ.get("STREAMING_PORT") else 4000
-if environ.get("ENV_MODE") == "production":
-    host = "0.0.0.0"
-elif environ.get("SERVER_IP"):
-    host = environ["SERVER_IP"]
-else:
+port = environ.get("SERVER_PORT", 80)
+if environ.get("NODE_ENV") == "development":
     socketI = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     socketI.connect(("8.8.8.8", 80))
     host = socketI.getsockname()[0]
     socketI.close()
+elif environ.get("SERVER_IP"):
+    host = environ["SERVER_IP"]
+else:
+    host = "0.0.0.0"
 
 if __name__ == "__main__":
-    app_server = threading.Thread(
-        target=uvicorn.run,
-        kwargs={
-            "app": app,
-            "host": host,
-            "port": int(port),
-            "log_level": logger.level,
-        },
-        daemon=True,
-    )
-    image_stream_server = threading.Thread(
-        target=uvicorn.run,
-        kwargs={
-            "app": stremer(),
-            "host": host,
-            "port": int(stream),
-            "log_level": logger.level,
-        },
-        daemon=True,
-    )
-    app_server.start()
-    image_stream_server.start()
     try:
-        while threading.active_count() > 1:
-            time.sleep(1)
-    except KeyboardInterrupt:
-        CameraManager.stop()
-        stremer.shutdown()
-        image_stream_server.join(2)
+        uvicorn.run(app=app, host=host, port=int(port), log_level=logger.level)
     finally:
-        app_server.join(1)
+        CameraManager.stop()
         dbo.close()
