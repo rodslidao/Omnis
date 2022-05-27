@@ -3,8 +3,8 @@ type NodeSheet {
   name: String
   saved: Boolean
   duplicated:Boolean
-  content: NDS
-  last_access: Int
+  content: JSON
+  last_access: timestamptz
   description: String
   node_qtd: Int
   author: String

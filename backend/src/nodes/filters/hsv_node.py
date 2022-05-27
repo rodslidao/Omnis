@@ -1,5 +1,5 @@
 from src.nodes.node_manager import NodeManager
-from src.nodes.base_node import BaseNode
+from src.nodes.base_node import BaseNode, Wizard
 
 from api import logger, exception
 from api.decorators import for_all_methods
@@ -36,11 +36,12 @@ class HsvNode(BaseNode):
         super().__init__(name, NODE_TYPE, id, options, output_connections)
         self.update_options(options)
         self.auto_run = options.get("auto_run", False)
-        self.image = imread("./src/imgs/no_image.jpg")
+        self.image = CameraManager.read()
         logger.warning(f"name: {name}, options: {options}")
         NodeManager.addNode(self)
         CameraManager.add(self)
 
+    @Wizard._decorator
     def execute(self, message):
         target = message.targetName.lower()
         if target == "color_range":
@@ -65,16 +66,16 @@ class HsvNode(BaseNode):
                 ))
 
     def update_options(self, options):
+        logger.info(f"options: {options}")
         self.color_range = {
-            "lower": ColorOBJ(options["lower"].values(), "RGB").get("CV2_HSV"),
-            "upper": ColorOBJ(options["upper"].values(), "RGB").get("CV2_HSV"),
+            "lower": ColorOBJ(options["lower"]["rgb"], "RGB").get("CV2_HSV"),
+            "upper": ColorOBJ(options["upper"]["rgb"], "RGB").get("CV2_HSV"),
         }
         logger.info(self.color_range)
-
     def stop(self):
         super().stop()
         CameraManager.remove(self)
 
-    @staticmethod
+    @staticmethod 
     def stream_frame(frame, lower, upper):
         return HsvNode.convert_frame(frame, lower, upper)

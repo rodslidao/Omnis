@@ -1,3 +1,4 @@
+from datetime import datetime
 from api import dbo
 from bson.objectid import ObjectId
 from json import load
@@ -10,14 +11,12 @@ def defaultException(function):
     Decorator to catch exceptions,
     and return a payload with success=False and errors=exception message
     """
-
     def wrapper(*args, **kwargs):
         try:
             return function(*args, **kwargs)
         except Exception as error:
             payload = {"status": {"success": False, "errors": [str(error)]}}
             return payload
-
     return wrapper
 
 
@@ -34,17 +33,28 @@ class NodeSheet:
         """Save a NodeSheet object"""
         target = dbo.find_one("node-sheets", {"_id": ObjectId(_id)}) is None
         kwargs_whiout_empty = {k: v for k, v in kwargs.items() if v}
+        kwargs_whiout_empty["last_access"] = datetime.utcnow().timestamp()
+        if kwargs_whiout_empty.get("content"):
+            kwargs_whiout_empty["node_qtd"] = len(kwargs_whiout_empty["content"]["nodes"])
         if target:
             self.create_node_sheet(_id, **kwargs_whiout_empty)
         else:
             self.update_node_sheet(_id, **kwargs_whiout_empty)
-        return self.get_sketch_list() #self.getNodeSheetById(kwargs.get("_id"))
+        return self.get_sketch_list()
 
+    def duplicate_node_sheet(self, _id):
+        """Duplicate a NodeSheet by id"""
+        logger.info(f"Duplicating NodeSheet [{_id}]")
+        self.NodeSheet = dbo.find_one("node-sheets", {"_id": ObjectId(_id)})
+        self.NodeSheet["_id"] = ObjectId()
+        self.NodeSheet["date"] = datetime.utcnow().timestamp()
+        self.NodeSheet["node_qtd"] = len(self.NodeSheet["content"]["nodes"])
+        return dbo.insert_one("node-sheets", self.NodeSheet) is not None
+    
     def create_node_sheet(self, _id, **kwargs):
         """Create a new NodeSheet object"""
         logger.info(f"Creating new NodeSheet with id: {_id}")
-        dbo.insert_one("node-sheets", {"_id": ObjectId(_id), **kwargs})
-        return self.getNodeSheetById(kwargs.get("_id"))
+        return dbo.insert_one("node-sheets", {"_id": ObjectId(_id), **kwargs}) is not None
 
     def getNodeSheetById(self, _id):
         """Get a NodeSheet by id"""
@@ -55,14 +65,12 @@ class NodeSheet:
     def update_node_sheet(self, _id, **kwargs):
         """Update a NodeSheet by id"""
         logger.info(f"Updating NodeSheet [{_id}]")
-        dbo.update_one("node-sheets", {"_id": ObjectId(_id)}, {"$set": kwargs})
-        return self.getNodeSheetById(_id)
+        return dbo.update_one("node-sheets", {"_id": ObjectId(_id)}, {"$set": kwargs}) is not None
 
     def delete_node_sheet(self, _id):
         """Delete a NodeSheet by id"""
         logger.info(f"Deleting NodeSheet [{_id}]")
-        dbo.delete_one("node-sheets", {"_id": ObjectId(_id)})
-        return self.get_sketch_list()
+        return dbo.delete_one("node-sheets", {"_id": ObjectId(_id)}) is not None
 
     def get_sketch_list(self):
         """Get a list of all sketches"""

@@ -20,7 +20,7 @@ type Mutation {
     node_qtd: Int
     author: String
     content: JSON!
-  ): SketchListResult!
+  ): Boolean
 
   saveNodeSheet(
     _id: ID!
@@ -34,15 +34,16 @@ type Mutation {
     content: JSON
   ): SketchListResult!
 
-  updateNodeSheet(_id: ID!, name: String, content: JSON): SketchListResult!
-  deleteNodeSheet(_id: ID!): SketchListResult!
-
+  updateNodeSheet(_id: ID!, name: String, content: JSON): Boolean
+  deleteNodeSheet(_id: ID!): Boolean
+  duplicateNodeSheet(_id: ID!): Boolean
+  
   startProcess: ProcessResult
   stopProcess: ProcessResult
   resumeProcess: ProcessResult
   pauseProcess: ProcessResult
 
-  loadConfig(_id: ID!): NodeSheet!
+  loadConfig(_id: ID!): NodeSheet
   getLoadedConfig: ID!
 
   createAlert(input: AlertInput!): AlertResult!

@@ -1,6 +1,6 @@
 import re
 from tkinter.font import BOLD
-from src.nodes.base_node import BaseNode
+from src.nodes.base_node import BaseNode, Wizard
 from src.nodes.node_manager import NodeManager
 from src.nodes.matrix.matrix_obj import Blister, Slot
 from bson import ObjectId
@@ -103,6 +103,7 @@ class MatrixNode(BaseNode):
         self.blister = Blister(shape=shape, name=options["matrix"]["name"], _id=options["matrix"]["id"],  slot_config=slot_config)
         self.auto_run = options.get("auto_run", False)
         NodeManager.addNode(self)
+    @Wizard._decorator
     def execute(self, message):
         target = message.targetName.lower()
     

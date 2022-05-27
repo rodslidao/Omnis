@@ -23,7 +23,7 @@ mutation = MutationType()
 def createNodeSheet_resolver(obj, info, _id, **kwargs):
     """Create a new NodeSheet object and return it like a payload"""
     returns = NodeSheet().create_node_sheet(_id, **kwargs)
-    return {"data": returns}
+    return  returns
 
 
 @mutation.field("saveNodeSheet")
@@ -37,15 +37,20 @@ def saveNodeSheet_resolver(obj, info, _id, **kwargs):
 def updateNodeSheet_resolver(obj, info, _id, **kwargs):
     """Update a NodeSheet by id and return it like a payload"""
     returns = NodeSheet().update_node_sheet(_id, **kwargs)
-    return {"data": returns}
+    return  returns
 
 
 @mutation.field("deleteNodeSheet")
 def deleteNodeSheet_resolver(obj, info, _id):
     """Delete a NodeSheet by id and return it like a payload"""
     returns = NodeSheet().delete_node_sheet(_id)
-    return {"data": returns}
+    return  returns
 
+@mutation.field("duplicateNodeSheet")
+def duplicateNodeSheet_resolver(obj, info, _id):
+    """Duplicate a NodeSheet by id and return it like a payload"""
+    returns = NodeSheet().duplicate_node_sheet(_id)
+    return  returns
 
 @mutation.field("startProcess")
 def startProcess_resolver(obj, info):
@@ -81,7 +86,7 @@ def resumeProcess_resolver(obj, info):
 
 @mutation.field("loadConfig")
 def loadConfig_resolver(obj, info, _id):
-    process.load(_id)
+    a = process.load(_id)
     logger.info("Loaded config with id {}".format(_id))
     return NodeSheet().getNodeSheetById(_id)
 

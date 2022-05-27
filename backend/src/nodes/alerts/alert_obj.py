@@ -7,7 +7,7 @@ from api.subscriptions import SubscriptionFactory
 AlertLevel = {"INFO": "INFO", "WARNING": "WARNING", "ERROR": "ERROR", "LOG": "LOG"}
 
 AlertManager = SubscriptionFactory(alerts, 'alerts')
-
+from time import sleep
 
 @for_all_methods(exception(logger))
 class Alert:
@@ -23,6 +23,7 @@ class Alert:
         how2solve="",
         buttonText="Ok",
         buttonAction="Ok",
+        delay=0,
     ):
         """
         Create a new Alert object.
@@ -35,6 +36,7 @@ class Alert:
         self.buttonText = buttonText
         self.buttonAction = buttonAction
         getattr(logger, self.level)(self.dict())
+        sleep(delay)
         AlertManager.put(self)
 
     def __str__(self) -> str:
@@ -49,7 +51,7 @@ class Alert:
     def __repr__(self) -> str:
         return str(self)
 
-    @classmethod
+    # @classmethod
     def dict(self):
         """
         Return a dictionary representation of the Alert object.

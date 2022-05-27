@@ -6,14 +6,37 @@ from api.store import nodes
 from api.subscriptions import SubscriptionFactory
 from threading import Event
 
-from threading import Thread
+from threading import Thread, Event, Lock
 NODE_TYPE = "BASE_NODE"
-rtc_status = SubscriptionFactory(nodes, 'nodes')
+rtc_status = SubscriptionFactory(nodes, 'nodes')     
 
-from time import sleep
+CKL = Lock()
+event_list = {}
+class Wizard(object):
+    def _decorator(exteral_execution):
+        def magic( self, *args, **kwargs ):
+            try:
+                CKL.acquire()
+                logger.warning(f"{self.__class__.__name__} - {exteral_execution.__name__}")
+                event_list[self._id] = Event()
+                exteral_execution( self, *args, **kwargs )
+                event_list[self._id].set()
+            except KeyError:
+                event_list[self._id] = Event().set()
+            finally:
+                logger.warning(f"{self.__class__.__name__} - {exteral_execution.__name__} - END")
+                CKL.release()
+        return magic
+    _decorator = staticmethod( _decorator )
+
+    @_decorator
+    def execute( self ) :
+        logger.error("normal call")
+
+    _decorator = staticmethod( _decorator )
 
 @for_all_methods(exception(logger))
-class BaseNode:
+class BaseNode(Wizard):
     """
     A class that represents a node, and its properties.
 
@@ -92,14 +115,17 @@ class BaseNode:
                 node_to_run.update_status({"status": "PAUSED"})
 
             while not self.running:
-                pass
+                if self.stop_event.isSet():
+                    self.resume()
+                    return
 
             if node_to_run and not self.stop_event.isSet():
-                # logger.info(f'Trigger: {node_to_run}')
+                logger.info(f'Trigger: {node_to_run}')
                 self.update_status({"status": "SENDING", "message":{"from":target.get("from").get("id"), "to":target.get("to").get("id")}})
                 Thread(target=node_to_run.execute, args=(message,), name=f"{str(self)}({message.sourceName}) -> {message}", daemon=True).start()
-                node_to_run.update_status({"status": "RUNNING", "message":{"from":None, "to":None}})
-                self.update_status({"status": "RUNNING", "message":{"from":None, "to":None}})
+                # self.resume()
+                # node_to_run.update_status({"status": "RUNNING", "message":{"from":None, "to":None}})
+                # self.update_status({"status": "RUNNING", "message":{"from":None, "to":None}})
 
     def AutoRun(self):
         message = Message(
@@ -135,6 +161,7 @@ class BaseNode:
 
     def resume(self):
         self.running = True
+        self.stop_event.clear()
         return True
 
     def stop(self):

@@ -61,8 +61,8 @@ class Camera(CamGear):
             CameraManager.add(self)
 
     def read(self):
-        if self.marker_len:
-            return undistort(super().read(), self.mtx, self.dist, None)
+        # if self.marker_len:
+        #     return undistort(super().read(), self.mtx, self.dist, None)
         return super().read()
 
     def remove(self):

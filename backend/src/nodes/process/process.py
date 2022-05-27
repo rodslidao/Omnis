@@ -1,4 +1,7 @@
+from ast import Try
+import imp
 import threading
+from time import sleep
 from bson import ObjectId
 from src.nodes.node_manager import NodeManager
 from src.nodes.timer.timer import Chronometer
@@ -6,7 +9,7 @@ from src.nodes.alerts.alert_obj import Alert
 from api import logger, exception
 from api.decorators import for_all_methods
 from src.loader import load as load_conf
-
+from src.nodes.base_node import event_list
 
 @for_all_methods(exception(logger))
 class Process(threading.Thread):
@@ -25,20 +28,41 @@ class Process(threading.Thread):
         self.stopped = threading.Event()
         self.paused = threading.Event()
         self.resumed = threading.Event()
+        self.reboot = threading.Event()
         self.target = target
         self.args = args
         self.kwargs = kwargs
 
     def run(self):
         while not self.stopped.is_set():
+            self.reboot.clear()
             while self.paused.is_set():
+                logger.info("Process Paused - loop_info")
                 self.resumed.wait()
+                logger.info("Process Resumed - loop_info")
                 self.resumed.clear()
         # for i in range(2):
             if not self.stopped.is_set() and not self.paused.is_set():
                 self.target(*self.args, **self.kwargs)
+                self.verify()
+                logger.info("Wait for reboot - loop_info")
+                self.reboot.wait()
+                logger.info("Process END [reseting] - loop_info")
         logger.info("Process Thread Stopped - Normally")
 
+
+    def verify(self, l=0):
+        logger.info("Process Verifying")
+        sleep(0.1)
+        for key, val in list(event_list.items()):
+            val.wait(5)
+            event_list.pop(key)
+
+        if len(event_list) != l:
+            self.verify(len(event_list))
+        self.reboot.set()
+        logger.info("Process Verified")
+        
     def start(self):
         logger.info("Process Started")
         self.status = Process.RUNNING
@@ -101,10 +125,13 @@ class sample_process:
     def load(self, _id=None):
         if self.status == Process.STOPPED:
             self.unload()
-            load_conf(_id)
-            self.loaded_id = _id
-            #Alert("INFO", "Process Loaded", str(self.process.getStatus()))
-            return True
+            a = load_conf(_id)
+            if a:
+                self.loaded_id = _id
+            else:
+                self.loaded_id = None
+                self.unload()
+            return a
         return False
 
     def unload(self):

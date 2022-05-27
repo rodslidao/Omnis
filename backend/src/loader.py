@@ -220,17 +220,23 @@ def saveNodeChange(nodeChange):
 
 @exception(logger)
 def load(node_id=None):
-    current_loaded_query = {"description": "current-config-loaded-id"}
-    if node_id is not None:
-        dbo.update_one(
-            "last-values",
-            current_loaded_query,
-            {"$set": {"sheet-id": ObjectId(node_id)}},
-        )
-        sheet = NodeSheet().getNodeSheetById(node_id)["content"]
-    else:
-        sheet = NodeSheet().getNodeSheetById(
-            dbo.find_one("last-values", current_loaded_query)["sheet-id"]
-        )["content"]
-    NodeManager.clear()
-    loadConfig(sheet, LoadingMode)
+    try:
+        current_loaded_query = {"description": "current-config-loaded-id"}
+        if node_id is not None:
+            dbo.update_one(
+                "last-values",
+                current_loaded_query,
+                {"$set": {"sheet-id": ObjectId(node_id)}},
+            )
+            sheet = NodeSheet().getNodeSheetById(node_id)["content"]
+        else:
+            sheet = NodeSheet().getNodeSheetById(
+                dbo.find_one("last-values", current_loaded_query)["sheet-id"]
+            )["content"]
+        NodeManager.clear()
+        loadConfig(sheet, LoadingMode)
+        return True
+    except Exception as e:
+        logger.error("Error loading config: {}".format(e))
+        return False
+

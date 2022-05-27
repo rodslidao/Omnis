@@ -4,13 +4,13 @@ import uvicorn
 import socket
 import time
 
-from api import logger, dbo, stremer
+from api import logger, dbo, automatic_classes
 from api.queries import query
 from api.subscriptions import subscription
 from api.mutations import mutation
 
 from src.nodes.node_registry import NodeRegistry
-from src.end_points import imgRoute, videoRoute, custom_video_response, frame_producer
+from src.end_points import custom_video_response
 from src.nodes.node_manager import NodeManager
 from src.loader import extractOptionsFromNode
 from src.manager.camera_manager import CameraManager
@@ -51,17 +51,21 @@ class Echo(WebSocketEndpoint):
     async def on_receive(self, websocket, data):
         node_id = data.get("nodeId")
         if node_id:
-            node_type = data.get("nodeType")
+            # node_type = data.get("nodeType")
             running_node = NodeManager.getNodeById(node_id)
             if running_node:
-                running_node.update_options(extractOptionsFromNode(data))
+                running_node.update_options(data['options'])
         await websocket.send_json({"a": "b"})
 
     async def on_disconnect(self, websocket, close_code=100):
         print("disconnected")
 
 routes_app = [
-    Mount("/imgs", routes=imgRoute),
+    # Mount("/imgs", routes=imgRoute),
+    Route(
+        "/videos/{video_id}", endpoint=custom_video_response, methods=["GET", "POST"]
+    ),
+    WebSocketRoute("/ws", endpoint=Echo),
     Mount(
         "/",
         app=CORSMiddleware(
@@ -71,13 +75,9 @@ routes_app = [
             allow_headers=["*"],
         ),
     ),
-    WebSocketRoute("/ws", endpoint=Echo),
-    Route(
-        "/videos/{video_id}", endpoint=custom_video_response, methods=["GET", "POST"]
-    ),
 ]
 
-app = Starlette(debug=True, routes=routes_app, on_startup=[], on_shutdown=[dbo.close])
+app = Starlette(debug=True, routes=routes_app, on_startup=[automatic_classes], on_shutdown=[dbo.close])
 
 port = environ.get("SERVER_PORT", 80)
 if environ.get("NODE_ENV") == "development":
