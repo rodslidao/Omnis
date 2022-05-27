@@ -24,10 +24,6 @@ export default {
     runningTabId: 1641587087905,
     selectedTabId: 1641587087905,
     // http://192.168.1.31:5000/video_feed/camera0
-    connection: {
-      ip: '192.168.1.31',
-      portStream: 5000,
-    },
     selectedTabIndex: 0,
     contentDefault: {},
     renamingIndex: null,
@@ -140,6 +136,19 @@ export default {
       state.deletedNode = node;
       console.log('state', state.deletedNode);
     },
+    loadTabId: (state, data) => {
+      console.log('datanode', data);
+      state.editor.load(data.content);
+      const newLoadTab = {
+        name: data.name,
+        id: data._id,
+        saved: true,
+        content: data.content,
+      };
+
+      state.tabList.push(newLoadTab);
+      state.selectedTabId = data._id;
+    },
   },
 
   actions: {
@@ -199,6 +208,9 @@ export default {
     },
     deletedNode({ commit }, payload) {
       commit('deletedNode', payload);
+    },
+    loadTabId({ commit }, payload) {
+      commit('loadTabId', payload);
     },
 
     /**

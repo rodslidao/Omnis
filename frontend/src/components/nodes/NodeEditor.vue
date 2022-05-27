@@ -1,7 +1,7 @@
 <template>
   <div class="background" ref="container">
     <span style="display: none">{{ selectedTabIndex }}</span>
-    <baklava-editor :plugin="viewPlugin" />
+    <baklava-editor :plugin="viewPlugin" class="baklava-editor" />
     <ActionMenuForNodes
       :editor="editor"
       class="action-buttons"
@@ -182,7 +182,7 @@ export default {
     this.addNodeWithCoordinates(
       StartNode,
       this.$refs.container.clientWidth / 2 - 100,
-      this.$refs.container.clientHeight / 2 - 100,
+      this.$refs.container.clientHeight / 2 - 100
     );
     // console.log(this.contentDefault);
   },
@@ -243,6 +243,11 @@ export default {
 <style lang="scss" scoped >
 .node.--type-MoveNode {
   // background-color: red;
+}
+
+.v-dialog__content {
+  padding-bottom: 35px;
+  padding-top: 75px;
 }
 
 .v-main__wrap {

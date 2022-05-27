@@ -110,6 +110,7 @@
 
 <script>
 import gql from 'graphql-tag';
+import { mapActions } from 'vuex';
 import DialogConfirmation from '../settings/DialogConfirmation.vue';
 
 const GET_SKETCH_LIST = gql`
@@ -155,14 +156,23 @@ const DUPLICATE_NODE_SHEET = gql`
 `;
 
 const LOAD_CONFIG = gql`
-  query ($id: ID!) {
+  mutation ($id: ID!) {
     loadConfig(_id: $id) {
-      data {
+        name
+        _id
         content
-      }
     }
   }
 `;
+// const LOAD_CONFIG = gql`
+//   mutation ($id: ID!) {
+//     loadConfig(_id: $id) {
+//       data {
+//         content
+//       }
+//     }
+//   }
+// `;
 
 const GET_LOADED_CONFIG = gql`
   query ($id: ID!) {
@@ -275,9 +285,7 @@ export default {
   },
 
   methods: {
-    oi() {
-      console.log('oi');
-    },
+    ...mapActions('node', ['loadTabId']),
 
     initialize() {
       this.$apollo.queries.getSketchList.refetch();
@@ -337,20 +345,14 @@ export default {
           variables: {
             id: this.selectedId,
           },
-          update: (cache, { data: { loadConfig } }) => {
-            try {
-              console.log(loadConfig);
-              const data = cache.readQuery({ query: GET_LOADED_CONFIG });
-              cache.writeQuery({ query: GET_LOADED_CONFIG, data });
-            } catch (error) {
-              console.error(error);
-            }
-          },
         })
-        .then(() => {
+        .then((data) => {
           // Result
+          console.log('data', data.data.loadConfig);
+          this.loadTabId(data.data.loadConfig);
           this.$alertFeedback('Arquivo carregado com sucesso', 'success');
           this.dialog = true;
+          this.$emit('close-dialog');
           // this.isLoading = false;
           // this.setSaved(this.selectedTabIndex);
         })

@@ -39,7 +39,7 @@ export default {
   name: 'AlertFeedback',
   data() {
     return {
-      defaultTimeout: 5000,
+      defaultTimeout: 6000,
       snackbar: true,
     };
   },
@@ -82,6 +82,9 @@ export default {
       }
       // console.log('timeout returned', timeout);
       // console.log(timeout);
+      // if (type === 'error') {
+      //   return this.defaultTimeout * 2;
+      // }
       return timeout;
     },
   },
@@ -90,5 +93,6 @@ export default {
 
 <style lang="scss" scoped>
 .warper {
+  z-index: 99999999;
 }
 </style>

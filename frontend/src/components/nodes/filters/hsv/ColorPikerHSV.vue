@@ -9,11 +9,13 @@
           >
             <div class="d-flex align-right mb-6 text-h6 d-flex flex-column">
               Cor 1<br />
-              <span v-show="false" class="text-subtitle-2"> {{ myMessage.a }}</span>
+              <span v-show="false" class="text-subtitle-2">
+                {{ myMessage.a }}</span
+              >
               <v-text-field
-                    v-model="configuration.camera.filters.hole.gradient.color"
-                    dense
-                    hide-details
+                v-model="configuration.camera.filters.hole.gradient.color"
+                dense
+                hide-details
               ></v-text-field>
             </div>
           </div>
@@ -48,11 +50,13 @@
           <div :class="selectedColor1 ? 'colorName' : 'colorNameSelected'">
             <div class="d-flex mb-6 text-h6 d-flex flex-column">
               Cor 2<br />
-              <span v-show="false" class="text-subtitle-2">{{ myMessage.b }}</span>
+              <span v-show="false" class="text-subtitle-2">{{
+                myMessage.b
+              }}</span>
               <v-text-field
-                    v-model="configuration.camera.filters.hole.gradient.color2"
-                    dense
-                    hide-details
+                v-model="configuration.camera.filters.hole.gradient.color2"
+                dense
+                hide-details
               ></v-text-field>
             </div>
           </div>
@@ -87,6 +91,10 @@ export default {
   components: {
     ColorPicker,
   },
+  props: {
+    upper: Object,
+    lower: Object,
+  },
 
   data: () => ({
     selected: '',
@@ -102,8 +110,8 @@ export default {
             name: 'hole',
             area: [10, 20],
             gradient: {
-              color: '#a02727',
-              color2: '#e261ae',
+              color: '#ffffff',
+              color2: '#ffffff',
             },
             hsv: {
               hue: [2, 50],
@@ -117,6 +125,11 @@ export default {
     selectedFilter: 'hole',
   }),
 
+  created() {
+    this.configuration.camera.filters[this.selectedFilter].gradient.color = this.lower.hex;
+    this.configuration.camera.filters[this.selectedFilter].gradient.color2 = this.upper.hex;
+  },
+
   methods: {
     hexToRgb(hex) {
       // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
@@ -126,11 +139,11 @@ export default {
 
       const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
       return result
-        ? {
-          r: parseInt(result[1], 16),
-          g: parseInt(result[2], 16),
-          b: parseInt(result[3], 16),
-        }
+        ? [
+          parseInt(result[1], 16),
+          parseInt(result[2], 16),
+          parseInt(result[3], 16),
+        ]
         : null;
     },
   },
@@ -141,14 +154,22 @@ export default {
       const upperB = this.configuration.camera.filters.hole.gradient.color2;
 
       const data = {
-        rgb: {
-          lower: this.hexToRgb(lowerA),
-          upper: this.hexToRgb(upperB),
+        lower: {
+          rgb: this.hexToRgb(lowerA),
+          hex: lowerA,
         },
-        hex: {
-          lower: lowerA,
-          upper: upperB,
+        upper: {
+          rgb: this.hexToRgb(upperB),
+          hex: upperB,
         },
+        // rgb: {
+        //   lower: this.hexToRgb(lowerA),
+        //   upper: this.hexToRgb(upperB),
+        // },
+        // hex: {
+        //   lower: lowerA,
+        //   upper: upperB,
+        // },
       };
 
       this.$emit('colors', data);

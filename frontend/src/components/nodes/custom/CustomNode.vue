@@ -160,7 +160,7 @@ export default {
       });
     },
     startDrag() {
-      console.log('startDrag');
+      // console.log('startDrag');
       this.select();
       this.dragging = true;
       document.addEventListener('mousemove', this.handleMove);

@@ -14,41 +14,37 @@
                 title="Camera"
                 description="Selecione a camera que deseja pegar a imagem."
               >
-                <v-select
-                  @click="getCamera()"
-                  :items="cameraList"
-                  v-model="selectedCamera"
-                  item-text="name"
-                  return-object
-                  dense
-                  :loading="cameraLoading"
-                  :rules="requiredRules"
-                  required
-                ></v-select>
+                <div>
+                  <v-select
+                    :items="getCameras.data"
+                    v-model="selectedCamera"
+                    item-text="name"
+                    return-object
+                    dense
+                    :loading="!getCameras.data"
+                    :rules="requiredRules"
+                    required
+                  ></v-select>
+                </div>
               </NodeConfigTitle>
               <v-row>
                 <v-col>
-                  <v-progress-linear
+                  <!-- <v-progress-linear
                     v-on="delay(8000)"
                     v-if="selectedCamera"
                     v-show="!frameLoaded"
                     indeterminate
                     rounded
                     height="4"
-                  ></v-progress-linear>
+                  ></v-progress-linear> -->
                   <v-img
+                    v-if="selectedCamera"
                     :lazy-src="require(`@/assets/img/estribo-pattern-low.jpg`)"
                     class="cameraImg"
                     alt="camera"
-                    :src="`http://192.168.1.55:5000/videos2/6244b07d3a8338aceae46cee?${Math.floor(Math.random() * 1000) + 1}`"
-                  >
-                  </v-img>
-                  <iframe
-                    v-if="selectedCamera"
-                    v-show="frameLoaded"
                     :src="UrlMaker()"
                   >
-                  </iframe>
+                  </v-img>
                 </v-col>
               </v-row>
             </v-col>
@@ -82,8 +78,19 @@ import EventBus from '@/event-bus';
 import { mapActions } from 'vuex';
 import NodeConfigTitle from '@/components/nodes/NodeConfigTitle.vue';
 import gql from 'graphql-tag';
-import { getNodeInfo } from '@/graphql/nodes/GetInfos.js';
+// import { getNodeInfo } from '@/graphql/nodes/GetInfos.js';
 import TextEditable from '@/components/nodes/dialogs/TextEditable.vue';
+
+const GET_CAMERAS = gql`
+  query {
+    getCameras {
+      data {
+        _id
+        name
+      }
+    }
+  }
+`;
 
 export default {
   data: () => ({
@@ -125,7 +132,13 @@ export default {
     });
   },
 
-  mounted() {},
+  apollo: {
+    getCameras: {
+      query: GET_CAMERAS,
+      fetchPolicy: 'network-only',
+      // nextFetchPolicy: 'network-only',
+    },
+  },
 
   methods: {
     ...mapActions('node', ['saveNodeConfig']),
@@ -144,59 +157,46 @@ export default {
       this.dialog = false;
     },
 
-    async getCamera() {
-      this.cameraLoading = true;
-      // const response = await getNodeInfo(this.node.type);
-      // console.log(response);
-      const response = await this.$apollo.query({
-        query: gql`
-          query {
-            getNodeInfo(node_type: "CameraNode") {
-              data {
-                options
-              }
-            }
-          }
-        `,
-      });
+    // async getCamera() {
+    //   this.cameraLoading = true;
+    //   // const response = await getNodeInfo(this.node.type);
+    //   // console.log(response);
+    //   const response = await this.$apollo.query({
+    //     query: GET_CAMERAS,
+    //   });
 
-      console.log(this.$apollo.store);
+    //   console.log(this.$apollo.store);
 
-      this.cameraList = [];
-      this.cameraList.push(...response.data.getNodeInfo.data.options);
+    //   this.cameraList = [];
+    //   this.cameraList.push(...response.data.getNodeInfo.data.options);
 
-      if (!this.cameraCopy) {
-        this.cameraList.push(this.cameraCopy);
-        this.selectedCamera = this.cameraCopy;
-      }
-      console.log(this.cameraList);
+    //   if (!this.cameraCopy) {
+    //     this.cameraList.push(this.cameraCopy);
+    //     this.selectedCamera = this.cameraCopy;
+    //   }
+    //   console.log(this.cameraList);
 
-      this.cameraLoading = false;
-    },
+    //   this.cameraLoading = false;
+    // },
 
     async init() {
       this.nodeCopy = { ...this.node };
       this.cameraCopy = this.node.getOptionValue('camera');
-      await this.getCamera();
     },
 
-    delay(time) {
-      setTimeout(() => {
-        this.frameLoaded = true;
-      }, time);
-    },
+    // delay(time) {
+    //   setTimeout(() => {
+    //     this.frameLoaded = true;
+    //   }, time);
+    // },
 
+    // eslint-disable-next-line consistent-return
     UrlMaker() {
-      const url = `http://${process.env.VUE_APP_URL_API_IP}:${process.env.VUE_APP_URL_API_STREAMING_PORT}`;
-
-      const id = this.selectedCamera.id;
+      const { id } = this.node;
+      const url = `http://${process.env.VUE_APP_URL_API_IP}:${process.env.VUE_APP_URL_API_STREAMING_PORT}/videos/${id}`;
       if (id !== null) {
-        navigator.sendBeacon(
-          `http://${process.env.VUE_APP_URL_API_IP}:${process.env.VUE_APP_URL_API_PORT}/videos/${id}`
-        );
         return url;
       }
-
       console.log(url);
     },
 

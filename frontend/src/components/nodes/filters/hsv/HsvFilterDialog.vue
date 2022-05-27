@@ -1,24 +1,26 @@
 <template>
   <v-row justify="center">
-    <v-dialog v-model="dialog" max-width="600px">
-      <v-card dark>
+    <v-dialog v-model="dialog">
+      <v-card dark   class="pb-30" v-if="dialog">
         <v-card-title>
           <TextEditable :text="node.name" @changeText="changeName" />
         </v-card-title>
         <v-divider></v-divider>
         <v-card-text class="pt-4">
           <v-form ref="title" v-model="valid">
-            <v-col class="">
-              <NodeConfigTitle
-                title="Cores"
-                description="Selecione as duas cores que serão filtradas,
+            <v-col class="d-flex flex-row flex-wrap justify-center">
+              <div class="cores">
+                <NodeConfigTitle
+                  title="Cores"
+                  description="Selecione as duas cores que serão filtradas,
                 lembrando que o filtro pegara todo o intervalo entre as duas cores.
                 Digamos que você coloque preto e branco, o filtro pegara o preto passando
                 pelo cinza até chegar no branco"
-                no-content
-              >
-              </NodeConfigTitle>
-              <!-- <v-select
+                  no-content
+                >
+                </NodeConfigTitle>
+                <p>aqui:{{ frameLoaded }}</p>
+                <!-- <v-select
                 @click="getCamera()"
                 :items="cameraList"
                 v-model="selectedCamera"
@@ -27,23 +29,26 @@
                 dense
                 :loading="cameraLoading"
               ></v-select> -->
-              <ColorPikerHSV
-                v-if="dialog"
-                @colors="sendMessage"
-              ></ColorPikerHSV>
-              <v-row>
-                <v-col>
-                  <v-progress-linear
-                    v-on="delay(8000)"
-                    v-if="selectedCamera"
-                    v-show="!frameLoaded"
-                    indeterminate
-                    rounded
-                    height="4"
-                  ></v-progress-linear>
-                  <iframe :src="UrlMaker()"> </iframe>
-                </v-col>
-              </v-row>
+                <ColorPikerHSV
+                  v-if="dialog"
+                  @colors="sendMessage"
+                  :lower="lower"
+                  :upper="upper"
+                ></ColorPikerHSV>
+              </div>
+              <v-img
+                contain
+                @load="frameLoaded = true"
+                class="cameraImg"
+                alt="camera"
+                :src="UrlMaker()"
+              >
+                <template v-slot:placeholder>
+                  <v-sheet>
+                    <v-skeleton-loader/>
+                  </v-sheet>
+                </template>
+              </v-img>
             </v-col>
           </v-form>
         </v-card-text>
@@ -130,24 +135,14 @@ export default {
     }),
   },
 
-  mounted() {},
-
-  apollo: {
-    getStreamNodeId: {
-      query: gql`
-        query {
-          getStreamNodeId
-        }
-      `,
-    },
-  },
-
   methods: {
     ...mapActions('node', ['saveNodeConfig']),
 
     init() {
       this.nodeCopy = { ...this.node };
       this.cameraCopy = this.node.getOptionValue('camera');
+      this.lower = this.node.getOptionValue('lower');
+      this.upper = this.node.getOptionValue('upper');
 
       // await this.getCamera();
     },
@@ -184,11 +179,13 @@ export default {
         const editedData = {
           nodeId: this.node.id,
           nodeType: this.node.type,
-          options: this.optionsMaker(data),
+          options: data,
         };
 
-        this.lower = data.rgb.lower;
-        this.upper = data.rgb.upper;
+        this.localData = data;
+
+        this.lower = data.lower;
+        this.upper = data.upper;
 
         console.log('data', data);
         // this.node.getInterface('Imagem').value = 2;
@@ -215,8 +212,8 @@ export default {
 
     save() {
       this.node.setOptionValue('camera', this.selectedCamera);
-      this.node.setOptionValue('lower', this.lower);
-      this.node.setOptionValue('upper', this.upper);
+      this.node.setOptionValue('lower', this.localData.lower);
+      this.node.setOptionValue('upper', this.localData.upper);
       this.saveNodeConfig(this.node.id);
       // this.$store.commit('saveNodeConfig', this.node.id);
       this.dialog = false;
@@ -245,25 +242,19 @@ export default {
 
     optionsMaker(data) {
       const options = [
-        ['lower', data.rgb.lower],
-        ['upper', data.rgb.upper],
+        ['lower', [data.rgb.lower.r, data.rgb.lower.g, data.rgb.lower.b]],
+        ['upper', [data.rgb.upper.r, data.rgb.upper.g, data.rgb.upper.b]],
       ];
       return options;
     },
 
     // eslint-disable-next-line consistent-return
     UrlMaker() {
-      const url = `http://${process.env.VUE_APP_URL_API_IP}:${process.env.VUE_APP_URL_API_STREAMING_PORT}`;
-
       const { id } = this.node;
+      const url = `http://${process.env.VUE_APP_URL_API_IP}:${process.env.VUE_APP_URL_API_STREAMING_PORT}/videos/${id}`;
       if (id !== null) {
-        navigator.sendBeacon(
-          `http://${process.env.VUE_APP_URL_API_IP}:${process.env.VUE_APP_URL_API_PORT}/videos/${id}`
-        );
-        console.log('url', url);
         return url;
       }
-
       console.log(url);
     },
 
@@ -280,17 +271,13 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+.cores {
+  max-width: 600px;
+}
 img {
   width: 100%;
+  min-width: 400px;
   border-radius: 20px;
-}
-iframe {
-  width: 100%;
-  border: none;
-  // height: 414px;
-  border-radius: 7px;
-  aspect-ratio: 4/3;
-  overflow: hidden;
 }
 video {
   border: 1px solid salmon;

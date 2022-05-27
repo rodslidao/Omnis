@@ -50,12 +50,10 @@
         <v-btn color="primary" class="" dark @click="folderDialog = true">
           <v-icon left dark>mdi-folder</v-icon>Arquivos
         </v-btn>
+        <v-btn color="primary" class="" dark @click="serialDialog = true">
+          <v-icon left dark>mdi-console</v-icon>Serial
+        </v-btn>
 
-        <!-- <v-file-input
-            hide-input
-            truncate-length="15"
-            v-model="files"
-          ></v-file-input> -->
       </v-speed-dial>
     </div>
     <v-progress-linear
@@ -66,7 +64,7 @@
       bottom
     ></v-progress-linear>
     <v-dialog
-    dark
+      dark
       v-model="folderDialog"
       fullscreen
       hide-overlay
@@ -80,7 +78,19 @@
           <v-spacer></v-spacer>
         </v-toolbar>
         <div class="pa-12" v-if="folderDialog">
-          <sketch-explorer></sketch-explorer>
+          <sketch-explorer @close-dialog="folderDialog = false"></sketch-explorer>
+        </div>
+      </v-card>
+    </v-dialog>
+    <v-dialog dark v-model="serialDialog" transition="dialog-bottom-transition" max-width="750px"
+      ><v-card>
+        <!-- <v-toolbar dark color="primary">
+          
+          <v-toolbar-title>Monitor Serial</v-toolbar-title>
+          <v-spacer></v-spacer>
+        </v-toolbar> -->
+        <div class="pa-5" v-if="serialDialog">
+          <serial-monitor  ></serial-monitor>
         </div>
       </v-card>
     </v-dialog>
@@ -92,6 +102,7 @@ import { mapState, mapActions, mapGetters } from 'vuex';
 import gql from 'graphql-tag';
 import saveNodeSheet from '@/graphql/nodes/SaveNodeSheet';
 import SketchExplorer from '@/components/nodes/SketchExplorer.vue';
+import SerialMonitor from '@/components//SerialMonitor.vue';
 
 export default {
   name: 'ActionMenuForNodes',
@@ -100,12 +111,14 @@ export default {
   },
   components: {
     SketchExplorer,
+    SerialMonitor,
   },
 
   data() {
     return {
       saveNodeSheet,
       folderDialog: false,
+      serialDialog: false,
       direction: 'top',
       fab: false,
       fling: false,
