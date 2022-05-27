@@ -1,3 +1,4 @@
+from datetime import datetime
 from serial.tools import list_ports
 from serial import Serial as _Serial, serialutil
 from bson import ObjectId
@@ -152,6 +153,7 @@ class Serial(_Serial):
             "is_gcode": self.is_gcode == True,
             "last_value_send": self.last_value_send,
             "last_value_received": self.last_value_received,
+            "date": datetime.timestamp(datetime.utcnow()),
         }
 
 

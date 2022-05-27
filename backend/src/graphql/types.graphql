@@ -34,6 +34,7 @@ type Serial {
   is_gcode: Boolean!
   last_value_send: String!
   last_value_received: [String!]!
+  date: timestamptz!
 }
 
 type connection {

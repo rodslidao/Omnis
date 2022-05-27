@@ -77,3 +77,5 @@ def resolve_getLoadedNodes(obj, info):
 def resolve_getLoadedConfig(obj, info):
     """Get a Node by id and return it like a payload"""
     return NodeSheet().getNodeSheetById(process.loaded_id)
+
+    

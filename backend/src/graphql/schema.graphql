@@ -57,11 +57,11 @@ type Mutation {
   stopCamera(_id: ID!): CameraResult!
   resetCamera(_id: ID!): CameraResult!
 
-  createSerial(input: JSON): SerialResult!
-  startSerial(_id: ID!): SerialResult!
-  stopSerial(_id: ID!): SerialResult!
-  resetSerial(_id: ID!): SerialResult!
-  sendSerial(_id: ID!, payload: String!): SerialResult!
+  createSerial(input: JSON): Serial!
+  startSerial(_id: ID!): Serial!
+  stopSerial(_id: ID!): Serial!
+  resetSerial(_id: ID!): Serial!
+  sendSerial(_id: ID!, payload: String!): Serial!
   setCameraProperty(_id: ID!, input: JSON): CameraResult!
 
   syncHostTime(timestamp: Int): Boolean!
@@ -76,7 +76,7 @@ type Query {
   getCamera(_id: ID!): CameraResult!
   getCameras: CamerasResult!
 
-  getSerial(_id: ID!): SerialResult!
+  getSerial(_id: ID!): Serial!
   getSerials: SerialsResult!
 
   getProcess: ProcessResult

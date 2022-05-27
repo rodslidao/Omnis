@@ -10,12 +10,6 @@ type CamerasResult {
   data: [Camera]
 }
 
-type SerialResult {
-  status: Boolean!
-  error: [String]
-  data: Serial
-}
-
 type SerialsResult {
   status: Boolean!
   error: [String]

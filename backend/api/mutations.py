@@ -186,7 +186,7 @@ def setCameraProperty_resolver(obj, info, _id, **kwargs):
 def createSerial_resolver(obj, info, **kwargs):
     """Create a new Serial object and return it like a payload"""
     returns = Serial(**kwargs.get("input", {})).to_dict()
-    return {"data": returns}
+    return  returns
 
 
 @mutation.field("startSerial")
@@ -194,7 +194,7 @@ def startSerial_resolver(obj, info, _id):
     """Start a serial by id and return it like a payload"""
     serial = SerialManager.get_by_id(_id).start()
     returns = serial.to_dict()
-    return {"data": returns}
+    return  returns
 
 
 @mutation.field("stopSerial")
@@ -202,13 +202,13 @@ def stopSerial_resolver(obj, info, _id):
     """Stop a serial by id and return it like a payload"""
     serial = SerialManager.get_by_id(_id).stop()
     returns = serial.to_dict()
-    return {"data": returns}
+    return  returns
 
 
 @mutation.field("sendSerial")
 def sendSerial_resolver(obj, info, _id, payload):
     """Communicate a serial by id and return it like a payload"""
-    return {"status": True, "data": SerialManager.get_by_id(_id).send(payload).to_dict()}
+    return SerialManager.get_by_id(_id).send(payload).to_dict()
 
 
 @mutation.field("syncHostTime")
