@@ -2,6 +2,7 @@
   <div class="background" ref="container">
     <span style="display: none">{{ selectedTabIndex }}</span>
     <baklava-editor :plugin="viewPlugin" class="baklava-editor" />
+    <side-menu class="side-menu"></side-menu>
     <ActionMenuForNodes
       :editor="editor"
       class="action-buttons"
@@ -26,6 +27,7 @@ import ActionMenuForNodes from '@/components/nodes/ActionMenuForNodes.vue';
 import { mapActions, mapState } from 'vuex';
 
 import StartNode from '@/components/nodes/inputs/StartNode';
+import SideMenu from '@/components/nodes//sideMenu/sideMenu.vue';
 
 // Custom Baklava Components
 import CustomContextMenu from '@/components/nodes/custom/CustomContextMenu.vue';
@@ -49,6 +51,7 @@ export default {
 
   components: {
     ActionMenuForNodes,
+    SideMenu,
   },
 
   computed: {
@@ -260,5 +263,11 @@ export default {
   position: absolute;
   // margin: 0 0 32px 16px;
   z-index: 9999;
+}
+.side-menu {
+  // position: absolute;
+  // top:40px;
+  // right: 0;
+  // z-index: 9999;
 }
 </style>
