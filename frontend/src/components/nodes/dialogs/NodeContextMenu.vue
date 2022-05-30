@@ -211,7 +211,6 @@ export default {
     this.color = this.nodeData.getOptionValue('color');
     this.running = this.nodeData.getOptionValue('running');
     this.description = getDescription(this.nodeData.type);
-    console.log('description', this.description);
   },
   methods: {
     ...mapActions('node', ['deletedNode', 'saveNodeConfig']),

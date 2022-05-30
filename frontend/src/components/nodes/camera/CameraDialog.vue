@@ -16,12 +16,12 @@
               >
                 <div>
                   <v-select
-                    :items="getCameras.data"
+                    :items="getCameras ? getCameras.data : []"
                     v-model="selectedCamera"
                     item-text="name"
                     return-object
                     dense
-                    :loading="!getCameras.data"
+                    :loading="!getCameras"
                     :rules="requiredRules"
                     required
                   ></v-select>
@@ -113,6 +113,7 @@ export default {
     imgUrl: '',
     cameraId: '',
   }),
+
   components: {
     TextEditable,
     NodeConfigTitle,
@@ -130,6 +131,17 @@ export default {
         this.init();
       }
     });
+  },
+
+  watch: {
+    getCameras() {
+      if (this.cameraCopy) {
+        this.selectedCamera = this.this.cameraCopy;
+      } else {
+        // eslint-disable-next-line prefer-destructuring
+        this.selectedCamera = this.getCameras.data[0];
+      }
+    },
   },
 
   apollo: {
@@ -157,38 +169,10 @@ export default {
       this.dialog = false;
     },
 
-    // async getCamera() {
-    //   this.cameraLoading = true;
-    //   // const response = await getNodeInfo(this.node.type);
-    //   // console.log(response);
-    //   const response = await this.$apollo.query({
-    //     query: GET_CAMERAS,
-    //   });
-
-    //   console.log(this.$apollo.store);
-
-    //   this.cameraList = [];
-    //   this.cameraList.push(...response.data.getNodeInfo.data.options);
-
-    //   if (!this.cameraCopy) {
-    //     this.cameraList.push(this.cameraCopy);
-    //     this.selectedCamera = this.cameraCopy;
-    //   }
-    //   console.log(this.cameraList);
-
-    //   this.cameraLoading = false;
-    // },
-
     async init() {
       this.nodeCopy = { ...this.node };
       this.cameraCopy = this.node.getOptionValue('camera');
     },
-
-    // delay(time) {
-    //   setTimeout(() => {
-    //     this.frameLoaded = true;
-    //   }, time);
-    // },
 
     // eslint-disable-next-line consistent-return
     UrlMaker() {

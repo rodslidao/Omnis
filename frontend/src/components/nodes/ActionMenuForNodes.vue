@@ -102,7 +102,7 @@ import { mapState, mapActions, mapGetters } from 'vuex';
 import gql from 'graphql-tag';
 import saveNodeSheet from '@/graphql/nodes/SaveNodeSheet';
 import SketchExplorer from '@/components/nodes/SketchExplorer.vue';
-import SerialMonitor from '@/components//SerialMonitor.vue';
+import SerialMonitor from '@/components/SerialMonitor.vue';
 
 export default {
   name: 'ActionMenuForNodes',

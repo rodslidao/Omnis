@@ -15,8 +15,7 @@
               description="Selecione a placa que executara o movimento."
             >
               <v-select
-                @click="getBoards()"
-                :items="boardList"
+                :items="('options' in getNodeInfo.data) ? getNodeInfo.data.options : []"
                 v-model="selectedBoard"
                 item-text="name"
                 return-object
@@ -113,6 +112,16 @@ import gql from 'graphql-tag';
 import TextEditable from '@/components/nodes/dialogs/TextEditable.vue';
 import NodeConfigTitle from '@/components/nodes/NodeConfigTitle.vue';
 
+const GET_BOARDS = gql`
+  query {
+    getNodeInfo(node_type: "MoveAxisNode") {
+      data {
+        options
+      }
+    }
+  }
+`;
+
 export default {
   data: () => ({
     dialog: false,
@@ -123,6 +132,7 @@ export default {
     boardList: [],
     Description: '',
     requiredRules: [(v) => !!v || 'Esse campo não pode ficar em branco'],
+
 
     rules: {
       positive: (value) => value >= 0 || 'voce só pode inserir numeros',
@@ -147,6 +157,23 @@ export default {
     });
   },
 
+  apollo: {
+    getNodeInfo: {
+      query: GET_BOARDS,
+    },
+  },
+
+  watch: {
+    getNodeInfo() {
+      if (this.boardCopy.id) {
+        this.selectedBoard = this.this.boardCopy;
+      } else {
+        // eslint-disable-next-line prefer-destructuring
+        this.selectedBoard = this.getNodeInfo.data.options[0];
+      }
+    },
+  },
+
   methods: {
     ...mapActions('node', ['saveNodeConfig']),
 
@@ -164,35 +191,12 @@ export default {
       this.init();
     },
 
-    async getBoards() {
-      const response = await this.$apollo.query({
-        query: gql`
-          query {
-            getNodeInfo(node_type: "MOVEMENT") {
-              data {
-                options
-              }
-            }
-          }
-        `,
-      });
-      // console.log(this.$apollo.store);
-      this.boardList = [];
-      // make a list of boards name from the response
-      this.boardList.push(...response.data.getNodeInfo.data.options);
-      if (!this.boardCopy) {
-        this.boardList.push(this.boardCopy);
-        this.selectedBoard = this.boardCopy;
-      }
-    },
-
     async init() {
       this.nodeCopy = { ...this.node };
       this.boardCopy = this.node.getOptionValue('board');
       this.axisListCopy = JSON.parse(
         JSON.stringify(this.node.getOptionValue('axisList'))
       );
-      await this.getBoards();
     },
 
     changeName(data) {

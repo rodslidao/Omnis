@@ -177,22 +177,20 @@ export default {
   components: { Home },
   extends: Components.ContextMenu,
   inject: ['plugin'],
-  data: () => {
-    return {
-      nodeList: null,
-      valueCopy: false,
-      selected: 0,
-      selectedTemplate: null,
-      search: '',
-      maxed: false,
-      addList: [],
-      templates: [],
-      componentKey: 0,
-      hoveredItem: null,
-      descriptionsList: descriptions,
-      categories: getCategoryList(),
-    };
-  },
+  data: () => ({
+    nodeList: null,
+    valueCopy: false,
+    selected: 0,
+    selectedTemplate: null,
+    search: '',
+    maxed: false,
+    addList: [],
+    templates: [],
+    componentKey: 0,
+    hoveredItem: null,
+    descriptionsList: descriptions,
+    categories: getCategoryList(),
+  }),
   methods: {
     updateHoverItem(item) {
       this.hoveredItem = item;
@@ -224,12 +222,10 @@ export default {
       } else this.addTemplate();
     },
     addTemplate() {
-      let template = this.templates[this.selectedTemplate];
+      const template = this.templates[this.selectedTemplate];
 
-      template.position.x =
-        this.x / this.plugin.scaling - this.plugin.panning.x;
-      template.position.y =
-        this.y / this.plugin.scaling - this.plugin.panning.y;
+      template.position.x = this.x / this.plugin.scaling - this.plugin.panning.x;
+      template.position.y = this.y / this.plugin.scaling - this.plugin.panning.y;
 
       this.$store.commit('createNodeFromTemplate', template);
       this.onClickOutside(undefined);
@@ -284,13 +280,13 @@ export default {
   },
   computed: {
     nodeListFiltered() {
-      if (this.nodeList)
+      if (this.nodeList) {
         return this.nodeList.filter(
-          (node) =>
-            node.type.includes(this.search) ||
-            node.tags.some((tag) => tag.includes(this.search))
+          (node) => node.type.includes(this.search)
+            || node.tags.some((tag) => tag.includes(this.search)),
         );
-      else return null;
+      }
+      return null;
     },
 
     // categories() {
@@ -306,19 +302,18 @@ export default {
     },
     selectedTitle() {
       return (
-        this.nodeListFiltered[this.selected]?.type ||
-        'Template: ' + this.templates[this.selectedTemplate]?.name
+        this.nodeListFiltered[this.selected]?.type
+        || `Template: ${this.templates[this.selectedTemplate]?.name}`
       );
     },
     selectedDescr() {
-      let nodeDescription = this.nodeListFiltered[this.selected]?.description;
+      const nodeDescription = this.nodeListFiltered[this.selected]?.description;
       if (nodeDescription) return nodeDescription; // Guard-clause for node case
 
-      let templateSettings = this.templates[
+      const templateSettings = this.templates[
         this.selectedTemplate
       ]?.options.find((option) => option[0] === 'settings');
-      if (templateSettings && templateSettings[1]?.notes)
-        return templateSettings[1]?.notes;
+      if (templateSettings && templateSettings[1]?.notes) { return templateSettings[1]?.notes; }
 
       return 'No description provided';
     },
@@ -328,7 +323,6 @@ export default {
   },
 };
 </script>
-
 
 <style>
 .tagselected {

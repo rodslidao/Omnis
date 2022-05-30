@@ -65,6 +65,21 @@ export const descriptions = [
     configurable: true,
     hasHistory: false,
   },
+  {
+    name: 'Condicional OU',
+    type: 'OrNode',
+    text: `
+            Com esse node você será capaz de fazer operações condicionais do tipo OU, ou seja, se uma das entradas for verdadeira, a saída será verdadeira.
+        `,
+    icon: 'set-merge',
+    examples: 'quando você precisar de duas entradas em um nó',
+    category: 'Lógica',
+    tags: ['or', 'condition'],
+    resettable: false,
+    stoppable: false,
+    configurable: false,
+    hasHistory: false,
+  },
   // {
   //   name: 'Blur (Borrar)',
   //   type: 'filter-blur',

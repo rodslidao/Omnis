@@ -134,7 +134,7 @@ export default {
         if (this.isAdvanced) {
           // this.node.setOptionValue('expression', this.advancedExpression);
         } else {
-          console.log('save', this.selectedMatrix);
+          // console.log('save', this.selectedMatrix);
           this.node.setOptionValue('matrix', this.selectedMatrix);
         }
 
@@ -162,10 +162,10 @@ export default {
       this.matrixObjList = [];
       this.matrixObjList.push(...response.data.getNodeInfo.data.options);
 
-      console.log('response.data', ...response.data.getNodeInfo.data.options);
+      // console.log('response.data', ...response.data.getNodeInfo.data.options);
 
       if (!this.matrixCopy) {
-        console.log('entrei', this.matrixCopy);
+        // console.log('entrei', this.matrixCopy);
 
         this.matrixObjList.push(this.matrixCopy);
         this.selectedMatrix = this.matrixCopy;
@@ -182,7 +182,7 @@ export default {
       this.nodeCopy = { ...this.node };
       this.matrixCopy = this.node.getOptionValue('matrix');
 
-      console.log('matrixCopy', this.matrixCopy);
+      // console.log('matrixCopy', this.matrixCopy);
       await this.getMatrix();
     },
 

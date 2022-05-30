@@ -68,7 +68,7 @@ export default {
       const [x2, y2] = this.getPortCoordinates(to);
       const [tx1, ty1] = this.transform(x1, y1);
       const [tx2, ty2] = this.transform(x2, y2);
-      const dx = 0.3 * Math.abs(tx1 - tx2);
+      const dx = 0.6 * Math.abs(tx1 - tx2);
       this.d = `M ${tx1} ${ty1} C ${tx1 + dx} ${ty1}, ${
         tx2 - dx
       } ${ty2}, ${tx2} ${ty2}`;
@@ -154,6 +154,7 @@ export default {
     window.addEventListener('resize', () => {
       this.updateCoords();
     });
+    // eslint-disable-next-line no-unused-vars
     const timeOut = null;
   },
 };

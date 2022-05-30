@@ -13,7 +13,7 @@
         <v-select
           class="ml-4"
           placeholder="Selecione a placa"
-          :items="getSerials.data"
+          :items="('data' in getSerials ? getSerials.data : [])"
           v-model="selectedSerial"
           item-text="name"
           return-object
@@ -83,7 +83,7 @@
       </div>
     </div>
 
-      <v-divider></v-divider>
+    <v-divider></v-divider>
     <div class="d-flex flex-nowrap">
       <v-text-field
         filled
@@ -227,8 +227,9 @@ export default {
       ],
     };
   },
+
   watch: {
-    receivedData(newData, oldData) {
+    receivedData(newData) {
       console.log('new', newData.data);
       if (newData.data.sendSerial.last_value_received) {
         this.serialMonitor.push({
@@ -239,8 +240,7 @@ export default {
         this.scrollToBottom();
       }
     },
-    selectedSerial() {
-      console.log('selectedSerial', this.getSerials.data[0]);
+    getSerials() {
       // eslint-disable-next-line prefer-destructuring
       this.selectedSerial = this.getSerials.data[0];
     },
@@ -304,12 +304,12 @@ export default {
             this.isLoading = false;
             console.error(
               'Não foi possível enviar comando para a placa  \n',
-              error
+              error,
             );
             this.$alertFeedback(
               `Não foi possível enviar comando para a placa ${this.selectedSerial.name}!`,
               'error',
-              error
+              error,
             );
 
             // We restore the initial user input
@@ -380,7 +380,7 @@ export default {
 <style scoped lang="scss">
 .head {
   width: 100%;
-  .text-h4{
+  .text-h4 {
     min-width: 100px;
   }
 }

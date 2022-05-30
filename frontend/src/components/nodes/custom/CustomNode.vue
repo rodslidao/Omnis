@@ -101,8 +101,6 @@ export default {
     //   }
     // });
 
-    console.log('created');
-
     EventBus.$on('HIGHLIGHT_NODE', (nodeId) => {
       if (nodeId === this.data.id) {
         this.triggerPulse(this.data.getOptionValue('color'));
@@ -137,7 +135,6 @@ export default {
     ...mapActions('node', ['saveNodeConfig', 'deletedNode']),
 
     deleteNode() {
-      console.log('delete node');
       this.deletedNode(this.nodeData);
     },
 

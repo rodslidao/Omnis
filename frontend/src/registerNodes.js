@@ -21,6 +21,9 @@ import CameraNode from '@/components/nodes/camera/CameraNode';
 import IfDialog from '@/components/nodes/if/IfDialog.vue';
 import IfNode from '@/components/nodes/if/IfNode';
 
+// OrNode
+import OrNode from '@/components/nodes/or/OrNode';
+
 // MatrixNode
 import MatrixDialog from '@/components/nodes/matrix/MatrixDialog.vue';
 import MatrixNode from '@/components/nodes/matrix/MatrixNode';
@@ -72,9 +75,11 @@ export function registerNodes(editorInstance) {
 
   editorInstance.registerNodeType('CameraNode', CameraNode, 'Img');
 
-  editorInstance.registerNodeType('IfNode', IfNode, 'Output');
+  editorInstance.registerNodeType('IfNode', IfNode, 'Input');
 
-  editorInstance.registerNodeType('MatrixNode', MatrixNode, 'Matrix');
+  editorInstance.registerNodeType('OrNode', OrNode, 'Input');
+
+  editorInstance.registerNodeType('MatrixNode', MatrixNode, 'Input');
 
   editorInstance.registerNodeType('HsvFilterNode', HsvFilterNode, 'Hsv');
 

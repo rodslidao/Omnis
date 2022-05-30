@@ -15,7 +15,7 @@
               description="Selecione a placa que executara o movimento."
             >
               <v-select
-                :items="getSerials"
+                :items="getSerials? getSerials:[]"
                 v-model="selectedBoard"
                 item-text="name"
                 return-object
@@ -110,6 +110,27 @@ import { mapActions } from 'vuex';
 import NodeConfigTitle from '@/components/nodes/NodeConfigTitle.vue';
 import TextEditable from '@/components/nodes/dialogs/TextEditable.vue';
 
+const GET_SERIALS = gql`
+  query {
+    getSerials {
+      data {
+        _id
+        name
+      }
+    }
+  }
+`;
+
+const GET_NODE_INFO = gql`
+  query getNodeInfo($kwargs: JSON) {
+    getNodeInfo(node_type: "IoNode", kwargs: $kwargs) {
+      data {
+        options
+      }
+    }
+  }
+`;
+
 export default {
   data: () => ({
     nodeCopy: null,
@@ -149,6 +170,20 @@ export default {
     });
   },
 
+  watch: {
+    getSerials() {
+      if (this.portCopy) {
+        console.log('port', this.portCopy);
+        this.selectedBoard = this.portCopy.board;
+        this.selectedPort = this.portCopy.port;
+        this.selectedPortType = this.portCopy.portType;
+      } else {
+        // eslint-disable-next-line prefer-destructuring
+        this.selectedBoard = this.getSerials[0];
+      }
+    },
+  },
+
   computed: {
     pwmPeriod() {
       return 100 / this.pwmDivision;
@@ -157,39 +192,21 @@ export default {
 
   apollo: {
     getSerials: {
-      query: gql`
-        query {
-          getSerials {
-            data {
-              _id
-              name
-            }
-          }
-        }
-      `,
+      query: GET_SERIALS,
       update(data) {
         return data.getSerials.data;
       },
     },
 
     getPorts: {
-      query: gql`
-        query getNodeInfo($kwargs: JSON) {
-          getNodeInfo(node_type: "IoNode", kwargs: $kwargs) {
-            data {
-              options
-            }
-          }
-        }
-      `,
+      query: GET_NODE_INFO,
       variables() {
         return {
           // eslint-disable-next-line no-underscore-dangle
-          kwargs: { board: this.selectedBoard._id },
+          kwargs: { board: this.selectedBoard?._id },
         };
       },
       update(data) {
-        console.log(data.getNodeInfo.data.options);
         return data.getNodeInfo.data.options;
       },
     },
@@ -205,13 +222,15 @@ export default {
     save() {
       this.$refs.form.validate();
       if (
-        (this.isAdvanced && this.isValidAdvancedForm) ||
-        (!this.isAdvanced && this.isValidSimpleForm)
+        (this.isAdvanced && this.isValidAdvancedForm)
+        || (!this.isAdvanced && this.isValidSimpleForm)
       ) {
         if (this.isAdvanced) {
           // this.node.setOptionValue('expression', this.advancedExpression);
         } else {
+          // eslint-disable-next-line prefer-const
           let port = this.selectedPort;
+          port.portType = this.selectedPortType;
 
           port.selectedBoard = this.selectedBoard;
 
@@ -242,12 +261,7 @@ export default {
 
     async init() {
       this.nodeCopy = { ...this.node };
-      this.portListCopy = this.node.getOptionValue('port');
-      if (this.node.getOptionValue('port')) {
-        this.selectedBoard = this.node.getOptionValue('port').board;
-        this.selectedPort = this.node.getOptionValue('port');
-        this.selectedPortType = this.node.getOptionValue('port').pwm;
-      }
+      this.portCopy = this.node.getOptionValue('port');
     },
 
     changeName(data) {

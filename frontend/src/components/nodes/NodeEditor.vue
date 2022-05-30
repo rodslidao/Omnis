@@ -41,10 +41,8 @@ export default {
   data: () => ({
     // editor: new Editor(),
     viewPlugin: new ViewPlugin(),
-    engine: new Engine(true),
+    engine: new Engine(false),
     // optionPlugin: new OptionPlugin(),
-
-    tablist2: 2,
   }),
 
   components: {
@@ -81,13 +79,13 @@ export default {
 
     this.editor.events.addNode.addListener(this, () => {
       // this.$store.node.commit("saveNodeConfig", 1);
-      console.log(this.saveNode);
+      // console.log(this.saveNode);
       this.saveNodeConfig(1);
-      console.log('save aqui');
     });
 
     this.editor.events.addConnection.addListener(this, () => {
       // this.$store.commit("saveNodeConfig", 1);
+      console.log('addConnection');
       this.saveNodeConfig(1);
     });
 
@@ -99,6 +97,13 @@ export default {
     this.editor.events.removeConnection.addListener(this, () => {
       // this.$store.commit("saveNodeConfig", 1);
       this.saveNodeConfig(1);
+    });
+
+    this.editor.events.checkConnection.addListener(this, (c) => {
+      // return false if the connection is not allowed
+      console.log('checkConnection', c);
+      console.log(this.editor.events);
+      return true;
     });
 
     // Show a minimap in the top right corner
@@ -124,7 +129,7 @@ export default {
     // this.intfTypePlugin.addType('int', '#ff0055');
 
     // console.log(this.editor.save());
-    this.engine.calculate();
+    // this.engine.calculate();
   },
 
   methods: {
@@ -146,8 +151,8 @@ export default {
       //   }
       // });
       // this.engine.hooks.gatherCalculationData.tap(this, () => 'def');
-      this.editor.use(this.engine);
-      console.log(this.engine);
+      // this.editor.use(this.engine);
+      // console.log(this.engine);
 
       this.viewPlugin.components.contextMenu = CustomContextMenu;
       this.viewPlugin.components.node = CustomNode;
@@ -163,6 +168,7 @@ export default {
     },
 
     addNodeWithCoordinates(nodeType, x, y) {
+      // eslint-disable-next-line new-cap
       const n = new nodeType();
       this.editor.addNode(n);
       n.position.x = x;
@@ -175,14 +181,14 @@ export default {
     // this.$emit('nodeObject', this.editor.save());
     // console.log("mounted");
     // this.updateNodeEditor(this.editor);
-    if (Object.values(this.updateContentDefault).length == 0) {
+    if (Object.values(this.updateContentDefault).length === 0) {
       this.updateContentDefault(this.editor.save());
     }
 
     this.addNodeWithCoordinates(
       StartNode,
       this.$refs.container.clientWidth / 2 - 100,
-      this.$refs.container.clientHeight / 2 - 100
+      this.$refs.container.clientHeight / 2 - 100,
     );
     // console.log(this.contentDefault);
   },
