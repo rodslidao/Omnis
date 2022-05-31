@@ -28,6 +28,10 @@ import OrNode from '@/components/nodes/or/OrNode';
 import MatrixDialog from '@/components/nodes/matrix/MatrixDialog.vue';
 import MatrixNode from '@/components/nodes/matrix/MatrixNode';
 
+// DelayNode
+import DelayDialog from '@/components/nodes/delay/DelayDialog.vue';
+import DelayNode from '@/components/nodes/delay/DelayNode';
+
 // HsvFilterNode
 import HsvFilterDialog from '@/components/nodes/filters/hsv/HsvFilterDialog.vue';
 import HsvFilterNode from '@/components/nodes/filters/hsv/HsvFilterNode';
@@ -61,6 +65,7 @@ export function registerOptions(viewPlugin) {
   viewPlugin.registerOption('IdentifyDialog', IdentifyDialog);
   viewPlugin.registerOption('IoDialog', IoDialog);
   viewPlugin.registerOption('AlertDialog', AlertDialog);
+  viewPlugin.registerOption('DelayDialog', DelayDialog);
 }
 
 export function registerNodes(editorInstance) {
@@ -80,6 +85,8 @@ export function registerNodes(editorInstance) {
   editorInstance.registerNodeType('OrNode', OrNode, 'Input');
 
   editorInstance.registerNodeType('MatrixNode', MatrixNode, 'Input');
+
+  editorInstance.registerNodeType('DelayNode', DelayNode, 'Output');
 
   editorInstance.registerNodeType('HsvFilterNode', HsvFilterNode, 'Hsv');
 

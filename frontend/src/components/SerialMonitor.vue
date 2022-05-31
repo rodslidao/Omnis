@@ -13,7 +13,7 @@
         <v-select
           class="ml-4"
           placeholder="Selecione a placa"
-          :items="('data' in getSerials ? getSerials.data : [])"
+          :items="'data' in getSerials ? getSerials.data : []"
           v-model="selectedSerial"
           item-text="name"
           return-object
@@ -96,6 +96,8 @@
         single-line
         type="text"
         v-on:keyup.enter="selectedSerial ? send() : ''"
+        @keyup.up="leftItem()"
+        @keyup.down="rightItem()"
         required
       >
         <v-btn
@@ -304,12 +306,12 @@ export default {
             this.isLoading = false;
             console.error(
               'Não foi possível enviar comando para a placa  \n',
-              error,
+              error
             );
             this.$alertFeedback(
               `Não foi possível enviar comando para a placa ${this.selectedSerial.name}!`,
               'error',
-              error,
+              error
             );
 
             // We restore the initial user input

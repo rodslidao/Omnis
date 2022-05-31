@@ -33,6 +33,22 @@ export const descriptions = [
     hasHistory: false,
   },
   {
+    name: 'Espera(Delay)',
+    type: 'DelayNode',
+    text: `Espera um tempo especificado antes de executar o proximo node.
+    `,
+    icon: 'clock',
+    examples: `
+    Digamos que voce queira esperar um tempo antes de executar o proximo node.
+    `,
+    category: 'Utilidades',
+    tags: ['delay', 'mapping', 'object', 'array', 'img'],
+    resettable: true,
+    stoppable: false,
+    configurable: true,
+    hasHistory: false,
+  },
+  {
     name: 'Identificação',
     type: 'IdentifyNode',
     text: `
