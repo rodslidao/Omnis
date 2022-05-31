@@ -94,18 +94,18 @@ export default {
     styleObject() {
       const updatedStyleObject = {
         slots: {
-          height: `${this.slots.size.y * this.constant.x}px`,
-          width: `${this.slots.size.x * this.constant.x}px`,
-          marginTop: `${this.slots.margin.y * this.constant.x}px`,
+          height: `${this.slots.size.y * this.constant.x -1}px`,
+          width: `${this.slots.size.x * this.constant.x -1}px`,
+          marginTop: `${this.slots.margin.y * this.constant.x +1}px`,
         },
         slotsRow: {
-          marginLeft: `${this.slots.margin.x * this.constant.x}px`,
+          marginLeft: `${this.slots.margin.x * this.constant.x +1}px`,
         },
         subdivision: {
-          marginLeft: `${this.subdivisions.margin.x * this.constant.x}px`,
+          marginLeft: `${this.subdivisions.margin.x * this.constant.x +1}px`,
         },
         row: {
-          marginTop: `${this.subdivisions.margin.y * this.constant.x}px`,
+          marginTop: `${this.subdivisions.margin.y * this.constant.x +1}px`,
         },
       };
       return updatedStyleObject;

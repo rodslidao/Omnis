@@ -8,6 +8,7 @@
           <!-- <span class="headline">{{ nodeCopy.name }}</span> -->
         </v-card-title>
         <v-divider></v-divider>
+        {{}}
         <v-form ref="form" v-model="isValidSimpleForm" v-if="!isAdvanced">
           <v-card-text class="pt-8">
             <NodeConfigTitle
@@ -15,11 +16,10 @@
               description="Selecione a matriz que você cadastrou."
             >
               <v-select
-                @click="getMatrix()"
                 required
-                :loading="matrixLoading"
+                :loading="$apollo.queries.getNodeInfo.loading"
                 class="middle-select ml-5 mr-5"
-                :items="matrixObjList"
+                :items="getNodeInfo"
                 v-model="selectedMatrix"
                 item-text="name"
                 return-object
@@ -74,6 +74,16 @@ import MatrixViewer from '@/components/nodes/matrix/MatrixViewer.vue';
 import MatrixInfoResume from '@/components/nodes/matrix/MatrixInfoResume.vue';
 import gql from 'graphql-tag';
 
+const GET_NODE_INFO = gql`
+  query {
+    getNodeInfo(node_type: "MatrixNode") {
+      data {
+        options
+      }
+    }
+  }
+`;
+
 export default {
   data: () => ({
     dialog: false,
@@ -82,9 +92,7 @@ export default {
     isAdvanced: false,
     requiredRules: [(v) => !!v || 'Campo não pode ficar em branco'],
 
-    matrixLoading: false,
     matrixCopy: null,
-    matrixObjList: [],
     selectedMatrix: null,
     slots: null,
     subdivisions: null,
@@ -111,16 +119,12 @@ export default {
     });
   },
 
-  // watch: {
-  //   // whenever question changes, this function will run
-  //   selectedMatrix(newMatrix, oldMatrix) {
-  //     console.log('selectedMatrix', newMatrix, oldMatrix);
-  //     if (oldMatrix !== newMatrix) {
-  //       this.selectedMatrix.slots;
-  //       this.selectedMatrix.subdivisions;
-  //     }
-  //   },
-  // },
+  apollo: {
+    getNodeInfo: {
+      query: GET_NODE_INFO,
+      update: (data) => data.getNodeInfo.data.options,
+    },
+  },
 
   methods: {
     ...mapActions('node', ['saveNodeConfig']),
@@ -128,8 +132,8 @@ export default {
     save() {
       this.$refs.form.validate();
       if (
-        (this.isAdvanced && this.isValidAdvancedForm) ||
-        (!this.isAdvanced && this.isValidSimpleForm)
+        (this.isAdvanced && this.isValidAdvancedForm)
+        || (!this.isAdvanced && this.isValidSimpleForm)
       ) {
         if (this.isAdvanced) {
           // this.node.setOptionValue('expression', this.advancedExpression);
@@ -145,35 +149,6 @@ export default {
       }
     },
 
-    async getMatrix() {
-      this.matrixLoading = true;
-      const response = await this.$apollo.query({
-        query: gql`
-          query {
-            getNodeInfo(node_type: "MatrixNode") {
-              data {
-                options
-              }
-            }
-          }
-        `,
-      });
-      // console.log(this.$apollo.store);
-      this.matrixObjList = [];
-      this.matrixObjList.push(...response.data.getNodeInfo.data.options);
-
-      // console.log('response.data', ...response.data.getNodeInfo.data.options);
-
-      if (!this.matrixCopy) {
-        // console.log('entrei', this.matrixCopy);
-
-        this.matrixObjList.push(this.matrixCopy);
-        this.selectedMatrix = this.matrixCopy;
-      }
-
-      this.matrixLoading = false;
-    },
-
     close() {
       this.dialog = false;
     },
@@ -181,9 +156,6 @@ export default {
     async init() {
       this.nodeCopy = { ...this.node };
       this.matrixCopy = this.node.getOptionValue('matrix');
-
-      // console.log('matrixCopy', this.matrixCopy);
-      await this.getMatrix();
     },
 
     changeName(data) {
