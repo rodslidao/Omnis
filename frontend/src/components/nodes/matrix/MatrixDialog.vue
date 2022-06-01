@@ -28,7 +28,7 @@
               ></v-select>
             </NodeConfigTitle>
 
-            <div v-if="!matrixLoading && selectedMatrix" class="mb-10">
+            <div v-if="!$apollo.queries.getNodeInfo.loading && selectedMatrix" class="mb-10">
               <MatrixInfoResume
                 class="mb-5"
                 :slots="selectedMatrix.slots"

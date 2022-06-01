@@ -3,7 +3,6 @@
     <span style="display: none">{{ selectedTabIndex }}</span>
     <baklava-editor :plugin="viewPlugin" class="baklava-editor" />
     <ActionMenuForNodes
-      :editor="editor"
       class="action-buttons"
     ></ActionMenuForNodes>
   </div>

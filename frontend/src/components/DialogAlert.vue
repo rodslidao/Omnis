@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-for="alert in alertList" :key="alert.title">
+    <div v-for="alert in alertList" :key="alert.index">
       <v-row justify="center">
         <!-- <v-dialog v-model="state.dialogAlert.show" persistent max-width="300"> -->
 
@@ -13,9 +13,10 @@
             :type="alert.level"
             elevation="3"
           >
-            <div class="text-h4 font-weight-thin text-capitalize">
-              {{ alert.description }}
+            <div class="text-h3 font-weight-thin text-capitalize">
+              {{ alert.title }}
             </div>
+              {{ alert.description }}
 
             <div>
               <p class="mt-2">Como Solucionar</p>

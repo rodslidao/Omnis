@@ -85,7 +85,6 @@
     <v-dialog dark v-model="serialDialog" transition="dialog-bottom-transition" max-width="750px"
       ><v-card>
         <!-- <v-toolbar dark color="primary">
-          
           <v-toolbar-title>Monitor Serial</v-toolbar-title>
           <v-spacer></v-spacer>
         </v-toolbar> -->
@@ -106,9 +105,6 @@ import SerialMonitor from '@/components/SerialMonitor.vue';
 
 export default {
   name: 'ActionMenuForNodes',
-  props: {
-    editor: Object,
-  },
   components: {
     SketchExplorer,
     SerialMonitor,
@@ -131,6 +127,7 @@ export default {
       files: null,
       result_: 'Teste',
       transition: 'slide-y-reverse-transition',
+      loadedId: null,
       items: [
         {
           title: 'Salvar',
@@ -149,6 +146,7 @@ export default {
       selectedTabIndex: (state) => state.selectedTabIndex,
       tabList: (state) => state.tabList,
       selectedTabId: (state) => state.selectedTabId,
+      editor: (state) => state.editor,
     }),
 
     ...mapGetters('node', [
@@ -209,7 +207,7 @@ export default {
           this.$alertFeedback(
             'Não foi possível rodar programa',
             'error',
-            error
+            error,
           );
 
           // We restore the initial user input
@@ -252,7 +250,7 @@ export default {
           this.$alertFeedback(
             'Não foi possível parar a rotina',
             'error',
-            error
+            error,
           );
 
           // We restore the initial user input
@@ -298,7 +296,7 @@ export default {
           this.$alertFeedback(
             'Não foi possível rodar programa',
             'error',
-            error
+            error,
           );
 
           // We restore the initial user input
@@ -368,13 +366,19 @@ export default {
       console.log(" :salvo com sucesso!'");
 
       const tabToSave = this.tabList[this.selectedTabIndex];
+      console.log('tab to save', tabToSave);
 
       await this.$apollo
         .mutate({
           mutation: this.saveNodeSheet,
           variables: {
-            id: tabToSave.id,
+            _id: tabToSave._id,
+            parent_id: tabToSave.parent_id,
             name: tabToSave.name,
+            description: `${tabToSave.name} descrição`,
+            version: tabToSave.version,
+            author: 'Autor',
+            date: new Date().getTime(),
             saved: tabToSave.saved,
             duplicated: tabToSave.duplicated,
             content: this.editor.save(),
@@ -397,7 +401,7 @@ export default {
           this.$alertFeedback(
             'Não foi possível salvar o arquivo, erro ao conectar com servidor',
             'error',
-            error
+            error,
           );
 
           // We restore the initial user input
@@ -414,9 +418,9 @@ export default {
       }
       const fileName = this.tabList[this.selectedTabIndex].name;
       download(
-        JSON.stringify(this.editor.save()),
+        JSON.stringify(this.tabList[this.selectedTabIndex]),
         `${fileName}.oms`,
-        'text/oms'
+        'text/oms',
       );
     },
 
@@ -429,12 +433,12 @@ export default {
       console.log(target.files[0].name.split('.').pop());
 
       if (
-        target.files[0].name.split('.').pop() !== 'oms' &&
-        target.files[0].name.split('.').pop() !== 'json'
+        target.files[0].name.split('.').pop() !== 'oms'
+        && target.files[0].name.split('.').pop() !== 'json'
       ) {
         this.$alertFeedback(
           'Arquivo inválido, seu arquivo deve ser um .oms',
-          'error'
+          'error',
         );
 
         return;
