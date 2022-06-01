@@ -65,7 +65,7 @@
 import { mapState } from 'vuex';
 import { actions } from '@/store/index';
 import RestartButton from '@/components/navbar/RestarButton.vue';
-import TabMenuNodes from '@/components/nodes/TabMenuNodes.vue';
+import TabMenuNodes from '@/components/node/TabMenuNodes.vue';
 
 export default {
   name: 'NavBar',

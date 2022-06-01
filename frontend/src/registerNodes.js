@@ -1,58 +1,55 @@
 // import EventButtonOption from "@/options/EventButtonOption";
-// import { MoveNode } from '@/components/nodes/MoveNode';
-import EventButtonOption from '@/components/nodes/options/EventButtonOption.vue';
-
-// ButtonNode
-import ButtonNode from '@/components/nodes/ButtonNode';
+// import { MoveNode } from '@/components/node/nodes/MoveNode';
+import EventButtonOption from '@/components/node/nodes/options/EventButtonOption.vue';
 
 // TextNode
-import TextTemplateDialog from '@/components/nodes/text/TextTemplateDialog.vue';
-import TextTemplateNode from '@/components/nodes/text/TextTemplateNode';
+import TextTemplateDialog from '@/components/node/nodes/text/TextTemplateDialog.vue';
+import TextTemplateNode from '@/components/node/nodes/text/TextTemplateNode';
 
 // MoveNode
-import MoveAxisDialog from '@/components/nodes/move/MoveAxisDialog.vue';
-import MoveAxisNode from '@/components/nodes/move/MoveAxisNode';
+import MoveAxisDialog from '@/components/node/nodes/move/MoveAxisDialog.vue';
+import MoveAxisNode from '@/components/node/nodes/move/MoveAxisNode';
 
 // MoveNode
-import CameraDialog from '@/components/nodes/camera/CameraDialog.vue';
-import CameraNode from '@/components/nodes/camera/CameraNode';
+import CameraDialog from '@/components/node/nodes/camera/CameraDialog.vue';
+import CameraNode from '@/components/node/nodes/camera/CameraNode';
 
 // ifNode
-import IfDialog from '@/components/nodes/if/IfDialog.vue';
-import IfNode from '@/components/nodes/if/IfNode';
+import IfDialog from '@/components/node/nodes/if/IfDialog.vue';
+import IfNode from '@/components/node/nodes/if/IfNode';
 
 // OrNode
-import OrNode from '@/components/nodes/or/OrNode';
+import OrNode from '@/components/node/nodes/or/OrNode';
 
 // MatrixNode
-import MatrixDialog from '@/components/nodes/matrix/MatrixDialog.vue';
-import MatrixNode from '@/components/nodes/matrix/MatrixNode';
+import MatrixDialog from '@/components/node/nodes/matrix/MatrixDialog.vue';
+import MatrixNode from '@/components/node/nodes/matrix/MatrixNode';
 
 // DelayNode
-import DelayDialog from '@/components/nodes/delay/DelayDialog.vue';
-import DelayNode from '@/components/nodes/delay/DelayNode';
+import DelayDialog from '@/components/node/nodes/delay/DelayDialog.vue';
+import DelayNode from '@/components/node/nodes/delay/DelayNode';
 
 // HsvFilterNode
-import HsvFilterDialog from '@/components/nodes/filters/hsv/HsvFilterDialog.vue';
-import HsvFilterNode from '@/components/nodes/filters/hsv/HsvFilterNode';
+import HsvFilterDialog from '@/components/node/nodes/filters/hsv/HsvFilterDialog.vue';
+import HsvFilterNode from '@/components/node/nodes/filters/hsv/HsvFilterNode';
 
 // IdentifyNode
-import IdentifyDialog from '@/components/nodes/identify/IdentifyDialog.vue';
-import IdentifyNode from '@/components/nodes/identify/IdentifyNode';
+import IdentifyDialog from '@/components/node/nodes/identify/IdentifyDialog.vue';
+import IdentifyNode from '@/components/node/nodes/identify/IdentifyNode';
 
 // IoNode
-import IoNode from '@/components/nodes/io/IoNode';
-import IoDialog from '@/components/nodes/io/IoDialog.vue';
+import IoNode from '@/components/node/nodes/io/IoNode';
+import IoDialog from '@/components/node/nodes/io/IoDialog.vue';
 
 // input nodes
-import StartNode from '@/components/nodes/inputs/StartNode';
-import PauseNode from '@/components/nodes/inputs/PauseNode';
-import StopNode from '@/components/nodes/inputs/StopNode';
-import RestartNode from '@/components/nodes/inputs/RestartNode';
+import StartNode from '@/components/node/nodes/inputs/StartNode';
+import PauseNode from '@/components/node/nodes/inputs/PauseNode';
+import StopNode from '@/components/node/nodes/inputs/StopNode';
+import RestartNode from '@/components/node/nodes/inputs/RestartNode';
 
 // AlertNode
-import AlertNode from '@/components/nodes/alert/AlertNode';
-import AlertDialog from '@/components/nodes/alert/AlertDialog.vue';
+import AlertNode from '@/components/node/nodes/alert/AlertNode';
+import AlertDialog from '@/components/node/nodes/alert/AlertDialog.vue';
 
 export function registerOptions(viewPlugin) {
   viewPlugin.registerOption('EventButtonOption', EventButtonOption);
@@ -72,7 +69,6 @@ export function registerNodes(editorInstance) {
   // editorInstance.registerNodeType('MoveNode', MoveNode);
 
   // User input
-  editorInstance.registerNodeType('ButtonNode', ButtonNode, 'Input');
 
   editorInstance.registerNodeType('TextTemplateNode', TextTemplateNode, 'Text');
 
