@@ -22,6 +22,7 @@
     "@vueuse/core": "^8.3.1",
     "apexcharts": "^3.27.3",
     "baklavajs": "1.8.3",
+    "bson-objectid": "^2.0.3",
     "core-js": "^3.6.5",
     "electron-builder": "^22.14.5",
     "eslint-plugin-graphql": "^4.0.0",

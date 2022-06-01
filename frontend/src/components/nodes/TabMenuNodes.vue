@@ -27,16 +27,12 @@
               autofocus
               :value="tabList[index].name"
               v-model="name"
-              @keyup.enter="
-                name != '' ? rename(index) : tabList[index].name
-              "
+              @keyup.enter="name != '' ? rename(index) : tabList[index].name"
               single-line
               full-width
             ></v-text-field>
           </div>
-          <span v-else>{{
-            +!item.saved ? item.name + '*' : item.name
-          }}</span>
+          <span v-else>{{ +!item.saved ? item.name + '*' : item.name }}</span>
         </div>
 
         <!-- dropdown -->
@@ -89,6 +85,8 @@
 import { mapActions, mapState } from 'vuex';
 import gql from 'graphql-tag';
 
+const ObjectID = require('bson-objectid');
+
 export default {
   name: 'TabMenuNodes',
 
@@ -119,6 +117,18 @@ export default {
           function: this.setRenamingIndex,
         },
       ],
+      newTab: {
+        name: '',
+        description: 'Descrição',
+        author: 'Autor',
+        last_access: new Date().getTime(),
+        _id: null,
+        parent_id: null,
+        version: 1,
+        saved: false,
+        duplicated: false,
+        content: '',
+      },
     };
   },
 
@@ -130,6 +140,13 @@ export default {
       contentDefault: (state) => state.contentDefault,
       renamingIndex: (state) => state.renamingIndex,
     }),
+  },
+
+  watch: {
+    selectedTabIndex(newValue) {
+      console.log(`nova ${newValue} tab: ${this.tab}`);
+      this.tab = newValue;
+    },
   },
 
   methods: {
@@ -177,20 +194,12 @@ export default {
       this.updateSelectedTab(index);
     },
 
-    // functcion to gerate unique id based in timestamp
-    generateId() {
-      const timestamp = Math.floor(new Date().getTime() / 1000).toString(16);
-      const objectId =
-        timestamp +
-        'xxxxxxxxxxxxxxxx'
-          .replace(/[x]/g, () => {
-            return Math.floor(Math.random() * 16).toString(16);
-          })
-          .toLowerCase();
-
-      return objectId;
-      // return new Date().getTime();
-    },
+    // // functcion to gerate unique id based in timestamp
+    // generateId() {
+    //   console.log(ObjectID().toHexString());
+    //   return ObjectID().toHexString();
+    //   // return new Date().getTime();
+    // },
 
     close(index) {
       if (this.tabList.length > 1) {
@@ -202,37 +211,40 @@ export default {
       }
     },
 
-    add(index) {
+    add() {
       const tabLength = this.tabList.length;
       let tabSketchName = `Aba ${this.newTabCount}`;
       if (tabLength === 0) tabSketchName = 'Aba 1';
-      const idGenerated = this.generateId();
-      this.newTabCount += 1;
-      const newTab = {
-        name: tabSketchName,
-        id: idGenerated,
-        saved: false,
-        duplicated: false,
-        content: this.contentDefault,
-      };
+      const idGenerated = ObjectID().toHexString();
 
-      this.addTab(newTab);
+      this.newTabCount += 1;
+
+      this.newTab.name = tabSketchName;
+      this.newTab.parent_id = idGenerated;
+      // eslint-disable-next-line no-underscore-dangle
+      this.newTab._id = idGenerated;
+      this.newTab.version = 1;
+      this.newTab.content = this.contentDefault;
+
+      this.addTab({ ...this.newTab });
       // console.log('tab length: ', tabLength);
       this.updateSelectedTab(tabLength);
       this.tab = tabLength;
     },
 
-    duplicate(index) {
-      const idGenerated = this.generateId();
+    duplicate() {
+      const idGenerated = ObjectID().toHexString();
 
-      const newTab = {
-        id: idGenerated,
-        saved: false,
-        duplicated: true,
-      };
+      const duplicatedTab = this.newTab;
+
+      duplicatedTab.saved = false;
+      duplicatedTab.duplicated = true;
+      // eslint-disable-next-line no-underscore-dangle
+      duplicatedTab._id = idGenerated;
+      duplicatedTab.parent_id = idGenerated;
 
       this.duplicateTab({
-        tab: newTab,
+        tab: { ...duplicatedTab },
         indexContextMenu: this.contextMenuSelectedTabIndex,
       });
       // console.log('selected indexxxxxxxxxxxxxxxx: ', this.selectedTabIndex);
@@ -244,7 +256,7 @@ export default {
 
     rename(index) {
       this.setRenamingIndex(null);
-      this.setSketchName({ name: this.name, index: index });
+      this.setSketchName({ name: this.name, index });
       this.name = '';
     },
   },

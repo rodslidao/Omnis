@@ -3,7 +3,8 @@
     <v-data-table
       :headers="headers"
       :items="getSketchList.data"
-      sort-by="date"
+      sort-by="_id"
+      :sort-desc="true"
       class="elevation-1 table-warper"
       :footer-props="{
         itemsPerPageText: 'Arquivos por página:',
@@ -118,6 +119,7 @@ const GET_SKETCH_LIST = gql`
     getSketchList {
       data {
         _id
+        version
         name
         description
         node_qtd
@@ -156,11 +158,19 @@ const DUPLICATE_NODE_SHEET = gql`
 `;
 
 const LOAD_CONFIG = gql`
-  mutation ($id: ID!) {
-    loadConfig(_id: $id) {
-        name
-        _id
-        content
+  mutation ($_id: ID!) {
+    loadConfig(_id: $_id) {
+      _id
+      name
+      description
+      version
+      node_qtd
+      author
+      last_access
+      parent_id
+      content
+      saved
+      duplicated
     }
   }
 `;
@@ -203,6 +213,7 @@ export default {
           value: 'name',
         },
         { text: 'Descrição', value: 'description' },
+        { text: 'Versão', value: 'version' },
         { text: 'Qtd. nó', value: 'node_qtd' },
         { text: 'Autor', value: 'author' },
         { text: 'ID', value: '_id' },
@@ -212,20 +223,6 @@ export default {
       // files: [],
       runningFileId: 16530682866630,
       editedIndex: -1,
-      editedItem: {
-        name: '',
-        descrição: 0,
-        nodeQtd: 0,
-        author: '',
-        id: '',
-      },
-      defaultItem: {
-        name: '',
-        descrição: 0,
-        nodeQtd: 0,
-        author: '',
-        id: '',
-      },
       selectedId: null,
       renamingIndex: null,
       editNameMode: false,
@@ -343,14 +340,13 @@ export default {
         .mutate({
           mutation: LOAD_CONFIG,
           variables: {
-            id: this.selectedId,
+            _id: this.selectedId,
           },
         })
         .then((data) => {
           // Result
           console.log('data', data.data.loadConfig);
           this.loadTabId(data.data.loadConfig);
-          this.$alertFeedback('Arquivo carregado com sucesso', 'success');
           this.dialog = true;
           this.$emit('close-dialog');
           // this.isLoading = false;

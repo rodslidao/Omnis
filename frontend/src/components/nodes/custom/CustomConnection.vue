@@ -142,7 +142,8 @@ export default {
             this.connectionActive = true; // Activate animation
             clearTimeout(timeOut); // Reset timeout if called
             timeOut = setTimeout(() => {
-              this.connectionActive = false; // Deactivate animation if method is not called within interval.
+              // Deactivate animation if method is not called within interval.
+              this.connectionActive = false;
             }, 750);
           }
         },

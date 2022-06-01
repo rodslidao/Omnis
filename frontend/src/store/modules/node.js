@@ -1,6 +1,7 @@
 /* eslint-disable no-underscore-dangle */
 // import { Editor } from '@baklavajs/core';
 import { Editor } from '@baklavajs/core';
+import Vue from 'vue';
 
 export default {
   namespaced: true,
@@ -21,8 +22,8 @@ export default {
       //   content: {},
       // },
     ],
-    runningTabId: 1641587087905,
-    selectedTabId: 1641587087905,
+    runningTabId: null,
+    selectedTabId: null,
     // http://192.168.1.31:5000/video_feed/camera0
     selectedTabIndex: 0,
     contentDefault: {},
@@ -56,6 +57,7 @@ export default {
 
     addTab: (state, tab) => {
       state.tabList.push(tab);
+      console.log('%c Tab Adicionada:', 'color: #51a4f7', tab);
     },
 
     duplicateTab: (state, payload) => {
@@ -137,17 +139,42 @@ export default {
       console.log('state', state.deletedNode);
     },
     loadTabId: (state, data) => {
-      console.log('datanode', data);
-      state.editor.load(data.content);
-      const newLoadTab = {
-        name: data.name,
-        id: data._id,
-        saved: true,
-        content: data.content,
-      };
+      console.log('LoadTab', data);
 
-      state.tabList.push(newLoadTab);
-      state.selectedTabId = data._id;
+      let equalTabIndex = 0;
+
+      const equalTab = state.tabList.find((tab, index) => {
+        equalTabIndex = index;
+        console.log('tab', tab);
+        return tab._id === data._id && tab.last_modified === data.last_modified;
+      });
+
+      console.log('existTab', equalTab);
+      console.log('existTabIndex', equalTabIndex);
+
+      if (equalTab) {
+        state.selectedTabIndex = equalTabIndex;
+        state.selectedTabId = equalTab._id;
+        Vue.prototype.$alertFeedback('Este arquivo ja estava aberto', 'success');
+      } else {
+        console.log('não existe uma tab igual');
+        const newLoadTab = {
+          _id: data._id,
+          name: data.name,
+          parent_id: data.parent_id,
+          description: data.description,
+          author: data.author,
+          last_access: data.date,
+          saved: true,
+          content: data.content,
+        };
+
+        state.tabList.push(newLoadTab);
+        state.selectedTabIndex += 1;
+
+        state.selectedTabId = data._id;
+        Vue.prototype.$alertFeedback('Arquivo carregado com sucesso', 'success');
+      }
     },
   },
 
