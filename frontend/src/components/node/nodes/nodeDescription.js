@@ -33,6 +33,52 @@ export const descriptions = [
     hasHistory: false,
   },
   {
+    name: 'Calculadora',
+    type: 'ArithmeticNode',
+    text: `
+    `,
+    icon: 'calculator-variant',
+    examples: ` Digamos que a cada ovo que vc pega vc quer que em determinada posição ele ande mais dois para o lado
+    `,
+    category: 'Utilidades',
+    tags: ['calculator', 'arithmetic', 'math', 'count'],
+    resettable: true,
+    stoppable: false,
+    configurable: true,
+    hasHistory: false,
+  },
+  {
+    name: 'Variável',
+    type: 'VariableNode',
+    text: ` Este nó armazena informação 
+    `,
+    icon: 'variable',
+    examples: ` Digamos que vc queira armazenar um valor para ser usado em outro nó, e fazer uma conta com ele
+    `,
+    category: 'Utilidades',
+    tags: ['variable', 'mapping', 'object', 'array', 'int', 'float', 'string'],
+    resettable: true,
+    stoppable: false,
+    configurable: true,
+    hasHistory: false,
+  },
+  {
+    name: 'Console',
+    type: 'ConsoleNode',
+    text: ` Este nó mostra informações no console
+    `,
+    icon: 'console',
+    examples: ` Digamos que vc queira mostrar um valor no console
+    `,
+    category: 'Feedback',
+    tags: ['console', 'print', 'log', 'debug'],
+    resettable: true,
+    stoppable: false,
+    configurable: true,
+    hasHistory: false,
+
+  },
+  {
     name: 'Espera(Delay)',
     type: 'DelayNode',
     text: `Espera um tempo especificado antes de executar o proximo node.
@@ -66,7 +112,7 @@ export const descriptions = [
     hasHistory: false,
   },
   {
-    name: 'Condicinal IF',
+    name: 'Condicional IF',
     type: 'IfNode',
     text: `
             Com esse node você será capaz de fazer operações condicionais

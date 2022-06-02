@@ -136,6 +136,7 @@ export default {
     ...mapState('node', {
       tabList: (state) => state.tabList,
       selectedTabId: (state) => state.selectedTabId,
+      selectedTab: (state) => state.selectedTab,
       selectedTabIndex: (state) => state.selectedTabIndex,
       contentDefault: (state) => state.contentDefault,
       renamingIndex: (state) => state.renamingIndex,

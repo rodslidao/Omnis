@@ -8,7 +8,6 @@
           <!-- <span class="headline">{{ nodeCopy.name }}</span> -->
         </v-card-title>
         <v-divider></v-divider>
-        {{}}
         <v-form ref="form" v-model="isValidSimpleForm" v-if="!isAdvanced">
           <v-card-text class="pt-8">
             <NodeConfigTitle

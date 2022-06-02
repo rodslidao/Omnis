@@ -2,6 +2,8 @@
 // import { MoveNode } from '@/components/node/nodes/MoveNode';
 import EventButtonOption from '@/components/node/nodes/options/EventButtonOption.vue';
 
+import ArithmeticOption from '@/components/node/nodes/arithmetic/ArithmeticOption.vue';
+
 // TextNode
 import TextTemplateDialog from '@/components/node/nodes/text/TextTemplateDialog.vue';
 import TextTemplateNode from '@/components/node/nodes/text/TextTemplateNode';
@@ -51,8 +53,13 @@ import RestartNode from '@/components/node/nodes/inputs/RestartNode';
 import AlertNode from '@/components/node/nodes/alert/AlertNode';
 import AlertDialog from '@/components/node/nodes/alert/AlertDialog.vue';
 
+// ArithmeticNode
+import ArithmeticNode from '@/components/node/nodes/arithmetic/ArithmeticNode';
+import ArithmeticDialog from '@/components/node/nodes/arithmetic/ArithmeticDialog.vue';
+
 export function registerOptions(viewPlugin) {
   viewPlugin.registerOption('EventButtonOption', EventButtonOption);
+  viewPlugin.registerOption('ArithmeticOption', ArithmeticOption);
   viewPlugin.registerOption('TextTemplateDialog', TextTemplateDialog);
   viewPlugin.registerOption('MoveAxisDialog', MoveAxisDialog);
   viewPlugin.registerOption('CameraDialog', CameraDialog);
@@ -63,6 +70,7 @@ export function registerOptions(viewPlugin) {
   viewPlugin.registerOption('IoDialog', IoDialog);
   viewPlugin.registerOption('AlertDialog', AlertDialog);
   viewPlugin.registerOption('DelayDialog', DelayDialog);
+  viewPlugin.registerOption('ArithmeticDialog', ArithmeticDialog);
 }
 
 export function registerNodes(editorInstance) {
@@ -96,4 +104,6 @@ export function registerNodes(editorInstance) {
   editorInstance.registerNodeType('RestartNode', RestartNode, 'Input');
 
   editorInstance.registerNodeType('AlertNode', AlertNode, 'Alert');
+
+  editorInstance.registerNodeType('ArithmeticNode', ArithmeticNode, 'Arithmetic');
 }

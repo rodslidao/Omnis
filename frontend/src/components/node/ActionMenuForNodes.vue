@@ -53,7 +53,6 @@
         <v-btn color="primary" class="" dark @click="serialDialog = true">
           <v-icon left dark>mdi-console</v-icon>Serial
         </v-btn>
-
       </v-speed-dial>
     </div>
     <v-progress-linear
@@ -78,18 +77,24 @@
           <v-spacer></v-spacer>
         </v-toolbar>
         <div class="pa-12" v-if="folderDialog">
-          <sketch-explorer @close-dialog="folderDialog = false"></sketch-explorer>
+          <sketch-explorer
+            @close-dialog="folderDialog = false"
+          ></sketch-explorer>
         </div>
       </v-card>
     </v-dialog>
-    <v-dialog dark v-model="serialDialog" transition="dialog-bottom-transition" max-width="750px"
+    <v-dialog
+      dark
+      v-model="serialDialog"
+      transition="dialog-bottom-transition"
+      max-width="750px"
       ><v-card>
         <!-- <v-toolbar dark color="primary">
           <v-toolbar-title>Monitor Serial</v-toolbar-title>
           <v-spacer></v-spacer>
         </v-toolbar> -->
         <div class="pa-5" v-if="serialDialog">
-          <serial-monitor  ></serial-monitor>
+          <serial-monitor></serial-monitor>
         </div>
       </v-card>
     </v-dialog>
@@ -166,29 +171,21 @@ export default {
     },
 
     async play() {
-      console.log('play');
       this.isLoading = true;
 
-      // aconst tabToPlay = this.tabList[this.selectedTabIndex];
+      this.save();
+
+      console.log(this.selectedTabId);
 
       await this.$apollo
         .mutate({
           mutation: gql`
             mutation play($id: ID!) {
-              loadConfig(_id: $id)
-              startProcess {
-                data {
-                  error
-                }
-              }
+              startProcess(_id: $id)
             }
           `,
           variables: {
-            id: '620c0b85b975eb564a701b5e',
-            // id: tabToPlay.id,
-          },
-          update: (store, { data: { startProcess } }) => {
-            console.log(startProcess.data);
+            id: this.selectedTabId,
           },
         })
 
@@ -207,7 +204,7 @@ export default {
           this.$alertFeedback(
             'Não foi possível rodar programa',
             'error',
-            error,
+            error
           );
 
           // We restore the initial user input
@@ -250,7 +247,7 @@ export default {
           this.$alertFeedback(
             'Não foi possível parar a rotina',
             'error',
-            error,
+            error
           );
 
           // We restore the initial user input
@@ -296,7 +293,7 @@ export default {
           this.$alertFeedback(
             'Não foi possível rodar programa',
             'error',
-            error,
+            error
           );
 
           // We restore the initial user input
@@ -401,7 +398,7 @@ export default {
           this.$alertFeedback(
             'Não foi possível salvar o arquivo, erro ao conectar com servidor',
             'error',
-            error,
+            error
           );
 
           // We restore the initial user input
@@ -420,7 +417,7 @@ export default {
       download(
         JSON.stringify(this.tabList[this.selectedTabIndex]),
         `${fileName}.oms`,
-        'text/oms',
+        'text/oms'
       );
     },
 
@@ -433,12 +430,12 @@ export default {
       console.log(target.files[0].name.split('.').pop());
 
       if (
-        target.files[0].name.split('.').pop() !== 'oms'
-        && target.files[0].name.split('.').pop() !== 'json'
+        target.files[0].name.split('.').pop() !== 'oms' &&
+        target.files[0].name.split('.').pop() !== 'json'
       ) {
         this.$alertFeedback(
           'Arquivo inválido, seu arquivo deve ser um .oms',
-          'error',
+          'error'
         );
 
         return;

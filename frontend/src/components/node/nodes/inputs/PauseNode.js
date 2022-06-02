@@ -14,10 +14,10 @@ export default class PauseNode extends Node {
       description: 'Quando acionado, pausa o processo ',
     });
 
-    // this.addOutputInterface('Gatilho', {
-    //   description:
-    //     'Chama qualquer outro nó quando o botão Iniciar for acionado'
-    // });
+    this.addOutputInterface('Saida', {
+      description:
+        'Chama qualquer outro nó quando o botão Iniciar for acionado',
+    });
 
     this.addOption('color', undefined, '#f3ff06');
     this.addOption('running', undefined, true);

@@ -1,12 +1,14 @@
 /* eslint-disable no-underscore-dangle */
 // import { Editor } from '@baklavajs/core';
 import { Editor } from '@baklavajs/core';
+import { Engine } from '@baklavajs/plugin-engine';
 import Vue from 'vue';
 
 export default {
   namespaced: true,
   state: {
     editor: new Editor(),
+    engine: new Engine(false),
     counter: 0,
     tabList: [
       // {
@@ -24,6 +26,7 @@ export default {
     ],
     runningTabId: null,
     selectedTabId: null,
+    selectedTab: null,
     // http://192.168.1.31:5000/video_feed/camera0
     selectedTabIndex: 0,
     contentDefault: {},
@@ -57,6 +60,7 @@ export default {
 
     addTab: (state, tab) => {
       state.tabList.push(tab);
+      state.selectedTab = tab;
       console.log('%c Tab Adicionada:', 'color: #51a4f7', tab);
     },
 
@@ -155,6 +159,7 @@ export default {
       if (equalTab) {
         state.selectedTabIndex = equalTabIndex;
         state.selectedTabId = equalTab._id;
+        state.selectedTab = equalTab;
         Vue.prototype.$alertFeedback('Este arquivo ja estava aberto', 'success');
       } else {
         console.log('não existe uma tab igual');
@@ -171,6 +176,7 @@ export default {
 
         state.tabList.push(newLoadTab);
         state.selectedTabIndex += 1;
+        state.selectedTab = newLoadTab;
 
         state.selectedTabId = data._id;
         Vue.prototype.$alertFeedback('Arquivo carregado com sucesso', 'success');

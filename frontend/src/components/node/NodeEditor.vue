@@ -16,7 +16,6 @@
 // import { Editor } from '@baklavajs/core';
 import { ViewPlugin } from '@baklavajs/plugin-renderer-vue';
 import { OptionPlugin } from '@baklavajs/plugin-options-vue';
-import { Engine } from '@baklavajs/plugin-engine';
 import { registerOptions, registerNodes } from '@/registerNodes';
 
 import { InterfaceTypePlugin } from '@baklavajs/plugin-interface-types';
@@ -40,7 +39,6 @@ export default {
   data: () => ({
     // editor: new Editor(),
     viewPlugin: new ViewPlugin(),
-    engine: new Engine(false),
     // optionPlugin: new OptionPlugin(),
   }),
 
@@ -51,6 +49,7 @@ export default {
   computed: {
     ...mapState('node', {
       editor: (state) => state.editor,
+      engine: (state) => state.engine,
       selectedTabIndex: (state) => state.selectedTabIndex,
       tabList: (state) => state.tabList,
       contentDefault: (state) => state.contentDefault,

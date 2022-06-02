@@ -1,6 +1,6 @@
 <template>
   <div class="warper">
-    <div>
+    <div @mouseover="mouseUp = true" @mouseleave="mouseUp = false, mouseLeave()">
       <div v-for="(alert, i) in alertList" :key="i">
         <v-snackbar
           v-on="timer(alert.description)"
@@ -41,6 +41,7 @@ export default {
     return {
       defaultTimeout: 8000,
       snackbar: true,
+      mouseUp: false,
     };
   },
 
@@ -62,9 +63,20 @@ export default {
       // this.alertList.pop();
     },
 
+    mouseLeave() {
+      setTimeout(() => {
+        if (!this.mouseUp) {
+          this.alertList.pop();
+        }
+        // console.log('this.alertList');
+      }, 2000);
+    },
+
     timer(description) {
       setTimeout(() => {
-        this.alertList.pop();
+        if (!this.mouseUp) {
+          this.alertList.pop();
+        }
         // console.log('this.alertList');
       }, this.calculateTimeout(description));
     },
@@ -80,11 +92,6 @@ export default {
         // console.log('timeout defalut', this.defaultTimeout);
         return this.defaultTimeout;
       }
-      // console.log('timeout returned', timeout);
-      // console.log(timeout);
-      // if (type === 'error') {
-      //   return this.defaultTimeout * 2;
-      // }
       return timeout;
     },
   },
