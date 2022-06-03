@@ -4,28 +4,31 @@ import { Editor } from '@baklavajs/core';
 import { Engine } from '@baklavajs/plugin-engine';
 import Vue from 'vue';
 
+const ObjectID = require('bson-objectid');
+
 export default {
   namespaced: true,
   state: {
     editor: new Editor(),
     engine: new Engine(false),
     counter: 0,
-    tabList: [
-      // {
-      //   name: 'two',
-      //   id: 1641587087910,
-      //   saved: true,
-      //   content: {},
-      // },
-      // {
-      //   name: 'tree',
-      //   id: 1641587087911,
-      //   saved: true,
-      //   content: {},
-      // },
-    ],
+    newTab: {
+      label: '',
+      _id: null,
+      key: null,
+      description: 'Descrição',
+      author: 'Autor',
+      last_access: new Date().getTime(),
+      parent_id: null,
+      version: 1,
+      saved: false,
+      duplicated: false,
+      content: '',
+    },
+    tabList: [],
+    newTabCounter: 0,
     runningTabId: null,
-    selectedTabId: null,
+    // selectedTabId: null,
     selectedTab: null,
     // http://192.168.1.31:5000/video_feed/camera0
     selectedTabIndex: 0,
@@ -39,6 +42,7 @@ export default {
     /**
      * access counter in state from the parameterr
      */
+    selectedTabKey: (state) => state.selectedTab.key,
 
     // eslint-disable-next-line max-len
     SelectedTabName: (state) => {
@@ -58,10 +62,22 @@ export default {
       state.runningTabId = state.selectedTabId;
     },
 
-    addTab: (state, tab) => {
-      state.tabList.push(tab);
-      state.selectedTab = tab;
-      console.log('%c Tab Adicionada:', 'color: #51a4f7', tab);
+    addNewTab: (state) => {
+      const idGenerated = ObjectID().toHexString();
+
+      let tabSketchName = `Aba ${state.newTabCounter}`;
+      if (state.newTab.length === 0) tabSketchName = 'Aba 1';
+      state.newTabCounter += 1;
+
+      state.newTab._id = idGenerated;
+      state.newTab.key = idGenerated;
+      state.newTab.parent_id = idGenerated;
+      state.newTab.label = tabSketchName;
+
+      // state.tabList.push(state.newTab);
+      state.selectedTab = { ...state.newTab };
+      console.log('%c Tab Adicionada:', 'color: #51a4f7', state.newTab);
+      console.log('%c Tab List:', 'color: #51a4f7', state.tabList);
     },
 
     duplicateTab: (state, payload) => {
@@ -78,27 +94,13 @@ export default {
       // state.selectedTabIndex = indexOfNewTab;
     },
 
-    removeTabById: (state, id) => {
-      state.tabList = state.tabList.filter((tab) => tab.id !== id);
+    removeTabByKey: (state, key) => {
+      state.tabList = state.tabList.filter((tab) => tab.id !== key);
     },
 
-    removeTabByIndex: (state, index) => {
-      state.tabList.splice(index, 1);
-    },
-
-    updateTabById: (state, tab) => {
-      const index = state.tabList.findIndex((t) => t.id === tab.id);
-      state.tabList.splice(index, 1, tab);
-    },
-
-    selectTabByIndex: (state, index) => {
-      // find id of tab at index
-      const tabId = state.tabList[index].id;
-      state.selectedTabId = tabId;
-    },
-
-    updateSelectedTab: (state, tab) => {
-      state.selectedTabIndex = tab;
+    updateSelectedTab: (state, selectedTabKey) => {
+      state.selectTab = state.tabList.find((tab) => tab.key === selectedTabKey);
+      console.log('%c Tab Atualizada:', 'color: #51a4f7', state.selectTab);
     },
 
     updateNodeContent: (state, payload) => {
@@ -112,10 +114,6 @@ export default {
           itemSelected.duplicated = payload.duplicated;
         }
       }
-    },
-
-    updateContentDefault: (state, content) => {
-      state.contentDefault = content;
     },
 
     setRenamingIndex: (state, index) => {
@@ -192,16 +190,16 @@ export default {
       commit('play');
     },
 
-    addTab({ commit }, payload) {
-      commit('addTab', payload);
+    addNewTab({ commit }) {
+      commit('addNewTab');
     },
 
     duplicateTab({ commit }, payload) {
       commit('duplicateTab', payload);
     },
 
-    removeTabById({ commit }, payload) {
-      commit('removeTabById', payload);
+    removeTabByKey({ commit }, payload) {
+      commit('removeTabByKey', payload);
     },
 
     removeTabByIndex({ commit }, payload) {
