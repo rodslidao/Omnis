@@ -2,9 +2,7 @@
   <div class="background" ref="container">
     <span style="display: none">{{ selectedTabIndex }}</span>
     <baklava-editor :plugin="viewPlugin" class="baklava-editor" />
-    <ActionMenuForNodes
-      class="action-buttons"
-    ></ActionMenuForNodes>
+    <ActionMenuForNodes class="action-buttons"></ActionMenuForNodes>
   </div>
 </template>
 
@@ -51,6 +49,8 @@ export default {
       editor: (state) => state.editor,
       engine: (state) => state.engine,
       selectedTabIndex: (state) => state.selectedTabIndex,
+
+      selectedTab: (state) => state.selectedTab,
       tabList: (state) => state.tabList,
       contentDefault: (state) => state.contentDefault,
       saveNode: (state) => state.saveNode,
@@ -176,19 +176,17 @@ export default {
   },
 
   mounted() {
-    // this.$emit('nodeObject', this.editor.save());
     // console.log("mounted");
-    // this.updateNodeEditor(this.editor);
-    if (Object.values(this.updateContentDefault).length === 0) {
-      this.updateContentDefault(this.editor.save());
+    if (this.contentDefault) {
+      this.updateContentDefault({ ...this.editor.save() });
+      console.log('updateContentDefault', this.contentDefault);
     }
 
     this.addNodeWithCoordinates(
       StartNode,
       this.$refs.container.clientWidth / 2 - 100,
-      this.$refs.container.clientHeight / 2 - 100,
+      this.$refs.container.clientHeight / 2 - 100
     );
-    // console.log(this.contentDefault);
   },
 
   watch: {
@@ -199,35 +197,38 @@ export default {
         }
       },
     },
-    '$store.state.node.selectedTabIndex': {
-      handler(newValue, oldValue) {
-        this.updateNodeContent({
-          content: this.editor.save(),
-          index: oldValue,
-        });
+    // '$store.state.node.selectedTab': {
+    //   handler(newValue, oldValue) {
+    //     // this.updateNodeContent({
+    //     //   content: this.editor.save(),
+    //     //   index: oldValue,
+    //     // });
 
-        console.log('newValue', newValue);
-        console.log('oldValue', oldValue);
-        console.log('this.tabList[newValue]', this.tabList);
+    //     console.log('newValue', newValue);
+    //     console.log('oldValue', oldValue);
+    //     console.log('this.tabList[newValue]', this.tabList);
 
-        if (this.tabList[newValue].duplicated) {
-          console.log('duplicated load', this.tabList[newValue].duplicated);
+    //     // if (this.tabList[newValue].duplicated) {
+    //     //   console.log('duplicated load', this.tabList[newValue].duplicated);
 
-          this.updateNodeContent({
-            content: JSON.parse(JSON.stringify(this.editor.save())),
-            index: newValue,
-          });
+    //     //   this.updateNodeContent({
+    //     //     content: JSON.parse(JSON.stringify(this.editor.save())),
+    //     //     index: newValue,
+    //     //   });
 
-          console.log('duplicated load2', this.tabList[newValue].duplicated);
-        }
-        // console.log('this.tabList[newValue].content', this.tabList[newValue].content);
-        // let oi = this.editor.save()
-        // console.log('oi', oi);
-        // this.editor.load(oi);
-        // this.editor.load(this.editor.save());
-        this.editor.load(this.tabList[newValue].content);
-      },
-    },
+    //     //   console.log('duplicated load2', this.tabList[newValue].duplicated);
+    //     // }
+    //     // console.log('this.tabList[newValue].content', this.tabList[newValue].content);
+    //     // let oi = this.editor.save()
+    //     // console.log('oi', oi);
+    //     // this.editor.load(oi);
+    //     // this.editor.load(this.editor.save());
+    //     this.editor.load(this.selectedTab.content);
+    //   },
+    // },
+    // selectedTab() {
+    //   console.log('selectedTab', this.selectedTab);
+    // },
   },
 };
 </script>

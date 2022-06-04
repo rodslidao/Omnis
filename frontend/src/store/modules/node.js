@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* eslint-disable no-underscore-dangle */
 // import { Editor } from '@baklavajs/core';
 import { Editor } from '@baklavajs/core';
@@ -23,16 +24,17 @@ export default {
       version: 1,
       saved: false,
       duplicated: false,
-      content: '',
+      content: {},
     },
     tabList: [],
     newTabCounter: 0,
-    runningTabId: null,
-    // selectedTabId: null,
+    loadedFileTrigger: false,
     selectedTab: null,
-    // http://192.168.1.31:5000/video_feed/camera0
-    selectedTabIndex: 0,
     contentDefault: {},
+
+    // não usados ainda
+    runningTabId: null,
+    selectedTabKey: null,
     renamingIndex: null,
     saveNode: null,
     deletedNode: null,
@@ -63,6 +65,7 @@ export default {
     },
 
     addNewTab: (state) => {
+      console.log('addNewTab');
       const idGenerated = ObjectID().toHexString();
 
       let tabSketchName = `Aba ${state.newTabCounter}`;
@@ -73,11 +76,37 @@ export default {
       state.newTab.key = idGenerated;
       state.newTab.parent_id = idGenerated;
       state.newTab.label = tabSketchName;
+      state.newTab.content = state.contentDefault;
 
-      // state.tabList.push(state.newTab);
+      // if (state.newTab.content.nodes) {
+      //   console.log('old', state.newTab.content.nodes[0].id);
+      //   state.newTab.content.nodes[0].id = `node_${state.editor.generateId()}`;
+      //   console.log('new', state.newTab.content.nodes[0].id);
+      // }
+
       state.selectedTab = { ...state.newTab };
+
       console.log('%c Tab Adicionada:', 'color: #51a4f7', state.newTab);
       console.log('%c Tab List:', 'color: #51a4f7', state.tabList);
+    },
+
+    updateSelectedTab: (state, selectedTabKey) => {
+      const newKey = selectedTabKey[0];
+      const oldKey = selectedTabKey[1];
+
+      // state.selectedTab.content = state.editor.save();
+      const foundOldIndex = state.tabList.findIndex((tab) => tab.key === oldKey);
+      if (oldKey) state.tabList[foundOldIndex].content = state.editor.save();
+
+      // state.selectedTab = state.tabList.find((tab) => tab.key === newKey);
+      const foundNewIndex = state.tabList.findIndex((tab) => tab.key === newKey);
+
+      console.log('antiga', foundOldIndex);
+      console.log('atual', foundNewIndex);
+
+      if (oldKey) state.editor.load(state.tabList[foundNewIndex].content);
+      state.selectedTab = state.tabList[foundNewIndex];
+      console.log('%c Tab Atualizada:', 'color: #51a4f7', state.selectedTab);
     },
 
     duplicateTab: (state, payload) => {
@@ -98,11 +127,6 @@ export default {
       state.tabList = state.tabList.filter((tab) => tab.id !== key);
     },
 
-    updateSelectedTab: (state, selectedTabKey) => {
-      state.selectTab = state.tabList.find((tab) => tab.key === selectedTabKey);
-      console.log('%c Tab Atualizada:', 'color: #51a4f7', state.selectTab);
-    },
-
     updateNodeContent: (state, payload) => {
       const itemSelected = state.tabList[payload.index];
       if (itemSelected) {
@@ -114,6 +138,10 @@ export default {
           itemSelected.duplicated = payload.duplicated;
         }
       }
+    },
+
+    updateContentDefault: (state, content) => {
+      state.contentDefault = content;
     },
 
     setRenamingIndex: (state, index) => {
@@ -161,22 +189,33 @@ export default {
         Vue.prototype.$alertFeedback('Este arquivo ja estava aberto', 'success');
       } else {
         console.log('não existe uma tab igual');
-        const newLoadTab = {
-          _id: data._id,
-          name: data.name,
-          parent_id: data.parent_id,
-          description: data.description,
-          author: data.author,
-          last_access: data.date,
-          saved: true,
-          content: data.content,
-        };
+        state.newTab._id = data._id;
+        state.newTab.label = data.label;
+        state.newTab.key = data._id;
+        state.newTab.parent_id = data._id;
+        state.newTab.description = data.description;
+        state.newTab.author = data.author;
+        state.newTab.last_access = data.date;
+        state.newTab.saved = true;
+        state.newTab.content = data.content;
+        // const newLoadTab = {
+        //   _id: data._id,
+        //   label: data.label,
+        //   parent_id: data.parent_id,
+        //   description: data.description,
+        //   author: data.author,
+        //   last_access: data.date,
+        //   saved: true,
+        //   content: data.content,
+        // };
 
-        state.tabList.push(newLoadTab);
-        state.selectedTabIndex += 1;
-        state.selectedTab = newLoadTab;
+        // state.tabList.push(newLoadTab);
+        // state.selectedTabIndex += 1;
+        // state.selectedTab = newLoadTab;
 
-        state.selectedTabId = data._id;
+        state.loadedFileTrigger = !state.loadedFileTrigger;
+
+        // state.selectedTabId = data._id;
         Vue.prototype.$alertFeedback('Arquivo carregado com sucesso', 'success');
       }
     },
@@ -225,6 +264,7 @@ export default {
     updateContentDefault({ commit }, payload) {
       commit('updateContentDefault', payload);
     },
+
     setRenamingIndex({ commit }, payload) {
       commit('setRenamingIndex', payload);
     },

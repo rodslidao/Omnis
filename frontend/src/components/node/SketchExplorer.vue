@@ -11,27 +11,27 @@
         itemsPerPageAllText: 'Todos',
       }"
     >
-      <template v-slot:item.name="{ item }" class="name">
+      <template v-slot:item.label="{ item }" class="name">
         <div
           v-if="!(selectedId == item._id && editNameMode)"
-          @dblclick="editTextIntention(item._id, 'name', item.name)"
+          @dblclick="editTextIntention(item._id, 'name', item.label)"
         >
-          {{ item.name }}
+          {{ item.label }}
           <v-icon v-if="runningFileId == item._id" small color="green"
             >mdi-play-circle</v-icon
           >
         </div>
         <div v-else class="mb-n5 mt-n6">
           <v-text-field
-            :append-outer-icon="item.name ? 'mdi-check' : null"
-            @click:append-outer="edit(item._id, item.name, item.description)"
+            :append-outer-icon="item.label ? 'mdi-check' : null"
+            @click:append-outer="edit(item._id, item.label, item.description)"
             autofocus
-            :value="item.name"
-            v-model="item.name"
+            :value="item.label"
+            v-model="item.label"
             @keyup.enter="
-              item.name != ''
-                ? edit(item._id, item.name, item.description)
-                : item.name
+              item.label != ''
+                ? edit(item._id, item.label, item.description)
+                : item.label
             "
             single-line
             full-width
@@ -52,13 +52,13 @@
         <div v-else class="mb-n5 mt-n6">
           <v-text-field
             :append-outer-icon="item.description ? 'mdi-check' : null"
-            @click:append-outer="edit(item._id, item.name, item.description)"
+            @click:append-outer="edit(item._id, item.label, item.description)"
             autofocus
             :value="item.description"
             v-model="item.description"
             @keyup.enter="
               item.description != ''
-                ? edit(item._id, item.name, item.description)
+                ? edit(item._id, item.label, item.description)
                 : item.description
             "
             single-line
@@ -120,7 +120,7 @@ const GET_SKETCH_LIST = gql`
       data {
         _id
         version
-        name
+        label
         description
         node_qtd
         author
@@ -131,11 +131,11 @@ const GET_SKETCH_LIST = gql`
 `;
 
 const SAVE_NODE_SHEET = gql`
-  mutation ($id: ID!, $name: String, $description: String) {
-    saveNodeSheet(_id: $id, name: $name, description: $description) {
+  mutation ($id: ID!, $label: String, $description: String) {
+    saveNodeSheet(_id: $id, label: $label, description: $description) {
       data {
         _id
-        name
+        label
         description
         node_qtd
         author
@@ -161,7 +161,7 @@ const LOAD_CONFIG = gql`
   mutation ($_id: ID!) {
     loadConfig(_id: $_id) {
       _id
-      name
+      label
       description
       version
       node_qtd
@@ -184,21 +184,21 @@ const LOAD_CONFIG = gql`
 //   }
 // `;
 
-const GET_LOADED_CONFIG = gql`
-  query ($id: ID!) {
-    getLoadedConfig(_id: $id) {
-      data {
-        _id
-        name
-        description
-        node_qtd
-        author
-        last_access
-        content
-      }
-    }
-  }
-`;
+// const GET_LOADED_CONFIG = gql`
+//   query ($id: ID!) {
+//     getLoadedConfig(_id: $id) {
+//       data {
+//         _id
+//         label
+//         description
+//         node_qtd
+//         author
+//         last_access
+//         content
+//       }
+//     }
+//   }
+// `;
 
 export default {
   components: { DialogConfirmation },
@@ -210,7 +210,7 @@ export default {
         {
           text: 'Nome',
           align: 'start',
-          value: 'name',
+          value: 'label',
         },
         { text: 'Descrição', value: 'description' },
         { text: 'Versão', value: 'version' },
@@ -299,7 +299,7 @@ export default {
       // ];
     },
 
-    async edit(id, name, description) {
+    async edit(id, label, description) {
       this.editNameMode = false;
       this.editDescriptionMode = false;
       this.selectedId = null;
@@ -309,7 +309,7 @@ export default {
           mutation: SAVE_NODE_SHEET,
           variables: {
             id,
-            name,
+            label,
             description,
           },
         })
@@ -328,7 +328,7 @@ export default {
           this.$alertFeedback(
             'Não foi possível editar o arquivo',
             'error',
-            error
+            error,
           );
 
           // We restore the initial user input
@@ -360,7 +360,7 @@ export default {
           this.$alertFeedback(
             'Não foi possível carregar o arquivo',
             'error',
-            error
+            error,
           );
 
           // We restore the initial user input
@@ -383,7 +383,7 @@ export default {
           this.$apollo.queries.getSketchList.refetch();
           this.$alertFeedback(
             'Seu arquivo foi deletado com sucesso',
-            'success'
+            'success',
           );
           // this.isLoading = false;
           // this.setSaved(this.selectedTabIndex);
@@ -396,7 +396,7 @@ export default {
           this.$alertFeedback(
             'Não foi possível deletar o arquivo',
             'error',
-            error
+            error,
           );
 
           // We restore the initial user input
@@ -418,7 +418,7 @@ export default {
           this.$apollo.queries.getSketchList.refetch();
           this.$alertFeedback(
             'Seu arquivo foi duplicado com sucesso',
-            'success'
+            'success',
           );
         })
 
@@ -429,7 +429,7 @@ export default {
           this.$alertFeedback(
             'Não foi possível duplicado o arquivo',
             'error',
-            error
+            error,
           );
 
           // We restore the initial user input

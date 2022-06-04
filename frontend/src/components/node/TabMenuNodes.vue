@@ -6,14 +6,37 @@
       v-model="selectedTabKey"
       :tabs="tabList"
       @remove="close"
+      @contextmenu="contextMenu"
     >
       <span slot="after">
-        <v-btn class="add-tab" dark depressed icon @click="addTab"  small
+        <v-btn class="add-tab" dark depressed icon @click="addTab" small
           ><v-icon small dark> mdi-plus </v-icon></v-btn
         >
-        <p>{{  }}</p>
       </span>
     </vue-tabs-chrome>
+    <v-menu
+      transition="slide-x-transition"
+      v-model="showMenu"
+      bottom
+      dark
+      left
+      :position-y="context.y"
+      :position-x="context.x"
+    >
+      <v-list>
+        <v-list-item
+          class="list-item"
+          v-for="(item, index) in items"
+          :key="index"
+          link
+        >
+          <v-list-item-title @click="item.function()"
+            ><v-icon small class="mr-5">mdi-{{ item.btnIcon }}</v-icon
+            >{{ item.title }}
+          </v-list-item-title>
+        </v-list-item>
+      </v-list>
+    </v-menu>
   </div>
 </template>
 <script>
@@ -29,25 +52,41 @@ export default {
   data() {
     return {
       selectedTabKey: '',
+      showMenu: false,
+      items: [
+        {
+          title: 'Duplicar',
+          btnIcon: 'content-duplicate',
+          function: this.duplicate,
+        },
+        {
+          title: 'Renomear',
+          btnIcon: 'form-textbox',
+          function: this.setRenamingIndex,
+        },
+      ],
+      context: {
+        x: 0,
+        y: 0,
+      },
     };
   },
 
   watch: {
-    selectedTabKey() {
-      this.updateSelectedTab(this.selectedTabKey);
-      console.log('selectedTabKey', this.selectedTabKey);
+    selectedTabKey(newVal, oldVal) {
+      this.updateSelectedTab([newVal, oldVal]);
     },
-    '$store.getter.node.selectedTabKey': (newVal) => {
-      console.log('newVal', newVal);
-      this.selectedTabKey = this.selectedTab.key;
+    '$store.state.node.loadedFileTrigger': {
+      handler() {
+        console.log('loadedFileTrigger');
+        this.$refs.tabs.addTab({ ...this.newTab });
+        this.selectedTabKey = this.newTab.key;
+      },
+      // deep: true,
     },
-    // '$store.node.getter.selectedTabKey': (newVal) => {
-    //   console.log('newVal2', newVal);
-    //   this.selectedTabKey = newVal;
-    // },
   },
 
-  created() {
+  mounted() {
     this.addTab();
     console.log('criou uma nova aba');
   },
@@ -56,7 +95,7 @@ export default {
     ...mapState('node', {
       tabList: (state) => state.tabList,
       selectedTab: (state) => state.selectedTab,
-      newTabCopy: (state) => state.newTab,
+      newTab: (state) => state.newTab,
     }),
   },
 
@@ -64,14 +103,16 @@ export default {
     ...mapActions('node', [
       'addNewTab',
       'closeTab',
-      'selectTab',
       'updateSelectedTab',
       'removeTabByKey',
+      'duplicateTab',
     ]),
 
     addTab() {
       this.addNewTab();
-      this.$refs.tabs.addTab({ ...this.newTabCopy });
+      console.log(this.newTab);
+      this.$refs.tabs.addTab({ ...this.newTab });
+      this.selectedTabKey = this.newTab.key;
     },
 
     close() {
@@ -82,6 +123,23 @@ export default {
 
     select(index) {
       this.selectTab(index);
+    },
+
+    contextMenu(event, tab, index) {
+      this.context.x = event.x;
+      this.context.y = event.y;
+      this.showMenu = true;
+      console.log(event, tab, index);
+    },
+
+    duplicate() {
+      console.log('duplicate');
+      // this.duplicateTab(this.selectedTabKey);
+    },
+
+    setRenamingIndex() {
+      console.log('setRenamingIndex');
+      // this.renamingIndex = index;
     },
   },
 };
