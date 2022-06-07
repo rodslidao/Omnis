@@ -16,6 +16,7 @@ export default gql`
   ) {
     saveNodeSheet(
       _id: $_id
+      key: $_id
       parent_id: $parent_id
       label: $label
       description: $description

@@ -92,13 +92,11 @@
                 >{{ option.title }}
               </v-list-item-title>
             </v-list-item>
-            <dialog-confirmation del @confirm-event="del"
-              ><v-list-item>
-                <v-list-item-title>
-                  <v-icon small class="mr-5">mdi-delete</v-icon>Deletar
-                </v-list-item-title>
-              </v-list-item>
-            </dialog-confirmation>
+            <v-list-item @click="dialogDelete = true">
+              <v-list-item-title>
+                <v-icon small class="mr-5">mdi-delete</v-icon>Deletar
+              </v-list-item-title>
+            </v-list-item>
           </v-list>
         </v-menu>
       </template>
@@ -106,6 +104,11 @@
         <v-btn rounded color="primary" @click="initialize"> recarregar </v-btn>
       </template>
     </v-data-table>
+    <dialog-confirmation
+      v-if="dialogDelete"
+      del
+      @confirm-event="del"
+    ></dialog-confirmation>
   </div>
 </template>
 
@@ -328,7 +331,7 @@ export default {
           this.$alertFeedback(
             'Não foi possível editar o arquivo',
             'error',
-            error,
+            error
           );
 
           // We restore the initial user input
@@ -360,7 +363,7 @@ export default {
           this.$alertFeedback(
             'Não foi possível carregar o arquivo',
             'error',
-            error,
+            error
           );
 
           // We restore the initial user input
@@ -383,7 +386,7 @@ export default {
           this.$apollo.queries.getSketchList.refetch();
           this.$alertFeedback(
             'Seu arquivo foi deletado com sucesso',
-            'success',
+            'success'
           );
           // this.isLoading = false;
           // this.setSaved(this.selectedTabIndex);
@@ -396,7 +399,7 @@ export default {
           this.$alertFeedback(
             'Não foi possível deletar o arquivo',
             'error',
-            error,
+            error
           );
 
           // We restore the initial user input
@@ -418,7 +421,7 @@ export default {
           this.$apollo.queries.getSketchList.refetch();
           this.$alertFeedback(
             'Seu arquivo foi duplicado com sucesso',
-            'success',
+            'success'
           );
         })
 
@@ -429,7 +432,7 @@ export default {
           this.$alertFeedback(
             'Não foi possível duplicado o arquivo',
             'error',
-            error,
+            error
           );
 
           // We restore the initial user input

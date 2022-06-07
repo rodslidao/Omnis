@@ -96,17 +96,27 @@ export default {
 
       // state.selectedTab.content = state.editor.save();
       const foundOldIndex = state.tabList.findIndex((tab) => tab.key === oldKey);
-      if (oldKey) state.tabList[foundOldIndex].content = state.editor.save();
+      // console.log('%c foundOldIndex:', 'color: #51a4f7', foundOldIndex);
 
-      // state.selectedTab = state.tabList.find((tab) => tab.key === newKey);
+      if (foundOldIndex !== -1) {
+        if (oldKey) state.tabList[foundOldIndex].content = state.editor.save();
+      }
+
       const foundNewIndex = state.tabList.findIndex((tab) => tab.key === newKey);
 
       console.log('antiga', foundOldIndex);
       console.log('atual', foundNewIndex);
 
+      if (state.tabList.length === 1) {
+        state.tabList[0].closable = false;
+      } else {
+        state.tabList[0].closable = true;
+      }
+
       if (oldKey) state.editor.load(state.tabList[foundNewIndex].content);
       state.selectedTab = state.tabList[foundNewIndex];
-      console.log('%c Tab Atualizada:', 'color: #51a4f7', state.selectedTab);
+
+      // console.log('%c Tab Atualizada:', 'color: #51a4f7', state.selectedTab);
     },
 
     duplicateTab: (state, payload) => {
@@ -123,8 +133,8 @@ export default {
       // state.selectedTabIndex = indexOfNewTab;
     },
 
-    removeTabByKey: (state, key) => {
-      state.tabList = state.tabList.filter((tab) => tab.id !== key);
+    removeTabByKey: (state, payload) => {
+      state.tabList = state.tabList.filter((tab) => tab.id !== payload);
     },
 
     updateNodeContent: (state, payload) => {
@@ -140,16 +150,28 @@ export default {
       }
     },
 
+    updateByProperty: (state, payload) => {
+      console.log('updateByProperty', payload);
+      const foundIndex = state.tabList.findIndex((tab) => tab.key === payload.key);
+
+      // eslint-disable-next-line no-restricted-syntax, guard-for-in
+      for (let prop in payload) {
+        console.log(state.tabList[foundIndex][prop]);
+        state.tabList[foundIndex][prop] = payload[prop];
+      }
+
+      // payload.forEach((element) => {
+      //   console.log(element);
+      //   state.tabList[foundIndex] = element[element];
+      // });
+    },
+
     updateContentDefault: (state, content) => {
       state.contentDefault = content;
     },
 
     setRenamingIndex: (state, index) => {
       state.renamingIndex = index;
-    },
-
-    setSketchName: (state, payload) => {
-      state.tabList[payload.index].name = payload.name;
     },
 
     setSaved: (state, { index, value }) => {
@@ -268,8 +290,8 @@ export default {
     setRenamingIndex({ commit }, payload) {
       commit('setRenamingIndex', payload);
     },
-    setSketchName({ commit }, payload) {
-      commit('setSketchName', payload);
+    updateByProperty({ commit }, payload) {
+      commit('updateByProperty', payload);
     },
     setSaved({ commit }, payload) {
       commit('setSaved', payload);

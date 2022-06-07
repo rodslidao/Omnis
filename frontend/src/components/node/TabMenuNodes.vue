@@ -37,22 +37,53 @@
         </v-list-item>
       </v-list>
     </v-menu>
+    <dialog-confirmation
+      v-on="getName()"
+      confirmText="salvar"
+      dark
+      v-if="renameDialog"
+      description=" "
+      title="Renomear"
+      @cancel-event="renameDialog = false"
+      @confirm-event="renameDialog = false, updateName()"
+    >
+      <template v-slot:description>
+        <v-text-field
+          required
+          placeholder="Nome"
+          v-model="name"
+          hint="Os valores mais usados são 'verdadeiro' e 'falso'"
+          :rules="requiredRules"
+        ></v-text-field>
+        <v-text-field
+          placeholder="Descrição"
+          v-model="description"
+        ></v-text-field>
+      </template>
+    </dialog-confirmation>
   </div>
 </template>
 <script>
 import { mapActions, mapState } from 'vuex';
-import gql from 'graphql-tag';
+// import gql from 'graphql-tag';
 
 import VueTabsChrome from 'vue-tabs-chrome';
+import DialogConfirmation from '@/components/settings/DialogConfirmation.vue';
 
 export default {
   components: {
     VueTabsChrome,
+    DialogConfirmation,
   },
   data() {
     return {
       selectedTabKey: '',
+      contextMenuSelectedTab: null,
       showMenu: false,
+      renameDialog: false,
+      requiredRules: [(v) => !!v || 'Campo não pode ficar em branco'],
+      name: '',
+      description: '',
       items: [
         {
           title: 'Duplicar',
@@ -62,7 +93,7 @@ export default {
         {
           title: 'Renomear',
           btnIcon: 'form-textbox',
-          function: this.setRenamingIndex,
+          function: this.rename,
         },
       ],
       context: {
@@ -106,6 +137,7 @@ export default {
       'updateSelectedTab',
       'removeTabByKey',
       'duplicateTab',
+      'updateByProperty',
     ]),
 
     addTab() {
@@ -115,10 +147,11 @@ export default {
       this.selectedTabKey = this.newTab.key;
     },
 
-    close() {
+    close(tab, index) {
       console.log('close');
-      this.removeTabByKey(this.selectedTabKey);
-      this.$refs.tabs.removeTab(this.selectedTabKey);
+      console.log({ tab, index });
+      this.removeTabByKey(tab.key);
+      this.$refs.tabs.removeTab(tab.key);
     },
 
     select(index) {
@@ -129,6 +162,7 @@ export default {
       this.context.x = event.x;
       this.context.y = event.y;
       this.showMenu = true;
+      this.contextMenuSelectedTab = tab;
       console.log(event, tab, index);
     },
 
@@ -137,9 +171,23 @@ export default {
       // this.duplicateTab(this.selectedTabKey);
     },
 
-    setRenamingIndex() {
-      console.log('setRenamingIndex');
+    getName() {
+      this.name = this.selectedTab.label;
+      this.description = this.selectedTab.description;
+    },
+
+    rename() {
+      this.renameDialog = true;
+      console.log('rename');
       // this.renamingIndex = index;
+    },
+
+    updateName() {
+      this.updateByProperty({
+        label: this.name,
+        description: this.description,
+        key: this.contextMenuSelectedTab.key,
+      });
     },
   },
 };

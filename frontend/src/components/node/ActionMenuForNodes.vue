@@ -151,6 +151,7 @@ export default {
       selectedTabIndex: (state) => state.selectedTabIndex,
       tabList: (state) => state.tabList,
       selectedTabId: (state) => state.selectedTabId,
+      selectedTab: (state) => state.selectedTab,
       editor: (state) => state.editor,
     }),
 
@@ -362,18 +363,20 @@ export default {
       this.isLoading = true;
       console.log(" :salvo com sucesso!'");
 
-      const tabToSave = this.tabList[this.selectedTabIndex];
+      const tabToSave = this.selectedTab;
       console.log('tab to save', tabToSave);
 
       await this.$apollo
         .mutate({
           mutation: this.saveNodeSheet,
           variables: {
+            // eslint-disable-next-line no-underscore-dangle
             _id: tabToSave._id,
             parent_id: tabToSave.parent_id,
-            name: tabToSave.name,
+            label: tabToSave.label,
             description: `${tabToSave.name} descrição`,
             version: tabToSave.version,
+            // key: tabToSave.key,
             author: 'Autor',
             date: new Date().getTime(),
             saved: tabToSave.saved,
@@ -389,7 +392,7 @@ export default {
           console.log(data);
           this.$alertFeedback('Arquivo salvo com sucesso', 'success');
           this.isLoading = false;
-          this.setSaved({ index: this.selectedTabIndex, value: true });
+          // this.setSaved({ index: this.selectedTabIndex, value: true });
         })
         .catch((error) => {
           // Error

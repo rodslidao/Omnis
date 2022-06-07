@@ -1,6 +1,6 @@
 <template>
   <v-row justify="center">
-    <v-dialog v-model="dialog" :persistent="persistent" max-width="400">
+    <v-dialog :dark="dark" v-model="dialog" :persistent="persistent" max-width="400">
       <template v-slot:activator="{ on, attrs }">
         <div v-bind="attrs" v-on="on">
           <slot></slot>
@@ -14,10 +14,12 @@
           description
             ? description
             : 'Esse arquivo será excluído permanentemente, tem certeza que deseja exclui-lo?'
-        }}</v-card-text>
+        }}
+        <slot name="description"></slot>
+        </v-card-text>
         <v-card-actions v-if="!del">
           <v-spacer></v-spacer>
-          <v-btn color="green darken-1" text @click="dialog = false, $emit('cancel-event')">
+          <v-btn color="green darken-1" text @click="$emit('cancel-event')">
             {{ cancelText ? cancelText : 'Cancelar' }}
           </v-btn>
           <v-btn text @click="$emit('confirm-event')">
@@ -26,10 +28,10 @@
         </v-card-actions>
         <v-card-actions v-else>
           <v-spacer></v-spacer>
-          <v-btn color="green darken-1" text @click="dialog = false, $emit('cancel-event')">
+          <v-btn color="green darken-1" text @click="$emit('cancel-event')">
             Cancelar
           </v-btn>
-          <v-btn text @click="dialog = false, $emit('confirm-event')">
+          <v-btn text @click=" $emit('confirm-event')">
             Confirmar
           </v-btn>
         </v-card-actions>
@@ -47,11 +49,12 @@ export default {
     description: String,
     del: Boolean,
     persistent: Boolean,
+    dark: Boolean,
   },
 
   data() {
     return {
-      dialog: false,
+      dialog: true,
     };
   },
   methods: {
