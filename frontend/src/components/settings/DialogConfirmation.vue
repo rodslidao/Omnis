@@ -1,6 +1,11 @@
 <template>
   <v-row justify="center">
-    <v-dialog :dark="dark" v-model="dialog" :persistent="persistent" max-width="400">
+    <v-dialog
+      :dark="dark"
+      v-model="dialog"
+      :persistent="persistent"
+      max-width="400"
+    >
       <template v-slot:activator="{ on, attrs }">
         <div v-bind="attrs" v-on="on">
           <slot></slot>
@@ -10,12 +15,13 @@
         <v-card-title class="text-h5">
           {{ title ? title : 'Tem certeza que quer excluir?' }}
         </v-card-title>
-        <v-card-text>{{
-          description
-            ? description
-            : 'Esse arquivo será excluído permanentemente, tem certeza que deseja exclui-lo?'
-        }}
-        <slot name="description"></slot>
+        <v-card-text
+          >{{
+            description
+              ? description
+              : 'Esse arquivo será excluído permanentemente, tem certeza que deseja exclui-lo?'
+          }}
+          <slot name="description"></slot>
         </v-card-text>
         <v-card-actions v-if="!del">
           <v-spacer></v-spacer>
@@ -31,7 +37,11 @@
           <v-btn color="green darken-1" text @click="$emit('cancel-event')">
             Cancelar
           </v-btn>
-          <v-btn text @click=" $emit('confirm-event')">
+          <v-btn
+            text
+            v-on:keyup.enter="$emit('confirm-event')"
+            @click="$emit('confirm-event')"
+          >
             Confirmar
           </v-btn>
         </v-card-actions>

@@ -52,7 +52,6 @@
           required
           placeholder="Nome"
           v-model="name"
-          hint="Os valores mais usados são 'verdadeiro' e 'falso'"
           :rules="requiredRules"
         ></v-text-field>
         <v-text-field
@@ -172,8 +171,8 @@ export default {
     },
 
     getName() {
-      this.name = this.selectedTab.label;
-      this.description = this.selectedTab.description;
+      this.name = this.contextMenuSelectedTab.label;
+      this.description = this.contextMenuSelectedTab.description;
     },
 
     rename() {
