@@ -65,7 +65,7 @@
       <TabMenuNodes></TabMenuNodes>
     </template> -->
     </v-app-bar>
-    <TabMenuNodes v-if="$route.name == 'node'"></TabMenuNodes>
+    <TabMenuNodes v-show="$route.name == 'node'"></TabMenuNodes>
   </div>
 </template>
 

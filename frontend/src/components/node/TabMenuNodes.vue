@@ -1,18 +1,33 @@
 <template>
-  <div class="tabMenu">
+  <div class="tabMenu custom">
     <vue-tabs-chrome
       ref="tabs"
-      theme="dark"
+      theme="tab-custom"
       v-model="selectedTabKey"
       :tabs="tabList"
       @remove="close"
       @contextmenu="contextMenu"
+      :gap="4"
     >
-      <span slot="after">
+      <span slot="after" >
         <v-btn class="add-tab" dark depressed icon @click="addTab" small
           ><v-icon small dark> mdi-plus </v-icon></v-btn
         >
       </span>
+      <!-- <template slot="close-icon">
+        <div class="btn-container">
+          <v-btn depressed icon @click="close(index)" small dark>
+            <v-icon class="align-self-end" small dark>
+              mdi-dots-vertical
+            </v-icon></v-btn
+          >
+          <v-btn depressed icon @click="close(index)" small dark>
+            <v-icon class="align-self-end" small dark>
+              mdi-close
+            </v-icon></v-btn
+          >
+        </div>
+      </template> -->
     </vue-tabs-chrome>
     <v-menu
       transition="slide-x-transition"
@@ -42,19 +57,22 @@
       confirmText="salvar"
       dark
       v-if="renameDialog"
+      :visible="renameDialog"
       description=" "
       title="Renomear"
       @cancel-event="renameDialog = false"
-      @confirm-event="renameDialog = false, updateName()"
+      @confirm-event="(renameDialog = false), updateName()"
     >
       <template v-slot:description>
         <v-text-field
+          label="Nome"
           required
           placeholder="Nome"
           v-model="name"
           :rules="requiredRules"
         ></v-text-field>
         <v-text-field
+          label="Descrição"
           placeholder="Descrição"
           v-model="description"
         ></v-text-field>
@@ -84,11 +102,11 @@ export default {
       name: '',
       description: '',
       items: [
-        {
-          title: 'Duplicar',
-          btnIcon: 'content-duplicate',
-          function: this.duplicate,
-        },
+        // {
+        //   title: 'Duplicar',
+        //   btnIcon: 'content-duplicate',
+        //   function: this.duplicate,
+        // },
         {
           title: 'Renomear',
           btnIcon: 'form-textbox',
@@ -117,8 +135,25 @@ export default {
   },
 
   mounted() {
-    this.addTab();
-    console.log('criou uma nova aba');
+    console.log('mounted', this.tabList);
+
+    if (this.selectedTabKey === '' && this.tabList.length > 0) {
+      // this.tabList.forEach((tab) => {
+      //   console.log('tab', tab);
+      //   this.$refs.tabs.addTab(tab);
+      // });
+      this.selectedTabKey = this.selectedTab.key;
+      // this.$refs.tabs.setup();
+      // this.$refs.tabs.doLayout();
+    }
+
+    console.log('selected tabbbb22222', this.selectedTabKey);
+
+    console.log(this.tabList.length ? this.tabList : 0);
+    if (this.tabList.length === 0) this.addTab();
+    if (!this.selectedTabKey) this.selectedTabKey = this.selectedTab.key;
+    // this.updateSelectedTab(this.selectedTabKey);
+    console.log('tab list', this.tabList);
   },
 
   computed: {
@@ -140,6 +175,8 @@ export default {
     ]),
 
     addTab() {
+      console.log('addTab', this.selectedTabKey);
+      // console.log('addTabdddd', this.$refs.tabs.addTab);
       this.addNewTab();
       console.log(this.newTab);
       this.$refs.tabs.addTab({ ...this.newTab });
@@ -177,7 +214,6 @@ export default {
 
     rename() {
       this.renameDialog = true;
-      console.log('rename');
       // this.renamingIndex = index;
     },
 
@@ -195,8 +231,71 @@ export default {
 <style lang="scss">
 $primary-dark: #232323;
 $secondary-dark: #272727;
+$soft-grey: #d1d1d1;
 .tabMenu {
   width: 100%;
   background: $primary-dark;
+  color: $soft-grey;
+
+  .btn-container {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    color: $soft-grey;
+    padding-right: 3rem;
+    margin-right: 1rem;
+  }
+
+  .theme-tab-custom {
+    color: #9ca1a7;
+    background-color: $secondary-dark;
+    box-shadow: inset 0px -6px 0px 0px rgb(25 118 210);
+    .tabs-item {
+      &:hover {
+        .tabs-background-content {
+          background-color: #202124;
+        }
+        .tabs-background-before,
+        .tabs-background-after {
+          fill: transparent;
+        }
+      }
+      &.is-dragging {
+        .tabs-background-content {
+          background-color: #202124;
+        }
+        .tabs-background-before,
+        .tabs-background-after {
+          fill: transparent;
+        }
+      }
+      &.active {
+        color: #fff;
+        .tabs-background-content {
+          background-color: $primary-dark;
+        }
+        .tabs-background-before,
+        .tabs-background-after {
+          fill: $primary-dark;
+        }
+      }
+      .tabs-close-icon {
+        stroke: #81878c;
+        &:hover {
+          stroke: #cfd1d2;
+          background-color: #5f6368;
+        }
+      }
+    }
+    .tabs-divider {
+      background-color: #4a4d51;
+    }
+    .tabs-footer {
+      background-color: $primary-dark;
+    }
+  }
 }
 </style>

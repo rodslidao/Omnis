@@ -176,16 +176,16 @@ export default {
   },
 
   mounted() {
-    // console.log("mounted");
-    if (this.contentDefault) {
+    if (Object.keys(this.contentDefault).length === 0) {
       this.updateContentDefault({ ...this.editor.save() });
       console.log('updateContentDefault', this.contentDefault);
     }
+    console.log('mounted content', this.contentDefault);
 
     this.addNodeWithCoordinates(
       StartNode,
       this.$refs.container.clientWidth / 2 - 100,
-      this.$refs.container.clientHeight / 2 - 100
+      this.$refs.container.clientHeight / 2 - 100,
     );
   },
 

@@ -91,6 +91,7 @@ export default {
     },
 
     updateSelectedTab: (state, selectedTabKey) => {
+      console.log('selected tabbbb', state.selectedTab.key);
       const newKey = selectedTabKey[0];
       const oldKey = selectedTabKey[1];
 
@@ -98,7 +99,8 @@ export default {
       const foundOldIndex = state.tabList.findIndex((tab) => tab.key === oldKey);
       // console.log('%c foundOldIndex:', 'color: #51a4f7', foundOldIndex);
 
-      if (foundOldIndex !== -1) {
+      if (foundOldIndex !== -1 && state.tabList.length > 0) {
+        console.log('salva');
         if (oldKey) state.tabList[foundOldIndex].content = state.editor.save();
       }
 
@@ -106,6 +108,7 @@ export default {
 
       console.log('antiga', foundOldIndex);
       console.log('atual', foundNewIndex);
+      console.log('%c Tab List:', 'color: #51a4f7', state.tabList);
 
       if (state.tabList.length === 1) {
         state.tabList[0].closable = false;
@@ -113,8 +116,17 @@ export default {
         state.tabList[0].closable = true;
       }
 
-      if (oldKey) state.editor.load(state.tabList[foundNewIndex].content);
-      state.selectedTab = state.tabList[foundNewIndex];
+      if (foundNewIndex !== -1 && state.tabList.length > 0) {
+        state.selectedTab = state.tabList[foundNewIndex];
+        if (oldKey) state.editor.load(state.tabList[foundNewIndex].content);
+      } else {
+        const foundSelectedIndex = state.tabList.findIndex(
+          (tab) => tab.key === state.selectedTab.key
+        );
+        console.log('%c foundSelectedIndex:', 'color: #11a4f7', foundSelectedIndex);
+        console.log('%c foundSelectedIndex:', 'color: #11a4f7', state.tabList[foundSelectedIndex].content);
+        state.editor.load(state.tabList[foundSelectedIndex].content);
+      }
 
       // console.log('%c Tab Atualizada:', 'color: #51a4f7', state.selectedTab);
     },

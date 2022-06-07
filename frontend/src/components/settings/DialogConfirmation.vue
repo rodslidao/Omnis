@@ -2,7 +2,7 @@
   <v-row justify="center">
     <v-dialog
       :dark="dark"
-      v-model="dialog"
+      v-model="visible"
       :persistent="persistent"
       max-width="400"
     >
@@ -25,20 +25,21 @@
         </v-card-text>
         <v-card-actions v-if="!del">
           <v-spacer></v-spacer>
-          <v-btn color="green darken-1" text @click="$emit('cancel-event')">
+          <v-btn color="primary" text @click="$emit('cancel-event')" rounded>
             {{ cancelText ? cancelText : 'Cancelar' }}
           </v-btn>
-          <v-btn text @click="$emit('confirm-event')">
+          <v-btn text @click="$emit('confirm-event')" rounded>
             {{ confirmText ? confirmText : 'Confirmar' }}
           </v-btn>
         </v-card-actions>
         <v-card-actions v-else>
           <v-spacer></v-spacer>
-          <v-btn color="green darken-1" text @click="$emit('cancel-event')">
+          <v-btn color="primary" text @click="$emit('cancel-event')" rounded>
             Cancelar
           </v-btn>
           <v-btn
             text
+            rounded
             v-on:keyup.enter="$emit('confirm-event')"
             @click="$emit('confirm-event')"
           >
@@ -60,6 +61,7 @@ export default {
     del: Boolean,
     persistent: Boolean,
     dark: Boolean,
+    visible: Boolean,
   },
 
   data() {
