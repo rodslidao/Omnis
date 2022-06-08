@@ -55,8 +55,8 @@ export default {
 
   mutations: {
     SOCKET_RESPONSE_MESSAGE: (state, message) => {
-      console.log('%c Recebido:', 'color: #51a4f7');
-      console.log(message);
+      // console.log('%c Recebido:', 'color: #51a4f7');
+      // console.log(message);
       // state.commit('TOGGLE_LOADING', null, { root: true })
     },
 
@@ -65,7 +65,7 @@ export default {
     },
 
     addNewTab: (state) => {
-      console.log('addNewTab');
+      // console.log('addNewTab');
       const idGenerated = ObjectID().toHexString();
 
       let tabSketchName = `Aba ${state.newTabCounter}`;
@@ -80,18 +80,18 @@ export default {
 
       // if (state.newTab.content.nodes) {
       //   console.log('old', state.newTab.content.nodes[0].id);
-      //   state.newTab.content.nodes[0].id = `node_${state.editor.generateId()}`;
+      // //   state.newTab.content.nodes[0].id = `node_${state.editor.generateId()}`;
       //   console.log('new', state.newTab.content.nodes[0].id);
       // }
 
       state.selectedTab = { ...state.newTab };
 
-      console.log('%c Tab Adicionada:', 'color: #51a4f7', state.newTab);
-      console.log('%c Tab List:', 'color: #51a4f7', state.tabList);
+      // console.log('%c Tab Adicionada:', 'color: #51a4f7', state.newTab);
+      // console.log('%c Tab List:', 'color: #51a4f7', state.tabList);
     },
 
     updateSelectedTab: (state, selectedTabKey) => {
-      console.log('selected tabbbb', state.selectedTab.key);
+      // console.log('selected tabbbb', state.selectedTab.key);
       const newKey = selectedTabKey[0];
       const oldKey = selectedTabKey[1];
 
@@ -100,15 +100,15 @@ export default {
       // console.log('%c foundOldIndex:', 'color: #51a4f7', foundOldIndex);
 
       if (foundOldIndex !== -1 && state.tabList.length > 0) {
-        console.log('salva');
+        // console.log('salva');
         if (oldKey) state.tabList[foundOldIndex].content = state.editor.save();
       }
 
       const foundNewIndex = state.tabList.findIndex((tab) => tab.key === newKey);
 
-      console.log('antiga', foundOldIndex);
-      console.log('atual', foundNewIndex);
-      console.log('%c Tab List:', 'color: #51a4f7', state.tabList);
+      // console.log('antiga', foundOldIndex);
+      // console.log('atual', foundNewIndex);
+      // console.log('%c Tab List:', 'color: #51a4f7', state.tabList);
 
       if (state.tabList.length === 1) {
         state.tabList[0].closable = false;
@@ -121,10 +121,10 @@ export default {
         if (oldKey) state.editor.load(state.tabList[foundNewIndex].content);
       } else {
         const foundSelectedIndex = state.tabList.findIndex(
-          (tab) => tab.key === state.selectedTab.key
+          (tab) => tab.key === state.selectedTab.key,
         );
-        console.log('%c foundSelectedIndex:', 'color: #11a4f7', foundSelectedIndex);
-        console.log('%c foundSelectedIndex:', 'color: #11a4f7', state.tabList[foundSelectedIndex].content);
+        // console.log('%c foundSelectedIndex:', 'color: #11a4f7', foundSelectedIndex);
+        // console.log('%c foundSelectedIndex:', 'color: #11a4f7', state.tabList[foundSelectedIndex].content);
         state.editor.load(state.tabList[foundSelectedIndex].content);
       }
 
@@ -155,7 +155,7 @@ export default {
         if (payload.index < state.tabList.length) {
           itemSelected.content = payload.content;
         }
-        console.log(payload);
+        // console.log(payload);
         if (itemSelected.duplicated) {
           itemSelected.duplicated = payload.duplicated;
         }
@@ -163,17 +163,17 @@ export default {
     },
 
     updateByProperty: (state, payload) => {
-      console.log('updateByProperty', payload);
+      // console.log('updateByProperty', payload);
       const foundIndex = state.tabList.findIndex((tab) => tab.key === payload.key);
 
-      // eslint-disable-next-line no-restricted-syntax, guard-for-in
+      // eslint-disable-next-line no-restricted-syntax, guard-for-in, prefer-const
       for (let prop in payload) {
-        console.log(state.tabList[foundIndex][prop]);
+        // console.log(state.tabList[foundIndex][prop]);
         state.tabList[foundIndex][prop] = payload[prop];
       }
 
       // payload.forEach((element) => {
-      //   console.log(element);
+        // console.log(element);
       //   state.tabList[foundIndex] = element[element];
       // });
     },
@@ -188,7 +188,7 @@ export default {
 
     setSaved: (state, { index, value }) => {
       state.tabList[index].saved = value;
-      console.log(state.tabList[index].saved);
+      // console.log(state.tabList[index].saved);
     },
 
     asyncIncrement: (state, incrementalObject) => {
@@ -200,21 +200,21 @@ export default {
     },
     deletedNode: (state, node) => {
       state.deletedNode = node;
-      console.log('state', state.deletedNode);
+      // console.log('state', state.deletedNode);
     },
     loadTabId: (state, data) => {
-      console.log('LoadTab', data);
+      // console.log('LoadTab', data);
 
       let equalTabIndex = 0;
 
       const equalTab = state.tabList.find((tab, index) => {
         equalTabIndex = index;
-        console.log('tab', tab);
+        // console.log('tab', tab);
         return tab._id === data._id && tab.last_modified === data.last_modified;
       });
 
-      console.log('existTab', equalTab);
-      console.log('existTabIndex', equalTabIndex);
+      // console.log('existTab', equalTab);
+      // console.log('existTabIndex', equalTabIndex);
 
       if (equalTab) {
         state.selectedTabIndex = equalTabIndex;
@@ -222,7 +222,7 @@ export default {
         state.selectedTab = equalTab;
         Vue.prototype.$alertFeedback('Este arquivo ja estava aberto', 'success');
       } else {
-        console.log('não existe uma tab igual');
+        // console.log('não existe uma tab igual');
         state.newTab._id = data._id;
         state.newTab.label = data.label;
         state.newTab.key = data._id;

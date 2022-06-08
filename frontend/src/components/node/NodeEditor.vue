@@ -178,9 +178,9 @@ export default {
   mounted() {
     if (Object.keys(this.contentDefault).length === 0) {
       this.updateContentDefault({ ...this.editor.save() });
-      console.log('updateContentDefault', this.contentDefault);
+      // console.log('updateContentDefault', this.contentDefault);
     }
-    console.log('mounted content', this.contentDefault);
+    // console.log('mounted content', this.contentDefault);
 
     this.addNodeWithCoordinates(
       StartNode,

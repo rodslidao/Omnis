@@ -9,7 +9,7 @@
       @contextmenu="contextMenu"
       :gap="4"
     >
-      <span slot="after" >
+      <span slot="after">
         <v-btn class="add-tab" dark depressed icon @click="addTab" small
           ><v-icon small dark> mdi-plus </v-icon></v-btn
         >
@@ -126,7 +126,7 @@ export default {
     },
     '$store.state.node.loadedFileTrigger': {
       handler() {
-        console.log('loadedFileTrigger');
+        // console.log('loadedFileTrigger');
         this.$refs.tabs.addTab({ ...this.newTab });
         this.selectedTabKey = this.newTab.key;
       },
@@ -135,11 +135,11 @@ export default {
   },
 
   mounted() {
-    console.log('mounted', this.tabList);
+    // console.log('mounted', this.tabList);
 
     if (this.selectedTabKey === '' && this.tabList.length > 0) {
       // this.tabList.forEach((tab) => {
-      //   console.log('tab', tab);
+      // console.log('tab', tab);
       //   this.$refs.tabs.addTab(tab);
       // });
       this.selectedTabKey = this.selectedTab.key;
@@ -147,13 +147,13 @@ export default {
       // this.$refs.tabs.doLayout();
     }
 
-    console.log('selected tabbbb22222', this.selectedTabKey);
+    // console.log('selected tabbbb22222', this.selectedTabKey);
 
-    console.log(this.tabList.length ? this.tabList : 0);
+    // console.log(this.tabList.length ? this.tabList : 0);
     if (this.tabList.length === 0) this.addTab();
     if (!this.selectedTabKey) this.selectedTabKey = this.selectedTab.key;
     // this.updateSelectedTab(this.selectedTabKey);
-    console.log('tab list', this.tabList);
+    // console.log('tab list', this.tabList);
   },
 
   computed: {
@@ -175,17 +175,17 @@ export default {
     ]),
 
     addTab() {
-      console.log('addTab', this.selectedTabKey);
+      // console.log('addTab', this.selectedTabKey);
       // console.log('addTabdddd', this.$refs.tabs.addTab);
       this.addNewTab();
-      console.log(this.newTab);
+      // console.log(this.newTab);
       this.$refs.tabs.addTab({ ...this.newTab });
       this.selectedTabKey = this.newTab.key;
     },
 
-    close(tab, index) {
-      console.log('close');
-      console.log({ tab, index });
+    close(tab) {
+      // console.log('close');
+      // console.log({ tab, index });
       this.removeTabByKey(tab.key);
       this.$refs.tabs.removeTab(tab.key);
     },
@@ -194,16 +194,16 @@ export default {
       this.selectTab(index);
     },
 
-    contextMenu(event, tab, index) {
+    contextMenu(event, tab) {
       this.context.x = event.x;
       this.context.y = event.y;
       this.showMenu = true;
       this.contextMenuSelectedTab = tab;
-      console.log(event, tab, index);
+      // console.log(event, tab, index);
     },
 
     duplicate() {
-      console.log('duplicate');
+      // console.log('duplicate');
       // this.duplicateTab(this.selectedTabKey);
     },
 
