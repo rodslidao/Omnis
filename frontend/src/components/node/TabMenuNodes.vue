@@ -1,294 +1,301 @@
 <template>
-  <div class="content">
-    <v-tabs align-with-title grow v-model="tab">
-      <v-tab
-        class="tab-item d-flex justify-space-between"
-        @contextmenu="show"
-        v-for="(item, index) in tabList"
-        :key="index"
-        @click="selectTab(index)"
-        @click.middle="close(index)"
-        @click.right="contextMenuSelectedTabIndex = index"
-        v-model="tab"
-      >
-        <div>
-          <v-icon
-            small
-            dark
-            color="green accent-3"
-            v-if="nameRunning == item.name"
+  <div class="tabMenu custom">
+    <vue-tabs-chrome
+      ref="tabs"
+      theme="tab-custom"
+      v-model="selectedTabKey"
+      :tabs="tabList"
+      @remove="close"
+      @contextmenu="contextMenu"
+      :gap="4"
+    >
+      <span slot="after">
+        <v-btn class="add-tab" dark depressed icon @click="addTab" small
+          ><v-icon small dark> mdi-plus </v-icon></v-btn
+        >
+      </span>
+      <!-- <template slot="close-icon">
+        <div class="btn-container">
+          <v-btn depressed icon @click="close(index)" small dark>
+            <v-icon class="align-self-end" small dark>
+              mdi-dots-vertical
+            </v-icon></v-btn
           >
-            mdi-play
-          </v-icon>
-          <div class="mb-n5" v-if="renamingIndex === index">
-            <v-text-field
-              :append-outer-icon="name ? 'mdi-check' : null"
-              @click:append-outer="rename(index)"
-              autofocus
-              :value="tabList[index].name"
-              v-model="name"
-              @keyup.enter="name != '' ? rename(index) : tabList[index].name"
-              single-line
-              full-width
-            ></v-text-field>
-          </div>
-          <span v-else>{{ +!item.saved ? item.name + '*' : item.name }}</span>
+          <v-btn depressed icon @click="close(index)" small dark>
+            <v-icon class="align-self-end" small dark>
+              mdi-close
+            </v-icon></v-btn
+          >
         </div>
-
-        <!-- dropdown -->
-        <v-menu
-          transition="slide-x-transition"
-          v-model="showMenu"
-          bottom
-          dark
-          right
-          :position-y="y"
-          :position-x="x"
+      </template> -->
+    </vue-tabs-chrome>
+    <v-menu
+      transition="slide-x-transition"
+      v-model="showMenu"
+      bottom
+      dark
+      left
+      :position-y="context.y"
+      :position-x="context.x"
+    >
+      <v-list>
+        <v-list-item
+          class="list-item"
+          v-for="(item, index) in items"
+          :key="index"
+          link
         >
-          <v-list>
-            <v-list-item
-              class="list-item"
-              v-for="(item, index) in items"
-              :key="index"
-              link
-            >
-              <v-list-item-title
-                @click="item.function(contextMenuSelectedTabIndex)"
-                ><v-icon small class="mr-5">mdi-{{ item.btnIcon }}</v-icon
-                >{{ item.title }}
-              </v-list-item-title>
-            </v-list-item>
-          </v-list>
-        </v-menu>
-
-        <v-btn depressed icon small class="context-menu-btn">
-          <v-icon small dark> mdi-dots-vertical </v-icon></v-btn
-        >
-        <v-btn
-          v-if="tabList.length > 1"
-          depressed
-          icon
-          @click="close(index)"
-          small
-        >
-          <v-icon class="align-self-end" small dark> mdi-close </v-icon></v-btn
-        >
-      </v-tab>
-      <v-btn class="add-tab" depressed icon @click="add()" small
-        ><v-icon small dark> mdi-plus </v-icon></v-btn
-      >
-    </v-tabs>
+          <v-list-item-title @click="item.function()"
+            ><v-icon small class="mr-5">mdi-{{ item.btnIcon }}</v-icon
+            >{{ item.title }}
+          </v-list-item-title>
+        </v-list-item>
+      </v-list>
+    </v-menu>
+    <dialog-confirmation
+      v-on="getName()"
+      confirmText="salvar"
+      dark
+      v-if="renameDialog"
+      :visible="renameDialog"
+      description=" "
+      title="Renomear"
+      @cancel-event="renameDialog = false"
+      @confirm-event="(renameDialog = false), updateName()"
+    >
+      <template v-slot:description>
+        <v-text-field
+          label="Nome"
+          required
+          placeholder="Nome"
+          v-model="name"
+          :rules="requiredRules"
+        ></v-text-field>
+        <v-text-field
+          label="Descrição"
+          placeholder="Descrição"
+          v-model="description"
+        ></v-text-field>
+      </template>
+    </dialog-confirmation>
   </div>
 </template>
-
 <script>
 import { mapActions, mapState } from 'vuex';
-import gql from 'graphql-tag';
+// import gql from 'graphql-tag';
 
-const ObjectID = require('bson-objectid');
+import VueTabsChrome from 'vue-tabs-chrome';
+import DialogConfirmation from '@/components/settings/DialogConfirmation.vue';
 
 export default {
-  name: 'TabMenuNodes',
-
+  components: {
+    VueTabsChrome,
+    DialogConfirmation,
+  },
   data() {
     return {
-      tab: null,
-      actualNode: null,
-      length: 0,
-      name: '',
-      nameRunning: 'One',
-      newTabCount: 1,
-      lixo: null,
-      tagAdded: {},
-      contextMenuSelectedTabIndex: null,
-
+      selectedTabKey: '',
+      contextMenuSelectedTab: null,
       showMenu: false,
-      x: 0,
-      y: 0,
+      renameDialog: false,
+      requiredRules: [(v) => !!v || 'Campo não pode ficar em branco'],
+      name: '',
+      description: '',
       items: [
-        {
-          title: 'Duplicar',
-          btnIcon: 'content-duplicate',
-          function: this.duplicate,
-        },
+        // {
+        //   title: 'Duplicar',
+        //   btnIcon: 'content-duplicate',
+        //   function: this.duplicate,
+        // },
         {
           title: 'Renomear',
           btnIcon: 'form-textbox',
-          function: this.setRenamingIndex,
+          function: this.rename,
         },
       ],
-      newTab: {
-        name: '',
-        description: 'Descrição',
-        author: 'Autor',
-        last_access: new Date().getTime(),
-        _id: null,
-        parent_id: null,
-        version: 1,
-        saved: false,
-        duplicated: false,
-        content: '',
+      context: {
+        x: 0,
+        y: 0,
       },
     };
+  },
+
+  watch: {
+    selectedTabKey(newVal, oldVal) {
+      this.updateSelectedTab([newVal, oldVal]);
+    },
+    '$store.state.node.loadedFileTrigger': {
+      handler() {
+        // console.log('loadedFileTrigger');
+        this.$refs.tabs.addTab({ ...this.newTab });
+        this.selectedTabKey = this.newTab.key;
+      },
+      // deep: true,
+    },
+  },
+
+  mounted() {
+    // console.log('mounted', this.tabList);
+
+    if (this.selectedTabKey === '' && this.tabList.length > 0) {
+      // this.tabList.forEach((tab) => {
+      // console.log('tab', tab);
+      //   this.$refs.tabs.addTab(tab);
+      // });
+      this.selectedTabKey = this.selectedTab.key;
+      // this.$refs.tabs.setup();
+      // this.$refs.tabs.doLayout();
+    }
+
+    // console.log('selected tabbbb22222', this.selectedTabKey);
+
+    // console.log(this.tabList.length ? this.tabList : 0);
+    if (this.tabList.length === 0) this.addTab();
+    if (!this.selectedTabKey) this.selectedTabKey = this.selectedTab.key;
+    // this.updateSelectedTab(this.selectedTabKey);
+    // console.log('tab list', this.tabList);
   },
 
   computed: {
     ...mapState('node', {
       tabList: (state) => state.tabList,
-      selectedTabId: (state) => state.selectedTabId,
       selectedTab: (state) => state.selectedTab,
-      selectedTabIndex: (state) => state.selectedTabIndex,
-      contentDefault: (state) => state.contentDefault,
-      renamingIndex: (state) => state.renamingIndex,
+      newTab: (state) => state.newTab,
     }),
-  },
-
-  watch: {
-    selectedTabIndex(newValue) {
-      console.log(`nova ${newValue} tab: ${this.tab}`);
-      this.tab = newValue;
-    },
   },
 
   methods: {
     ...mapActions('node', [
-      'addTab',
-      'removeTabById',
-      'selectTabByIndex',
-      'removeTabByIndex',
-      'play',
+      'addNewTab',
+      'closeTab',
       'updateSelectedTab',
+      'removeTabByKey',
       'duplicateTab',
-      'setRenamingIndex',
-      'setSketchName',
+      'updateByProperty',
     ]),
 
-    show(e) {
-      e.preventDefault();
-      this.showMenu = false;
-      this.x = e.clientX;
-      this.y = e.clientY;
-      this.$nextTick(() => {
-        this.showMenu = true;
-      });
+    addTab() {
+      // console.log('addTab', this.selectedTabKey);
+      // console.log('addTabdddd', this.$refs.tabs.addTab);
+      this.addNewTab();
+      // console.log(this.newTab);
+      this.$refs.tabs.addTab({ ...this.newTab });
+      this.selectedTabKey = this.newTab.key;
     },
 
-    async apollo() {
-      // console.time('apollo');
-      const response = await this.$apollo.query({
-        query: gql`
-          query {
-            getProcess {
-              data {
-                status
-              }
-            }
-          }
-        `,
-      });
-      // console.log(this.$apollo.store);
-      this.lixo = response.data.getProcess.data.status;
-      // console.timeEnd('apollo');
+    close(tab) {
+      // console.log('close');
+      // console.log({ tab, index });
+      this.removeTabByKey(tab.key);
+      this.$refs.tabs.removeTab(tab.key);
     },
 
-    selectTab(index) {
-      this.updateSelectedTab(index);
+    select(index) {
+      this.selectTab(index);
     },
 
-    // // functcion to gerate unique id based in timestamp
-    // generateId() {
-    //   console.log(ObjectID().toHexString());
-    //   return ObjectID().toHexString();
-    //   // return new Date().getTime();
-    // },
-
-    close(index) {
-      if (this.tabList.length > 1) {
-        this.removeTabByIndex(index);
-        if (index <= this.selectedTabIndex) {
-          // this.tabList.length(0);
-          this.updateSelectedTab(this.selectedTabIndex - 1);
-        }
-      }
-    },
-
-    add() {
-      const tabLength = this.tabList.length;
-      let tabSketchName = `Aba ${this.newTabCount}`;
-      if (tabLength === 0) tabSketchName = 'Aba 1';
-      const idGenerated = ObjectID().toHexString();
-
-      this.newTabCount += 1;
-
-      this.newTab.name = tabSketchName;
-      this.newTab.parent_id = idGenerated;
-      // eslint-disable-next-line no-underscore-dangle
-      this.newTab._id = idGenerated;
-      this.newTab.version = 1;
-      this.newTab.content = this.contentDefault;
-
-      this.addTab({ ...this.newTab });
-      // console.log('tab length: ', tabLength);
-      this.updateSelectedTab(tabLength);
-      this.tab = tabLength;
+    contextMenu(event, tab) {
+      this.context.x = event.x;
+      this.context.y = event.y;
+      this.showMenu = true;
+      this.contextMenuSelectedTab = tab;
+      // console.log(event, tab, index);
     },
 
     duplicate() {
-      const idGenerated = ObjectID().toHexString();
+      // console.log('duplicate');
+      // this.duplicateTab(this.selectedTabKey);
+    },
 
-      const duplicatedTab = this.newTab;
+    getName() {
+      this.name = this.contextMenuSelectedTab.label;
+      this.description = this.contextMenuSelectedTab.description;
+    },
 
-      duplicatedTab.saved = false;
-      duplicatedTab.duplicated = true;
-      // eslint-disable-next-line no-underscore-dangle
-      duplicatedTab._id = idGenerated;
-      duplicatedTab.parent_id = idGenerated;
+    rename() {
+      this.renameDialog = true;
+      // this.renamingIndex = index;
+    },
 
-      this.duplicateTab({
-        tab: { ...duplicatedTab },
-        indexContextMenu: this.contextMenuSelectedTabIndex,
+    updateName() {
+      this.updateByProperty({
+        label: this.name,
+        description: this.description,
+        key: this.contextMenuSelectedTab.key,
       });
-      // console.log('selected indexxxxxxxxxxxxxxxx: ', this.selectedTabIndex);
-      // console.log('CONTEEEEEEEEEEEEEEEEEE',this.contextMenuSelectedTabIndex)
-
-      this.updateSelectedTab(this.contextMenuSelectedTabIndex + 1);
-      this.tab = this.contextMenuSelectedTabIndex + 1;
     },
-
-    rename(index) {
-      this.setRenamingIndex(null);
-      this.setSketchName({ name: this.name, index });
-      this.name = '';
-    },
-  },
-
-  mounted() {
-    if (this.tabList.length === 0) {
-      this.add();
-    }
   },
 };
 </script>
 
-<style scoped lang="scss">
-.content {
+<style lang="scss">
+$primary-dark: #232323;
+$secondary-dark: #272727;
+$soft-grey: #d1d1d1;
+.tabMenu {
   width: 100%;
-}
+  background: $primary-dark;
+  color: $soft-grey;
 
-.list-item {
-  min-height: 37px;
-}
+  .btn-container {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    color: $soft-grey;
+    padding-right: 3rem;
+    margin-right: 1rem;
+  }
 
-.add-tab {
-  align-self: center;
-  margin: 9px;
-}
-
-.context-menu-btn {
-  display: none;
-}
-
-.tab-item:hover + .context-menu-btn {
-  display: block;
+  .theme-tab-custom {
+    color: #9ca1a7;
+    background-color: $secondary-dark;
+    box-shadow: inset 0px -6px 0px 0px rgb(25 118 210);
+    .tabs-item {
+      &:hover {
+        .tabs-background-content {
+          background-color: #202124;
+        }
+        .tabs-background-before,
+        .tabs-background-after {
+          fill: transparent;
+        }
+      }
+      &.is-dragging {
+        .tabs-background-content {
+          background-color: #202124;
+        }
+        .tabs-background-before,
+        .tabs-background-after {
+          fill: transparent;
+        }
+      }
+      &.active {
+        color: #fff;
+        .tabs-background-content {
+          background-color: $primary-dark;
+        }
+        .tabs-background-before,
+        .tabs-background-after {
+          fill: $primary-dark;
+        }
+      }
+      .tabs-close-icon {
+        stroke: #81878c;
+        &:hover {
+          stroke: #cfd1d2;
+          background-color: #5f6368;
+        }
+      }
+    }
+    .tabs-divider {
+      background-color: #4a4d51;
+    }
+    .tabs-footer {
+      background-color: $primary-dark;
+    }
+  }
 }
 </style>

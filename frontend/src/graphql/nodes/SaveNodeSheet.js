@@ -5,7 +5,7 @@ export default gql`
   mutation saveNodeSheet(
     $_id: ID!
     $parent_id: ID!
-    $name: String
+    $label: String
     $description: String
     $author: String
     $version: Int
@@ -16,8 +16,9 @@ export default gql`
   ) {
     saveNodeSheet(
       _id: $_id
+      key: $_id
       parent_id: $parent_id
-      name: $name
+      label: $label
       description: $description
       author: $author
       version: $version
