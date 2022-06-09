@@ -27,7 +27,7 @@ import ActionMenuForNodes from '@/components/nodes/ActionMenuForNodes.vue';
 import { mapActions, mapState } from 'vuex';
 
 import StartNode from '@/components/nodes/inputs/StartNode';
-import SideMenu from '@/components/nodes//sideMenu/sideMenu.vue';
+import SideMenu from '@/components/nodes//sideMenu/SideMenu.vue';
 
 // Custom Baklava Components
 import CustomContextMenu from '@/components/nodes/custom/CustomContextMenu.vue';
@@ -264,6 +264,7 @@ export default {
   // margin: 0 0 32px 16px;
   z-index: 9999;
 }
+
 .side-menu {
   // position: absolute;
   // top:40px;

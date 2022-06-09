@@ -1,10 +1,10 @@
-
 <template>
   <div class="container">
     <v-btn
+      dark
       class="tab-button"
-      outlined
-      color="white"
+      :class="drawer ? 'active' : ''"
+      color="#4e4e4e"
       @click.stop="drawer = !drawer"
       >movimentação</v-btn
     >
@@ -15,7 +15,7 @@
       absolute
       right
       :permanent="drawer"
-      width="300px"
+      width="400px"
     >
       <jog-buttons></jog-buttons>
     </v-navigation-drawer>
@@ -24,6 +24,7 @@
 
 <script>
 import JogButtons from '@/components/nodes/sideMenu/move/JogButtons.vue';
+
 export default {
   components: {
     JogButtons,
@@ -43,13 +44,17 @@ export default {
 
 <style lang="scss" scoped>
 .container {
+  padding: 0;
   .tab-button {
     transform: rotate(-90deg);
     transform-origin: 92%;
     position: absolute;
-    top: 40px;
-    right: 0;
-    z-index: 9999;
+    top: 20px;
+    z-index: 1;
+    right: 3px;
+  }
+  .active {
+    transform: rotate(-90deg) translateY(-398px);
   }
 }
 </style>
