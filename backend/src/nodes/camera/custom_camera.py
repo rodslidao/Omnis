@@ -1,6 +1,8 @@
+from cmath import log
+from src.nodes.alerts.alert_obj import Alert
 from bson import ObjectId
 from src.manager.camera_manager import CameraManager
-from cv2 import line, putText, FONT_HERSHEY_SIMPLEX, rectangle, LINE_AA
+from cv2 import line, putText, FONT_HERSHEY_SIMPLEX, rectangle, LINE_AA, error
 from api import logger, exception, dbo
 from api.decorators import for_all_methods
 from vidgear.gears import CamGear
@@ -42,23 +44,42 @@ class Camera(CamGear):
         self.config = options.get("config")
         self.aruco_parms = DetectorParameters_create()
         self.aruco_dict = Dictionary_get(ARUCO_DICT.get(self.config.get("marker_type")))
-        if not disable:
-            print(options.get("props"))
-            self.distortion_obj = dbo.find_one(
-                "camera-calibrations", {"_id": str(self._id)}
+        # if not disable:
+        #     print(options.get("props"))
+        #     self.distortion_obj = dbo.find_one(
+        #         "camera-calibrations", {"_id": str(self._id)}
+        #     )
+        #     self.marker_len = self.distortion_obj is not None
+        #     if self.marker_len:
+        #         self.mtx, self.dist = array(self.distortion_obj.get("mtx")), array(
+        #             self.distortion_obj.get("dist")
+        #         )
+        if self.opt.get("props", {}).get("CAP_PROP_FOURCC"):
+            self.opt["props"]["CAP_PROP_FOURCC"] = VideoWriter_fourcc(
+                *options["props"]["CAP_PROP_FOURCC"][:4]
             )
-            self.marker_len = self.distortion_obj is not None
-            if self.marker_len:
-                self.mtx, self.dist = array(self.distortion_obj.get("mtx")), array(
-                    self.distortion_obj.get("dist")
-                )
-            if options.get("props", {}).get("CAP_PROP_FOURCC"):
-                options["props"]["CAP_PROP_FOURCC"] = VideoWriter_fourcc(
-                    *options["props"]["CAP_PROP_FOURCC"][:4]
-                )
-            super().__init__(source, **options.get("props"))
-            self.start()
-            CameraManager.add(self)
+        for s in self.source:
+            try:
+                super().__init__(s, **self.opt.get("props"))
+                logger.info(f"Camera {self.name} initialized with source {s}")
+                break
+            except ValueError:
+                self.stop()
+            except (error, RuntimeError):
+                logger.warning("Camera source: {} fail".format(s))
+                # super().stop()
+                # continue
+                # super().__init__(self.source, **self.opt.get("props"))
+            # else:
+            #     Alert('error', 'Camera sem resposta', 'Não foi possivel iniciar a camera', 'A fonte alternativa não responde, verifique a conexão com a camera. e reinicie o sistema.')
+            #     raise RuntimeError("[Camera] Camera source invalid")
+        self.start()
+        CameraManager.add(self)
+        
+    # def run(self):
+    #     try:
+    #         super().run()
+
 
     def read(self):
         # if self.marker_len:
@@ -152,3 +173,6 @@ class Camera(CamGear):
                 LINE_AA,
             )
             rectangle(self.frame, (120, 170), (520, 310), (255, 255, 255), 1)
+
+    def __dell__(self):
+        self.stop()

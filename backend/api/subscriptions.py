@@ -39,4 +39,5 @@ class SubscriptionFactory:
         Put alert to queue without await
         """
         for queue in self.store:
-            queue.put_nowait(alert)
+            # logger.info(alert.__dict__)
+            queue.put_nowait(dict(alert.items()))

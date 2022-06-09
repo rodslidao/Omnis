@@ -103,10 +103,11 @@ class Serial(_Serial):
         self.start()
         return self
 
-    def send(self, message, echo=False):
+    def send(self, message, echo=False, log=True):
         send_lock.acquire()
         try:
-            logger.info(f"{self.name} send: {message}")
+            if log:
+                logger.info(f"{self.name} send: {message}")
             _ = self.write(message)
             return  _ if echo else self
         except serialutil.PortNotOpenError:

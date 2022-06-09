@@ -5,6 +5,7 @@ from api.decorators import for_all_methods
 from api.store import nodes
 from api.subscriptions import SubscriptionFactory
 from threading import Event
+from time import sleep
 
 from threading import Thread, Event, Lock
 NODE_TYPE = "BASE_NODE"
@@ -14,18 +15,12 @@ CKL = Lock()
 event_list = {}
 class Wizard(object):
     def _decorator(exteral_execution):
-        def magic( self, *args, **kwargs ):
+        def magic( self, message):
             try:
-                CKL.acquire()
-                logger.warning(f"{self.__class__.__name__} - {exteral_execution.__name__}")
-                event_list[self._id] = Event()
-                exteral_execution( self, *args, **kwargs )
-                event_list[self._id].set()
-            except KeyError:
-                event_list[self._id] = Event().set()
+                event_list[message._id] = Event()
+                exteral_execution( self, message)
             finally:
-                logger.warning(f"{self.__class__.__name__} - {exteral_execution.__name__} - END")
-                CKL.release()
+                event_list[message._id].set()
         return magic
     _decorator = staticmethod( _decorator )
 
@@ -74,6 +69,7 @@ class BaseNode(Wizard):
         self.update_status({
             "status": "LOADED"
         })
+        self.auto_run = options.get("auto_run", False)
         logger.info("[%s] Node loaded", self)
 
     def onSuccess(self, payload, additional=None):
@@ -99,7 +95,6 @@ class BaseNode(Wizard):
                 target.get("from").get("id"), target.get("to").get("id")
             )
             node_to_run = NodeManager.getNodeById(target.get("to").get("nodeId"))
-
             message = Message(
                 target.get("from").get("id"),
                 target.get("to").get("id"),
@@ -116,16 +111,11 @@ class BaseNode(Wizard):
 
             while not self.running:
                 if self.stop_event.isSet():
-                    self.resume()
-                    return
+                    return self.resume()
 
             if node_to_run and not self.stop_event.isSet():
-                logger.info(f'Trigger: {node_to_run}')
                 self.update_status({"status": "SENDING", "message":{"from":target.get("from").get("id"), "to":target.get("to").get("id")}})
                 Thread(target=node_to_run.execute, args=(message,), name=f"{str(self)}({message.sourceName}) -> {message}", daemon=True).start()
-                # self.resume()
-                # node_to_run.update_status({"status": "RUNNING", "message":{"from":None, "to":None}})
-                # self.update_status({"status": "RUNNING", "message":{"from":None, "to":None}})
 
     def AutoRun(self):
         message = Message(
@@ -195,6 +185,9 @@ class BaseNode(Wizard):
             "options": self.options,
             "output_connections": self.output_connections,
         }
+    
+    def __repr__(self):
+        return self.__str__()
         
     @staticmethod
     def normalize_id_on_dict(dictionary):

@@ -37,12 +37,13 @@ class SerialGcodeOBJ(Serial):
             is_gcode=True,
             _id=_id,
         )
-        self.pause = False
-        self.pause_permission = ["stop", "kill", "quick_stop", "resume"]
+        self.paused = False
+        self.paused_permission = ["stop", "kill", "quick_stop", "resume"]
+        self.resume()
 
     def verify(function):
         def wrapper(self, *args, **kwargs):
-            if self.pause or not self.is_open:
+            if self.paused or not self.is_open:
                 return
             return function(self, *args, **kwargs)
 
@@ -57,7 +58,7 @@ class SerialGcodeOBJ(Serial):
             ''- Return the future postion of the machine.
 
         """
-        echo = self.send(f"M114 {_type}", echo=True)[0]
+        echo = self.send(f"M114 {_type}", echo=True, log=False)[0]
         txt = echo
         for n in sequence:
             txt = txt.replace(n, "")
@@ -150,14 +151,14 @@ class SerialGcodeOBJ(Serial):
         # Wait for the machine to reach the coordinate string. while all axis real coordinates are not equal to the future coordinates (+- 0.5).
         while (
             not all((a[i] - 0.5 <= b[i] <= a[i] + 0.5) for i in range(len(b)))
-            and not self.pause
+            and not self.paused
         ):
             # Update the real position.
             b = [v for v in self.M114("R").values()]
 
     @verify
     def pause(self):
-        self.pause = True
+        self.paused = True
         """
         The M0 command pause after the last movement and wait for the user to continue.
         """
@@ -165,7 +166,7 @@ class SerialGcodeOBJ(Serial):
 
     @verify
     def kill(self):
-        self.pause = True
+        self.paused = True
         """
         Used for emergency stopping,
         M112 shuts down the machine, turns off all the steppers and heaters
@@ -176,20 +177,23 @@ class SerialGcodeOBJ(Serial):
 
     @verify
     def stop(self):
-        self.pause = True
+        self.paused = True
         """
         Stop all steppers instantly.
         Since there will be no deceleration,
         steppers are expected to be out of position after this command.
         """
+        self.send("P000")
         self.send("M410")
+        self.resume()
 
     def resume(self):
-        self.pause = False
+        self.paused = False
         """
         Resume machine from pause (M0) using M108 command.
         """
         self.send("M108")
+        self.send("R000")
 
     def callPin(self, name, state, json):
         value = json[name]["command"] + (

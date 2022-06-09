@@ -48,7 +48,11 @@ class HsvNode(BaseNode):
             self.color_range = message.payload
         elif target == "imagem":
             self.image = message.payload
-            self.on("Saida", self.read())
+            self.on("Saida", self.convert_frame(
+                    self.image,
+                    self.color_range["lower"],
+                    self.color_range["upper"],
+                ))
 
     @staticmethod
     def convert_frame(image, lower, upper):

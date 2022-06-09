@@ -19,5 +19,5 @@ WORKDIR /app
 COPY . .
 
 ENV PATH=/root/.local:$PATH
-
-CMD [ "python", "main.py" ]
+ENTRYPOINT ["python", "main.py"]
+# CMD [ "python", "main.py" ]

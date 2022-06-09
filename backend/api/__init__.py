@@ -33,14 +33,14 @@ def Managers_Import(definitions):
                             manager_class["class"][1](**config)
                         case _:
                             manager_class["class"][0](**config, **config.get("options"))
-                except Exception:
+                except Exception as e:
                     Alert(
                             "error",
-                            "Dispotivo com Falha",
-                            'Não foi possível iniciar o dispositivo "{}"'.format(
-                                config.get("name")
+                            "Dispositivo com Falha",
+                            'Não foi possível iniciar o dispositivo "{}".\n Erro: {}'.format(
+                                config.get("name"), e
                             ),
-                            how2solve="Verifique se o dispositivo está conectado corretamente",
+                            how_to_solve="Verifique se o dispositivo está conectado corretamente",
                             delay=3
                         )
 
@@ -51,7 +51,7 @@ mangers = {
 }
 
 # Managers_Import(mangers)
-async def automatic_classes():
+def automatic_classes():
     Thread(target=Managers_Import, args=(mangers,)).start()
 
 
@@ -64,3 +64,6 @@ async def automatic_classes():
 
 # stremer = WebGear(logging=True)
 # stremer = WebGear_RTC(logging=True, **options)
+
+# ATTRS{idVendor}=="0c45"
+# ATTRS{idProduct}=="636d"

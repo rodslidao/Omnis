@@ -1,3 +1,4 @@
+from bson import ObjectId
 class Message:
     def __init__(
         self,
@@ -18,6 +19,7 @@ class Message:
         self.targetNodeId = targetNodeId
         self.payload = payload
         self.additional = additional
+        self._id = ObjectId()
 
     def __str__(self) -> str:
         return f"([{self.targetNodeId}|{self.targetName}]"

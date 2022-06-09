@@ -20,9 +20,9 @@ class Alert:
         level,
         title,
         description,
-        how2solve="",
-        buttonText="Ok",
-        buttonAction="Ok",
+        how_to_solve="",
+        button_text="Ok",
+        button_action="Ok",
         delay=0,
     ):
         """
@@ -32,10 +32,10 @@ class Alert:
         self.date = float(datetime.now().timestamp())
         self.title = title
         self.description = description
-        self.how2solve = how2solve
-        self.buttonText = buttonText
-        self.buttonAction = buttonAction
-        getattr(logger, self.level)(self.dict())
+        self.how_to_solve = how_to_solve
+        self.button_text = button_text
+        self.button_action = button_action
+        getattr(logger, self.level.lower())(f"{self.items()}")
         sleep(delay)
         AlertManager.put(self)
 
@@ -44,7 +44,7 @@ class Alert:
         Return a string representation of the Alert object.
         """
         message = ""
-        for k, v in self.__dict__.items():
+        for k, v in self.items():
             message += f"{k[0].upper()}{k[1:]}:\t{v}\n"
         return message
 
@@ -52,8 +52,8 @@ class Alert:
         return str(self)
 
     # @classmethod
-    def dict(self):
+    def items(self):
         """
         Return a dictionary representation of the Alert object.
         """
-        return self.__dict__
+        return vars(self)

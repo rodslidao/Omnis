@@ -27,7 +27,7 @@ def createNodeSheet_resolver(obj, info, _id, **kwargs):
 
 
 @mutation.field("saveNodeSheet")
-def saveNodeSheet_resolver(obj, info, _id, **kwargs):
+def saveNodeSheet_resolver(obj, info, _id=None, **kwargs):
     """Create a new NodeSheet object and return it like a payload"""
     returns = NodeSheet().save_node_sheet(_id, **kwargs)
     return {"data": returns}
@@ -38,6 +38,7 @@ def updateNodeSheet_resolver(obj, info, _id, **kwargs):
     """Update a NodeSheet by id and return it like a payload"""
     returns = NodeSheet().update_node_sheet(_id, **kwargs)
     return  returns
+
 
 
 @mutation.field("deleteNodeSheet")
@@ -53,11 +54,11 @@ def duplicateNodeSheet_resolver(obj, info, _id):
     return  returns
 
 @mutation.field("startProcess")
-def startProcess_resolver(obj, info):
+def startProcess_resolver(obj, info, _id):
     """Start a process by id and return it like a payload"""
-    process.start()
+    process.start(_id)
     returns = process.dict()
-    return {"data": returns}
+    return
 
 
 @mutation.field("stopProcess")
@@ -65,7 +66,7 @@ def stopProcess_resolver(obj, info):
     """Stop a process by id and return it like a payload"""
     process.stop()
     returns = process.dict()
-    return {"data": returns}
+    return 
 
 
 @mutation.field("pauseProcess")
@@ -73,7 +74,7 @@ def pauseProcess_resolver(obj, info):
     """Pause a process by id and return it like a payload"""
     process.pause()
     returns = process.dict()
-    return {"data": returns}
+    return
 
 
 @mutation.field("resumeProcess")
@@ -81,7 +82,7 @@ def resumeProcess_resolver(obj, info):
     """Resume a process by id and return it like a payload"""
     process.resume()
     returns = process.dict()
-    return {"data": returns}
+    return 
 
 
 @mutation.field("loadConfig")

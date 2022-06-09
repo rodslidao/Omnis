@@ -33,7 +33,7 @@ class NodeSheet:
         """Save a NodeSheet object"""
         target = dbo.find_one("node-sheets", {"_id": ObjectId(_id)}) is None
         kwargs_whiout_empty = {k: v for k, v in kwargs.items() if v}
-        kwargs_whiout_empty["last_access"] = datetime.utcnow().timestamp()
+        # kwargs_whiout_empty["last_access"] = datetime.utcnow().timestamp()
         if kwargs_whiout_empty.get("content"):
             kwargs_whiout_empty["node_qtd"] = len(kwargs_whiout_empty["content"]["nodes"])
         if target:
@@ -49,6 +49,7 @@ class NodeSheet:
         self.NodeSheet["_id"] = ObjectId()
         self.NodeSheet["date"] = datetime.utcnow().timestamp()
         self.NodeSheet["node_qtd"] = len(self.NodeSheet["content"]["nodes"])
+        self.NodeSheet["label"] = self.NodeSheet["label"]+' - Cópia'
         return dbo.insert_one("node-sheets", self.NodeSheet) is not None
     
     def create_node_sheet(self, _id, **kwargs):
