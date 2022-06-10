@@ -25,8 +25,8 @@ import ActionMenuForNodes from '@/components/node/ActionMenuForNodes.vue';
 
 import { mapActions, mapState } from 'vuex';
 
-import StartNode from '@/components/nodes/inputs/StartNode';
-import SideMenu from '@/components/nodes/sideMenu/SideMenu.vue';
+import StartNode from '@/components/node/nodes/inputs/StartNode';
+import SideMenu from '@/components/node/sideMenu/sideMenu.vue';
 
 // Custom Baklava Components
 import CustomContextMenu from '@/components/node/custom/CustomContextMenu.vue';

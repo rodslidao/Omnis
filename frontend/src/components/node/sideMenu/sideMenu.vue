@@ -23,7 +23,7 @@
 </template>
 
 <script>
-import JogButtons from '@/components/nodes/sideMenu/move/JogButtons.vue';
+import JogButtons from '@/components/node/sideMenu/move/JogButtons.vue';
 
 export default {
   components: {
