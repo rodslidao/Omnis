@@ -1,13 +1,16 @@
 type NodeSheet {
-  _id: ID!
-  name: String
+  _id: ID
+  parent_id: ID
+  label: String
+  key: ID
+  description: String
+  author: String
+  version: Int
+  last_access: Float
   saved: Boolean
   duplicated:Boolean
   content: JSON
-  last_access: timestamptz
-  description: String
   node_qtd: Int
-  author: String
 }
 
 type NDS {

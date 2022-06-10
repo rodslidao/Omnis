@@ -4,7 +4,7 @@ from api import logger, exception
 from api.decorators import for_all_methods
 from api import dbo
 from src.manager.serial_manager import SerialManager
-
+from time import sleep
 NODE_TYPE = "IoNode"
 
 
@@ -28,8 +28,11 @@ class IoNodeNode(BaseNode):
     def execute(self, message=""):
         target = message.targetName.lower()
         if target == "gatilho":
+            # logger.warning(self.board)
             self.board.send(self.command)
-            self.on("Saida", True)
+            sleep(0.2)
+            self.on("Saida", message.payload)
+            # logger.warning(f"{self.output_connections}")
 
 
     @staticmethod

@@ -1,18 +1,14 @@
 from os import environ
-import threading
 import uvicorn
 import socket
-import time
 
 from api import logger, dbo, automatic_classes
 from api.queries import query
 from api.subscriptions import subscription
 from api.mutations import mutation
 
-from src.nodes.node_registry import NodeRegistry
 from src.end_points import custom_video_response
 from src.nodes.node_manager import NodeManager
-from src.loader import extractOptionsFromNode
 from src.manager.camera_manager import CameraManager
 
 from starlette.routing import Route
@@ -78,6 +74,13 @@ routes_app = [
 ]
 
 app = Starlette(debug=True, routes=routes_app, on_startup=[automatic_classes], on_shutdown=[dbo.close])
+
+@app.on_event("shutdown")
+def shutdown_event():
+    try:
+        CameraManager.stop()
+    except Exception as e:
+        logger.error(e)
 
 port = environ.get("SERVER_PORT", 80)
 if environ.get("NODE_ENV") == "development":

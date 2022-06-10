@@ -28,9 +28,9 @@ class ProcessNode(BaseNode):
     def __init__(self, name, id, options, output_connections, input_connections):
         super().__init__(name, NODE_TYPE, id, options, output_connections)
         self.input_connections = input_connections
-        logger.info(f"name: {name}, options: {options}")
         self.function = process_options[options["action"]]
         self.auto_run = options.get("auto_run", False)
+        self.process = process
         NodeManager.addNode(self)
 
     @Wizard._decorator

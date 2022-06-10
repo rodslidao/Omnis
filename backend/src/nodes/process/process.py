@@ -28,14 +28,12 @@ class Process(threading.Thread):
         self.stopped = threading.Event()
         self.paused = threading.Event()
         self.resumed = threading.Event()
-        self.reboot = threading.Event()
         self.target = target
         self.args = args
         self.kwargs = kwargs
 
     def run(self):
         while not self.stopped.is_set():
-            self.reboot.clear()
             while self.paused.is_set():
                 logger.info("Process Paused - loop_info")
                 self.resumed.wait()
@@ -44,70 +42,81 @@ class Process(threading.Thread):
         # for i in range(2):
             if not self.stopped.is_set() and not self.paused.is_set():
                 self.target(*self.args, **self.kwargs)
-                self.verify()
-                logger.info("Wait for reboot - loop_info")
-                self.reboot.wait()
+                self.wait_process_end()
                 logger.info("Process END [reseting] - loop_info")
         logger.info("Process Thread Stopped - Normally")
 
 
-    def verify(self, l=0):
-        logger.info("Process Verifying")
-        sleep(0.1)
-        for key, val in list(event_list.items()):
-            val.wait(5)
-            event_list.pop(key)
+    def wait_process_end(self):
+        while len(event_list) > 0:
+            
+            item = list(event_list.items())[-1]
+            item[1].wait()
+            event_list.pop(item[0])
+            
+            # espere até que todos os eventos sejam executados, e então os remova da lista
+            # for event in event_list.values():
+            #     event.wait()
+            # event_list.clear()
 
-        if len(event_list) != l:
-            self.verify(len(event_list))
-        self.reboot.set()
-        logger.info("Process Verified")
+
+
         
     def start(self):
         logger.info("Process Started")
         self.status = Process.RUNNING
-        self.Chronometer = Chronometer()
-        self.startTiming = self.Chronometer.start().timestamp()
+        # self.Chronometer = Chronometer()
+        # self.startTiming = self.Chronometer.start().timestamp()
         super().start()
 
-    def runningTime(self):
-        try:
-            return float(self.Chronometer.trigger().total_seconds())
-        except AttributeError:
-            return 0.0
+    # def runningTime(self):
+    #     try:
+    #         return float(self.Chronometer.trigger().total_seconds())
+    #     except AttributeError:
+    #         return 0.0
 
     def resume(self):
         self.paused.clear()
         self.resumed.set()
         logger.info("Process Resumed")
         self.status = Process.RUNNING
-        self.Chronometer.resume()
+        # getattr(self, "Chronometer", Chronometer()).resume()
 
     def pause(self):
         self.paused.set()
         logger.info("Process Paused")
         self.status = Process.PAUSED
-        self.Chronometer.pause()
+        # getattr(self, "Chronometer", Chronometer()).pause()
 
     def stop(self, wait=True):
         self.stopped.set()
         self.resume()
         logger.info("Process Stopped")
         self.status = Process.STOPPED
-        self.Chronometer.stop()
-        self.endTiming = self.Chronometer.cron_End.timestamp()
-        if wait:
-            self.join()
+        # getattr(self, "Chronometer", Chronometer()).stop()
+        # self.endTiming = self.Chronometer.cron_End.timestamp()
+        if wait: self.join()
         # Alert("INFO", "Process Stopped", str(self.getStatus()))
 
+    def is_paused(self):
+        return self.paused.is_set()
+
+    def is_stopped(self):
+        return self.stopped.is_set()
+
+    def is_running(self):
+        return not (self.is_stopped() or self.is_paused())
+
+    
+    
     def getStatus(self):
         return {
             "_id": str(self._id),
             "status": self.status,
             "errors": self.errors,
-            "startTiming": self.startTiming,
-            "endTiming": self.endTiming,
-            "runningTime": self.runningTime(),
+            "startTiming": 0.0, #self.startTiming,
+            "endTiming": 0.0, #self.endTiming,
+            "runningTime": 0.0, #self.runningTime(),
         }
 
 
@@ -145,29 +154,45 @@ class sample_process:
     def getLoadedId(self):
         return self.loaded_id
 
-    def start(self):
-        if self.loaded_id is None:
-            self.load()
+    def start(self, _id=None, internal=False):
+        # if self.loaded_id is None:
+        self.process.stop(False)
+        self.load(_id)
         self.process = Process(self.st, *self.args, **self.kwargs)
         self.process.start()
-        #Alert("INFO", "Process Started", str(self.process.getStatus()))
+        if internal:
+            Alert("INFO", "Processo iniciado", "O processo foi iniciado automaticamente")
+        
 
 
-    def pause(self):
+    def pause(self, internal=False):
         NodeManager.pause()
         self.process.pause()
-        #Alert("INFO", "Process Paused", str(self.process.getStatus()))
+        if internal:
+            Alert("INFO", "Processo em pausa", "O processo foi parado automaticamente")
 
-    def resume(self):
+    def resume(self, internal=False):
         NodeManager.resume()
         self.process.resume()
-        #Alert("INFO", "Process Resumed", str(self.process.getStatus()))
+        if internal:
+            Alert("INFO", "Processo em execução", "O processo foi retomado automaticamente")
 
-    def stop(self, wait=True):
+    def stop(self, wait=True, internal=False):
         NodeManager.stop()
         self.process.stop(wait)
-        #Alert("INFO", "Process Stopped", str(self.process.getStatus()))
+        if internal:
+            Alert("INFO", "Processo parado", "O processo foi parado automaticamente")
 
+    def is_paused(self):
+        return self.process.is_paused()
+    
+    def is_running(self):
+        return self.process.is_running()
+    
+    def is_stopped(self):
+        return self.process.is_stopped()
+    
+    
     def dict(self):
         return self.process.getStatus()
 

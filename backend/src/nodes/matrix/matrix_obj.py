@@ -1,13 +1,21 @@
 # from tkinter import Scale
+from asyncio.log import logger
+from hashlib import new
+from re import M
+from tkinter import Y
 from bson import ObjectId
 from src.manager.mongo_manager import CustomEncoder
-from numpy import ndarray, ndenumerate, generic, array, reshape
+from numpy import ndarray, ndenumerate, generic, reshape
 from json import loads, dumps
-import cv2
-from api import logger
-from datetime import datetime
-# ! Slot should be a self-contained class or Node?
+from cv2 import (
+    drawMarker,
+    rectangle,
+    putText,
+    FONT_HERSHEY_SIMPLEX,
+    LINE_AA
+)
 
+from numpy import fliplr, rot90, flipud, array, meshgrid, arange, arange, ndindex
 
 class Slot:
     """
@@ -80,7 +88,7 @@ class Slot:
         **kwargs,
     ):
         self._id = ObjectId(_id)
-        self.scale = kwargs.get("scale", 1)
+        self.scale = kwargs.get("scale", 1.0)
         self.sizes = array(sizes)     * self.scale
         self.borders = array(borders) * self.scale
         self.extra = array(extra)     * self.scale
@@ -88,7 +96,6 @@ class Slot:
         self.position = array(position)
         self.counter = array(counter)
         self.item = item
-        self.width, self.height = sizes[:2]
         M = array(
             list(
                 (p / c) if c > 0 else 0
@@ -115,7 +122,8 @@ class Slot:
         return {i: getattr(self, i) for i in vars(self) if i not in ["_id", "unscaled"] }
 
     def __str__(self) -> str:
-        return f"((item slot) {self.item} at center:{self.center}, position:{self.position[::-1]})"
+        # return f"((item slot) {self.item} at center:{self.center}, position:{self.position[::-1]})"
+        return f"{self.center}"
 
     def __repr__(self):
         return str(self)
@@ -129,6 +137,45 @@ class Slot:
         _["scale"] = self.scale
         return _
 
+
+class matrix_sorter:
+    def __init__(self, matrix):
+        self.matrix = matrix
+    
+    def BRU(m,S=False): return fliplr(rot90(m, 1))
+
+    def BRL(m,S=False): return rot90(m, 2)
+
+    def BLR(m,S=False): return flipud(m)
+
+    def BLU(m, S=False):
+            
+        m = rot90(m,3)
+        print(S)
+        if S:
+            return matrix_sorter.S(m)
+        return m
+
+    def TRB(m,S=False): return rot90(m, 1)
+
+    def TRL(m,S=False): return fliplr(m)
+
+    def TLB(m,S=False): return m.transpose()
+
+    def TLR(m,S=False): return m
+
+    def S(m):
+        s = m.copy()
+        s[1::2, :] = s[1::2, ::-1]
+        return s
+    def get(tag, matrix):
+        return getattr(matrix_sorter, tag[0:3])(matrix, tag[-1] == 'S')
+
+if __name__ == '__main__':
+    m = array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+    print(matrix_sorter.get('BRL', m))
+    print(matrix_sorter.get('TRBS', m))
+    print(matrix_sorter.get('TRL', m))
 
 class Blister:
     """
@@ -165,15 +212,26 @@ class Blister:
      [03,13,23,33]]  i=3, j(x)=0,1,2,3 |\n
     """
 
-    def __init__(self, shape, name, slot_config, _id=None, **kwargs) -> None:
+    def __init__(self, shape, name, slot_config, _id=None, order='TLR', **kwargs) -> None:
         self._id = ObjectId(_id)
         self.slot_config = (
             slot_config if not isinstance(slot_config, Slot) else slot_config.export()
         )
+        
         self.name = name
-        self.shape = shape
+        self.shape = tuple(shape)
         self.kwargs = kwargs
-        self.data = self.generate_data(shape, **self.slot_config)
+        # self.order_matrix = self.re_order(array([*ndindex(self.shape)]).reshape(*shape[::-1],2), order)
+        self.data = self.re_order(self.generate_data(shape, **self.slot_config), order)
+        
+        # print(self.order_matrix)
+        # if order != 'TLR' and order == 'BLUS': #! ONLY WORTKS WITH BLUS AND TLR (WHY?)
+        #     self.data = self.data.reshape(shape)
+        #     # print(self.data)
+        #     for index, value in ndenumerate(self.data.copy()):
+        #         # print(self.data[tuple(self.order_matrix[index])].c)
+        #         self.data[tuple(self.order_matrix[index])] = value
+        #     # print(self.data)
         self.reset_iterator()
 
     def __str__(self) -> str:
@@ -246,10 +304,16 @@ class Blister:
 
     def reset_iterator(self):
         self.iterator = ndenumerate(self.data)
-        return self.iterator
+        # self.iterator = 
+        # pass
+        # self.iterator = ndenumerate(self.order_matrix)
+        # return self.iterator
 
     def __next__(self):
-        return next(self.iterator)
+        # _id = next(self.iterator)
+        return next(self.iterator)#self.data[_id[0], _id[1]]
+        # return self.get_slot(next(self.iterator)).center
+        # return self.get_slot(next(self.iterator))
 
     def __call__(self, y=None, x=None, v=None):
         if y is not None and x is not None:
@@ -261,20 +325,20 @@ class Blister:
 
     def draw(self, image=None, thickness=1, color=(0, 0, 0), **kwargs):
         for _, slot in ndenumerate(self.data):
-            cv2.drawMarker(image, tuple((slot.center[:2].astype(int))), (0, 0, 255), thickness=thickness)
-            cv2.rectangle(image, slot.start, slot.end, color, thickness)
-            cv2.putText(
+            drawMarker(image, tuple((slot.center[:2].astype(int))), (0, 0, 255), thickness=thickness)
+            rectangle(image, slot.start, slot.end, color, thickness)
+            putText(
                 image,
                 str(slot.position[:2]),
                 tuple(
                     (slot.center[:2].astype(int))
                     + [int((slot.width * -1) / 2) + 5, int(slot.height / 4) - 5]
                 ),
-                cv2.FONT_HERSHEY_SIMPLEX,
+                FONT_HERSHEY_SIMPLEX,
                 1.2,
                 color,
                 thickness,
-                lineType=cv2.LINE_AA,
+                lineType=LINE_AA,
             )
         return image
 
@@ -316,39 +380,9 @@ class Blister:
         data["_id"] = self._id
         return data
 
-    def re_order(self, T=False, steps_x=1, flatten=False, start_x=0, x=1, y=None):
-        """
-        Args:
-            T (bool, optional): Tranpose the matrix. Defaults to False.
-
-            flatten (bool, optional): return a flattened array. Defaults to False.
-
-            start_x (int, optional): initial axis x to start manipulate. Defaults to 0.
-
-            steps_x (int, optional): every 'n' x axis will be re_order.
-
-            Defaults to 1 (all), (2 will set even or odds, depends on start_x).
-
-            x (int, optional): directional flux of elements in X axis.
-            Defaults to 1 ( L > R) | -1 (L < R).
-
-            y (_type_, optional): directional flux of elements in Y axis.
-            Defaults to None (Not change).
-
-        Returns:
-            self.data (ndarray): sorted array.
-        """
-        if y is not None:
-            self.data[::] = self.data[::y]
-        if start_x is not None:
-            self.data[start_x::steps_x, ::] = self.data[start_x::steps_x, ::x]
-        if T:
-            self.data = self.data.transpose()
-        if flatten:
-            self.data = self.data.flatten()
-        self.data = reshape(self.data, self.shape[::-1])
-        self.reset_iterator()
-        return self.data
+    @staticmethod
+    def re_order(M, tag='TLR'):
+        return matrix_sorter.get(tag, M)
 
     def __iter__(self):
         return self

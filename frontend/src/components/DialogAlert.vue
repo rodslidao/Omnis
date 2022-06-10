@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-for="alert in alertList" :key="alert.title">
+    <div v-for="(alert, index) in alertList" :key="alert.index">
       <v-row justify="center">
         <!-- <v-dialog v-model="state.dialogAlert.show" persistent max-width="300"> -->
 
@@ -12,21 +12,23 @@
             colored-border
             :type="alert.level"
             elevation="3"
+            width="600px"
           >
             <div class="text-h4 font-weight-thin text-capitalize">
-              {{ alert.description }}
+              {{ alert.title }}
             </div>
+              {{ alert.description }}
 
-            <div>
+            <div v-if="alert.how_to_solve">
               <p class="mt-2">Como Solucionar</p>
               <v-divider></v-divider>
-              <p>{{ alert.how2solve }}</p>
+              <p>{{ alert.how_to_solve }}</p>
 
               <v-divider></v-divider>
             </div>
             <v-row justify="center">
               <v-btn x-large class="mt-4 mb-3" @click="closeDialog">
-                Entendi
+                {{alert.button_text? alert.button_text : 'Entendi'}}
                 <!-- {{ info.buttonText }} -->
               </v-btn>
             </v-row>
@@ -50,7 +52,7 @@ export default {
         title: 'Deu Ruin',
         description: 'the program not started',
         how2solve: 'press restart button',
-        buttonText: 'Ok',
+        button_text: 'Ok',
       },
     };
   },
@@ -70,8 +72,9 @@ export default {
               level
               title
               description
-              how2solve
-              buttonText
+              how_to_solve
+              button_text
+              button_action
             }
           }
         `,

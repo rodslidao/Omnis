@@ -5,7 +5,7 @@ from api.models import NodeSheet
 
 from .nodes.node_manager import NodeManager
 from .nodes.node_registry import NodeRegistry
-# from src.manager.mongo_manager import getDb
+from .nodes.alerts.alert_obj import Alert
 from api import logger, exception, dbo
 
 
@@ -162,24 +162,35 @@ def loadConfig(NodeSheet, mode=LoadingMode):
             )
 
             if existingNode is None:
-                newCls(
-                    node.get("name"),
-                    node.get("id"),
-                    options,
-                    output_connections,
-                    input_connections,
-                )
-                numberOfNodesInit += 1
-                if mode == LoadingMode.RUNNING:
-                    saveNodeChange(
-                        NodeChange(
-                            node.get("id"),
-                            node.get("name"),
-                            NodeChangeType.CREATE,
-                            {},
-                            options.get("settings"),
-                        )
+                try:
+                    newCls(
+                        node.get("name"),
+                        node.get("id"),
+                        options,
+                        output_connections,
+                        input_connections,
                     )
+                    numberOfNodesInit += 1
+                    if mode == LoadingMode.RUNNING:
+                        saveNodeChange(
+                            NodeChange(
+                                node.get("id"),
+                                node.get("name"),
+                                NodeChangeType.CREATE,
+                                {},
+                                options.get("settings"),
+                            )
+                        )
+                except Exception as e:
+                    Alert(
+                        "error",
+                        "Configuração Inválida",
+                        'Não foi possível criar o nó "{}"'.format(
+                            node.get("name")
+                        ),
+                        how_to_solve="Verifique se todos os valores obrigatórios estão presentes",
+                    )
+                    raise
             else:
                 logger.warning("Node {} EXIST!".format(node.get("name")))
                 nodeSettingsChanged = existingNode.options.get(

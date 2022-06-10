@@ -8,3 +8,11 @@ class PauseNode(ProcessNode):
         self.options["action"] = "pause"
         self.options["auto_run"] = False
         super().__init__(name, id, options, output_connections, input_connections)
+
+    # def execute(self, message):
+    #     super().execute(message)
+    #     while not self.process.is_paused():
+    #         if self.process.is_stopped():
+    #             return
+    #     else:
+    #         self.on("Saida", message.payload)

@@ -1,3 +1,4 @@
+from src.nodes.alerts.alert_obj import Alert
 from src.nodes.node_manager import NodeManager
 from starlette.responses import StreamingResponse, JSONResponse
 from starlette.routing import Route
@@ -29,7 +30,6 @@ async def frame_producer(_id='default'):
     while True:
         yield (b"--frame\r\nContent-Type:video/jpeg2000\r\n\r\n" + imencode(".jpg", await reducer(CameraManager.read(_id), percentage=75))[1].tobytes() + b"\r\n")
         await asyncio.sleep(0.00001)
-    logger.warning("FECHANDO STREAM")
 
 async def custom_video_response(scope):
     """

@@ -17,10 +17,10 @@ class SwitchNode(BaseNode):
         self.input_connections = input_connections
         self.variables = list(map(lambda x: x["name"], options["inputlist"]))#[chr(i) for i in range(ord("a"), ord("z") + 1)]
         self.inputs = {}
-        setattr(self, "True", options["onsuccess"])
-        setattr(self, "False", options["onfailure"])
         self.expression = options["expression"]
         self.auto_run = options.get("auto_run", False)
+        self.results = {True:options["onsuccess"], False: options["onfailure"]}
+        self.translator ={"Verdadeiro":True, "Falso":False}
         NodeManager.addNode(self)
 
     @Wizard._decorator
@@ -28,14 +28,10 @@ class SwitchNode(BaseNode):
         target = message.targetName
         if target in self.variables:
             self.inputs[str(target)] = message.payload
-        elif target in ["True", "False"]:
-            setattr(self, target, self.inputs.get(message.payload, message.payload))
-        # elif target == "expression":
+        elif target in ["Verdadeiro", "Falso"]:
+            self.results[self.translator[target]] = message.payload
         result = eval(self.expression, self.inputs.copy())
-        # if result != False:
-        #     logger.warning(list(map(type, self.inputs['A'][1].item)))
-        # opt_result = getattr(self, str(result))
-        self.on("Sucesso" if result else "Falha", True)
+        self.on("Sucesso" if result else "Falha", self.results[result])
 
     @staticmethod
     def get_info(**kwargs):

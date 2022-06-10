@@ -12,11 +12,11 @@ class AlertNode(BaseNode):
         self.level = options["level"]    
         self.title = options["title"]    
         self.description = options["description"]    
-        self.how2solve = options["how2solve"]        
-        self.buttonText = options["buttonText"]        
-        self.buttonAction = options["buttonAction"]        
+        self.how_to_solve = options["how_to_solve"]        
+        self.button_text = options["button_text"]        
+        self.button_action = options["button_action"]        
         NodeManager.addNode(self)
 
     @Wizard._decorator
     def execute(self, message=""):
-        Alert(self.tile, self.level, self.title, self.description, self.how2solve, self.buttonText, self.buttonAction)
+        Alert(self.tile, self.level, self.title, self.description, self.how_to_solve, self.button_text, self.button_action)

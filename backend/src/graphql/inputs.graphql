@@ -33,9 +33,9 @@ input AlertInput {
   level: String!
   title: String!
   description: String!
-  how2solve: String
-  buttonText: String
-  buttonAction: String
+  how_to_solve: String
+  button_text: String
+  button_action: String
 }
 
 input CalibrateRequestInput {

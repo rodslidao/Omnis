@@ -13,8 +13,8 @@
 </template>
 
 <script>
-// import TabMenuNodes from '@/components/nodes/TabMenuNodes.vue';
-import NodeEditor from '@/components/nodes/NodeEditor.vue';
+// import TabMenuNodes from '@/components/node/nodes/TabMenuNodes.vue';
+import NodeEditor from '@/components/node/NodeEditor.vue';
 import { mapState } from 'vuex';
 
 export default {

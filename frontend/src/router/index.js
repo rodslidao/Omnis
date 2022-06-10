@@ -9,7 +9,7 @@ import Scan from '@/views/Scan.vue';
 import Progress from '@/views/Progress.vue';
 import Dashboard from '@/views/Dashboard.vue';
 import NodeWorkspace from '@/views/NodeWorkspace.vue';
-import NodeEditor from '@/components/nodes/NodeEditor.vue';
+import NodeEditor from '@/components/node/NodeEditor.vue';
 
 Vue.use(Router);
 
