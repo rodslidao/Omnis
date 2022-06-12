@@ -26,6 +26,11 @@ const routes = [
     component: Settings,
   },
   {
+    name: 'settings',
+    path: '/settings',
+    component: Settings,
+  },
+  {
     name: 'intro-logo',
     path: '/',
     component: IntroLogo,
