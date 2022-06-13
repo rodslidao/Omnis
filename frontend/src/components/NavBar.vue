@@ -7,7 +7,7 @@
           icon
           @click="$router.go(-1)"
           alt
-          v-if="$route.name == 'settings'"
+          v-if="$route.name == 'config'"
         >
           <v-icon>mdi-arrow-left</v-icon>
         </v-btn>
