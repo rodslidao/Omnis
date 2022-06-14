@@ -1,3 +1,4 @@
+from src.nodes.alerts.alert_obj import Alert
 from src.message import Message
 from src.nodes.node_manager import NodeManager
 from api import logger, exception
@@ -5,30 +6,46 @@ from api.decorators import for_all_methods
 from api.store import nodes
 from api.subscriptions import SubscriptionFactory
 from threading import Event
-from time import sleep
 
 from threading import Thread, Event, Lock
+
 NODE_TYPE = "BASE_NODE"
-rtc_status = SubscriptionFactory(nodes, 'nodes')     
+rtc_status = SubscriptionFactory(nodes, "nodes")
 
 CKL = Lock()
-event_list = {}
+# event_list = {}
+import queue
+event_list = queue.Queue()
+from src.nodes.process.process import process
+
 class Wizard(object):
     def _decorator(exteral_execution):
-        def magic( self, message):
+        def magic(self, message):
             try:
-                event_list[message._id] = Event()
-                exteral_execution( self, message)
+                # CKL.acquire()
+                
+                # event_list[message._id] = Event()
+                # CKL.release()
+                exteral_execution(self, message)
+                event_list.get()
+            except Exception as e:
+                Alert("error", "Falha durante o processo", "Erro: {}".format(e))
+                process.stop()
+                raise e
             finally:
-                event_list[message._id].set()
+                event_list.task_done()
+                # event_list[message._id].set()
+
         return magic
-    _decorator = staticmethod( _decorator )
+
+    _decorator = staticmethod(_decorator)
 
     @_decorator
-    def execute( self ) :
+    def execute(self):
         logger.error("normal call")
 
-    _decorator = staticmethod( _decorator )
+    _decorator = staticmethod(_decorator)
+
 
 @for_all_methods(exception(logger))
 class BaseNode(Wizard):
@@ -66,9 +83,7 @@ class BaseNode(Wizard):
         self.output_connections = output_connections
         self.running = True
         self.stop_event = Event()
-        self.update_status({
-            "status": "LOADED"
-        })
+        self.update_status({"status": "LOADED"})
         self.auto_run = options.get("auto_run", False)
         logger.info("[%s] Node loaded", self)
 
@@ -82,19 +97,18 @@ class BaseNode(Wizard):
         self.on("onFailure", payload, additional, pulse)
 
     def on(self, trigger, payload, additional=None, pulse=False, errorMessage=""):
-        targets = list(
+        # targets =
+        # if pulse:
+        #     self.sendErrorMessage(self._id, errorMessage)
+        for target in list(
             filter(
                 lambda connection: connection.get("from").get("name") == trigger,
                 self.output_connections,
             )
-        )
-        if pulse:
-            self.sendErrorMessage(self._id, errorMessage)
-        for target in targets:
-            self.sendConnectionExec(
-                target.get("from").get("id"), target.get("to").get("id")
-            )
-            node_to_run = NodeManager.getNodeById(target.get("to").get("nodeId"))
+        ):
+            # self.sendConnectionExec(
+            #     target.get("from").get("id"), target.get("to").get("id")
+            # )
             message = Message(
                 target.get("from").get("id"),
                 target.get("to").get("id"),
@@ -105,6 +119,8 @@ class BaseNode(Wizard):
                 payload,
                 additional,
             )
+            # event_list.setdefault(message._id, Event())
+            node_to_run = NodeManager.getNodeById(target.get("to").get("nodeId"))
 
             if not self.running:
                 node_to_run.update_status({"status": "PAUSED"})
@@ -113,9 +129,26 @@ class BaseNode(Wizard):
                 if self.stop_event.isSet():
                     return self.resume()
 
+            logger.info(f"[{self}] Sending message to node [{node_to_run}]")
             if node_to_run and not self.stop_event.isSet():
-                self.update_status({"status": "SENDING", "message":{"from":target.get("from").get("id"), "to":target.get("to").get("id")}})
-                Thread(target=node_to_run.execute, args=(message,), name=f"{str(self)}({message.sourceName}) -> {message}", daemon=True).start()
+                event_list.put(message._id)
+                self.update_status(
+                    {
+                        "status": "SENDING",
+                        "message": {
+                            "from": target.get("from").get("id"),
+                            "to": target.get("to").get("id"),
+                        },
+                    }
+                )
+                Thread(
+                    target=node_to_run.execute,
+                    args=(message,),
+                    name=f"{str(self)}({message.sourceName}) -> {message}",
+                    daemon=True,
+                ).start()
+            # logger.warning(event_list.get(str(message._id), 'Não foi criado, posivel falha..'))
+            # logger.warning(event_list[str(message._id)+'before'].is_set())
 
     def AutoRun(self):
         message = Message(
@@ -139,8 +172,7 @@ class BaseNode(Wizard):
         }
         rtc_status.put(self.info)
         return self.info
-        
-    
+
     def update_status(self, info):
         self.status = info
         self.who_am_i()
@@ -176,7 +208,7 @@ class BaseNode(Wizard):
         }
 
     def __str__(self) -> str:
-        return f"[{self.type}|{self._id}|{self.name}]"
+        return f"[{self.type}|{self.name}]"
 
     def to_dict(self):
         return {
@@ -185,10 +217,10 @@ class BaseNode(Wizard):
             "options": self.options,
             "output_connections": self.output_connections,
         }
-    
+
     def __repr__(self):
         return self.__str__()
-        
+
     @staticmethod
     def normalize_id_on_dict(dictionary):
         temp = dictionary.copy()

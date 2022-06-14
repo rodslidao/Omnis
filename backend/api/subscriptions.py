@@ -24,11 +24,15 @@ class SubscriptionFactory:
             queue = asyncio.Queue()
             self.store.append(queue)
             try:
-                while True:
+                while not queue.empty():
                     yield await queue.get()
-            except asyncio.CancelledError:
+            except asyncio.exceptions.CancelledError:
+                pass
+            except Exception as e:
+                queue.task_done()
+                raise    
+            finally:
                 self.store.remove(queue)
-                raise
 
         @subscription.field(self.name)
         async def sub_resolver(obj, info):

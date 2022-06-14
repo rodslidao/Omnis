@@ -44,6 +44,8 @@ class Camera(CamGear):
         self.config = options.get("config")
         self.aruco_parms = DetectorParameters_create()
         self.aruco_dict = Dictionary_get(ARUCO_DICT.get(self.config.get("marker_type")))
+        self.fail_count = 0
+        self.fail_limit = 3
         # if not disable:
         #     print(options.get("props"))
         #     self.distortion_obj = dbo.find_one(
@@ -79,8 +81,23 @@ class Camera(CamGear):
     # def run(self):
     #     try:
     #         super().run()
-
-
+    def run(self):
+        try:
+            super().run()
+        except (error, RuntimeError):
+            logger.warning("Camera não sem sinal, tentando conserto automatico...")
+            self.fail_count += 1
+            if self.fail_count >= self.fail_limit:
+                logger.warning("Camera não sem sinal, reiniciando...")
+                self.fail_count = 0
+                self.stop()
+                self.start()
+            else:
+                self.run()
+            # super().stop()
+            # continue
+            # super().__init__(self.source, **self.opt.get("props"))
+    #Corrupt JPEG data: premature end of data segment
     def read(self):
         # if self.marker_len:
         #     return undistort(super().read(), self.mtx, self.dist, None)

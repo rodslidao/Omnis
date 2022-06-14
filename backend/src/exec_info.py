@@ -1,6 +1,5 @@
 from .nodes.node_manager import NodeManager
 from datetime import datetime
-from time import sleep
 
 RedisClient = None
 
@@ -52,7 +51,8 @@ class ExecutionCounter(object):
     def initialEmitAllCounts():
         activeNodes = NodeManager.getActiveNodes()
         for node in activeNodes:
-            sleep(2)
+            # sleep(2)
+            pass
             # ExecutionCounter.sendExecutionCountWithoutInfo(node.id)
             # print("Send here to front 'sendExecutionCountWithoutInfo(node.id)' ")
 

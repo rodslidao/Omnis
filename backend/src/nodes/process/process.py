@@ -11,7 +11,7 @@ from api.decorators import for_all_methods
 from src.loader import load as load_conf
 from src.nodes.base_node import event_list
 
-@for_all_methods(exception(logger))
+# @for_all_methods(exception(logger))
 class Process(threading.Thread):
     RUNNING = "RUNNING"
     STOPPED = "STOPPED"
@@ -33,17 +33,18 @@ class Process(threading.Thread):
         self.kwargs = kwargs
 
     def run(self):
-        while not self.stopped.is_set():
-            while self.paused.is_set():
-                logger.info("Process Paused - loop_info")
-                self.resumed.wait()
-                logger.info("Process Resumed - loop_info")
-                self.resumed.clear()
-        # for i in range(2):
-            if not self.stopped.is_set() and not self.paused.is_set():
-                self.target(*self.args, **self.kwargs)
-                self.wait_process_end()
-                logger.info("Process END [reseting] - loop_info")
+        # while not self.stopped.is_set():
+        while self.paused.is_set():
+            logger.info("Process Paused - loop_info")
+            self.resumed.wait()
+            logger.info("Process Resumed - loop_info")
+            self.resumed.clear()
+    # for i in range(2):
+        if not self.stopped.is_set() and not self.paused.is_set():
+            self.target(*self.args, **self.kwargs)
+            event_list.join()
+            # self.wait_process_end()
+            logger.info("Process END [reseting] - loop_info")
         logger.info("Process Thread Stopped - Normally")
 
 
@@ -95,7 +96,7 @@ class Process(threading.Thread):
         self.status = Process.STOPPED
         # getattr(self, "Chronometer", Chronometer()).stop()
         # self.endTiming = self.Chronometer.cron_End.timestamp()
-        if wait: self.join()
+        if wait: self.join(5)
         # Alert("INFO", "Process Stopped", str(self.getStatus()))
 
     def is_paused(self):

@@ -1,5 +1,4 @@
 from cmath import log
-from time import sleep
 from src.nodes.node_manager import NodeManager
 from src.nodes.base_node import BaseNode, Wizard
 from src.manager.serial_manager import SerialManager
@@ -29,7 +28,6 @@ class MovementNode(BaseNode):
         self.coordinates = {}
         self.wait_for_this = [{k.lower():v for k,v in x['to'].items() if k == "name"} for x in self.input_connections]
         self.wait_checks = 0
-        logger.error(self.wait_for_this)
         for axi in options["axislist"]:
             if axi["isActive"]:
                 self.axis.append(axi["name"].lower())
@@ -41,7 +39,7 @@ class MovementNode(BaseNode):
 
     @Wizard._decorator
     def execute(self, message):
-        logger.info(f"{self.name} received message: {message}")
+        # logger.info(f"{self.name} received message: {message}")
         action = message.targetName.lower()
         if action in self.axis:
             self.coordinates[action] = message.payload
@@ -82,7 +80,6 @@ class MovementNode(BaseNode):
                 self.serial.send("G90", log=False)
             # logger.info(f"coords: {movement}")
             self.serial.M_G0(*movement, sync=True)
-            # sleep(t)
             self.on("Sucesso", self.serial_id)
 
         else:

@@ -99,6 +99,7 @@ class MatrixNode(BaseNode):
             "origin": convert_to_array(options["matrix"]["origin"]),
             "counter": convert_to_array(slots["qtd"], int),
             "extra": convert_to_array(subdivisions["margin"]),
+            "scale": float(options["matrix"]["scale"])
         }
         logger.info(f"{slot_config}, {shape}")
         self.blister = Blister(shape=shape, name=options["matrix"]["name"], _id=options["matrix"]["id"],  slot_config=slot_config, order=options["matrix"]["order"])
@@ -113,7 +114,7 @@ class MatrixNode(BaseNode):
           case "reset":
               if isinstance(message.payload, Blister):
                   self.blister.update_data(message.payload.data)
-                  return self.item()
+                  # return self.item()
 
           case "próximo":
               return self.item()
@@ -171,7 +172,8 @@ class MatrixNode(BaseNode):
                 "qtd": set_X_Y(sub.astype(int).tolist()),
                 "margin": set_X_Y(blister["slot_config"]["extra"]),
             },
-            "origin": set_X_Y(blister["slot_config"]["origin"][:2])
+            "origin": set_X_Y(blister["slot_config"]["origin"][:2]),
+            "scale": blister["slot_config"]["scale"]
         }
 
 

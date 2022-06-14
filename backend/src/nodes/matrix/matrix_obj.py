@@ -123,7 +123,7 @@ class Slot:
 
     def __str__(self) -> str:
         # return f"((item slot) {self.item} at center:{self.center}, position:{self.position[::-1]})"
-        return f"{self.center}"
+        return f"{self.center if not self.item else self.item}"
 
     def __repr__(self):
         return str(self)

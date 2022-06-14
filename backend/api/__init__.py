@@ -53,8 +53,7 @@ mangers = {
 # Managers_Import(mangers)
 def automatic_classes():
     Thread(target=Managers_Import, args=(mangers,)).start()
-
-
+                
 # options = {
 #     "custom_stream": CameraManager,
 #     "custom_data_location": "./",
