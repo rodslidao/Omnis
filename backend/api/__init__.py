@@ -2,7 +2,6 @@ from os import environ
 from platform import system
 from threading import Thread
 from dotenv import load_dotenv
-from vidgear.gears.asyncio import WebGear
 from .log import logger, exception, custom_handler, logger, levels, lvl
 from .decorators import for_all_methods
 
@@ -50,19 +49,5 @@ mangers = {
     "serial-manager": {"manager": SerialManager, "class": [Serial, SerialGcodeOBJ]},
 }
 
-# Managers_Import(mangers)
 def automatic_classes():
     Thread(target=Managers_Import, args=(mangers,)).start()
-                
-# options = {
-#     "custom_stream": CameraManager,
-#     "custom_data_location": "./",
-#     "frame_size_reduction": 50,
-#     "jpeg_compression_quality": 21,
-# }
-
-# stremer = WebGear(logging=True)
-# stremer = WebGear_RTC(logging=True, **options)
-
-# ATTRS{idVendor}=="0c45"
-# ATTRS{idProduct}=="636d"

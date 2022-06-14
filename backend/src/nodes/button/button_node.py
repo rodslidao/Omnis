@@ -32,5 +32,4 @@ class ButtonNode(BaseNode):
         """
         Resets the node.
         """
-        # ExecutionCounter.resetCountType(self._id)
         return True

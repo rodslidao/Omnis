@@ -49,11 +49,6 @@ class HsvNode(BaseNode):
             self.color_range = message.payload
         elif target == "imagem":
             self.image = message.payload
-            imwrite("filter.jpg", self.convert_frame(
-                    self.image,
-                    self.color_range["lower"],
-                    self.color_range["upper"],
-                ))
             self.on("Saida", self.convert_frame(
                     self.image,
                     self.color_range["lower"],

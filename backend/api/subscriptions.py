@@ -25,12 +25,11 @@ class SubscriptionFactory:
             self.store.append(queue)
             try:
                 while not queue.empty():
-                    yield await queue.get()
+                    value = await queue.get()
+                    queue.task_done()
+                    yield value
             except asyncio.exceptions.CancelledError:
-                pass
-            except Exception as e:
-                queue.task_done()
-                raise    
+                pass   
             finally:
                 self.store.remove(queue)
 
@@ -38,10 +37,10 @@ class SubscriptionFactory:
         async def sub_resolver(obj, info):
             return obj
 
-    def put(self, alert):
+    def put(self, info):
         """
-        Put alert to queue without await
+        Send a message to the subscription queue.
+        info (dict): message to be sent.
         """
         for queue in self.store:
-            # logger.info(alert.__dict__)
-            queue.put_nowait(dict(alert.items()))
+            queue.put(dict(info.items()))

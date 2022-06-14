@@ -49,7 +49,6 @@ class Alert:
     def __repr__(self) -> str:
         return str(self)
 
-    # @classmethod
     def items(self):
         """
         Return a dictionary representation of the Alert object.

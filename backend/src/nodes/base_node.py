@@ -7,25 +7,20 @@ from api.store import nodes
 from api.subscriptions import SubscriptionFactory
 from threading import Event
 
-from threading import Thread, Event, Lock
+from threading import Thread, Event
+
+import queue
+event_list = queue.Queue()
+
+from src.nodes.process.process import process
 
 NODE_TYPE = "BASE_NODE"
 rtc_status = SubscriptionFactory(nodes, "nodes")
-
-CKL = Lock()
-# event_list = {}
-import queue
-event_list = queue.Queue()
-from src.nodes.process.process import process
 
 class Wizard(object):
     def _decorator(exteral_execution):
         def magic(self, message):
             try:
-                # CKL.acquire()
-                
-                # event_list[message._id] = Event()
-                # CKL.release()
                 exteral_execution(self, message)
                 event_list.get()
             except Exception as e:
@@ -34,8 +29,6 @@ class Wizard(object):
                 raise e
             finally:
                 event_list.task_done()
-                # event_list[message._id].set()
-
         return magic
 
     _decorator = staticmethod(_decorator)
@@ -97,18 +90,13 @@ class BaseNode(Wizard):
         self.on("onFailure", payload, additional, pulse)
 
     def on(self, trigger, payload, additional=None, pulse=False, errorMessage=""):
-        # targets =
-        # if pulse:
-        #     self.sendErrorMessage(self._id, errorMessage)
         for target in list(
             filter(
                 lambda connection: connection.get("from").get("name") == trigger,
                 self.output_connections,
             )
         ):
-            # self.sendConnectionExec(
-            #     target.get("from").get("id"), target.get("to").get("id")
-            # )
+
             message = Message(
                 target.get("from").get("id"),
                 target.get("to").get("id"),
@@ -119,7 +107,7 @@ class BaseNode(Wizard):
                 payload,
                 additional,
             )
-            # event_list.setdefault(message._id, Event())
+
             node_to_run = NodeManager.getNodeById(target.get("to").get("nodeId"))
 
             if not self.running:
@@ -147,8 +135,7 @@ class BaseNode(Wizard):
                     name=f"{str(self)}({message.sourceName}) -> {message}",
                     daemon=True,
                 ).start()
-            # logger.warning(event_list.get(str(message._id), 'Não foi criado, posivel falha..'))
-            # logger.warning(event_list[str(message._id)+'before'].is_set())
+                
 
     def AutoRun(self):
         message = Message(

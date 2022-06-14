@@ -48,15 +48,6 @@ class ExecutionCounter(object):
         RedisClient.set(execInfoString, value)
 
     @staticmethod
-    def initialEmitAllCounts():
-        activeNodes = NodeManager.getActiveNodes()
-        for node in activeNodes:
-            # sleep(2)
-            pass
-            # ExecutionCounter.sendExecutionCountWithoutInfo(node.id)
-            # print("Send here to front 'sendExecutionCountWithoutInfo(node.id)' ")
-
-    @staticmethod
     def resetCount(nodeId):
         execInfoTrigger = f"exec_info_trigger_{nodeId}"
         execInfoSuccess = f"exec_info_success_{nodeId}"
@@ -74,7 +65,6 @@ class ExecutionCounter(object):
 
         payload = NodeExecutionCount("ExecutionCount", nodeId, 0, 0, 0, 0, "-", "-")
         return payload
-        # emit("EXEC_COUNT", payload)
 
     @staticmethod
     def sendExecutionCountWithoutInfo(nodeId):

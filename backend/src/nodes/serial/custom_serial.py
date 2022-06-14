@@ -163,8 +163,7 @@ class Serial(_Serial):
     def write(self, payload):
         try:
             send_lock.acquire()
-            # if payload != self.last_value_send:
-            logger.info(f"{self.name} send: {payload}")
+            if payload != self.last_value_send: logger.info(f"{self.name} send: {payload}")
             super().write((f"{payload}\n").encode("ascii"))
         finally:
             send_lock.release()
@@ -175,7 +174,6 @@ class Serial(_Serial):
         lines = []
         _b = self.readline()
         while _b != b"" or self.inWaiting() != 0:
-            logger.info(f"{self.name} received: {_b}")
             if len(lines) < 200:
                 lines.append(_b.decode("ascii").rstrip())
             _b = self.readline()
