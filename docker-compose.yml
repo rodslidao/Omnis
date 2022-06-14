@@ -46,7 +46,8 @@ services:
     privileged: true
     container_name: backend
     image: omnisofc/backend:latest
-    build: ./backend
+    build:
+      context: ./backend
     restart: always
     ports:
       - ${STREAMING_PORT}:${STREAMING_PORT}
@@ -68,15 +69,15 @@ services:
       # - "/dev/video4:/dev/video4"
     volumes:
       # Share /dev is insecure but is required for the camera and serial devices that not has connected to the host. ( disable this if all devices are connected to the host )
-      - /dev:/dev
       - ./backend:/app
       - /home/ubuntu/.url_host:/app/.url_host
+      - /dev:/dev
     command: python main.py
     # depends_on:
     #   - mongo-express
       
   frontend:
-    profiles: ["prod", "dev"]
+    profiles: ["prod"]
     privileged: true
     container_name: frontend
     image: omnisofc/frontend:latest
