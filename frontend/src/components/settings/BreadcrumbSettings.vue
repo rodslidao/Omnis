@@ -1,25 +1,37 @@
 <template>
   <!-- <div class=" align-center"> -->
   <div class="d-flex align-center">
-    <v-btn icon @click="$router.go(-1)" alt v-if="$route.name !== 'settings'">
+    <v-btn
+      icon
+      large
+      class="mr-n4"
+      @click="$router.back()"
+      alt
+      v-if="$router.currentRoute.name !== 'default'"
+    >
       <v-icon>mdi-chevron-left</v-icon>
     </v-btn>
     <!-- <div class="text-h4">{{ $route.name }}</div> -->
     <v-breadcrumbs :items="crumbs">
       <template v-slot:item="{ item }" class="text">
-        <v-breadcrumbs-item
-          :href="item.to"
-          :class="$router.currentRoute.name == item.path ? 'text-h5 text--primary' : 'text--grey'"
-        >
-          {{ item.text.toUpperCase() }}
+        <v-breadcrumbs-item :href="item.to">
+          <span
+            :class="
+              $router.currentRoute.name == item.path
+                ? 'text-h4 text--primary'
+                : 'text-h6 text--grey'
+            "
+            >{{ item.text }}</span
+          >
         </v-breadcrumbs-item>
       </template>
       <template v-slot:divider>
         <v-icon>mdi-chevron-right</v-icon>
       </template>
     </v-breadcrumbs>
+    <div></div>
   </div>
-</template>D
+</template>
 
 <script>
 import { menuList } from '@/components/settings/menuDescription';
@@ -44,15 +56,15 @@ export default {
   },
   computed: {
     crumbs() {
-      let pathArray = this.$route.path.split('/');
+      const pathArray = this.$route.path.split('/');
       pathArray.shift();
       console.log(pathArray);
-      let breadcrumbs = pathArray.reduce((breadcrumbArray, path, idx) => {
+      const breadcrumbs = pathArray.reduce((breadcrumbArray, path, idx) => {
         breadcrumbArray.push({
-          path: path,
+          path,
           to: breadcrumbArray[idx - 1]
-            ? '/' + breadcrumbArray[idx - 1].path + '/' + path
-            : '/' + path,
+            ? `/${breadcrumbArray[idx - 1].path}/${path}`
+            : `/${path}`,
           text: this.$route.matched[idx].meta.breadCrumb || path,
         });
         return breadcrumbArray;
@@ -63,7 +75,4 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-.text a {
-  color: rgb(250, 0, 125);
-}
 </style>

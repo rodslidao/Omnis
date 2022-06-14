@@ -18,11 +18,11 @@ import System from '@/views/settings/System.vue';
 import Support from '@/views/settings/Support.vue';
 import Process from '@/views/settings/Process.vue';
 import MatrixDirectionSelector from '@/components/node/config/matrix/MatrixDirectionSelector.vue';
+import Users from '@/views/settings/Users.vue';
 
 Vue.use(Router);
 
 const routes = [
-  
   {
     name: 'home',
     path: '/home',
@@ -33,7 +33,7 @@ const routes = [
     path: '/config',
     component: Settings,
     meta: {
-      breadCrumb: 'Configurações', //crumb
+      breadCrumb: 'Configurações',
     },
     children: [
       {
@@ -63,6 +63,14 @@ const routes = [
         path: 'devices',
         meta: {
           breadCrumb: 'Dispositivos',
+        },
+      },
+      {
+        name: 'users',
+        component: Users,
+        path: 'users',
+        meta: {
+          breadCrumb: 'Usuários',
         },
       },
       {
@@ -145,6 +153,6 @@ const routes = [
   // },
 ];
 
-const router = new Router({...{ mode: 'history'}, routes });
+const router = new Router({ ...{ mode: 'history' }, routes });
 
 export default router;

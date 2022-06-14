@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="process">
     <router-view> </router-view>
     <settings-items
       class="mb-4"
@@ -27,7 +27,7 @@ export default {
           subtitle: 'Gerência seus nós',
           // icon: 'application-brackets',
           icon: 'application',
-          path: '/nodes',
+          path: '/node',
         },
         {
           title: 'Matriz',
@@ -35,6 +35,12 @@ export default {
           // icon: 'application-brackets',
           icon: 'grid',
           path: 'process/matrix',
+        },
+        {
+          title: 'Processos',
+          subtitle: 'Gerência seus processos',
+          icon: 'cog',
+          path: 'process/process',
         },
       ],
     };
@@ -47,5 +53,10 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss" scoped>
+.process {
+  overflow: auto;
+  padding: 0.5rem;
+  height: calc(100vh - 12rem);
+}
 </style>

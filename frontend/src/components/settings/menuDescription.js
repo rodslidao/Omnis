@@ -12,8 +12,9 @@ export const menuList = [
     ],
   },
   { title: 'Dispositivos', icon: 'devices', path: '/devices' },
-  { title: 'Rede & Internet ', icon: 'wifi', path: '/network' },
   { title: 'Processo', icon: 'robot-industrial', path: '/process' },
+  { title: 'Usuários', icon: 'account', path: '/users' },
+  { title: 'Rede & Internet ', icon: 'wifi', path: '/network' },
   { title: 'Suporte', icon: 'handshake-outline', path: '/support' },
 ];
 

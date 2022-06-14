@@ -1,5 +1,5 @@
 <template>
-  <div class="pt-10 d-flex">
+  <div class="pt-10 d-flex settings">
     <!-- <v-card elevation="12" width="256"> -->
     <v-navigation-drawer floating permanent width="350">
       <div class="user mx-4 ">
@@ -110,6 +110,11 @@ export default {
   width: 100%;
   margin-bottom: 2rem;
 }
+
+.settings{
+  height: 100%;
+}
+
 .setting-content {
   width: 100%;
   height: 100%;
