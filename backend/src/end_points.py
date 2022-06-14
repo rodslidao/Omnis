@@ -42,10 +42,3 @@ async def custom_video_response(scope):
         frame_producer(scope.path_params.get('video_id', 'default')),
         media_type="multipart/x-mixed-replace; boundary=frame",
     )
-
-# imgRoute = [Route("/{img_name}", endpoint=frameReader)]
-
-# videoRoute = [
-#     # Route("/node_frame/{node_id}", endpoint=nodeVideoFeed),
-#     # Route("/{video_id}", endpoint=videoFeed, methods=["GET", "POST"]),
-# ]

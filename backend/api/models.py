@@ -33,7 +33,6 @@ class NodeSheet:
         """Save a NodeSheet object"""
         target = dbo.find_one("node-sheets", {"_id": ObjectId(_id)}) is None
         kwargs_whiout_empty = {k: v for k, v in kwargs.items() if v}
-        # kwargs_whiout_empty["last_access"] = datetime.utcnow().timestamp()
         if kwargs_whiout_empty.get("content"):
             kwargs_whiout_empty["node_qtd"] = len(kwargs_whiout_empty["content"]["nodes"])
         if target:

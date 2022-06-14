@@ -100,7 +100,6 @@ class MongoOBJ:
         try:
             return self.dbo[collection_name].insert_one(data)
         except InvalidDocument:
-            # logger.critical(f"Invalid document: {data}")
             return self.dbo[collection_name].insert_one(
                 loads(dumps(data, cls=CustomEncoder))
             )

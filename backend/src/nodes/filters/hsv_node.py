@@ -14,7 +14,8 @@ from cv2 import (
     FONT_HERSHEY_SIMPLEX,
     putText,
     imread,
-    resize
+    resize,
+    imwrite
 )
 
 from numpy import array
@@ -37,7 +38,7 @@ class HsvNode(BaseNode):
         self.update_options(options)
         self.auto_run = options.get("auto_run", False)
         self.image = CameraManager.read()
-        logger.warning(f"name: {name}, options: {options}")
+        # logger.warning(f"name: {name}, options: {options}")
         NodeManager.addNode(self)
         CameraManager.add(self)
 
@@ -70,7 +71,7 @@ class HsvNode(BaseNode):
                 ))
 
     def update_options(self, options):
-        logger.info(f"options: {options}")
+        # logger.info(f"options: {options}")
         self.color_range = {
             "lower": ColorOBJ(options["lower"]["rgb"], "RGB").get("CV2_HSV"),
             "upper": ColorOBJ(options["upper"]["rgb"], "RGB").get("CV2_HSV"),

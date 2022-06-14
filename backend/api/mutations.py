@@ -153,7 +153,7 @@ def createCamera_resolver(obj, info, **kwargs):
 @mutation.field("startCamera")
 def startCamera_resolver(obj, info, _id):
     """Start a camera by id and return it like a payload"""
-    camera = (CameraManager.get_by_id(_id)).start()
+    camera = (CameraManager.get_by_id(_id))
     returns = camera.to_dict()
     return {"data": returns}
 
@@ -193,7 +193,7 @@ def createSerial_resolver(obj, info, **kwargs):
 @mutation.field("startSerial")
 def startSerial_resolver(obj, info, _id):
     """Start a serial by id and return it like a payload"""
-    serial = SerialManager.get_by_id(_id).start()
+    serial = SerialManager.get_by_id(_id)
     returns = serial.to_dict()
     return  returns
 
