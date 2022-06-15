@@ -239,7 +239,7 @@ export default {
           sent: false,
           message: newData.data.sendSerial.last_value_received,
         });
-        this.scrollToBottom();
+        // this.scrollToBottom();
       }
     },
     getSerials() {

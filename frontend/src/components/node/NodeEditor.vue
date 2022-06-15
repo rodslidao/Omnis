@@ -2,6 +2,9 @@
   <div class="background" ref="container">
     <span style="display: none">{{ selectedTabIndex }}</span>
     <baklava-editor :plugin="viewPlugin" class="baklava-editor" />
+      <Cartesian3D class="cartesian"></Cartesian3D>
+    <!-- <UseDraggable class="cartesian" :initialValue="{ x: 100, y: 100 }" v-slot="{ x, y }">
+    </UseDraggable> -->
     <side-menu class="side-menu"></side-menu>
     <ActionMenuForNodes
       :editor="editor"
@@ -27,6 +30,9 @@ import { mapActions, mapState } from 'vuex';
 
 import StartNode from '@/components/node/nodes/inputs/StartNode';
 import SideMenu from '@/components/node/sideMenu/sideMenu.vue';
+import Cartesian3D from '@/components/node/Cartesian3d.vue';
+
+import { useDraggable } from '@vueuse/core';
 
 // Custom Baklava Components
 import CustomContextMenu from '@/components/node/custom/CustomContextMenu.vue';
@@ -48,6 +54,8 @@ export default {
   components: {
     ActionMenuForNodes,
     SideMenu,
+    Cartesian3D,
+    useDraggable,
   },
 
   computed: {
@@ -191,7 +199,7 @@ export default {
     this.addNodeWithCoordinates(
       StartNode,
       this.$refs.container.clientWidth / 2 - 100,
-      this.$refs.container.clientHeight / 2 - 100,
+      this.$refs.container.clientHeight / 2 - 100
     );
   },
 
@@ -256,6 +264,13 @@ export default {
   // background-color: red;
 }
 
+.cartesian {
+  position: absolute;
+  // z-index: 9999;
+  top: 0;
+  left: 79px;
+}
+
 .v-dialog__content {
   padding-bottom: 35px;
   padding-top: 75px;
@@ -266,8 +281,8 @@ export default {
 }
 
 .action-buttons {
-  bottom: 0;
-  right: 0;
+  bottom: 16px;
+  left: 16px;
   position: absolute;
   // margin: 0 0 32px 16px;
   z-index: 9999;
