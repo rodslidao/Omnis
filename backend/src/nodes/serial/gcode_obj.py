@@ -1,7 +1,13 @@
+from cv2 import log
 from .custom_serial import Serial
 from api import logger, exception
 from api.decorators import for_all_methods
 from api import logger
+from threading import Event
+# from src.utility.system.sleep_alternative import sleep
+from time import sleep
+
+#! SLEEP WILL TRIGGER SEGFALUT ERROR, DONT USE.
 
 @for_all_methods(exception(logger))
 class SerialGcodeOBJ(Serial):
@@ -21,6 +27,9 @@ class SerialGcodeOBJ(Serial):
         is_gcode=True,
         disabled=False,
         _id=None,
+        startup_commands=[
+            "G28",
+        ]
     ):
         super().__init__(
             port,
@@ -37,16 +46,19 @@ class SerialGcodeOBJ(Serial):
             is_gcode=True,
             _id=_id,
         )
-        self.paused = False
-        self.paused_permission = ["stop", "kill", "quick_stop", "resume"]
+        self.resumed = Event()
+        self.resumed_permission = ["stop", "kill", "quick_stop", "resume"]
+    
+        for msg in startup_commands:
+            self.send(msg)
+
         self.resume()
 
     def verify(function):
         def wrapper(self, *args, **kwargs):
-            if self.paused or not self.is_open:
-                return
+            if not self.is_open: return
+            # self.resumed.wait()
             return function(self, *args, **kwargs)
-
         return wrapper
 
     @verify
@@ -70,25 +82,26 @@ class SerialGcodeOBJ(Serial):
                 )
             )
         except ValueError:  # ! Why this error?
-            print("\n" * 3, echo)
-            return self.M114(_type, sequence)
+            logger.info('[SerialGcodeOBJ] M114 error: "{}"'.format(echo))
+            raise
+            # return self.M114(_type, sequence)
 
-    @verify
-    def M119(self, cut=": "):
-        """
-        Get status of endstops.
-        """
-        pos = []
-        key = []
-        for _ in range(2):
-            Echo = (self.send("M119", echo=True))[1:-1]
-        for info in Echo:
-            try:
-                pos.append(info[info.index(cut) + len(cut) : len(info)])
-                key.append(info[: info.index(cut)])
-            except ValueError as e:  # ! Why this error?
-                logger.error(f"{self.name} - {info} : {e}")
-        return dict(zip(key, pos))
+    # @verify
+    # def M119(self, cut=": "):
+    #     """
+    #     Get status of endstops.
+    #     """
+    #     pos = []
+    #     key = []
+    #     for _ in range(2):
+    #         Echo = (self.send("M119", echo=True))[1:-1]
+    #     for info in Echo:
+    #         try:
+    #             pos.append(info[info.index(cut) + len(cut) : len(info)])
+    #             key.append(info[: info.index(cut)])
+    #         except ValueError as e:  # ! Why this error?
+    #             logger.error(f"{self.name} - {info} : {e}")
+    #     return dict(zip(key, pos))
 
     @verify
     def G28(
@@ -140,33 +153,31 @@ class SerialGcodeOBJ(Serial):
         # Send machine to the coordinate string
         self.send(f"G0 {cords}")
 
-        # if does not have a wait parameter, return.
-        if not kwargs.get("sync"):
-            return
-
         # Split the atual and future position in 2 lists.
-        future, real = self.M114(), self.M114("R")
-        a, b = [v for v in future.values()], [v for v in real.values()]
+    
+        a, b = list(self.M114().values()), len( self.M114("R").values() )
+        # a, b = [10,10,10,10,10,10], [100,100,100,100,100,100]
 
         # Wait for the machine to reach the coordinate string. while all axis real coordinates are not equal to the future coordinates (+- 0.5).
         while (
-            not all((a[i] - 0.5 <= b[i] <= a[i] + 0.5) for i in range(len(b)))
-            and not self.paused
+            not all((a[i] - 0.5 <= list(self.M114("R").values())[i] <= a[i] + 0.5) for i in range(b))
+            # not all((a[i] - 0.5 <= b[i] <= list(self.M114("R").values())[i] + 0.5) for i in range(len(b)))
+            #and not self.resumed.is_set()
         ):
-            # Update the real position.
-            b = [v for v in self.M114("R").values()]
+            pass
+            # logger.info(f"{self.name} - waiting for machine to reach {cords}")
+            # sleep(1)
 
     @verify
     def pause(self):
-        self.paused = True
         """
         The M0 command pause after the last movement and wait for the user to continue.
         """
+        self.resumed.clear()
         self.send("M0")
 
     @verify
     def kill(self):
-        self.paused = True
         """
         Used for emergency stopping,
         M112 shuts down the machine, turns off all the steppers and heaters
@@ -177,7 +188,7 @@ class SerialGcodeOBJ(Serial):
 
     @verify
     def stop(self):
-        self.paused = True
+        # self.resumed = True
         """
         Stop all steppers instantly.
         Since there will be no deceleration,
@@ -185,15 +196,16 @@ class SerialGcodeOBJ(Serial):
         """
         self.send("P000")
         self.send("M410")
-        self.resume()
+        self.pause()
+        # self.resume()
 
     def resume(self):
-        self.paused = False
         """
         Resume machine from pause (M0) using M108 command.
         """
         self.send("M108")
         self.send("R000")
+        self.resumed.set()
 
     def callPin(self, name, state, json):
         value = json[name]["command"] + (

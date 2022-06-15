@@ -134,94 +134,89 @@ def loadConfig(NodeSheet, mode=LoadingMode):
     numberOfNodesChanged = 0
     numberOfNodesInit = 0
     nodesChanged = []
+    connectionList = list(extractConnections(NodeSheet))
+    for node in NodeSheet.get("nodes"):
+        newCls = NodeRegistry.getNodeClassByName(node.get("type"))
 
-    nodeConfigs = [NodeSheet]  # list(dbo.get_collection("node-configs").find({}))
+        options = extractOptionsFromNode(node)
+        existingNode = NodeManager.getNodeById(node.get("id"))
 
-    for nodeConfig in nodeConfigs:
-        connectionList = list(extractConnections(nodeConfig))
-        # print("connectionList: {}".format(list(connectionList)))
-        for node in nodeConfig.get("nodes"):
-            newCls = NodeRegistry.getNodeClassByName(node.get("type"))
-
-            options = extractOptionsFromNode(node)
-            existingNode = NodeManager.getNodeById(node.get("id"))
-
-            output_connections = list(
-                filter(
-                    lambda connection: connection.get("from").get("nodeId")
-                    == node.get("id"),
-                    connectionList,
-                )
+        output_connections = list(
+            filter(
+                lambda connection: connection.get("from").get("nodeId")
+                == node.get("id"),
+                connectionList,
             )
-            input_connections = list(
-                filter(
-                    lambda connection: connection.get("to").get("nodeId")
-                    == node.get("id"),
-                    connectionList,
+        )
+        input_connections = list(
+            filter(
+                lambda connection: connection.get("to").get("nodeId")
+                == node.get("id"),
+                connectionList,
+            )
+        )
+
+        if existingNode is None:
+            try:
+                newCls(
+                    node.get("name"),
+                    node.get("id"),
+                    options,
+                    output_connections,
+                    input_connections,
                 )
+                numberOfNodesInit += 1
+                if mode == LoadingMode.RUNNING:
+                    saveNodeChange(
+                        NodeChange(
+                            node.get("id"),
+                            node.get("name"),
+                            NodeChangeType.CREATE,
+                            {},
+                            options.get("settings"),
+                        )
+                    )
+            except Exception as e:
+                Alert(
+                    "error",
+                    "Configuração Inválida",
+                    'Não foi possível criar o nó "{}"'.format(
+                        node.get("name")
+                    ),
+                    how_to_solve="Verifique se todos os valores obrigatórios estão presentes",
+                )
+                raise
+        else:
+            logger.warning("Node {} EXIST!".format(node.get("name")))
+            nodeSettingsChanged = existingNode.options.get(
+                "settings"
+            ) != options.get("settings")
+            outputChanged = existingNode.output_connections != output_connections
+            nameChanged = existingNode.name != node.get("name")
+
+            inputChanged = (
+                existingNode.input_connections is not None
+                and existingNode.input_connections != input_connections
             )
 
-            if existingNode is None:
-                try:
-                    newCls(
-                        node.get("name"),
-                        node.get("id"),
-                        options,
-                        output_connections,
-                        input_connections,
-                    )
-                    numberOfNodesInit += 1
-                    if mode == LoadingMode.RUNNING:
-                        saveNodeChange(
-                            NodeChange(
-                                node.get("id"),
-                                node.get("name"),
-                                NodeChangeType.CREATE,
-                                {},
-                                options.get("settings"),
-                            )
+            if existingNode and (
+                nodeSettingsChanged or outputChanged or inputChanged or nameChanged
+            ):
+                numberOfNodesChanged += 1
+                nodesChanged.append(node.get("name"))
+
+                if nodeSettingsChanged:
+                    saveNodeChange(
+                        NodeChange(
+                            node.get("id"),
+                            node.get("name"),
+                            NodeChangeType.MODIFY,
+                            existingNode.options.get("settings"),
+                            options.get("settings"),
                         )
-                except Exception as e:
-                    Alert(
-                        "error",
-                        "Configuração Inválida",
-                        'Não foi possível criar o nó "{}"'.format(
-                            node.get("name")
-                        ),
-                        how_to_solve="Verifique se todos os valores obrigatórios estão presentes",
                     )
-                    raise
-            else:
-                logger.warning("Node {} EXIST!".format(node.get("name")))
-                nodeSettingsChanged = existingNode.options.get(
-                    "settings"
-                ) != options.get("settings")
-                outputChanged = existingNode.output_connections != output_connections
-                nameChanged = existingNode.name != node.get("name")
 
-                inputChanged = (
-                    existingNode.input_connections is not None
-                    and existingNode.input_connections != input_connections
-                )
-
-                if existingNode and (
-                    nodeSettingsChanged or outputChanged or inputChanged or nameChanged
-                ):
-                    numberOfNodesChanged += 1
-                    nodesChanged.append(node.get("name"))
-
-                    if nodeSettingsChanged:
-                        saveNodeChange(
-                            NodeChange(
-                                node.get("id"),
-                                node.get("name"),
-                                NodeChangeType.MODIFY,
-                                existingNode.options.get("settings"),
-                                options.get("settings"),
-                            )
-                        )
-
-        numberOfNodesTotal += len(nodeConfig.get("nodes"))
+    numberOfNodesTotal += len(NodeSheet.get("nodes"))
 
 
 @exception(logger)

@@ -28,10 +28,13 @@ from cv2 import (
     threshold,
     moments,
     blur,
+    GaussianBlur,
+    erode,
+    imwrite
 )
 
 
-from numpy import angle, float32, int0, uint8, ndenumerate
+from numpy import angle, float32, int0, uint8, ndenumerate, ones
 from bson.objectid import ObjectId
 from api import logger, exception
 from api.decorators import for_all_methods
@@ -201,7 +204,8 @@ def identifyObjects(
         else images_array
     ):
         dimensional_object_list = []
-        image = slot.item
+        image = GaussianBlur(erode(slot.item, ones((5,5), uint8)),(5,5),0)
+        # imwrite(f"images/a{index}.png", image)
         # Find the contours in the image
         contours, _ = findContours(image, md, mt)
         for contour in contours:

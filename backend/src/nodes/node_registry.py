@@ -36,7 +36,7 @@ class NodeRegistry:
 
 
 package_nodes = []  # list of package names and classes
-nodeRegistry = []  # list of RegEntry objects created from package_nodes
+nodeRegistry = []   # list of RegEntry objects created from package_nodes
 
 # Use map() and filter() to filter out all the files that end with .py or start with _ in the list '_all'
 for _dir in list(

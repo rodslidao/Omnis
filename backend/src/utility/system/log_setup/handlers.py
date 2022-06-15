@@ -35,7 +35,6 @@ def time_file_handler(destination):
 
 @handlers_factory
 def mongo_handler(destination):
-    # print("mongo_handler", destination)
     return MongoHandler(destination)
 
 

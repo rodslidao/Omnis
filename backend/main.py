@@ -26,7 +26,6 @@ from starlette.endpoints import WebSocketEndpoint
 from starlette.applications import Starlette
 from starlette.middleware import Middleware
 
-
 type_defs = ""
 for _file in ["schema", "inputs", "types", "results"]:
     type_defs += load_schema_from_path(f"./src/graphql/{_file}.graphql") + ("\n" * 2)
@@ -47,17 +46,15 @@ class Echo(WebSocketEndpoint):
     async def on_receive(self, websocket, data):
         node_id = data.get("nodeId")
         if node_id:
-            # node_type = data.get("nodeType")
             running_node = NodeManager.getNodeById(node_id)
             if running_node:
                 running_node.update_options(data['options'])
-        await websocket.send_json({"a": "b"})
+        await websocket.send_json({"echo": data['options']})
 
     async def on_disconnect(self, websocket, close_code=100):
         print("disconnected")
 
 routes_app = [
-    # Mount("/imgs", routes=imgRoute),
     Route(
         "/videos/{video_id}", endpoint=custom_video_response, methods=["GET", "POST"]
     ),

@@ -2,7 +2,7 @@ from src.nodes.node_manager import NodeManager
 from src.nodes.base_node import BaseNode, Wizard
 from api import logger, exception
 from api.decorators import for_all_methods
-from time import sleep
+from src.utility.system.sleep_alternative import sleep
 NODE_TYPE = "DelayNode"
 
 

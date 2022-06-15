@@ -123,7 +123,7 @@ class Slot:
 
     def __str__(self) -> str:
         # return f"((item slot) {self.item} at center:{self.center}, position:{self.position[::-1]})"
-        return f"{self.center}"
+        return f"{self.center if not self.item else self.item}"
 
     def __repr__(self):
         return str(self)
@@ -221,17 +221,7 @@ class Blister:
         self.name = name
         self.shape = tuple(shape)
         self.kwargs = kwargs
-        # self.order_matrix = self.re_order(array([*ndindex(self.shape)]).reshape(*shape[::-1],2), order)
         self.data = self.re_order(self.generate_data(shape, **self.slot_config), order)
-        
-        # print(self.order_matrix)
-        # if order != 'TLR' and order == 'BLUS': #! ONLY WORTKS WITH BLUS AND TLR (WHY?)
-        #     self.data = self.data.reshape(shape)
-        #     # print(self.data)
-        #     for index, value in ndenumerate(self.data.copy()):
-        #         # print(self.data[tuple(self.order_matrix[index])].c)
-        #         self.data[tuple(self.order_matrix[index])] = value
-        #     # print(self.data)
         self.reset_iterator()
 
     def __str__(self) -> str:

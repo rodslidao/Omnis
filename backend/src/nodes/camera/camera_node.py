@@ -19,7 +19,7 @@ class CameraNode(BaseNode):
         super().__init__(name, NODE_TYPE, id, options, output_connections)
         self.input_connections = input_connections
         self.camera_id = options["camera"]["_id"]
-        self.camera = CameraManager.get_by_id(self.camera_id).start()
+        self.camera = CameraManager.get_by_id(self.camera_id)
         self.auto_run = options.get("auto_run", {"value":False})["value"]
         NodeManager.addNode(self)
 
