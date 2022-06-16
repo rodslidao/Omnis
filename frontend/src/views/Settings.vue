@@ -1,7 +1,7 @@
 <template>
   <div class="pt-10 d-flex settings">
     <!-- <v-card elevation="12" width="256"> -->
-    <v-navigation-drawer floating permanent width="350">
+    <v-navigation-drawer floating permanent width="350" class="navigation" color="rgba(0,0,0,0)">
       <div class="user mx-4 ">
         <v-avatar color="primary" size="50">
           <img v-if="user.avatar" :src="user.avatar" />
@@ -103,7 +103,7 @@ export default {
   },
 };
 </script>
-<style lang="scss" scoped>
+<style scoped>
 .user {
   display: flex;
   align-items: center;
@@ -113,6 +113,7 @@ export default {
 
 .settings{
   height: 100%;
+  background-color: rgb(253, 253, 253);
 }
 
 .setting-content {

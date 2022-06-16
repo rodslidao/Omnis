@@ -1,5 +1,5 @@
 <template>
-  <v-card class="d-flex align-center p-4" link :to="path">
+  <v-card class="d-flex align-center p-4" link :to="path" outlined >
     <div>
       <div class="d-flex">
         <v-icon v-if="icon" large>mdi-{{ icon }}</v-icon>
