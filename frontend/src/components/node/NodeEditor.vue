@@ -2,7 +2,7 @@
   <div class="background" ref="container">
     <span style="display: none">{{ selectedTabIndex }}</span>
     <baklava-editor :plugin="viewPlugin" class="baklava-editor" />
-      <Cartesian3D class="cartesian"></Cartesian3D>
+    <Cartesian3D class="cartesian"></Cartesian3D>
     <!-- <UseDraggable class="cartesian" :initialValue="{ x: 100, y: 100 }" v-slot="{ x, y }">
     </UseDraggable> -->
     <side-menu class="side-menu"></side-menu>
@@ -32,8 +32,6 @@ import StartNode from '@/components/node/nodes/inputs/StartNode';
 import SideMenu from '@/components/node/sideMenu/sideMenu.vue';
 import Cartesian3D from '@/components/node/Cartesian3d.vue';
 
-import { useDraggable } from '@vueuse/core';
-
 // Custom Baklava Components
 import CustomContextMenu from '@/components/node/custom/CustomContextMenu.vue';
 import CustomNode from '@/components/node/custom/CustomNode.vue';
@@ -55,7 +53,6 @@ export default {
     ActionMenuForNodes,
     SideMenu,
     Cartesian3D,
-    useDraggable,
   },
 
   computed: {
@@ -78,12 +75,6 @@ export default {
       // }
       return 0;
     },
-
-    // updateContentDefault() {
-    //   console.log('sdfsdfsdfsdfsd');
-    //   this.editor.load(this.tabList[this.selectedTabIndex].content);
-    //   return 0;
-    // },
   },
 
   created() {
@@ -211,38 +202,6 @@ export default {
         }
       },
     },
-    // '$store.state.node.selectedTab': {
-    //   handler(newValue, oldValue) {
-    //     // this.updateNodeContent({
-    //     //   content: this.editor.save(),
-    //     //   index: oldValue,
-    //     // });
-
-    //     console.log('newValue', newValue);
-    //     console.log('oldValue', oldValue);
-    //     console.log('this.tabList[newValue]', this.tabList);
-
-    //     // if (this.tabList[newValue].duplicated) {
-    //     //   console.log('duplicated load', this.tabList[newValue].duplicated);
-
-    //     //   this.updateNodeContent({
-    //     //     content: JSON.parse(JSON.stringify(this.editor.save())),
-    //     //     index: newValue,
-    //     //   });
-
-    //     //   console.log('duplicated load2', this.tabList[newValue].duplicated);
-    //     // }
-    //     // console.log('this.tabList[newValue].content', this.tabList[newValue].content);
-    //     // let oi = this.editor.save()
-    //     // console.log('oi', oi);
-    //     // this.editor.load(oi);
-    //     // this.editor.load(this.editor.save());
-    //     this.editor.load(this.selectedTab.content);
-    //   },
-    // },
-    // selectedTab() {
-    //   console.log('selectedTab', this.selectedTab);
-    // },
   },
 };
 </script>
@@ -264,10 +223,15 @@ export default {
   // background-color: red;
 }
 
+.drag {
+  width: 50px;
+  height: 50px;
+  background-color: #fff;
+}
 .cartesian {
   position: absolute;
   // z-index: 9999;
-  top: 0;
+  top: 50px;
   left: 79px;
 }
 
