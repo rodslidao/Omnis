@@ -8,7 +8,6 @@
       @click.stop="drawer = !drawer"
       >movimentação</v-btn
     >
-
     <v-navigation-drawer
       dark
       v-model="drawer"
@@ -17,17 +16,17 @@
       :permanent="drawer"
       width="400px"
     >
-      <jog-buttons></jog-buttons>
+    <move></move>
     </v-navigation-drawer>
   </div>
 </template>
 
 <script>
-import JogButtons from '@/components/node/sideMenu/move/JogButtons.vue';
+import Move from '@/components/node/sideMenu/move/Move.vue';
 
 export default {
   components: {
-    JogButtons,
+    Move,
   },
   data: () => ({
     drawer: false,

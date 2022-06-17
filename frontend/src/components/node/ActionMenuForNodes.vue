@@ -1,24 +1,11 @@
 <template>
-  <div>
+  <div class="actions-container">
     <div class="menuList" v-on:keyup.ctrl.s="save">
-      <v-btn class="button" color="primary" fab dark small @click="play">
-        <v-icon> mdi-play </v-icon>
-      </v-btn>
-      <v-btn class="button" color="primary" fab dark small @click="stop">
-        <v-icon> mdi-pause </v-icon>
-      </v-btn>
-      <p></p>
-
       <v-speed-dial
         v-model="fab"
-        :top="top"
-        :bottom="bottom"
-        :right="right"
-        :left="left"
-        :direction="direction"
-        :open-on-hover="hover"
-        :transition="transition"
-        class="d-flex flex-end"
+        direction="top"
+        transition="slide-x-transition"
+        class="d-flex flex-end speed-dial"
       >
         <template v-slot:activator>
           <v-btn color="primary" fab dark>
@@ -54,6 +41,13 @@
           <v-icon left dark>mdi-console</v-icon>Serial
         </v-btn>
       </v-speed-dial>
+
+      <v-btn class="button" color="primary" fab dark small @click="play">
+        <v-icon> mdi-play </v-icon>
+      </v-btn>
+      <v-btn class="button" color="primary" fab dark small @click="stop">
+        <v-icon> mdi-pause </v-icon>
+      </v-btn>
     </div>
     <v-progress-linear
       v-if="isLoading"
@@ -120,18 +114,12 @@ export default {
       saveNodeSheet,
       folderDialog: false,
       serialDialog: false,
-      direction: 'top',
       fab: false,
       fling: false,
-      hover: false,
       tabs: null,
-      top: false,
-      right: true,
-      bottom: true,
-      left: false,
       files: null,
       result_: 'Teste',
-      transition: 'slide-y-reverse-transition',
+      transition: 'slide-x-transition',
       loadedId: null,
       items: [
         {
@@ -518,21 +506,21 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
+.actions-container{
+  position: absolute;
+}
 .menuList {
   display: flex;
   flex-direction: row;
   align-items: center;
 
   .button {
-    right: 25px;
-    bottom: 16px;
-    margin-left: 10px;
+    margin-left: 8px;
   }
-  .v-speed-dial--direction-top .v-speed-dial__list {
-    flex-direction: column-reverse;
-    bottom: 100%;
-    align-items: flex-end;
-  }
+}
+
+::v-deep .v-speed-dial--direction-top .v-speed-dial__list{
+  align-items: baseline;
 }
 </style>

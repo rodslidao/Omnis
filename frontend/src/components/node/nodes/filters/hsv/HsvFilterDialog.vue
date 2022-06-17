@@ -79,7 +79,7 @@ import EventBus from '@/event-bus';
 // import WebRTC from 'vue-webrtc';
 import { mapActions, mapState } from 'vuex';
 import NodeConfigTitle from '@/components/node/nodes/NodeConfigTitle.vue';
-import gql from 'graphql-tag';
+// import gql from 'graphql-tag';
 import TextEditable from '@/components/node/nodes/dialogs/TextEditable.vue';
 import ColorPikerHSV from '@/components/node/nodes/filters/hsv/ColorPikerHSV.vue';
 
@@ -197,7 +197,7 @@ export default {
     connectToWebsocket() {
       console.log('Starting WebSocket to WebSocket Server');
       this.WebSocket = new WebSocket(
-        `ws://${process.env.VUE_APP_URL_API_IP}:${process.env.VUE_APP_URL_API_PORT}/ws`
+        `ws://${process.env.VUE_APP_URL_API_IP}:${process.env.VUE_APP_URL_API_PORT}/ws`,
       );
 
       this.WebSocket.onmessage = (event) => {

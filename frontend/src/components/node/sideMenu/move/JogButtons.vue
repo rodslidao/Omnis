@@ -1,12 +1,12 @@
 <template>
-  <div class="p-2 pl-4 d-flex flex-column">
+  <div>
     <side-menu-title
       tooltip="caso queira ir para uma coordenada especifica, click sobre os números."
       tooltipBottom
       >Movimentação</side-menu-title
     >
     <div
-      v-for="(axis, index) in axisList"
+      v-for="(axis, index) in getAxisList"
       :key="index"
       v-on.once="generateVariables(axis.name)"
     >
@@ -22,7 +22,7 @@
               <v-list dark>
                 <v-list-item
                   link
-                  v-for="(item, index) in axis.contextMenu"
+                  v-for="(item, index) in axis.context_menu"
                   :key="index"
                 >
                   <v-list-item-title> {{ item.title }}</v-list-item-title>
@@ -46,7 +46,7 @@
               :disabled="axis.disabled"
               icon
               x-large
-              @click="moveButton(axis)"
+              @click="moveButton(axis, true)"
             >
               <v-icon dark>
                 mdi-{{
@@ -76,7 +76,7 @@
                 autofocus
               ></v-text-field>
               <div v-else class="text-h5 grey--text text--lighten-2 text-end">
-                {{ index * 500 }}00.000
+                {{ variableList[index].value.toFixed(3) }}
               </div>
             </div>
             <div class="grey--text text--darken-2 ml-2 font-weight-bold">
@@ -89,7 +89,7 @@
               :disabled="axis.disabled"
               icon
               x-large
-              @click="moveButton(axis)"
+              @click="moveButton(axis, false)"
             >
               <v-icon dark>
                 mdi-{{
@@ -102,62 +102,37 @@
       </div>
       <v-divider></v-divider>
     </div>
-    <div class="mt-10">
-      <side-menu-title
-        tooltip="Define a escala de movimento, quando apertar pra movimentar o eixo"
-        tooltipBottom
-      >
-        Escala de movimento
-      </side-menu-title>
-      <v-btn-toggle v-model="stepSelected" dark mandatory dense>
-        <v-btn v-for="(steps, index) in stepsList" :key="index"
-          >{{ steps.value }}
-        </v-btn>
-      </v-btn-toggle>
-    </div>
-    <div class="mt-10">
-      <side-menu-title> controle de dispositivos </side-menu-title>
-      <output-devices></output-devices>
-    </div>
   </div>
 </template>
 
 <script>
-import OutputDevices from '../OutputDevices.vue';
+import gql from 'graphql-tag';
 import SideMenuTitle from '../SideMenuTitle.vue';
 
+const GET_AXIS_LIST = gql`
+  query {
+    getAxisList {
+      _id
+      name
+      color
+      icons
+      has_move_button
+      disable
+      unit
+      context_menu
+    }
+  }
+`;
+
 export default {
-  components: { SideMenuTitle, OutputDevices },
+  components: { SideMenuTitle },
   data() {
     return {
-      scale: '1',
-      moveSteps: '1',
-      stepSelected: '1',
       variableList: [],
-      stepsList: [
-        {
-          name: '0,01',
-          value: '0.01',
-        },
-        {
-          name: '0,1',
-          value: '0.1',
-        },
-        {
-          name: '1',
-          value: '1',
-        },
-        {
-          name: '10',
-          value: '10',
-        },
-        {
-          name: '100',
-          value: '100',
-        },
-      ],
+      receivedData: [],
       axisList: [
         {
+          id: 'iddomeunegocio',
           name: 'x',
           color: 'error',
           icons: {
@@ -183,6 +158,7 @@ export default {
           ],
         },
         {
+          id: 'iddomeunegocio2',
           name: 'y',
           color: 'success',
           icons: {
@@ -208,6 +184,7 @@ export default {
           ],
         },
         {
+          id: 'iddomeunegocio3',
           name: 'z',
           color: 'info',
           icons: {
@@ -233,6 +210,7 @@ export default {
           ],
         },
         {
+          id: 'iddomeunegocio4',
           name: 'a',
           color: 'warning',
           icons: {
@@ -261,9 +239,37 @@ export default {
     };
   },
 
+  watch: {
+    receivedData(newData) {
+      console.log('new', newData);
+      // start
+
+      if (newData.controls.jog_position) {
+        const data = newData.controls.jog_position;
+        Object.entries(data).forEach(([axis, val]) => {
+          const index = this.variableList.findIndex(
+            (item) => axis === item.name,
+            console.log('axis', axis, val)
+          );
+          if (index !== -1) {
+            console.log('valor', val);
+            this.variableList[index].value = val;
+          }
+        });
+        // end
+      }
+    },
+  },
+
   methods: {
-    moveButton(button) {
-      console.log(button.command.concat(this.scale));
+    moveButton(button, isNegative) {
+      const msg = {
+        context: 'joggingStep',
+        isNegative,
+        id: button.id,
+        scale: this.stepsList[this.stepSelected].value,
+      };
+      this.$emit('sendMessage', msg);
     },
 
     sendDistance(index) {
@@ -275,11 +281,40 @@ export default {
         const variable = {
           name,
           distance: Number,
+          value: 0.00,
           manualDistance: false,
         };
         this.variableList.push(variable);
         // console.log(this.variableList);
       }
+    },
+  },
+
+  apollo: {
+    getAxisList: {
+      query: GET_AXIS_LIST,
+      // update(data) {
+      //   return data.getSerials.data;
+      // },
+    },
+
+    $subscribe: {
+      // When a tag is added
+      controls: {
+        query: gql`
+          subscription {
+            controls {
+              jog_position
+            }
+          }
+        `,
+        // Result hook
+        // Don't forget to destructure `data`
+        result({ data }) {
+          this.receivedData = data;
+          // cabo a result
+        },
+      },
     },
   },
 };
