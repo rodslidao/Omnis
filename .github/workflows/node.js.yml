@@ -33,6 +33,12 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
+    - name: create env file
+      run: |
+        touch .env
+        echo VUE_APP_URL_API_IP=192.168.1.55 >> .env
+        echo VUE_APP_URL_API_PORT=5200 >> .env
+        echo VUE_APP_URL_API_STREAMING_PORT=5200 >> .env
     - name: Cleaning Instalation
       run: npm ci
       working-directory: ./frontend
@@ -40,7 +46,7 @@ jobs:
       run: npm install
       working-directory: ./frontend
     - name: Deploy
-      run: npm run build
+      run: npm run build        
       working-directory: ./frontend
     - name: Commit report
       run: |

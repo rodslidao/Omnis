@@ -9,7 +9,8 @@ import Scan from '@/views/Scan.vue';
 import Progress from '@/views/Progress.vue';
 import Dashboard from '@/views/Dashboard.vue';
 import NodeWorkspace from '@/views/NodeWorkspace.vue';
-import NodeEditor from '@/components/nodes/NodeEditor.vue';
+import NodeEditor from '@/components/node/NodeEditor.vue';
+import NodeConfig from '@/views/NodeConfig.vue';
 
 Vue.use(Router);
 
@@ -56,8 +57,13 @@ const routes = [
   },
   {
     name: 'nodeEditor',
-    path: '/nodeEditor',
+    path: '/node-editor',
     component: NodeEditor,
+  },
+  {
+    name: 'nodeConfig',
+    path: '/node-config',
+    component: NodeConfig,
   },
 ];
 

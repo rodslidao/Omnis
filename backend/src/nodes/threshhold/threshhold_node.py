@@ -1,5 +1,5 @@
 from src.nodes.node_manager import NodeManager
-from src.nodes.base_node import BaseNode
+from src.nodes.base_node import BaseNode, Wizard
 
 from cv2 import (
     threshold,
@@ -59,6 +59,7 @@ class ThreshholdNode(BaseNode):
         self.auto_run = options.get("auto_run", False)
         NodeManager.addNode(self)
 
+    @Wizard._decorator
     def execute(self, message):
         self.image = message.payload
         try:

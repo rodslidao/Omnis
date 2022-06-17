@@ -7,6 +7,7 @@ from src.manager.camera_manager import CameraManager
 from src.manager.serial_manager import SerialManager
 from src.nodes.calibration.camera_calibration import CameraCalibration
 from threading import Thread
+from api import dbo, logger
 
 query = QueryType()
 
@@ -41,8 +42,8 @@ def resolve_getCameras(obj, info, **kwargs):
 
 @query.field("getSketchList")
 def resolve_get_sketch_list(obj, info):
-    returns = list(NodeSheet().get_sketch_list())
-    return {"status": True, "data": returns}
+    print(NodeSheet().get_sketch_list()[0])
+    return {"status": True, "data": list(NodeSheet().get_sketch_list())}
 
 
 @query.field("getNodeInfo")
@@ -67,10 +68,30 @@ def resolve_getThr(obj, info):
 @query.field("calibrateCamera")
 def resolve_calibrateCamera(obj, info, **kwargs):
     Thread(target=CameraCalibration(**kwargs.get("input", {})).calibrate).start()
-    # CameraCalibration().calibrate()
     return True
 
 @query.field("getLoadedNodes")
 def resolve_getLoadedNodes(obj, info):
     """Get a Node by id and return it like a payload"""
     return NodeManager.getActiveNodes()
+
+@query.field("getLoadedConfig")
+def resolve_getLoadedConfig(obj, info):
+    """Get a Node by id and return it like a payload"""
+    return NodeSheet().getNodeSheetById(process.loaded_id)
+
+@query.field("getDevicesList")
+def resolve_getDevicesList(obj, info):
+    """Get a Node by id and return it like a payload"""
+    temp = list(dbo.find_many("pins"))
+    for i in temp:
+        i["_id"] = str(i["_id"])
+    return temp
+
+@query.field("getAxisList")
+def resolve_getAxisList(obj, info):
+    """Get a Node by id and return it like a payload"""
+    temp = list(dbo.find_many("machine_axis"))
+    for i in temp:
+        i["_id"] = str(i["_id"])
+    return temp

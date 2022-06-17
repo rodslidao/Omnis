@@ -1,5 +1,5 @@
 from src.nodes.node_manager import NodeManager
-from src.nodes.base_node import BaseNode
+from src.nodes.base_node import BaseNode, Wizard
 from src.nodes.process.process import process
 from api import logger, exception
 from api.decorators import for_all_methods
@@ -28,11 +28,12 @@ class ProcessNode(BaseNode):
     def __init__(self, name, id, options, output_connections, input_connections):
         super().__init__(name, NODE_TYPE, id, options, output_connections)
         self.input_connections = input_connections
-        logger.info(f"name: {name}, options: {options}")
         self.function = process_options[options["action"]]
         self.auto_run = options.get("auto_run", False)
+        self.process = process
         NodeManager.addNode(self)
 
+    # @Wizard._decorator # Since this can be a start node, a wizar is not necessary
     def execute(self, message=""):
         if self.auto_run:
             self.on("Gatilho", True)

@@ -1,5 +1,5 @@
 from src.nodes.node_manager import NodeManager
-from src.nodes.base_node import BaseNode
+from src.nodes.base_node import BaseNode, Wizard
 from src.nodes.timer.task_time import setInterval
 from src.manager.serial_manager import SerialManager
 from api import logger, exception
@@ -20,6 +20,7 @@ class SerialNode(BaseNode):
         NodeManager.addNode(self)
 
     @setInterval(1)
+    @Wizard._decorator
     def execute(self, message=""):
         if not self.serial.is_open:
             self.serial.start()

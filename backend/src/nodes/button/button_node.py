@@ -1,5 +1,5 @@
 from src.nodes.node_manager import NodeManager
-from src.nodes.base_node import BaseNode
+from src.nodes.base_node import BaseNode, Wizard
 from datetime import datetime
 from api import logger, exception
 from api.decorators import for_all_methods
@@ -20,6 +20,7 @@ class ButtonNode(BaseNode):
         self.auto_run = options.get("auto_run", False)
         NodeManager.addNode(self)
 
+    @Wizard._decorator
     def execute(self, message):
         """
         Executes the node.
@@ -31,5 +32,4 @@ class ButtonNode(BaseNode):
         """
         Resets the node.
         """
-        # ExecutionCounter.resetCountType(self._id)
         return True

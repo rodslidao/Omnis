@@ -1,6 +1,7 @@
 scalar JSON
 scalar Decimal
 scalar Upload
+scalar timestamptz
 
 schema {
   mutation: Mutation
@@ -12,30 +13,40 @@ type Mutation {
   createNodeSheet(
     _id: ID!
     name: String
-    sketchName: String
     saved: Boolean
-    duplicated: Boolean
+    duplicated:Boolean
+    last_access: Float
+    description: String
+    node_qtd: Int
+    author: String
     content: JSON!
-  ): NodeSheetResult!
+  ): Boolean
 
   saveNodeSheet(
-    _id: ID!
-    name: String
-    sketchName: String
+    _id: ID
+    parent_id: ID
+    label: String
+    description: String
+    author: String
+    version: Int
+    last_access: Float
     saved: Boolean
-    duplicated: Boolean
-    content: JSON!
-  ): NodeSheetResult!
+    duplicated:Boolean
+    content: JSON
+    node_qtd: Int
+    key: ID
+  ): SketchListResult!
 
-  updateNodeSheet(_id: ID!, name: String, content: JSON): NodeSheetResult
-  deleteNodeSheet(id: ID!): NodeSheetResult
+  updateNodeSheet(_id: ID!, name: String, content: JSON): Boolean
+  deleteNodeSheet(_id: ID!): Boolean
+  duplicateNodeSheet(_id: ID!): Boolean
+  
+  startProcess(_id: ID!): Boolean
+  stopProcess: Boolean
+  resumeProcess: Boolean
+  pauseProcess: Boolean
 
-  startProcess: ProcessResult
-  stopProcess: ProcessResult
-  resumeProcess: ProcessResult
-  pauseProcess: ProcessResult
-
-  loadConfig(_id: ID!): Boolean!
+  loadConfig(_id: ID!): NodeSheet
   getLoadedConfig: ID!
 
   createAlert(input: AlertInput!): AlertResult!
@@ -49,11 +60,11 @@ type Mutation {
   stopCamera(_id: ID!): CameraResult!
   resetCamera(_id: ID!): CameraResult!
 
-  createSerial(input: JSON): SerialResult!
-  startSerial(_id: ID!): SerialResult!
-  stopSerial(_id: ID!): SerialResult!
-  resetSerial(_id: ID!): SerialResult!
-  sendSerial(_id: ID!, payload: String!): SerialResult!
+  createSerial(input: JSON): Serial!
+  startSerial(_id: ID!): Serial!
+  stopSerial(_id: ID!): Serial!
+  resetSerial(_id: ID!): Serial!
+  sendSerial(_id: ID!, payload: String!): Serial!
   setCameraProperty(_id: ID!, input: JSON): CameraResult!
 
   syncHostTime(timestamp: Int): Boolean!
@@ -62,13 +73,14 @@ type Mutation {
 type Query {
   getNodeSheet(_id: ID!): NodeSheetResult!
   getSketchList: SketchListResult!
-
+  getAxisList: [AxisResult!]
+  getDevicesList: [DeviceResult!]
   getNodeInfo(node_type: ID!, kwargs: JSON): NodeInfoResult!
 
   getCamera(_id: ID!): CameraResult!
   getCameras: CamerasResult!
 
-  getSerial(_id: ID!): SerialResult!
+  getSerial(_id: ID!): Serial!
   getSerials: SerialsResult!
 
   getProcess: ProcessResult
@@ -81,6 +93,7 @@ type Query {
 
   calibrateCamera(input: CalibrateRequestInput!): Boolean
   getLoadedNodes: [Node_Status]
+  getLoadedConfig: NodeSheet
 }
 
 type Subscription {
@@ -89,4 +102,5 @@ type Subscription {
   serials: Serial
   calibrations: StepResult
   nodes: Node_Status
+  controls: control_status
 }

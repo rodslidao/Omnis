@@ -1,7 +1,7 @@
-
 version: "3.1"
 services:
   mongo:
+    profiles: ["prod"]
     privileged: true
     image: mongo:4.2
     container_name: mongo_c
@@ -13,11 +13,12 @@ services:
       # MONGO_INITDB_ROOT_USERNAME: ${DB_USER}
       # MONGO_INITDB_ROOT_PASSWORD: ${DB_PASS}
     networks:
-        - mongo-compose-network
+        - bind-network
     volumes: 
       - ./mongodb:/data/db
  
   mongo-express:
+    profiles: ["prod"]
     privileged: true
     image: mongo-express:latest
     restart: always
@@ -33,17 +34,19 @@ services:
     links:
       - mongo
     networks:
-      - mongo-compose-network
+      - bind-network
     depends_on:
       - mongo
     volumes: 
       - ./mongodb:/data/db
 
   backend:
+    profiles: ["prod", "dev"]
     privileged: true
     container_name: backend
     image: omnisofc/backend:latest
-    build: ./backend
+    build:
+      context: ./backend
     restart: always
     ports:
       - ${STREAMING_PORT}:${STREAMING_PORT}
@@ -52,10 +55,11 @@ services:
     env_file: .env
     environment:
       DB_HOST: mongo_c
-    links:
-      - mongo
+      NODE_ENV: production
+    # links:
+    #   - mongo
     networks:
-      - mongo-compose-network
+      - bind-network
     # Enable access to the camera and serial devices (if the device is connected, otherwise it will fail)
     # devices:
       # - "/dev/ttyACM0:/dev/ttyACM0"
@@ -64,29 +68,33 @@ services:
       # - "/dev/video4:/dev/video4"
     volumes:
       # Share /dev is insecure but is required for the camera and serial devices that not has connected to the host. ( disable this if all devices are connected to the host )
-      - /dev:/dev
       - ./backend:/app
       - /home/ubuntu/.url_host:/app/.url_host
+      - /dev:/dev
     command: python main.py
-    depends_on:
-      - mongo-express
+    # depends_on:
+    #   - mongo-express
       
   frontend:
+    profiles: ["prod"]
     privileged: true
     container_name: frontend
     image: omnisofc/frontend:latest
-    env_file: .env
     build:
       context: ./frontend/
-      args:
-        VUE_APP_URL_API_IP: ${VUE_APP_URL_API_IP}
-        VUE_APP_URL_API_PORT : ${VUE_APP_URL_API_PORT}
-        VUE_APP_URL_API_STREAMING_PORT: ${VUE_APP_URL_API_STREAMING_PORT}
-        NODE_ENV: ${NODE_ENV}
     restart: always
+    volumes:
+      - ./frontend/dist:/app
     ports:
-      - 8080:80
+      - 80:80
+    networks:
+      - bind-network
+      - default
+    links:
+      - backend
+    depends_on:
+      - backend
 
 networks: 
-  mongo-compose-network:
+  bind-network:
     driver: bridge

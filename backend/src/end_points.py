@@ -1,3 +1,4 @@
+from src.nodes.alerts.alert_obj import Alert
 from src.nodes.node_manager import NodeManager
 from starlette.responses import StreamingResponse, JSONResponse
 from starlette.routing import Route
@@ -26,11 +27,9 @@ def encode(frame):
     return simplejpeg.encode_jpeg(frame, colorspace="BGR", quality=90, fastdct=True)
 
 async def frame_producer(_id='default'):
-    # CameraManager.set_stream_id(_id)
     while True:
-        yield (b"--frame\r\nContent-Type:video/jpeg2000\r\n\r\n" + imencode(".jpg", await reducer(CameraManager.read(_id), percentage=30))[1].tobytes() + b"\r\n")
+        yield (b"--frame\r\nContent-Type:video/jpeg2000\r\n\r\n" + imencode(".jpg", await reducer(CameraManager.read(_id), percentage=75))[1].tobytes() + b"\r\n")
         await asyncio.sleep(0.00001)
-    logger.warning("FECHANDO STREAM")
 
 async def custom_video_response(scope):
     """
@@ -43,10 +42,3 @@ async def custom_video_response(scope):
         frame_producer(scope.path_params.get('video_id', 'default')),
         media_type="multipart/x-mixed-replace; boundary=frame",
     )
-
-imgRoute = [Route("/{img_name}", endpoint=frameReader)]
-
-videoRoute = [
-    # Route("/node_frame/{node_id}", endpoint=nodeVideoFeed),
-    # Route("/{video_id}", endpoint=videoFeed, methods=["GET", "POST"]),
-]

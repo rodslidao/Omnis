@@ -23,11 +23,11 @@ mutation = MutationType()
 def createNodeSheet_resolver(obj, info, _id, **kwargs):
     """Create a new NodeSheet object and return it like a payload"""
     returns = NodeSheet().create_node_sheet(_id, **kwargs)
-    return {"data": returns}
+    return  returns
 
 
 @mutation.field("saveNodeSheet")
-def saveNodeSheet_resolver(obj, info, _id, **kwargs):
+def saveNodeSheet_resolver(obj, info, _id=None, **kwargs):
     """Create a new NodeSheet object and return it like a payload"""
     returns = NodeSheet().save_node_sheet(_id, **kwargs)
     return {"data": returns}
@@ -37,22 +37,28 @@ def saveNodeSheet_resolver(obj, info, _id, **kwargs):
 def updateNodeSheet_resolver(obj, info, _id, **kwargs):
     """Update a NodeSheet by id and return it like a payload"""
     returns = NodeSheet().update_node_sheet(_id, **kwargs)
-    return {"data": returns}
+    return  returns
+
 
 
 @mutation.field("deleteNodeSheet")
-def deleteNodeSheet_resolver(obj, info, id):
+def deleteNodeSheet_resolver(obj, info, _id):
     """Delete a NodeSheet by id and return it like a payload"""
-    returns = NodeSheet().delete_node_sheet(id)
-    return {"data": returns}
+    returns = NodeSheet().delete_node_sheet(_id)
+    return  returns
 
+@mutation.field("duplicateNodeSheet")
+def duplicateNodeSheet_resolver(obj, info, _id):
+    """Duplicate a NodeSheet by id and return it like a payload"""
+    returns = NodeSheet().duplicate_node_sheet(_id)
+    return  returns
 
 @mutation.field("startProcess")
-def startProcess_resolver(obj, info):
+def startProcess_resolver(obj, info, _id):
     """Start a process by id and return it like a payload"""
-    process.start()
+    process.start(_id)
     returns = process.dict()
-    return {"data": returns}
+    return
 
 
 @mutation.field("stopProcess")
@@ -60,7 +66,7 @@ def stopProcess_resolver(obj, info):
     """Stop a process by id and return it like a payload"""
     process.stop()
     returns = process.dict()
-    return {"data": returns}
+    return 
 
 
 @mutation.field("pauseProcess")
@@ -68,7 +74,7 @@ def pauseProcess_resolver(obj, info):
     """Pause a process by id and return it like a payload"""
     process.pause()
     returns = process.dict()
-    return {"data": returns}
+    return
 
 
 @mutation.field("resumeProcess")
@@ -76,14 +82,14 @@ def resumeProcess_resolver(obj, info):
     """Resume a process by id and return it like a payload"""
     process.resume()
     returns = process.dict()
-    return {"data": returns}
+    return 
 
 
 @mutation.field("loadConfig")
 def loadConfig_resolver(obj, info, _id):
     a = process.load(_id)
-    logger.info("Loaded config with id {}. {}".format(_id, a))
-    return True
+    logger.info("Loaded config with id {}".format(_id))
+    return NodeSheet().getNodeSheetById(_id)
 
 
 @mutation.field("getLoadedConfig")
@@ -147,7 +153,7 @@ def createCamera_resolver(obj, info, **kwargs):
 @mutation.field("startCamera")
 def startCamera_resolver(obj, info, _id):
     """Start a camera by id and return it like a payload"""
-    camera = (CameraManager.get_by_id(_id)).start()
+    camera = (CameraManager.get_by_id(_id))
     returns = camera.to_dict()
     return {"data": returns}
 
@@ -181,15 +187,15 @@ def setCameraProperty_resolver(obj, info, _id, **kwargs):
 def createSerial_resolver(obj, info, **kwargs):
     """Create a new Serial object and return it like a payload"""
     returns = Serial(**kwargs.get("input", {})).to_dict()
-    return {"data": returns}
+    return  returns
 
 
 @mutation.field("startSerial")
 def startSerial_resolver(obj, info, _id):
     """Start a serial by id and return it like a payload"""
-    serial = SerialManager.get_by_id(_id).start()
+    serial = SerialManager.get_by_id(_id)
     returns = serial.to_dict()
-    return {"data": returns}
+    return  returns
 
 
 @mutation.field("stopSerial")
@@ -197,13 +203,13 @@ def stopSerial_resolver(obj, info, _id):
     """Stop a serial by id and return it like a payload"""
     serial = SerialManager.get_by_id(_id).stop()
     returns = serial.to_dict()
-    return {"data": returns}
+    return  returns
 
 
 @mutation.field("sendSerial")
 def sendSerial_resolver(obj, info, _id, payload):
     """Communicate a serial by id and return it like a payload"""
-    return {"status": True, "data": SerialManager.get_by_id(_id).send(payload).to_dict()}
+    return SerialManager.get_by_id(_id).send(payload).to_dict()
 
 
 @mutation.field("syncHostTime")

@@ -1,3 +1,4 @@
+from src.nodes.alerts.alert_obj import Alert
 from src.message import Message
 from src.nodes.node_manager import NodeManager
 from api import logger, exception
@@ -6,14 +7,41 @@ from api.store import nodes
 from api.subscriptions import SubscriptionFactory
 from threading import Event
 
-from threading import Thread
-NODE_TYPE = "BASE_NODE"
-rtc_status = SubscriptionFactory(nodes, 'nodes')
+from threading import Thread, Event
 
-from time import sleep
+import queue
+event_list = queue.Queue()
+
+from src.nodes.process.process import process
+
+NODE_TYPE = "BASE_NODE"
+rtc_status = SubscriptionFactory(nodes, "nodes")
+
+class Wizard(object):
+    def _decorator(exteral_execution):
+        def magic(self, message):
+            try:
+                exteral_execution(self, message)
+                event_list.get()
+            except Exception as e:
+                Alert("error", "Falha durante o processo", "Erro: {}".format(e))
+                process.stop()
+                raise e
+            finally:
+                event_list.task_done()
+        return magic
+
+    _decorator = staticmethod(_decorator)
+
+    @_decorator
+    def execute(self):
+        logger.error("normal call")
+
+    _decorator = staticmethod(_decorator)
+
 
 @for_all_methods(exception(logger))
-class BaseNode:
+class BaseNode(Wizard):
     """
     A class that represents a node, and its properties.
 
@@ -48,9 +76,8 @@ class BaseNode:
         self.output_connections = output_connections
         self.running = True
         self.stop_event = Event()
-        self.update_status({
-            "status": "LOADED"
-        })
+        self.update_status({"status": "LOADED"})
+        self.auto_run = options.get("auto_run", False)
         logger.info("[%s] Node loaded", self)
 
     def onSuccess(self, payload, additional=None):
@@ -63,19 +90,12 @@ class BaseNode:
         self.on("onFailure", payload, additional, pulse)
 
     def on(self, trigger, payload, additional=None, pulse=False, errorMessage=""):
-        targets = list(
+        for target in list(
             filter(
                 lambda connection: connection.get("from").get("name") == trigger,
                 self.output_connections,
             )
-        )
-        if pulse:
-            self.sendErrorMessage(self._id, errorMessage)
-        for target in targets:
-            self.sendConnectionExec(
-                target.get("from").get("id"), target.get("to").get("id")
-            )
-            node_to_run = NodeManager.getNodeById(target.get("to").get("nodeId"))
+        ):
 
             message = Message(
                 target.get("from").get("id"),
@@ -88,18 +108,34 @@ class BaseNode:
                 additional,
             )
 
+            node_to_run = NodeManager.getNodeById(target.get("to").get("nodeId"))
+
             if not self.running:
                 node_to_run.update_status({"status": "PAUSED"})
 
             while not self.running:
-                pass
+                if self.stop_event.isSet():
+                    return self.resume()
 
+            logger.info(f"[{self}] Sending message to node [{node_to_run}]")
             if node_to_run and not self.stop_event.isSet():
-                # logger.info(f'Trigger: {node_to_run}')
-                self.update_status({"status": "SENDING", "message":{"from":target.get("from").get("id"), "to":target.get("to").get("id")}})
-                Thread(target=node_to_run.execute, args=(message,), name=f"{str(self)}({message.sourceName}) -> {message}", daemon=True).start()
-                node_to_run.update_status({"status": "RUNNING", "message":{"from":None, "to":None}})
-                self.update_status({"status": "RUNNING", "message":{"from":None, "to":None}})
+                event_list.put(message._id)
+                self.update_status(
+                    {
+                        "status": "SENDING",
+                        "message": {
+                            "from": target.get("from").get("id"),
+                            "to": target.get("to").get("id"),
+                        },
+                    }
+                )
+                Thread(
+                    target=node_to_run.execute,
+                    args=(message,),
+                    name=f"{str(self)}({message.sourceName}) -> {message}",
+                    daemon=True,
+                ).start()
+                
 
     def AutoRun(self):
         message = Message(
@@ -123,8 +159,7 @@ class BaseNode:
         }
         rtc_status.put(self.info)
         return self.info
-        
-    
+
     def update_status(self, info):
         self.status = info
         self.who_am_i()
@@ -135,6 +170,7 @@ class BaseNode:
 
     def resume(self):
         self.running = True
+        self.stop_event.clear()
         return True
 
     def stop(self):
@@ -159,7 +195,7 @@ class BaseNode:
         }
 
     def __str__(self) -> str:
-        return f"[{self.type}|{self._id}|{self.name}]"
+        return f"[{self.type}|{self.name}]"
 
     def to_dict(self):
         return {
@@ -168,7 +204,10 @@ class BaseNode:
             "options": self.options,
             "output_connections": self.output_connections,
         }
-        
+
+    def __repr__(self):
+        return self.__str__()
+
     @staticmethod
     def normalize_id_on_dict(dictionary):
         temp = dictionary.copy()

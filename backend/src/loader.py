@@ -5,7 +5,7 @@ from api.models import NodeSheet
 
 from .nodes.node_manager import NodeManager
 from .nodes.node_registry import NodeRegistry
-# from src.manager.mongo_manager import getDb
+from .nodes.alerts.alert_obj import Alert
 from api import logger, exception, dbo
 
 
@@ -134,34 +134,30 @@ def loadConfig(NodeSheet, mode=LoadingMode):
     numberOfNodesChanged = 0
     numberOfNodesInit = 0
     nodesChanged = []
+    connectionList = list(extractConnections(NodeSheet))
+    for node in NodeSheet.get("nodes"):
+        newCls = NodeRegistry.getNodeClassByName(node.get("type"))
 
-    nodeConfigs = [NodeSheet]  # list(dbo.get_collection("node-configs").find({}))
+        options = extractOptionsFromNode(node)
+        existingNode = NodeManager.getNodeById(node.get("id"))
 
-    for nodeConfig in nodeConfigs:
-        connectionList = list(extractConnections(nodeConfig))
-        # print("connectionList: {}".format(list(connectionList)))
-        for node in nodeConfig.get("nodes"):
-            newCls = NodeRegistry.getNodeClassByName(node.get("type"))
-
-            options = extractOptionsFromNode(node)
-            existingNode = NodeManager.getNodeById(node.get("id"))
-
-            output_connections = list(
-                filter(
-                    lambda connection: connection.get("from").get("nodeId")
-                    == node.get("id"),
-                    connectionList,
-                )
+        output_connections = list(
+            filter(
+                lambda connection: connection.get("from").get("nodeId")
+                == node.get("id"),
+                connectionList,
             )
-            input_connections = list(
-                filter(
-                    lambda connection: connection.get("to").get("nodeId")
-                    == node.get("id"),
-                    connectionList,
-                )
+        )
+        input_connections = list(
+            filter(
+                lambda connection: connection.get("to").get("nodeId")
+                == node.get("id"),
+                connectionList,
             )
+        )
 
-            if existingNode is None:
+        if existingNode is None:
+            try:
                 newCls(
                     node.get("name"),
                     node.get("id"),
@@ -180,37 +176,47 @@ def loadConfig(NodeSheet, mode=LoadingMode):
                             options.get("settings"),
                         )
                     )
-            else:
-                logger.warning("Node {} EXIST!".format(node.get("name")))
-                nodeSettingsChanged = existingNode.options.get(
-                    "settings"
-                ) != options.get("settings")
-                outputChanged = existingNode.output_connections != output_connections
-                nameChanged = existingNode.name != node.get("name")
-
-                inputChanged = (
-                    existingNode.input_connections is not None
-                    and existingNode.input_connections != input_connections
+            except Exception as e:
+                Alert(
+                    "error",
+                    "Configuração Inválida",
+                    'Não foi possível criar o nó "{}"'.format(
+                        node.get("name")
+                    ),
+                    how_to_solve="Verifique se todos os valores obrigatórios estão presentes",
                 )
+                raise
+        else:
+            logger.warning("Node {} EXIST!".format(node.get("name")))
+            nodeSettingsChanged = existingNode.options.get(
+                "settings"
+            ) != options.get("settings")
+            outputChanged = existingNode.output_connections != output_connections
+            nameChanged = existingNode.name != node.get("name")
 
-                if existingNode and (
-                    nodeSettingsChanged or outputChanged or inputChanged or nameChanged
-                ):
-                    numberOfNodesChanged += 1
-                    nodesChanged.append(node.get("name"))
+            inputChanged = (
+                existingNode.input_connections is not None
+                and existingNode.input_connections != input_connections
+            )
 
-                    if nodeSettingsChanged:
-                        saveNodeChange(
-                            NodeChange(
-                                node.get("id"),
-                                node.get("name"),
-                                NodeChangeType.MODIFY,
-                                existingNode.options.get("settings"),
-                                options.get("settings"),
-                            )
+            if existingNode and (
+                nodeSettingsChanged or outputChanged or inputChanged or nameChanged
+            ):
+                numberOfNodesChanged += 1
+                nodesChanged.append(node.get("name"))
+
+                if nodeSettingsChanged:
+                    saveNodeChange(
+                        NodeChange(
+                            node.get("id"),
+                            node.get("name"),
+                            NodeChangeType.MODIFY,
+                            existingNode.options.get("settings"),
+                            options.get("settings"),
                         )
+                    )
 
-        numberOfNodesTotal += len(nodeConfig.get("nodes"))
+    numberOfNodesTotal += len(NodeSheet.get("nodes"))
 
 
 @exception(logger)
@@ -220,17 +226,23 @@ def saveNodeChange(nodeChange):
 
 @exception(logger)
 def load(node_id=None):
-    current_loaded_query = {"description": "current-config-loaded-id"}
-    if node_id is not None:
-        dbo.update_one(
-            "last-values",
-            current_loaded_query,
-            {"$set": {"sheet-id": ObjectId(node_id)}},
-        )
-        sheet = NodeSheet().getNodeSheetById(node_id)["content"]
-    else:
-        sheet = NodeSheet().getNodeSheetById(
-            dbo.find_one("last-values", current_loaded_query)["sheet-id"]
-        )["content"]
-    NodeManager.clear()
-    loadConfig(sheet, LoadingMode)
+    try:
+        current_loaded_query = {"description": "current-config-loaded-id"}
+        if node_id is not None:
+            dbo.update_one(
+                "last-values",
+                current_loaded_query,
+                {"$set": {"sheet-id": ObjectId(node_id)}},
+            )
+            sheet = NodeSheet().getNodeSheetById(node_id)["content"]
+        else:
+            sheet = NodeSheet().getNodeSheetById(
+                dbo.find_one("last-values", current_loaded_query)["sheet-id"]
+            )["content"]
+        NodeManager.clear()
+        loadConfig(sheet, LoadingMode)
+        return True
+    except Exception as e:
+        logger.error("Error loading config: {}".format(e))
+        return False
+

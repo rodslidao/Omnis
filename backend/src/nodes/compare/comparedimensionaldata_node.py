@@ -1,5 +1,5 @@
 from src.nodes.node_manager import NodeManager
-from src.nodes.base_node import BaseNode
+from src.nodes.base_node import BaseNode, Wizard
 from src.nodes.compare.compare_obj import data_comparatives
 from api import exception, logger, for_all_methods
 
@@ -21,6 +21,7 @@ class ComparedimensionaldataNode(BaseNode):
         self.auto_run = options.get("auto_run", False)
         NodeManager.addNode(self)
 
+    @Wizard._decorator
     def execute(self, message=""):
         target = message.targetName.lower()
         getattr(self, target)(message)

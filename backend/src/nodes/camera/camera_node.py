@@ -1,6 +1,6 @@
 from src.manager.camera_manager import CameraManager
 from src.nodes.node_manager import NodeManager
-from src.nodes.base_node import BaseNode
+from src.nodes.base_node import BaseNode, Wizard
 from api import logger, exception
 from api.decorators import for_all_methods
 
@@ -18,11 +18,12 @@ class CameraNode(BaseNode):
     def __init__(self, name, id, options, output_connections, input_connections):
         super().__init__(name, NODE_TYPE, id, options, output_connections)
         self.input_connections = input_connections
-        self.camera_id = options["camera"]["id"]
-        self.camera = CameraManager.get_by_id(self.camera_id).start()
+        self.camera_id = options["camera"]["_id"]
+        self.camera = CameraManager.get_by_id(self.camera_id)
         self.auto_run = options.get("auto_run", {"value":False})["value"]
         NodeManager.addNode(self)
 
+    @Wizard._decorator
     def execute(self, message=""):
         self.on("Imagem", self.read())
 

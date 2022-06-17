@@ -1,3 +1,6 @@
+from datetime import datetime
+from multiprocessing import Event
+from telnetlib import ECHO
 from serial.tools import list_ports
 from serial import Serial as _Serial, serialutil
 from bson import ObjectId
@@ -5,6 +8,9 @@ from src.manager.serial_manager import SerialManager
 from api import logger, exception
 from api.decorators import for_all_methods
 from threading import Lock
+import queue
+from threading import Thread
+from timeit import default_timer as timer
 
 send_lock = Lock()
 
@@ -48,7 +54,7 @@ class Serial(_Serial):
         bytesize=8,
         parity="N",
         stopbits=1,
-        timeout=0.01,
+        timeout=1,
         xonxoff=False,
         rtscts=False,
         dsrdtr=False,
@@ -62,6 +68,7 @@ class Serial(_Serial):
         self.port = port
         self.baudrate = baudrate
         self.is_gcode = is_gcode
+        self.is_open = True
         self.last_value_send = None
         self.last_value_received = None
 
@@ -71,6 +78,12 @@ class Serial(_Serial):
             self.name = name
 
         self.filters = filters
+        self.__comands = queue.Queue()
+        self.__echos = queue.Queue()
+        self.answers = {}
+        self.__signals = queue.Queue()
+        Thread(target=self.__command_writer, name=f"{self.name}_writer").start()
+        Thread(target=self.__command_reader, name=f"{self.name}_reader").start()
         SerialManager.add(self)
 
     def start(self):
@@ -102,28 +115,67 @@ class Serial(_Serial):
         self.start()
         return self
 
-    def send(self, message, echo=False):
-        send_lock.acquire()
-        try:
-            logger.info(f"{self.name} send: {message}")
-            _ = self.write(message)
-            return  _ if echo else self
-        except serialutil.PortNotOpenError:
-            self.open()
-            return self.send(message, echo)
-        finally:
-            send_lock.release()
+    def send(self, message, echo=False, log=True):
+
+        ID = ObjectId()
+        event = Event()
+        if echo:
+            self.__signals.put((event,ID))
+        self.__comands.put((message, echo))
+        if echo:
+            event.wait()
+            return self.answers.pop(ID, None)
+        return self
+        # return event, ID
+        # if echo:
+        #     self.__signals.join()
+        #     return self.answers.pop(ID, 'Fail')
+
+    def __command_writer(self):
+        while True:
+            try:
+                message, echo = self.__comands.get()
+                # try:
+                _echo = self.write(message)
+                # except serialutil.PortNotOpenError:
+                #     self.open()
+                #     _echo = self.write(message)
+                
+                if echo:
+                    event, ID = self.__signals.get()
+                    self.__echos.put((_echo, ID, event))
+            finally:
+                self.__comands.task_done()
+
+    
+    
+    def __command_reader(self):
+        while True:
+            try:
+                _echo, ID, event = self.__echos.get()
+                self.answers[ID] = _echo
+                event.set()
+            finally:
+                self.__signals.task_done()
+                self.__echos.task_done()
+
 
     def write(self, payload):
-        super().write((f"{payload}\n").encode("ascii"))
-        self.last_value_send = payload
-        return self.echo()
+        try:
+            send_lock.acquire()
+            if payload != self.last_value_send: logger.info(f"{self.name} send: {payload}")
+            super().write((f"{payload}\n").encode("ascii"))
+        finally:
+            send_lock.release()
+            self.last_value_send = payload
+            return self.echo()
 
     def echo(self):
         lines = []
         _b = self.readline()
-        while _b != b"" and self.inWaiting() != 0:
-            lines.append(_b.decode("ascii").rstrip())
+        while _b != b"" or self.inWaiting() != 0:
+            if len(lines) < 200:
+                lines.append(_b.decode("ascii").rstrip())
             _b = self.readline()
         lines.append(_b.decode("ascii").rstrip())
         self.last_value_received = lines
@@ -152,11 +204,5 @@ class Serial(_Serial):
             "is_gcode": self.is_gcode == True,
             "last_value_send": self.last_value_send,
             "last_value_received": self.last_value_received,
+            "date": datetime.timestamp(datetime.utcnow()),
         }
-
-
-@exception(logger)
-def checker():
-    a = Serial(device="/dev/ttyACM0", baudrate=250000)
-    a.open()
-    a.close()

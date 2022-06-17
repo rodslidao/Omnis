@@ -1,6 +1,6 @@
 import re
 from tkinter.font import BOLD
-from src.nodes.base_node import BaseNode
+from src.nodes.base_node import BaseNode, Wizard
 from src.nodes.node_manager import NodeManager
 from src.nodes.matrix.matrix_obj import Blister, Slot
 from bson import ObjectId
@@ -97,32 +97,38 @@ class MatrixNode(BaseNode):
             "sizes": convert_to_array(slots["size"]),
             "borders": convert_to_array(slots["margin"]),
             "origin": convert_to_array(options["matrix"]["origin"]),
-            "counter": shape / convert_to_array(slots["qtd"], int),
+            "counter": convert_to_array(slots["qtd"], int),
             "extra": convert_to_array(subdivisions["margin"]),
+            "scale": float(options["matrix"]["scale"])
         }
-        self.blister = Blister(shape=shape, name=options["matrix"]["name"], _id=options["matrix"]["id"],  slot_config=slot_config)
+        logger.info(f"{slot_config}, {shape}")
+        self.blister = Blister(shape=shape, name=options["matrix"]["name"], _id=options["matrix"]["id"],  slot_config=slot_config, order=options["matrix"]["order"])
+        # logger.info(f"MatrixNode {} created.")
+        # logger.info(f"{self.blister.data}")
         self.auto_run = options.get("auto_run", False)
         NodeManager.addNode(self)
+    @Wizard._decorator
     def execute(self, message):
         target = message.targetName.lower()
-    
         match target:
-            case "reset":
-                if isinstance(message.payload, Blister):
-                    self.blister.update_data(message.payload.data)
-                    return self.item()
+          case "reset":
+              if isinstance(message.payload, Blister):
+                  self.blister.update_data(message.payload.data)
+                  # return self.item()
 
-            case "próximo":
-                return self.item()
+          case "próximo":
+              return self.item()
 
-            case "imagem":
-                self.on(
-                    "Matriz", self.blister.roi(message.payload)
-                )
+          case "imagem":
+              self.on(
+                  "Matriz", self.blister.roi(message.payload)
+              )
 
     def item(self):
         try:
-            return self.on("Item", next(self.blister)[1]) # Send only the slot. Maybe another node is required to split item and slot data.
+            _ = next(self.blister)[1]
+            self.on("Item", _) # Send only the slot. Maybe another node is required to split item and slot data.
+            self.on("XY", dict(zip(['X', 'Y'], _.center ))) #! Thats is not the best option ...
         except StopIteration:
             self.on("Fim", True)
             self.reset()
@@ -156,6 +162,7 @@ class MatrixNode(BaseNode):
         return {
             "id": str(blister["_id"]),
             "name": blister["name"],
+            "order":blister.get("order", 'TLR'),
             "slots": {
                 "qtd": set_X_Y((np.array(blister["shape"]) / sub).astype(int).tolist()),
                 "margin": set_X_Y(blister["slot_config"]["borders"]),
@@ -165,7 +172,8 @@ class MatrixNode(BaseNode):
                 "qtd": set_X_Y(sub.astype(int).tolist()),
                 "margin": set_X_Y(blister["slot_config"]["extra"]),
             },
-            "origin": set_X_Y(blister["slot_config"]["origin"][:2])
+            "origin": set_X_Y(blister["slot_config"]["origin"][:2]),
+            "scale": blister["slot_config"]["scale"]
         }
 
 
@@ -181,3 +189,4 @@ if __name__ == "__main__":
     )
 
     print(vars(Blister(shape=[6, 6, 0], slot_config=S2)))
+

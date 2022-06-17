@@ -1,10 +1,10 @@
 from src.nodes.node_manager import NodeManager
-from src.nodes.base_node import BaseNode
+from src.nodes.base_node import BaseNode, Wizard
 from api import logger, exception
 from api.decorators import for_all_methods
 from api import dbo
 from src.manager.serial_manager import SerialManager
-
+from src.utility.system.sleep_alternative import sleep
 NODE_TYPE = "IoNode"
 
 
@@ -24,11 +24,15 @@ class IoNodeNode(BaseNode):
         NodeManager.addNode(self)
 
 
+    @Wizard._decorator
     def execute(self, message=""):
         target = message.targetName.lower()
         if target == "gatilho":
+            # logger.warning(self.board)
             self.board.send(self.command)
-            self.on("Saida", True)
+            sleep(0.3)
+            self.on("Saida", message.payload)
+            # logger.warning(f"{self.output_connections}")
 
 
     @staticmethod

@@ -1,8 +1,5 @@
 import asyncio
 from ariadne import SubscriptionType
-from src.manager.camera_manager import CameraManager
-from src.manager.serial_manager import SerialManager
-from .store import alerts, calibrations, nodes
 
 from api.decorators import for_all_methods
 from api import logger, exception
@@ -25,18 +22,25 @@ class SubscriptionFactory:
             self.store.append(queue)
             try:
                 while True:
+                    # value = 
+                    # queue.task_done()
                     yield await queue.get()
-            except asyncio.CancelledError:
+            # except asyncio.CancelledError:
+            #     pass 
+            except Exception as e:
+                queue.task_done()
+                raise  
+            finally:
                 self.store.remove(queue)
-                raise
 
         @subscription.field(self.name)
         async def sub_resolver(obj, info):
             return obj
 
-    def put(self, alert):
+    def put(self, info):
         """
-        Put alert to queue without await
+        Send a message to the subscription queue.
+        info (dict): message to be sent.
         """
         for queue in self.store:
-            queue.put_nowait(alert)
+            queue.put_nowait(dict(info.items()))

@@ -10,12 +10,6 @@ type CamerasResult {
   data: [Camera]
 }
 
-type SerialResult {
-  status: Boolean!
-  error: [String]
-  data: Serial
-}
-
 type SerialsResult {
   status: Boolean!
   error: [String]
@@ -44,9 +38,9 @@ type AlertResult {
   title: String
   date: Float
   description: String
-  how2solve: String
-  buttonText: String
-  buttonAction: String
+  how_to_solve: String
+  button_text: String
+  button_action: String
 }
 
 type SketchListResult {
@@ -73,4 +67,28 @@ type StepResult {
   step_description: String
   step_title: String
   estimated_time: Int
+}
+
+type DeviceResult{
+  _id: ID
+  name: String
+  command: String
+  board: String
+  port: String
+  icon: String
+  type: String
+  visible: Boolean
+  pwm: Int
+  range: JSON
+}
+
+type AxisResult {
+  _id: ID
+  name: String
+  color: String
+  icons: JSON
+  has_move_button: Boolean
+  disable: Boolean
+  unit: String
+  context_menu: [JSON]
 }

@@ -1,9 +1,16 @@
 type NodeSheet {
-  _id: ID!
-  name: String
+  _id: ID
+  parent_id: ID
+  label: String
+  key: ID
+  description: String
+  author: String
+  version: Int
+  last_access: Float
   saved: Boolean
   duplicated:Boolean
-  content: NDS
+  content: JSON
+  node_qtd: Int
 }
 
 type NDS {
@@ -26,10 +33,11 @@ type Serial {
   port: String!
   name: String!
   baudrate: Int!
-  is_open: Boolean!
-  is_gcode: Boolean!
-  last_value_send: String!
-  last_value_received: [String!]!
+  is_open: Boolean
+  is_gcode: Boolean
+  last_value_send: String
+  last_value_received: [String]
+  date: timestamptz
 }
 
 type connection {
@@ -107,4 +115,9 @@ type node_status_info{
 type target_message{
   from: ID
   to: ID
+}
+
+type control_status{
+  jog_position: JSON
+  endstops: JSON
 }

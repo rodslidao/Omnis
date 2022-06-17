@@ -1,1 +1,1 @@
-cameras, serials, queues, alerts, calibrations, nodes = [], [], [], [], [], []
+cameras, serials, queues, alerts, calibrations, nodes, controls = [], [], [], [], [], [], []
