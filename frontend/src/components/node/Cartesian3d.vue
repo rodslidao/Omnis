@@ -35,7 +35,7 @@ export default {
   },
 
   mounted() {
-    this.generate();
+    // this.generate();
   },
 
   methods: {
@@ -49,14 +49,14 @@ export default {
   },
 
   computed: {
-    cssUpdate() {
+    cssUpdate(x, y, z) {
       // sort random number each 2 seconds
-      console.log(this.x, this.y, this.z);
+      console.log(x, y, z);
       return {
         // '--position-x': this.receivedData.X ? this.receivedData.X : 0,
-        '--position-x': this.x,
-        '--position-y': this.y,
-        '--position-z': this.y,
+        '--position-x': x,
+        '--position-y': y,
+        '--position-z': y,
         '--aaaaaaaaaaaaaaa': 2,
       };
     },
@@ -64,7 +64,14 @@ export default {
 
   watch: {
     receivedData(newData) {
-      console.log('new2', newData.controls.jog_position.X);
+      console.log('dataaa', newData.controls.jog_position.x);
+      if (newData.controls.jog_position) {
+        const pos = newData.controls.jog_position;
+        // this.cssUpdate(pos.X, pos.Y, pos.Z);0
+        this.cssVars['--position-x'] = pos.X;
+        this.cssVars['--position-y'] = pos.Y;
+        this.cssVars['--position-z'] = pos.Z;
+      }
     },
   },
 
@@ -82,7 +89,7 @@ export default {
         // Result hook
         // Don't forget to destructure `data`
         result({ data }) {
-          this.receivedData = data.controls.jog_position;
+          this.receivedData = data;
           // cabo a result
         },
       },

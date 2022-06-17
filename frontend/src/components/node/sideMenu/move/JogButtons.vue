@@ -241,7 +241,7 @@ export default {
 
   watch: {
     receivedData(newData) {
-      console.log('new', newData);
+      // console.log('new', newData);
       // start
 
       if (newData.controls.jog_position) {
@@ -249,7 +249,7 @@ export default {
         Object.entries(data).forEach(([axis, val]) => {
           const index = this.variableList.findIndex(
             (item) => axis === item.name,
-            console.log('axis', axis, val)
+            // console.log('axis', axis, val)
           );
           if (index !== -1) {
             console.log('valor', val);

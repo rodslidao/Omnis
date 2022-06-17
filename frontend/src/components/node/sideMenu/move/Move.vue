@@ -23,8 +23,8 @@ export default {
 
   methods: {
     sendMessage(data) {
-      console.log('Ws sended:', data);
       if (this.WebSocket.readyState === 1) {
+        console.log('Ws sended:', data);
         this.WebSocket.send(JSON.stringify(data));
       }
     },
