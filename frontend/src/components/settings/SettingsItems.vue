@@ -1,5 +1,5 @@
 <template>
-  <v-card class="d-flex align-center p-4" link :to="path" outlined >
+  <v-card class="d-flex align-center p-4" min-height="100px" :link="path != ''" :to="path" outlined>
     <div>
       <div class="d-flex">
         <v-icon v-if="icon" large>mdi-{{ icon }}</v-icon>
@@ -15,9 +15,22 @@
     </div>
     <v-spacer></v-spacer>
     <div class="">
-      <v-btn icon :to="path" alt>
-        <v-icon>mdi-chevron-right</v-icon>
-      </v-btn>
+      <div v-if="select">
+        <v-select
+        class="select"
+          rounded
+          dense
+          :items="select"
+          v-model="selectedValue"
+          @change="$emit('selected', selectedValue)"
+          outlined
+        ></v-select>
+      </div>
+      <div v-else>
+        <v-btn icon :to="path" alt>
+          <v-icon>mdi-chevron-right</v-icon>
+        </v-btn>
+      </div>
     </div>
   </v-card>
 </template>
@@ -41,9 +54,25 @@ export default {
       type: String,
       default: '',
     },
+    select:{
+      type: Array,
+      default: [],
+    },
+    selected: {
+      type: String,
+      default: '',
+    },
+  },
+  data() {
+    return {
+      selectedValue: null,
+    };
   },
 };
 </script>
 
-<style>
+<style scoped>
+.select {
+  max-width: 12rem;
+}
 </style>
