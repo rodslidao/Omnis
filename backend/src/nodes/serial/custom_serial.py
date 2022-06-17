@@ -68,6 +68,7 @@ class Serial(_Serial):
         self.port = port
         self.baudrate = baudrate
         self.is_gcode = is_gcode
+        self.is_open = True
         self.last_value_send = None
         self.last_value_received = None
 
@@ -123,7 +124,6 @@ class Serial(_Serial):
         self.__comands.put((message, echo))
         if echo:
             event.wait()
-            logger.info(f"{self.name} returning: {self.answers[ID]}")
             return self.answers.pop(ID, None)
         return self
         # return event, ID

@@ -1,3 +1,4 @@
+from multiprocessing import context
 from os import environ
 import uvicorn
 import socket
@@ -54,11 +55,25 @@ class Echo(WebSocketEndpoint):
     async def on_disconnect(self, websocket, close_code=100):
         print("disconnected")
 
+class Controls(WebSocketEndpoint):
+    encoding = "json"
+    _id = None
+
+    async def on_connect(self, websocket):
+        await websocket.accept()
+    
+    async def on_receive(self, websocket, data):        
+        await websocket.send_json({"respose":'ok'})
+
+    async def on_disconnect(self, websocket, close_code=100):
+        print("disconnected")
+
 routes_app = [
     Route(
         "/videos/{video_id}", endpoint=custom_video_response, methods=["GET", "POST"]
     ),
     WebSocketRoute("/ws", endpoint=Echo),
+    WebSocketRoute("/controls", endpoint=Controls),
     Mount(
         "/",
         app=CORSMiddleware(

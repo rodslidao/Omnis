@@ -73,7 +73,8 @@ type Mutation {
 type Query {
   getNodeSheet(_id: ID!): NodeSheetResult!
   getSketchList: SketchListResult!
-
+  getAxisList: [AxisResult!]
+  getDevicesList: [DeviceResult!]
   getNodeInfo(node_type: ID!, kwargs: JSON): NodeInfoResult!
 
   getCamera(_id: ID!): CameraResult!
@@ -101,4 +102,5 @@ type Subscription {
   serials: Serial
   calibrations: StepResult
   nodes: Node_Status
+  controls: control_status
 }

@@ -33,11 +33,11 @@ type Serial {
   port: String!
   name: String!
   baudrate: Int!
-  is_open: Boolean!
-  is_gcode: Boolean!
-  last_value_send: String!
-  last_value_received: [String!]!
-  date: timestamptz!
+  is_open: Boolean
+  is_gcode: Boolean
+  last_value_send: String
+  last_value_received: [String]
+  date: timestamptz
 }
 
 type connection {
@@ -115,4 +115,9 @@ type node_status_info{
 type target_message{
   from: ID
   to: ID
+}
+
+type control_status{
+  jog_position: JSON
+  endstops: JSON
 }

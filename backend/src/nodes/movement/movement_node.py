@@ -21,9 +21,6 @@ class MovementNode(BaseNode):
         self.input_connections = input_connections
         self.serial_id = options["board"]["id"]
         self.serial = SerialManager.get_by_id(self.serial_id)
-        # if self.serial is not isinstance(self.serial, SerialGcodeOBJ):
-        #     raise Exception("Serial not found")
-            # self.on("Falha", "Serial not connected")
         self.axis = []
         self.coordinates = {}
         self.wait_for_this = [{k.lower():v for k,v in x['to'].items() if k == "name"} for x in self.input_connections]
@@ -39,7 +36,6 @@ class MovementNode(BaseNode):
 
     @Wizard._decorator
     def execute(self, message):
-        # logger.info(f"{self.name} received message: {message}")
         action = message.targetName.lower()
         if action in self.axis:
             self.coordinates[action] = message.payload
@@ -49,8 +45,6 @@ class MovementNode(BaseNode):
             self.gatilho_f()
         else:
             logger.error(f"Waiting for {self.wait_checks}/{len(self.wait_for_this)}")
-        # else:
-        #     return getattr(self, action + "_f")(message.payload)
 
     def coordinates_f(self, payload):
         try:
@@ -79,7 +73,7 @@ class MovementNode(BaseNode):
             else:
                 self.serial.send("G90", log=False)
             # logger.info(f"coords: {movement}")
-            self.serial.M_G0(*movement, sync=True)
+            self.serial.G0(*movement)
             self.on("Sucesso", self.serial_id)
 
         else:

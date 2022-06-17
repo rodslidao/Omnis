@@ -18,9 +18,10 @@ from src.manager.serial_manager import SerialManager
 from src.manager.camera_manager import CameraManager
 from src.nodes.serial.custom_serial import Serial
 from src.nodes.serial.gcode_obj import SerialGcodeOBJ
+from src.nodes.serial.pins_obj import pin
 from src.nodes.camera.custom_camera import Camera
 from src.nodes.alerts.alert_obj import Alert
-
+pins =  [pin(**p) for p in dbo.find_many("pins")]
 
 def Managers_Import(definitions):
     for collection, manager_class in definitions.items():
@@ -29,7 +30,7 @@ def Managers_Import(definitions):
                 try:
                     match config.get("is_gcode"):
                         case True:
-                            manager_class["class"][1](**config)
+                            manager_class["class"][1](pins={str(p._id): p for p in pins if p.board == str(config['_id'])}, **config)
                         case _:
                             manager_class["class"][0](**config, **config.get("options"))
                 except Exception as e:

@@ -7,6 +7,7 @@ from src.manager.camera_manager import CameraManager
 from src.manager.serial_manager import SerialManager
 from src.nodes.calibration.camera_calibration import CameraCalibration
 from threading import Thread
+from api import dbo, logger
 
 query = QueryType()
 
@@ -79,4 +80,18 @@ def resolve_getLoadedConfig(obj, info):
     """Get a Node by id and return it like a payload"""
     return NodeSheet().getNodeSheetById(process.loaded_id)
 
-    
+@query.field("getDevicesList")
+def resolve_getDevicesList(obj, info):
+    """Get a Node by id and return it like a payload"""
+    temp = list(dbo.find_many("pins"))
+    for i in temp:
+        i["_id"] = str(i["_id"])
+    return temp
+
+@query.field("getAxisList")
+def resolve_getAxisList(obj, info):
+    """Get a Node by id and return it like a payload"""
+    temp = list(dbo.find_many("machine_axis"))
+    for i in temp:
+        i["_id"] = str(i["_id"])
+    return temp
