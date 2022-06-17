@@ -1,5 +1,12 @@
 <template>
-  <v-card class="d-flex align-center p-4" min-height="100px" :link="path != ''" :to="path" outlined>
+  <v-card
+    class="d-flex align-center p-4"
+    min-height="100px"
+    min-width="900px"
+    :link="path != ''"
+    :to="path"
+    outlined
+  >
     <div>
       <div class="d-flex">
         <v-icon v-if="icon" large>mdi-{{ icon }}</v-icon>
@@ -15,21 +22,26 @@
     </div>
     <v-spacer></v-spacer>
     <div class="">
-      <div v-if="select">
+      <!-- <div v-if="select.length !== 0"> -->
+      <div>
         <v-select
-        class="select"
+          class="select"
           rounded
           dense
           :items="select"
-          v-model="selectedValue"
-          @change="$emit('selected', selectedValue)"
+          return-object
+          :value="selected"
+          @change="$emit('update:selected', $event.target.selected)"
           outlined
+          :item-text="itemText"
+          :item-value="itemValue"
         ></v-select>
       </div>
-      <div v-else>
+      <div>
         <v-btn icon :to="path" alt>
           <v-icon>mdi-chevron-right</v-icon>
         </v-btn>
+        <slot></slot>
       </div>
     </div>
   </v-card>
@@ -54,11 +66,19 @@ export default {
       type: String,
       default: '',
     },
-    select:{
+    select: {
       type: Array,
-      default: [],
+      default: () => [],
     },
     selected: {
+      type: String,
+      default: '',
+    },
+    itemText: {
+      type: String,
+      default: '',
+    },
+    itemValue: {
       type: String,
       default: '',
     },
@@ -68,11 +88,18 @@ export default {
       selectedValue: null,
     };
   },
+
+  methods: {
+    change(value) {
+      // this.$emit('selected', value);
+      this.$emit('update:selected', this.$event.target.checked)
+    },
+  },
 };
 </script>
 
 <style scoped>
 .select {
-  max-width: 12rem;
+  max-width: 16rem;
 }
 </style>

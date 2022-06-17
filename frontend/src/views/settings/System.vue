@@ -10,8 +10,9 @@
       :subtitle="item.subtitle"
       :icon="item.icon"
       :path="item.path"
-      :select="item.select"
-      @selected="changeLanguage"
+      item-text="text"
+      item-value="lang"
+      v-model="selected"
     ></settings-items>
     {{ items[0].selected }}
   </div>
@@ -26,6 +27,7 @@ export default {
   data() {
     const lang = localStorage.getItem(lang || 'pt-br');
     return {
+      selected: '',
       actualPath: '',
       items: [
         {
@@ -34,7 +36,10 @@ export default {
             'O idioma de todo o programa será exibida no idioma selecionado',
           icon: 'web',
           path: '',
-          select: ['pt-BR', 'en-US'],
+          select: [
+            { text: 'Português Brazil', lang: 'pt-br' },
+            { text: 'English', lang: 'en' },
+          ],
         },
       ],
     };
@@ -48,7 +53,7 @@ export default {
   methods: {
     changeLanguage(language) {
       console.log(language);
-      localStorage.setItem('lang', language);
+      localStorage.setItem('lang', language.lang);
       // window.location.reload();
       // this.$store.commit('setLanguage', language);
     },
@@ -58,8 +63,5 @@ export default {
 
 <style lang="scss" scoped>
 .system {
-  overflow: auto;
-  padding: 0.5rem;
-  height: calc(100vh - 12rem);
 }
 </style>

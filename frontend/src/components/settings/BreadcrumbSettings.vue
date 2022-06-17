@@ -1,13 +1,13 @@
 <template>
   <!-- <div class=" align-center"> -->
-  <div class="d-flex align-center">
+  <div class="d-flex align-center breadcrumb">
     <v-btn
       icon
       large
-      class="mr-n4"
+      class="mr-n4 ml-n10"
       @click="$router.back()"
       alt
-      v-if="$router.currentRoute.name !== 'default'"
+      v-if="crumbs.length !== 1"
     >
       <v-icon>mdi-chevron-left</v-icon>
     </v-btn>
@@ -67,7 +67,8 @@ export default {
             : `/${path}`,
           text: this.$route.matched[idx].meta.breadCrumb || path,
         });
-        return breadcrumbArray;
+        console.log('fasdfasdfa', breadcrumbArray);
+        return breadcrumbArray.filter((a) => a.path !== 'config');
       }, []);
       return breadcrumbs;
     },
@@ -75,4 +76,7 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+.breadcrumb{
+  margin-left: -24px;
+}
 </style>

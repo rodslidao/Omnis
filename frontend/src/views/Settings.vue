@@ -1,8 +1,14 @@
 <template>
   <div class="pt-10 d-flex settings">
     <!-- <v-card elevation="12" width="256"> -->
-    <v-navigation-drawer floating permanent width="350" class="navigation" color="rgba(0,0,0,0)">
-      <div class="user mx-4 ">
+    <v-navigation-drawer
+      floating
+      permanent
+      width="250"
+      class="navigation"
+      color="rgba(0,0,0,0)"
+    >
+      <div class="user mx-4">
         <v-avatar color="primary" size="50">
           <img v-if="user.avatar" :src="user.avatar" />
           <span v-else
@@ -20,7 +26,7 @@
         </div>
       </div>
 
-      <v-autocomplete
+      <!-- <v-autocomplete
         v-model="select"
         :items="items"
         cache-items
@@ -33,7 +39,7 @@
         hide-no-data
         hide-details
         placeholder="Pesquisar"
-      ></v-autocomplete>
+      ></v-autocomplete> -->
       <v-list dense rounded>
         <v-list-item-group
           v-model="group"
@@ -57,11 +63,13 @@
       </v-list>
     </v-navigation-drawer>
     <!-- </v-card> -->
-    <div class="setting-content ml-8 mr-8">
-      <breadcrumb-settings></breadcrumb-settings>
-      <transition>
-        <router-view transition="slide-x-transition"></router-view>
-      </transition>
+    <div class="pl-14 pr-2"> 
+        <breadcrumb-settings></breadcrumb-settings>
+      <div class="setting-content">
+        <transition>
+          <router-view transition="slide-x-transition"></router-view>
+        </transition>
+      </div>
     </div>
   </div>
 </template>
@@ -72,6 +80,10 @@ import { menuList } from '@/components/settings/menuDescription';
 
 export default {
   components: { BreadcrumbSettings },
+
+  created() {
+    this.$router.push({ name: 'system' });
+  },
 
   data() {
     return {
@@ -111,7 +123,7 @@ export default {
   margin-bottom: 2rem;
 }
 
-.settings{
+.settings {
   height: 100%;
   background-color: rgb(253, 253, 253);
 }
@@ -119,5 +131,8 @@ export default {
 .setting-content {
   width: 100%;
   height: 100%;
+  overflow: auto;
+  /* padding: 0.5rem; */
+  height: calc(100vh - 12rem);
 }
 </style>
