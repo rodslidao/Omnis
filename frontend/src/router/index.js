@@ -20,6 +20,7 @@ import Process from '@/views/settings/Process.vue';
 import MatrixDirectionSelector from '@/components/node/config/matrix/MatrixDirectionSelector.vue';
 import Users from '@/views/settings/Users.vue';
 import Personalize from '@/views/settings/Personalize.vue';
+import RegisterUser from '@/views/Auth/RegisterUser.vue';
 
 Vue.use(Router);
 
@@ -73,6 +74,14 @@ const routes = [
         meta: {
           breadCrumb: 'settings.users.name',
         },
+        children: [
+          {
+            name: 'registerUser',
+            component: RegisterUser,
+            path: ':register-user',
+            meta: { breadCrumb: 'settings.users.registerUser.name' },
+          },
+        ],
       },
       {
         name:'personalize',

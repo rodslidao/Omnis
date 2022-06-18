@@ -15,6 +15,7 @@ const store = new Vuex.Store({
   modules: {
     node,
     alert,
+    auth,
   },
 });
 export { store };

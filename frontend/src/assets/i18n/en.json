@@ -22,7 +22,16 @@
       }
     },
     "users": {
-      "name": "Users"
+      "name": "Users",
+      "registerUser": {
+        "name": "New User",
+        "title": "Register new User",
+        "subtitle": "Create users."
+      },
+      "listUsers": {
+        "name": "List of users",
+        "subtitle": "List users and their roles. You can edit the users."
+      }
     },
     "networkAndInternet": {
       "name": "Network & Internet"
@@ -33,5 +42,27 @@
     "support": {
       "name": "Support"
     }
+  },
+  "form": {
+    "name": "Name",
+    "lastName": "Last Name",
+    "email": "Email",
+    "username": "Username",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "showPassword": "Show Password",
+    "register": "Register",
+    "required": "Hey! I'm required",
+    "validEmail": "This e-mail is not valid",
+    "validPassword": "This password is not valid",
+    "passwordMatch": "This passwords do not match",
+    "minCharacters": "This field must have at least {count} characters"
+  },
+  "levels":{
+    "name": "Level",
+    "operator": "Operator",
+    "manager": "Manager",
+    "developer": "Developer",
+    "maintenance": "Maintenance"
   }
 }
