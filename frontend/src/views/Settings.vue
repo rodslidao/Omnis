@@ -4,7 +4,7 @@
     <v-navigation-drawer
       floating
       permanent
-      width="250"
+      width="300"
       class="navigation"
       color="rgba(0,0,0,0)"
     >
@@ -56,18 +56,18 @@
             </v-list-item-icon>
 
             <v-list-item-content>
-              <v-list-item-title>{{ item.title }}</v-list-item-title>
+              <v-list-item-title>{{ $t(item.title) }}</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
         </v-list-item-group>
       </v-list>
     </v-navigation-drawer>
     <!-- </v-card> -->
-    <div class="pl-14 pr-2"> 
+    <div class="pl-14 pr-2 setting-warper"> 
         <breadcrumb-settings></breadcrumb-settings>
       <div class="setting-content">
         <transition>
-          <router-view transition="slide-x-transition"></router-view>
+          <router-view transition="fade-transition"></router-view>
         </transition>
       </div>
     </div>
@@ -100,12 +100,6 @@ export default {
       search: null,
       select: null,
       items: menuList,
-      // items: [
-      //   { title: 'Sistema', icon: 'application', path: '/system' },
-      //   { title: 'Dispositivos', icon: 'devices', path: '/devices' },
-      //   { title: 'Rede & Internet ', icon: 'wifi', path: '/network' },
-      //   { title: 'Suporte', icon: 'handshake-outline', path: '/support' },
-      // ],
     };
   },
   watch: {
@@ -126,6 +120,9 @@ export default {
 .settings {
   height: 100%;
   background-color: rgb(253, 253, 253);
+}
+.setting-warper{
+  width: 100%;
 }
 
 .setting-content {

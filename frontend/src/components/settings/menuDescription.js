@@ -1,7 +1,7 @@
 export const menuList = [
   // just use icons only from material design https://materialdesignicons.com/
   {
-    title: 'Sistema',
+    title: 'settings.system.name',
     icon: 'application',
     path: '/system',
     children: [
@@ -11,11 +11,12 @@ export const menuList = [
       },
     ],
   },
-  { title: 'Dispositivos', icon: 'devices', path: '/devices' },
-  { title: 'Processo', icon: 'robot-industrial', path: '/process' },
-  { title: 'Usuários', icon: 'account', path: '/users' },
-  { title: 'Rede & Internet ', icon: 'wifi', path: '/network' },
-  { title: 'Suporte', icon: 'handshake-outline', path: '/support' },
+  { title: 'settings.devices.name', icon: 'devices', path: '/devices' },
+  { title: 'settings.process.name', icon: 'robot-industrial', path: '/process' },
+  { title: 'settings.users.name', icon: 'account', path: '/users' },
+  { title: 'settings.networkAndInternet.name', icon: 'wifi', path: '/network' },
+  { title: 'settings.personalize.name', icon: 'brush', path: '/personalize' },
+  { title: 'settings.support.name', icon: 'handshake-outline', path: '/support' },
 ];
 
 export function getCategoryList() {

@@ -19,6 +19,7 @@ import Support from '@/views/settings/Support.vue';
 import Process from '@/views/settings/Process.vue';
 import MatrixDirectionSelector from '@/components/node/config/matrix/MatrixDirectionSelector.vue';
 import Users from '@/views/settings/Users.vue';
+import Personalize from '@/views/settings/Personalize.vue';
 
 Vue.use(Router);
 
@@ -46,7 +47,7 @@ const routes = [
         component: Network,
         path: 'network',
         meta: {
-          breadCrumb: 'Rede & Internet',
+          breadCrumb: 'settings.networkAndInternet.name',
         },
       },
       {
@@ -54,7 +55,7 @@ const routes = [
         component: System,
         path: 'system',
         meta: {
-          breadCrumb: 'Sistema',
+          breadCrumb: 'settings.system.name',
         },
       },
       {
@@ -62,7 +63,7 @@ const routes = [
         component: Devices,
         path: 'devices',
         meta: {
-          breadCrumb: 'Dispositivos',
+          breadCrumb: 'settings.devices.name',
         },
       },
       {
@@ -70,15 +71,20 @@ const routes = [
         component: Users,
         path: 'users',
         meta: {
-          breadCrumb: 'Usuários',
+          breadCrumb: 'settings.users.name',
         },
+      },
+      {
+        name:'personalize',
+        component: Personalize,
+        path: 'settings.personalize.name',
       },
       {
         name: 'support',
         component: Support,
         path: 'support',
         meta: {
-          breadCrumb: 'Suporte',
+          breadCrumb: 'settings.support.name',
         },
       },
       {
@@ -86,14 +92,14 @@ const routes = [
         component: Process,
         path: ':process',
         meta: {
-          breadCrumb: 'Processo',
+          breadCrumb: 'settings.process.name',
         },
         children: [
           {
             name: 'matrix',
             component: MatrixDirectionSelector,
             path: ':matrix',
-            meta: { breadCrumb: 'Matriz' },
+            meta: { breadCrumb: 'settings.process.matrix.name' },
           },
         ],
       },

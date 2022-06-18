@@ -2,7 +2,6 @@
   <div class="process">
     <router-view> </router-view>
     <settings-items
-      class="mb-4"
       v-for="(item, index) in items"
       :key="index"
       :title="item.title"
@@ -46,10 +45,10 @@ export default {
     };
   },
 
-  created() {
-    this.actualPath = this.$router.currentRoute.path;
-    console.log(this.$router.currentRoute);
-  },
+  // created() {
+  //   this.actualPath = this.$router.currentRoute.path;
+  //   console.log(this.$router.currentRoute);
+  // },
 };
 </script>
 

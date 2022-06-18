@@ -5,6 +5,7 @@ import VueTheMask from 'vue-the-mask';
 import VueHaptic from 'vue-haptic';
 import JsonEditor from 'vue-json-edit';
 import VueApexCharts from 'vue-apexcharts';
+import i18n from './i18n';
 // import {WebRTC} from 'vue-webrtc';
 
 import AlertFeedback from '@/plugins/alertFeedback';
@@ -95,6 +96,7 @@ Vue.prototype.$workbox = wb;
 
 new Vue({
   vuetify,
+  i18n,
   render: (h) => h(App),
   router,
   apolloProvider: createProvider(),

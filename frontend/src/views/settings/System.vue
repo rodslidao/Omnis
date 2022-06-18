@@ -1,19 +1,29 @@
 <template>
   <div class="system">
-    <settings-title>Idioma e Data</settings-title>
+    <settings-title>{{$t('settings.system.languageAndData.name')}}</settings-title>
     <router-view> </router-view>
     <settings-items
-      class="mb-4"
       v-for="(item, index) in items"
       :key="index"
-      :title="item.title"
-      :subtitle="item.subtitle"
+      :title="$t(item.title)"
+      :subtitle="$t(item.subtitle)"
       :icon="item.icon"
       :path="item.path"
-      item-text="text"
-      item-value="lang"
-      v-model="selected"
-    ></settings-items>
+    >
+      <template v-slot:end>
+        <v-select
+          class="select"
+          rounded
+          v-model="lang"
+          dense
+          :items="item.select"
+          @change="changeLanguage(lang)"
+          outlined
+          item-text="text"
+          item-value="lang"
+        ></v-select>
+      </template>
+    </settings-items>
     {{ items[0].selected }}
   </div>
 </template>
@@ -25,37 +35,29 @@ import SettingsTitle from '@/components/settings/SettingsTitle.vue';
 export default {
   components: { SettingsItems, SettingsTitle },
   data() {
-    const lang = localStorage.getItem(lang || 'pt-br');
+    const lang = localStorage.getItem('lang') || 'en'
     return {
-      selected: '',
       actualPath: '',
+      lang: lang,
       items: [
         {
-          title: 'Idioma de exibição',
+          title:'settings.system.languageAndData.exhibitionLanguage.title',
           subtitle:
-            'O idioma de todo o programa será exibida no idioma selecionado',
+            'settings.system.languageAndData.exhibitionLanguage.subtitle',
           icon: 'web',
           path: '',
           select: [
-            { text: 'Português Brazil', lang: 'pt-br' },
+            { text: 'Português', lang: 'pt' },
             { text: 'English', lang: 'en' },
           ],
         },
       ],
     };
   },
-
-  created() {
-    this.actualPath = this.$router.currentRoute.path;
-    console.log(this.$router.currentRoute);
-  },
-
   methods: {
     changeLanguage(language) {
-      console.log(language);
-      localStorage.setItem('lang', language.lang);
-      // window.location.reload();
-      // this.$store.commit('setLanguage', language);
+      localStorage.setItem('lang', language);
+      window.location.reload();
     },
   },
 };
@@ -63,5 +65,8 @@ export default {
 
 <style lang="scss" scoped>
 .system {
+  .select {
+    max-width: 16rem;
+  }
 }
 </style>

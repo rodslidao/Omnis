@@ -1,0 +1,37 @@
+{
+  "settings": {
+    "system": {
+      "name": "System",
+      "languageAndData": {
+        "name": "Language and Data",
+        "exhibitionLanguage": {
+          "title": "Exhibition Language",
+          "subtitle": "The language of the entire program will be displayed in the selected language."
+        }
+      }
+    },
+    "devices": {
+      "name": "Devices"
+    },
+    "process": {
+      "name": "Process",
+      "matrix": {
+        "name": "Matrix",
+        "title": "Matrix",
+        "subtitle": "Create and edit the matrix to use in nodes."
+      }
+    },
+    "users": {
+      "name": "Users"
+    },
+    "networkAndInternet": {
+      "name": "Network & Internet"
+    },
+    "personalize": {
+      "name": "Personalize"
+    },
+    "support": {
+      "name": "Support"
+    }
+  }
+}

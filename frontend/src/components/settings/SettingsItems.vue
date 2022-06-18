@@ -1,16 +1,16 @@
 <template>
   <v-card
-    class="d-flex align-center p-4"
+    class="d-flex align-center p-4 mb-4"
     min-height="100px"
-    min-width="900px"
+    max-width="900px"
     :link="path != ''"
     :to="path"
     outlined
   >
     <div>
-      <div class="d-flex">
+      <div class="d-flex ">
         <v-icon v-if="icon" large>mdi-{{ icon }}</v-icon>
-        <div class="ml-4">
+        <div class="pl-4 pr-4">
           <div class="font-weight-bold">
             {{ title }}
           </div>
@@ -21,27 +21,15 @@
       </div>
     </div>
     <v-spacer></v-spacer>
-    <div class="">
-      <!-- <div v-if="select.length !== 0"> -->
-      <div>
-        <v-select
-          class="select"
-          rounded
-          dense
-          :items="select"
-          return-object
-          :value="selected"
-          @change="$emit('update:selected', $event.target.selected)"
-          outlined
-          :item-text="itemText"
-          :item-value="itemValue"
-        ></v-select>
+    <div>
+      <div v-if="!!this.$slots.end">
+       <slot name="end">
+       </slot>
       </div>
-      <div>
+      <div v-if="path != ''">
         <v-btn icon :to="path" alt>
           <v-icon>mdi-chevron-right</v-icon>
         </v-btn>
-        <slot></slot>
       </div>
     </div>
   </v-card>
@@ -99,7 +87,5 @@ export default {
 </script>
 
 <style scoped>
-.select {
-  max-width: 16rem;
-}
+
 </style>

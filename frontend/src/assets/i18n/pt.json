@@ -1,0 +1,38 @@
+{
+    "settings": {
+      "system": {
+        "name": "Sistema",
+        "languageAndData": {
+          "name": "Idioma e Data",
+          "exhibitionLanguage": {
+            "title": "Idioma de exibição",
+            "subtitle": "O idioma de todo o programa será exibida no idioma selecionado"
+          }
+        }
+      },
+      "devices": {
+        "name": "Dispositivos"
+      },
+      "process": {
+        "name": "Processo",
+        "matrix": {
+            "name": "Matriz",
+            "title": "Matriz",
+            "subtitle": "Crie e edite suas matrizes para serem usadas nos processos"
+          }
+      },
+      "users": {
+        "name": "Usuários"
+      },
+      "networkAndInternet": {
+        "name": "Rede & Internet"
+      },
+      "personalize": {
+        "name": "Personalizar"
+      },
+      "support": {
+        "name": "Suporte"
+      }
+    }
+  }
+  

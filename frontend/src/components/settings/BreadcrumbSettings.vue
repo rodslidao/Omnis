@@ -14,7 +14,8 @@
     <!-- <div class="text-h4">{{ $route.name }}</div> -->
     <v-breadcrumbs :items="crumbs">
       <template v-slot:item="{ item }" class="text">
-        <v-breadcrumbs-item :href="item.to">
+        <v-breadcrumbs-item>
+        <router-link :to="'/config'+item.to">
           <span
             :class="
               $router.currentRoute.name == item.path
@@ -23,6 +24,7 @@
             "
             >{{ item.text }}</span
           >
+          </router-link>
         </v-breadcrumbs-item>
       </template>
       <template v-slot:divider>
@@ -58,16 +60,16 @@ export default {
     crumbs() {
       const pathArray = this.$route.path.split('/');
       pathArray.shift();
-      console.log(pathArray);
+      // console.log(pathArray);
       const breadcrumbs = pathArray.reduce((breadcrumbArray, path, idx) => {
         breadcrumbArray.push({
           path,
           to: breadcrumbArray[idx - 1]
             ? `/${breadcrumbArray[idx - 1].path}/${path}`
             : `/${path}`,
-          text: this.$route.matched[idx].meta.breadCrumb || path,
+          text: this.$t(this.$route.matched[idx].meta.breadCrumb) || path,
         });
-        console.log('fasdfasdfa', breadcrumbArray);
+        // console.log('fasdfasdfa', breadcrumbArray);
         return breadcrumbArray.filter((a) => a.path !== 'config');
       }, []);
       return breadcrumbs;
