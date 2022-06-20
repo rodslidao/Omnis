@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 <template>
   <div class="actions-container">
     <div class="menuList" v-on:keyup.ctrl.s="save">
@@ -138,7 +139,6 @@ export default {
     ...mapState('node', {
       selectedTabIndex: (state) => state.selectedTabIndex,
       tabList: (state) => state.tabList,
-      selectedTabId: (state) => state.selectedTabId,
       selectedTab: (state) => state.selectedTab,
       editor: (state) => state.editor,
     }),
@@ -161,10 +161,7 @@ export default {
 
     async play() {
       this.isLoading = true;
-
       this.save();
-
-      console.log(this.selectedTabId);
 
       await this.$apollo
         .mutate({
@@ -174,7 +171,8 @@ export default {
             }
           `,
           variables: {
-            id: this.selectedTabId,
+            // eslint-disable-next-line no-underscore-dangle
+            id: this.selectedTab._id,
           },
         })
 
@@ -193,7 +191,7 @@ export default {
           this.$alertFeedback(
             'Não foi possível rodar programa',
             'error',
-            error
+            error,
           );
 
           // We restore the initial user input
@@ -209,11 +207,7 @@ export default {
         .mutate({
           mutation: gql`
             mutation stopProcess() {
-              stopProcess() {
-                data {
-                  _id
-                }num quer
-              }
+              stopProcess()
             }
           `,
           update: (store, { data: { loadConfig } }) => {
@@ -236,7 +230,7 @@ export default {
           this.$alertFeedback(
             'Não foi possível parar a rotina',
             'error',
-            error
+            error,
           );
 
           // We restore the initial user input
@@ -282,7 +276,7 @@ export default {
           this.$alertFeedback(
             'Não foi possível rodar programa',
             'error',
-            error
+            error,
           );
 
           // We restore the initial user input
@@ -389,7 +383,7 @@ export default {
           this.$alertFeedback(
             'Não foi possível salvar o arquivo, erro ao conectar com servidor',
             'error',
-            error
+            error,
           );
 
           // We restore the initial user input
@@ -408,7 +402,7 @@ export default {
       download(
         JSON.stringify(this.tabList[this.selectedTabIndex]),
         `${fileName}.oms`,
-        'text/oms'
+        'text/oms',
       );
     },
 
@@ -421,12 +415,12 @@ export default {
       console.log(target.files[0].name.split('.').pop());
 
       if (
-        target.files[0].name.split('.').pop() !== 'oms' &&
-        target.files[0].name.split('.').pop() !== 'json'
+        target.files[0].name.split('.').pop() !== 'oms'
+        && target.files[0].name.split('.').pop() !== 'json'
       ) {
         this.$alertFeedback(
           'Arquivo inválido, seu arquivo deve ser um .oms',
-          'error'
+          'error',
         );
 
         return;
@@ -507,7 +501,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.actions-container{
+.actions-container {
   position: absolute;
 }
 .menuList {
@@ -520,7 +514,7 @@ export default {
   }
 }
 
-::v-deep .v-speed-dial--direction-top .v-speed-dial__list{
+::v-deep .v-speed-dial--direction-top .v-speed-dial__list {
   align-items: baseline;
 }
 </style>

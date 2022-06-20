@@ -17,12 +17,12 @@
             hide-details
             v-haptic
             true-value="255"
-            @change="sendPwm(device.name, device.pwm)"
+            @change="sendCommand(device._id, device.pwm)"
           ></v-switch>
           <div
             class="
               switch-label
-              text-h6
+              text-subtitle-1
               grey--text
               text--lighten-2
               ml-2
@@ -36,7 +36,7 @@
       </div>
       <div v-if="device.type === 'slider'" class="pr-4 pt-4">
         <div
-          class="text-h6 grey--text text--lighten-2 mr-6 d-flex align-center"
+          class="text-subtitle-1 grey--text text--lighten-2 mr-6 d-flex align-center"
         >
           <v-icon small class="mr-3">mdi-{{ device.icon }}</v-icon>
           {{ device.name }}
@@ -48,7 +48,7 @@
             :min="device.range.min"
             :max="device.range.max"
             v-haptic
-            @mouseup="sendCommand(device.range.selected, device.id)"
+            @mouseup="sendCommand( device._id, device.range.selected)"
           >
             <template v-slot:prepend>
               <v-icon @click="decrement(index)"> mdi-minus </v-icon>
@@ -69,11 +69,11 @@
               type="number"
               v-on:keyup.enter="
                 (variableList[index].manualMode = false),
-                  sendCommand(device.range.selected, device.id)
+                  sendCommand(device._id, device.range.selected)
               "
               @blur="
                 (variableList[index].manualMode = false),
-                  sendCommand(device.range.selected, device.id)
+                  sendCommand(device._id, device.range.selected)
               "
               autofocus
             ></v-text-field>
@@ -183,11 +183,12 @@ export default {
       );
     },
 
-    sendCommand(data, index) {
+    sendCommand(id, value) {
+      // console.log(id, value);
       const msg = {
         context: 'outputDevices',
-        id: this.getDevicesList[index]._id,
-        pwm: data,
+        id,
+        pwm: value,
       };
       this.$emit('send', msg);
     },

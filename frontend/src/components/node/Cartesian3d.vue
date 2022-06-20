@@ -17,6 +17,8 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
+
 import gql from 'graphql-tag';
 
 export default {
@@ -43,30 +45,34 @@ export default {
       setInterval(() => {
         this.cssVars['--position-x'] = Math.floor(Math.random() * 1000);
         this.cssVars['--position-y'] = Math.floor(Math.random() * 800);
-        this.cssVars['--position-z'] = Math.floor(Math.random() * 200);
-      }, 2000);
+        this.cssVars['--position-z'] = Math.floor(Math.random() * 70);
+      }, 3000);
     },
   },
 
   computed: {
-    cssUpdate(x, y, z) {
-      // sort random number each 2 seconds
-      console.log(x, y, z);
-      return {
-        // '--position-x': this.receivedData.X ? this.receivedData.X : 0,
-        '--position-x': x,
-        '--position-y': y,
-        '--position-z': y,
-        '--aaaaaaaaaaaaaaa': 2,
-      };
-    },
+    ...mapState('node', {
+      controls: (state) => state.controls,
+    }),
+
+    // cssUpdate(x, y, z) {
+    //   // sort random number each 2 seconds
+    //   console.log(x, y, z);
+    //   return {
+    //     // '--position-x': this.receivedData.X ? this.receivedData.X : 0,
+    //     '--position-x': x,
+    //     '--position-y': y,
+    //     '--position-z': y,
+    //     '--aaaaaaaaaaaaaaa': 2,
+    //   };
+    // },
   },
 
   watch: {
-    receivedData(newData) {
-      console.log('dataaa', newData.controls.jog_position.x);
-      if (newData.controls.jog_position) {
-        const pos = newData.controls.jog_position;
+    '$store.state.node.controls': function (newData) {
+      console.log('dataaa', newData);
+      if (newData.jog_position) {
+        const pos = newData.jog_position;
         // this.cssUpdate(pos.X, pos.Y, pos.Z);0
         this.cssVars['--position-x'] = pos.X;
         this.cssVars['--position-y'] = pos.Y;
@@ -75,26 +81,26 @@ export default {
     },
   },
 
-  apollo: {
-    $subscribe: {
-      // When a tag is added
-      controls: {
-        query: gql`
-          subscription {
-            controls {
-              jog_position
-            }
-          }
-        `,
-        // Result hook
-        // Don't forget to destructure `data`
-        result({ data }) {
-          this.receivedData = data;
-          // cabo a result
-        },
-      },
-    },
-  },
+  // apollo: {
+  //   $subscribe: {
+  //     // When a tag is added
+  //     controls: {
+  //       query: gql`
+  //         subscription {
+  //           controls {
+  //             jog_position
+  //           }
+  //         }
+  //       `,
+  //       // Result hook
+  //       // Don't forget to destructure `data`
+  //       result({ data }) {
+  //         this.receivedData = data;
+  //         // cabo a result
+  //       },
+  //     },
+  //   },
+  // },
 };
 </script>
 
@@ -108,9 +114,9 @@ export default {
 
   --x-machine: 1000;
   --y-machine: 800;
-  --z-machine: 200;
+  --z-machine: 70;
 
-  --container-height: 8em;
+  --container-height: 10em;
   --scale-factor: calc(var(--container-height) / var(--y-machine));
   --container-width: calc(var(--scale-factor) * var(--x-machine));
 
@@ -127,12 +133,13 @@ export default {
   display: block;
   position: absolute;
   top: 50%;
-  transform: rotateX(60deg) rotateY(0deg) rotateZ(45deg);
+  transform: rotateX(70deg) rotateY(0deg) rotateZ(45deg);
   transform-style: preserve-3d;
   border-top: 2px solid;
-  border-image: linear-gradient(to right, rgb(0, 255, 81), rgba(0, 0, 0, 0)) 1 5%;
+  border-image: linear-gradient(to right, rgb(0, 255, 81), rgba(0, 0, 0, 0)) 1
+    5%;
 }
-.perspective:after{
+.perspective:after {
   content: '';
   display: block;
   height: calc(var(--scale-factor) * var(--z-machine));
@@ -141,7 +148,8 @@ export default {
   transform: rotateX(90deg);
   transform-origin: 0% 0%;
   border-left: 2px solid;
-  border-image: linear-gradient(to bottom, rgb(0, 119, 255), rgba(0, 0, 0, 0)) 1 100%;
+  border-image: linear-gradient(to bottom, rgb(0, 119, 255), rgba(0, 0, 0, 0)) 1
+    100%;
 }
 .perspective:before {
   content: '';
@@ -189,10 +197,15 @@ export default {
 
 .shadow {
   background-color: #00000065;
-  filter: blur(5px);
+  filter: blur(4px);
   transform: translateZ(
-    calc(-1 * (var(--cube-size) + var(--scale-factor) * var(--position-z)))
+    calc(-1*
+        (var(--cube-size) + var(--scale-factor) *
+          (-1 * var(--position-z) + var(--z-machine))
+         ) )
   );
+  color: white;
+  content: "calc(-1*(var(--cube-size) + var(--scale-factor) * var(--position-z)))";
   transition: 0.25s;
 }
 
@@ -204,7 +217,10 @@ export default {
 .cube:nth-child(1) {
   /*     animation: wave 2s ease-in-out infinite; */
   transform: translateZ(
-      calc(var(--cube-size) + var(--scale-factor) * var(--position-z))
+      calc(
+        var(--cube-size) + var(--scale-factor) *
+          (-1 * var(--position-z) + var(--z-machine))
+      )
     )
     translateX(calc(var(--scale-factor) * var(--position-x)))
     translateY(calc(var(--scale-factor) * var(--position-y)));
