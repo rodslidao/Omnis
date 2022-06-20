@@ -3,13 +3,15 @@ from os import environ
 import uvicorn
 import socket
 
-from api import logger, dbo, automatic_classes
+from api import logger, dbo
 from api.queries import query
 from api.subscriptions import subscription
 from api.mutations import mutation
 
-from src.end_points import custom_video_response
+from src.end_points import custom_video_response, Echo, Controls
 from src.nodes.node_manager import NodeManager
+from src.manager.serial_manager import SerialManager
+
 from src.manager.camera_manager import CameraManager
 
 from starlette.routing import Route
@@ -23,7 +25,6 @@ from ariadne import (
 
 from starlette.middleware.cors import CORSMiddleware
 from starlette.routing import Mount, WebSocketRoute
-from starlette.endpoints import WebSocketEndpoint
 from starlette.applications import Starlette
 from starlette.middleware import Middleware
 
@@ -37,43 +38,12 @@ schema = make_executable_schema(
 )
 
 
-class Echo(WebSocketEndpoint):
-    encoding = "json"
-    _id = None
-
-    async def on_connect(self, websocket):
-        await websocket.accept()
-
-    async def on_receive(self, websocket, data):
-        node_id = data.get("nodeId")
-        if node_id:
-            running_node = NodeManager.getNodeById(node_id)
-            if running_node:
-                running_node.update_options(data['options'])
-        await websocket.send_json({"echo": data['options']})
-
-    async def on_disconnect(self, websocket, close_code=100):
-        print("disconnected")
-
-class Controls(WebSocketEndpoint):
-    encoding = "json"
-    _id = None
-
-    async def on_connect(self, websocket):
-        await websocket.accept()
-    
-    async def on_receive(self, websocket, data):        
-        await websocket.send_json({"respose":'ok'})
-
-    async def on_disconnect(self, websocket, close_code=100):
-        print("disconnected")
-
 routes_app = [
     Route(
         "/videos/{video_id}", endpoint=custom_video_response, methods=["GET", "POST"]
     ),
     WebSocketRoute("/ws", endpoint=Echo),
-    WebSocketRoute("/controls", endpoint=Controls),
+    *[WebSocketRoute(f"/controls/{serial._id}", endpoint=serial.websocket) for serial in SerialManager.get()],
     Mount(
         "/",
         app=CORSMiddleware(
@@ -82,10 +52,11 @@ routes_app = [
             allow_methods=["*"],
             allow_headers=["*"],
         ),
-    ),
+    )
 ]
 
-app = Starlette(debug=True, routes=routes_app, on_startup=[automatic_classes], on_shutdown=[dbo.close])
+# logger.info([f"/controls/{serial._id} | {serial.websocket}" for serial in SerialManager.get()])
+app = Starlette(debug=True, routes=routes_app, on_shutdown=[dbo.close])
 
 @app.on_event("shutdown")
 def shutdown_event():

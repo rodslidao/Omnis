@@ -62,8 +62,8 @@ type ManutentionResult {
 }
 
 type StepResult {
-  step: Int!
-  total_steps: Int!
+  step: Int
+  total_steps: Int
   step_description: String
   step_title: String
   estimated_time: Int

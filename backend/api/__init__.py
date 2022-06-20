@@ -50,5 +50,6 @@ mangers = {
     "serial-manager": {"manager": SerialManager, "class": [Serial, SerialGcodeOBJ]},
 }
 
-def automatic_classes():
-    Thread(target=Managers_Import, args=(mangers,)).start()
+# def automatic_classes():
+# Thread(target=Managers_Import, args=(mangers,)).start()
+Managers_Import(mangers)

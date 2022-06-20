@@ -1,18 +1,15 @@
-from logging import Logger
-from click import command
-from cv2 import log
+from inspect import Attribute
+from timeit import default_timer
 from .custom_serial import Serial
 from api import logger, exception
 from api.decorators import for_all_methods
 from api import logger
-from threading import Event
-# from src.utility.system.sleep_alternative import sleep
-# from time import sleep
-from api.subscriptions import SubscriptionFactory
-from api.store import controls
+from threading import Event, Thread
 from json import loads
 from re import split
-rtc_status = SubscriptionFactory(controls, f"controls")
+from src.end_points import Controls
+import asyncio
+import math
 
 @for_all_methods(exception(logger))
 class SerialGcodeOBJ(Serial):
@@ -54,23 +51,36 @@ class SerialGcodeOBJ(Serial):
         )
         self.is_open = True
         self.status ={
-            "positions":{'X':-1, 'Y':-1, 'Z':-1, 'A':-1, 'B':-1, 'C':-1},
+            "jog_position":{'X':-1, 'Y':-1, 'Z':-1, 'A':-1, 'B':-1, 'C':-1},
             "endstops":{'X':False, 'Y':False, 'Z':False, 'A':False, 'B':False, 'C':False}
         }
         self.resumed = Event()
         self.resumed_permission = ["stop", "kill", "quick_stop", "resume"]
-    
         for msg in startup_commands:
             self.send(msg)
         self.pins = pins
         self.resume()
+        self.websocket = Controls(self._id)
+        Thread(target=self.auto_update, name=f"{_id}_auto_update", daemon=True).start()
+
+    def auto_update(self):
+        asyncio.run(self.update_webscoket_with_status())
+
+    async def update_webscoket_with_status(self):
+        logger.info("update task created")
+        old_status = self.status.copy()
+        while True:
+            if self.status != old_status:
+                await self.websocket.update_client_message(self.status)
+                await asyncio.sleep(0.01)
+                old_status = self.status.copy()
+            await asyncio.sleep(0.0001)
 
     def verify(function):
         def wrapper(self, *args, **kwargs):
             if not self.is_open: return
             return function(self, *args, **kwargs)
         return wrapper
-
     @verify
     def G0(self, *args, **kwargs):
         """
@@ -79,19 +89,24 @@ class SerialGcodeOBJ(Serial):
         # Create a coordinate string based in args.
         cords = ""
         for pos in args:
-            cords += f"{pos[0].upper()}{pos[1]} "
+            cords += f"{pos[0].upper()}{round(float(pos[1]), 3)} "
 
         # Send machine to the coordinate string
         self.super_send(f"G0 {cords}")
+        for _ in range(5):
+            try:
+                future = self.M114().items()
+                if future: break
+            except AttributeError:
+                pass
 
-        future = self.M114().items()
-        # Wait for the machine to reach the coordinate string
+        logger.info(f"future: {future}")
         while (
-            any((round(v,3) != round(self.M114("R")[i],3)) for i, v in future)
-            #and not self.resumed.is_set()
+            any((math.ceil(v) != math.ceil(self.M114("R")[i])) for i, v in future)
         ):
-            pass
-
+            continue
+    
+    
     @verify
     def M114(self, _type="", sequence=["X", "Y", "Z", "A", "B", "C", ":"], *args, **kwargs):
         """
@@ -101,24 +116,24 @@ class SerialGcodeOBJ(Serial):
             ''- Return the future postion of the machine.
 
         """
-        echo = self.super_send(f"M114 {_type}", echo=True, log=False)[0]
-        txt = echo
-        for n in sequence:
-            txt = txt.replace(n, "")
-        try:
-            _echo = dict(
-                zip(
-                    sequence[:-1],
-                    list(map(float, txt.split(" ")[: len(sequence) - 1])),
+        for echo in self.super_send(f"M114 {_type}", echo=True, log=False):
+            txt = echo
+            for n in sequence:
+                txt = txt.replace(n, "")
+            try:
+                _echo = dict(
+                    zip(
+                        sequence[:-1],
+                        list(map(float, txt.split(" ")[: len(sequence) - 1])),
+                    )
                 )
-            )
-            if _type == "R":
-                self.status["jog_position"] = _echo
-                rtc_status.put(self.status)
-            return _echo
-        except ValueError:  # ! Why this error?
-            logger.info('[SerialGcodeOBJ] M114 error: "{}"'.format(echo))
-            raise
+                if _type == "R":
+                    self.status["jog_position"] = _echo
+                    
+                return _echo
+            except ValueError:  # ! Why this error?
+                # logger.info('[SerialGcodeOBJ] M114 error: "{}"'.format(echo))
+                pass
     
     def M42(self, _id, _value):
         return super().send(self.pins[_id].set_value(_value)) if self.pins.get(_id) else False
