@@ -121,3 +121,17 @@ type control_status{
   jog_position: JSON
   endstops: JSON
 }
+
+type user {
+    _id: ID!
+    username: String
+    avatar_image: String
+    email: String
+    last_name: String
+    first_name: String
+  }
+
+type user_with_token{
+  user: user!
+  token: String!
+}
