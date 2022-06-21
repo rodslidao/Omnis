@@ -32,7 +32,8 @@ class SerialGcodeOBJ(Serial):
         startup_commands = [
             "G28",
         ],
-        pins={}
+        pins={},
+        axes={}
     ):
         super().__init__(
             port,
@@ -59,8 +60,10 @@ class SerialGcodeOBJ(Serial):
         for msg in startup_commands:
             self.send(msg)
         self.pins = pins
+        self.axes = axes
+        logger.info(axes)
         self.resume()
-        self.websocket = Controls(self._id)
+        self.websocket = Controls(self._id, self)
         Thread(target=self.auto_update, name=f"{_id}_auto_update", daemon=True).start()
 
     def auto_update(self):
@@ -105,7 +108,7 @@ class SerialGcodeOBJ(Serial):
             any((math.ceil(v) != math.ceil(self.M114("R")[i])) for i, v in future)
         ):
             continue
-    
+        return self.M114("R")
     
     @verify
     def M114(self, _type="", sequence=["X", "Y", "Z", "A", "B", "C", ":"], *args, **kwargs):

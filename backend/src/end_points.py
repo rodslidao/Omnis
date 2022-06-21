@@ -65,11 +65,13 @@ class Echo(WebSocketEndpoint):
     async def on_disconnect(self, websocket, close_code=100):
         print("disconnected")
 
-control_clients = {}
+control_sessions= {}
+
 class Controls(WebSocketEndpoint):
     encoding = "json"
-    def __init__(self, _id):
+    def __init__(self, _id, serial):
         self._id = _id
+        self.serial = serial
 
     def __call__(self, scope, receive, send):
         super().__init__(scope, receive, send)
@@ -82,14 +84,41 @@ class Controls(WebSocketEndpoint):
             
     async def on_connect(self, websocket):
         await websocket.accept()
-        control_clients[self._id] = websocket
+        if control_sessions.get(self._id) is not None:
+            control_sessions[self._id].add(websocket)
+        else:
+            control_sessions[self._id] = set([websocket])
         
-    # async def on_receive(self, websocket, data):        
-    #     await websocket.send_json({"respose":'ok'})
+    async def on_receive(self, websocket, data):
+        if data["context"] == "movementScale":
+            # Define a escala de movimento
+            for axis in self.serial.axes.values():
+                axis.step = float(data["value"])
+
+        elif data["context"] == "joggingDistance":
+            # Move a distancia especificada
+            axis = self.serial.axes[data["id"]]
+            axis.move(data["value"])
+            axis.position=self.serial.G0(axis())[axis.name]
+
+        elif data["context"] == "outputDevices":
+            # Ativa ou desativa os dispositivos de saida
+            self.serial.send(self.serial.pins[data["id"]].set_value(data["pwm"]))
+
+        elif data["context"] == "joggingStep":
+            # Movimento "Relativo"
+            axis = self.serial.axes[data["id"]]
+            axis.move(axis.position + axis.step * (1 if not data['isNegative'] else -1))
+            axis.position=self.serial.G0(axis())[axis.name]
+        else:
+            logger.info(data)
+
+        await websocket.send_json({"respose":'ok'})
 
     async def update_client_message(self, payload:dict):
-        if control_clients.get(self._id):
-            await control_clients.get(self._id).send_json(payload)
+        for session in control_sessions.get(self._id):
+            await session.send_json(payload)
     
     async def on_disconnect(self, websocket, close_code=100):
-        control_clients.pop(self._id, 'default')
+        control_sessions.get(self._id, set()).remove(websocket)
+        logger.info(f"{len(control_sessions.get(self._id))} remaining sessions")
