@@ -1,7 +1,7 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "a4ce47f1c518ae494729",
-    "url": "/css/app.d75688ee.css"
+    "revision": "12766e389757369119d3",
+    "url": "/css/app.2972c64b.css"
   },
   {
     "revision": "a126e7a70c90a0004a63",
@@ -124,11 +124,11 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/img/parallax-logo.972ebc01.svg"
   },
   {
-    "revision": "e76154d65d07e58eff5107bf8207b7f2",
+    "revision": "e6f42ce86f81fadd0c4aa6d595823d71",
     "url": "/index.html"
   },
   {
-    "revision": "a4ce47f1c518ae494729",
+    "revision": "12766e389757369119d3",
     "url": "/js/app.63a88424.js"
   },
   {
