@@ -57,7 +57,7 @@ def duplicateNodeSheet_resolver(obj, info, _id):
 def startProcess_resolver(obj, info, _id):
     """Start a process by id and return it like a payload"""
     process.start(_id)
-    returns = process.dict()
+    # returns = process.dict()
     return
 
 
@@ -65,7 +65,7 @@ def startProcess_resolver(obj, info, _id):
 def stopProcess_resolver(obj, info):
     """Stop a process by id and return it like a payload"""
     process.stop()
-    returns = process.dict()
+    # returns = process.dict()
     return 
 
 
@@ -73,7 +73,7 @@ def stopProcess_resolver(obj, info):
 def pauseProcess_resolver(obj, info):
     """Pause a process by id and return it like a payload"""
     process.pause()
-    returns = process.dict()
+    # returns = process.dict()
     return
 
 
@@ -81,13 +81,13 @@ def pauseProcess_resolver(obj, info):
 def resumeProcess_resolver(obj, info):
     """Resume a process by id and return it like a payload"""
     process.resume()
-    returns = process.dict()
+    # returns = process.dict()
     return 
 
 
 @mutation.field("loadConfig")
 def loadConfig_resolver(obj, info, _id):
-    a = process.load(_id)
+    process.load(_id)
     logger.info("Loaded config with id {}".format(_id))
     return NodeSheet().getNodeSheetById(_id)
 
@@ -220,3 +220,19 @@ def syncHostTime_resolver(obj, info, timestamp):
     except Exception:
         return False
     return True
+
+# *  ----------- Serial ----------- * #
+@mutation.field("registerUser")
+def registerUser_resolver(obj, info, **kwargs):
+    logger.info(f"RegUser:{kwargs}")
+    return {
+      "user": {
+        "_id":"12345678",
+        "username":"user_teste",
+        "avatar_image":"path/teste.jpg",
+        "email": "teste@gmail.com.br",
+        "last_name":"teste",
+        "first_name":"user"
+      },
+      "token":"99999999999999"
+    }

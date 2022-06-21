@@ -51,12 +51,9 @@ class SerialGcodeOBJ(Serial):
             _id=_id,
         )
         self.is_open = True
-        self.status ={
-            "jog_position":{'X':-1, 'Y':-1, 'Z':-1, 'A':-1, 'B':-1, 'C':-1},
-            "endstops":{'X':False, 'Y':False, 'Z':False, 'A':False, 'B':False, 'C':False}
-        }
         self.resumed = Event()
         self.resumed_permission = ["stop", "kill", "quick_stop", "resume"]
+        self.__status = {}
         for msg in startup_commands:
             self.send(msg)
         self.pins = pins
@@ -67,23 +64,20 @@ class SerialGcodeOBJ(Serial):
         Thread(target=self.auto_update, name=f"{_id}_auto_update", daemon=True).start()
 
     def auto_update(self):
-        asyncio.run(self.update_webscoket_with_status())
+        asyncio.run(self.websocket.broadcast_on_change(self.status))
 
-    async def update_webscoket_with_status(self):
-        logger.info("update task created")
-        old_status = self.status.copy()
-        while True:
-            if self.status != old_status:
-                await self.websocket.update_client_message(self.status)
-                await asyncio.sleep(0.01)
-                old_status = self.status.copy()
-            await asyncio.sleep(0.0001)
+
+    @property
+    def status(self):
+        return self.__status
+
 
     def verify(function):
         def wrapper(self, *args, **kwargs):
             if not self.is_open: return
             return function(self, *args, **kwargs)
         return wrapper
+
     @verify
     def G0(self, *args, **kwargs):
         """
@@ -131,13 +125,13 @@ class SerialGcodeOBJ(Serial):
                     )
                 )
                 if _type == "R":
-                    self.status["jog_position"] = _echo
+                    self.__status["position"] = _echo
                     
                 return _echo
             except ValueError:  # ! Why this error?
                 # logger.info('[SerialGcodeOBJ] M114 error: "{}"'.format(echo))
                 pass
-    
+
     def M42(self, _id, _value):
         return super().send(self.pins[_id].set_value(_value)) if self.pins.get(_id) else False
 

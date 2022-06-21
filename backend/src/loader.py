@@ -8,6 +8,9 @@ from .nodes.node_registry import NodeRegistry
 from .nodes.alerts.alert_obj import Alert
 from api import logger, exception, dbo
 
+variables = {
+    '<color>': "#FFFFFF",
+}
 
 class LoadingMode(Enum):
     STARTUP = "STARTUP"
@@ -61,7 +64,13 @@ def extractOptionsFromNode(node):
     node_options = node.get("options")
     options = {}
     for option in node_options:
-        options[option[0].lower()] = option[1]
+        if option[0].startswith("<") and option[0].endswith(">"):
+            try:
+                options[option[0][1:-1]] = variables[option[0]]
+            except KeyError:
+                raise KeyError(f"Variable {option[0]} not found at {node.get('name')}|{node.get('id')} during load. Aborting load.")
+        else:
+            options[option[0].lower()] = option[1]
     return options
 
 

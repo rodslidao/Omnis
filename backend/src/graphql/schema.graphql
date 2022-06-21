@@ -68,6 +68,7 @@ type Mutation {
   setCameraProperty(_id: ID!, input: JSON): CameraResult!
 
   syncHostTime(timestamp: Int): Boolean!
+  registerUser(newUser: reg_user): user_with_token
 }
 
 type Query {
