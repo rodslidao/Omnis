@@ -8,7 +8,7 @@
     <div
       v-for="(axis, index) in getAxisList"
       :key="index"
-      v-on.once="generateVariables(axis.name)"
+      v-on.once="generateVariables(axis)"
     >
       <div v-if="!axis.disable">
         <div class="d-flex pt-2 pb-2 align-center justify-space-between">
@@ -25,7 +25,7 @@
                   v-for="(item, index) in axis.context_menu"
                   :key="index"
                 >
-                  <v-list-item-title> {{ item.title }}</v-list-item-title>
+                  <v-list-item-title>{{ item.title }}</v-list-item-title>
                   <v-list-item-icon>
                     <v-icon v-text="'mdi-' + item.icon"></v-icon>
                   </v-list-item-icon>
@@ -71,6 +71,7 @@
                 :append-icon="
                   variableList[index].distance.length !== 0 ? 'mdi-send' : ''
                 "
+                @keyup.enter="sendDistance(index)"
                 @blur="variableList[index].manualDistance = false"
                 @click:append="sendDistance(index)"
                 autofocus
@@ -126,138 +127,78 @@ const GET_AXIS_LIST = gql`
 
 export default {
   components: { SideMenuTitle },
+  props: {
+    axisDistances: Object,
+  },
+
   data() {
     return {
       variableList: [],
       receivedData: [],
-      axisList: [
-        {
-          id: 'iddomeunegocio',
-          name: 'x',
-          color: 'error',
-          icons: {
-            left: {
-              command: 'G91 \n G0 X-',
-              icon: 'minus-circle',
-            },
-            right: {
-              command: 'G91 \n G0 X',
-              icon: 'plus-circle',
-            },
-          },
-          hasMoveButton: true,
-          disable: false,
-          unit: 'mm',
-          contextMenu: [
-            {
-              title: 'Ir para o ZERO',
-              command: 'G90 \n G0 Z0',
-              icon: 'mdi-home',
-            },
-            { title: 'Zerar o eixo', command: 'G28 X', icon: 'mdi-home' },
-          ],
-        },
-        {
-          id: 'iddomeunegocio2',
-          name: 'y',
-          color: 'success',
-          icons: {
-            left: {
-              command: 'G91 \n G0 Y-',
-              icon: 'minus-circle',
-            },
-            right: {
-              command: 'G91 \n G0 Y',
-              icon: 'plus-circle',
-            },
-          },
-          hasMoveButton: true,
-          disable: false,
-          unit: 'mm',
-          contextMenu: [
-            {
-              title: 'Ir para o ZERO',
-              command: 'G90 \n G0 Z0',
-              icon: 'mdi-home',
-            },
-            { title: 'Zerar o eixo', command: 'G28 Y', icon: 'mdi-home' },
-          ],
-        },
-        {
-          id: 'iddomeunegocio3',
-          name: 'z',
-          color: 'info',
-          icons: {
-            left: {
-              command: 'G91 \n G0 Z-',
-              icon: 'minus-circle',
-            },
-            right: {
-              command: 'G91 \n G0 Z',
-              icon: 'plus-circle',
-            },
-          },
-          hasMoveButton: true,
-          disable: false,
-          unit: 'mm',
-          contextMenu: [
-            {
-              title: 'Ir para o ZERO',
-              command: 'G90 \n G0 Z0',
-              icon: 'mdi-home',
-            },
-            { title: 'Zerar o eixo', command: 'G28 Z', icon: 'mdi-home' },
-          ],
-        },
-        {
-          id: 'iddomeunegocio4',
-          name: 'a',
-          color: 'warning',
-          icons: {
-            left: {
-              command: 'G91 \n G0 A-',
-              icon: 'minus-circle',
-            },
-            right: {
-              command: 'G91 \n G0 A',
-              icon: 'plus-circle',
-            },
-          },
-          hasMoveButton: true,
-          disable: true,
-          unit: 'mm',
-          contextMenu: [
-            {
-              title: 'Ir para o ZERO',
-              command: 'G90 \n G0 Z0',
-              icon: 'mdi-home',
-            },
-            { title: 'Zerar o eixo', command: 'G28 A', icon: 'mdi-home' },
-          ],
-        },
-      ],
+      // axisList: [
+      //   {
+      //     id: 'iddomeunegocio',
+      //     name: 'x',
+      //     color: 'error',
+      //     icons: {
+      //       left: {
+      //         command: 'G91 \n G0 X-',
+      //         icon: 'minus-circle',
+      //       },
+      //       right: {
+      //         command: 'G91 \n G0 X',
+      //         icon: 'plus-circle',
+      //       },
+      //     },
+      //     hasMoveButton: true,
+      //     disable: false,
+      //     unit: 'mm',
+      //     contextMenu: [
+      //       {
+      //         title: 'Ir para o ZERO',
+      //         command: 'G90 \n G0 Z0',
+      //         icon: 'mdi-home',
+      //       },
+      //       { title: 'Zerar o eixo', command: 'G28 X', icon: 'mdi-home' },
+      //     ],
+      //   },
+      // ],
     };
   },
 
   watch: {
-    receivedData(newData) {
-      console.log('new', newData);
+    axisDistances(newData) {
+      // console.log('new', newData);
       // start
 
-      if (newData.controls.jog_position) {
-        const data = newData.controls.jog_position;
+      if (newData.jog_position) {
+        const data = newData.jog_position;
         Object.entries(data).forEach(([axis, val]) => {
           const index = this.variableList.findIndex(
-            (item) => axis === item.name,
-            console.log('axis', axis, val)
+            (item) => axis === item.name
+            // console.log('axis', axis, val)
           );
           if (index !== -1) {
-            console.log('valor', val);
+            // console.log('valor', val);
             this.variableList[index].value = val;
           }
         });
         // end
       }
+      // if (newData.controls.jog_position) {
+      //   const data = newData.controls.jog_position;
+      //   Object.entries(data).forEach(([axis, val]) => {
+      //     const index = this.variableList.findIndex(
+      //       (item) => axis === item.name
+      //       // console.log('axis', axis, val)
+      //     );
+      //     if (index !== -1) {
+      //       console.log('valor', val);
+      //       this.variableList[index].value = val;
+      //     }
+      //   });
+      //   // end
+      // }
     },
   },
 
@@ -266,22 +207,30 @@ export default {
       const msg = {
         context: 'joggingStep',
         isNegative,
-        id: button.id,
-        scale: this.stepsList[this.stepSelected].value,
+        id: button._id,
       };
-      this.$emit('sendMessage', msg);
+      console.log('msg', button);
+      this.$emit('send', msg);
     },
 
     sendDistance(index) {
-      console.log(this.variableList[index].distance);
+      // console.log(this.variableList[index]);
+      this.variableList[index].manualDistance = false;
+      const msg = {
+        context: 'joggingDistance',
+        id: this.variableList[index].id,
+        value: this.variableList[index].distance,
+      };
+      this.$emit('send', msg);
     },
 
-    generateVariables(name) {
-      if (this.variableList.length !== this.axisList.length) {
+    generateVariables(axis) {
+      if (this.variableList.length !== this.getAxisList.length) {
         const variable = {
-          name,
+          name: axis.name,
+          id: axis._id,
           distance: Number,
-          value: 0.00,
+          value: 0.0,
           manualDistance: false,
         };
         this.variableList.push(variable);
@@ -298,24 +247,24 @@ export default {
       // },
     },
 
-    $subscribe: {
-      // When a tag is added
-      controls: {
-        query: gql`
-          subscription {
-            controls {
-              jog_position
-            }
-          }
-        `,
-        // Result hook
-        // Don't forget to destructure `data`
-        result({ data }) {
-          this.receivedData = data;
-          // cabo a result
-        },
-      },
-    },
+    // $subscribe: {
+    //   // When a tag is added
+    //   controls: {
+    //     query: gql`
+    //       subscription {
+    //         controls {
+    //           jog_position
+    //         }
+    //       }
+    //     `,
+    //     // Result hook
+    //     // Don't forget to destructure `data`
+    //     result({ data }) {
+    //       this.receivedData = data;
+    //       // cabo a result
+    //     },
+    //   },
+    // },
   },
 };
 </script>

@@ -13,6 +13,7 @@ export default {
     editor: new Editor(),
     engine: new Engine(false),
     counter: 0,
+    controls: {},
     newTab: {
       label: '',
       _id: null,
@@ -253,6 +254,9 @@ export default {
         Vue.prototype.$alertFeedback('Arquivo carregado com sucesso', 'success');
       }
     },
+    updateControls: (state, data) => {
+      state.controls = data;
+    },
   },
 
   actions: {
@@ -316,6 +320,9 @@ export default {
     },
     loadTabId({ commit }, payload) {
       commit('loadTabId', payload);
+    },
+    updateControls({ commit }, payload) {
+      commit('updateControls', payload);
     },
 
     /**

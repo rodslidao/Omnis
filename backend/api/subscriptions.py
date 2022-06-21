@@ -1,4 +1,5 @@
 import asyncio
+import queue
 from ariadne import SubscriptionType
 
 from api.decorators import for_all_methods
@@ -13,34 +14,27 @@ Create a decorator to pass (self.name) attribute from SubscriptionFactory method
 @for_all_methods(exception(logger))
 class SubscriptionFactory:
     def __init__(self, store, name):
-        self.store = store
+        self.store = asyncio.Queue()
         self.name = name
 
         @subscription.source(self.name)
         async def alerts_source(obj, info):
-            queue = asyncio.Queue()
-            self.store.append(queue)
             try:
                 while True:
-                    # value = 
-                    # queue.task_done()
-                    yield await queue.get()
-            # except asyncio.CancelledError:
-            #     pass 
-            except Exception as e:
-                queue.task_done()
-                raise  
+                    yield await self.store.get()
             finally:
-                self.store.remove(queue)
+                logger.info("closing...")
 
         @subscription.field(self.name)
         async def sub_resolver(obj, info):
             return obj
-
+    
     def put(self, info):
         """
         Send a message to the subscription queue.
         info (dict): message to be sent.
         """
-        for queue in self.store:
-            queue.put_nowait(dict(info.items()))
+        self.store.put_nowait(dict(info.items()))
+        
+        # self.store
+        logger.info("putting")
