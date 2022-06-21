@@ -291,7 +291,10 @@ export default {
 
             this.receivedData = data;
 
-            this.sendCommandList.push(this.message);
+            if (this.sendCommandList.at(-1) !== this.message) {
+              this.sendCommandList.push(this.message);
+            }
+
             this.selectedItemCommandList = this.sendCommandList.length;
             this.clearMessage();
 
