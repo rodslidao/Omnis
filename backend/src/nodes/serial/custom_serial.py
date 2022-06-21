@@ -175,9 +175,15 @@ class Serial(_Serial):
         _b = self.readline()
         while _b != b"" or self.inWaiting() != 0:
             if len(lines) < 200:
-                lines.append(_b.decode("ascii").rstrip())
+                try:
+                    lines.append(_b.decode("ascii").rstrip())
+                except UnicodeDecodeError:
+                    pass
             _b = self.readline()
-        lines.append(_b.decode("ascii").rstrip())
+        try:
+            lines.append(_b.decode("ascii").rstrip())
+        except UnicodeDecodeError:
+            pass
         self.last_value_received = lines
         return lines
 

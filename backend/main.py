@@ -11,9 +11,8 @@ from api.mutations import mutation
 from src.end_points import custom_video_response, Echo, Controls
 from src.nodes.node_manager import NodeManager
 from src.manager.serial_manager import SerialManager
-
 from src.manager.camera_manager import CameraManager
-
+from src.nodes.process.process import process
 from starlette.routing import Route
 
 from ariadne.asgi import GraphQL
@@ -43,6 +42,7 @@ routes_app = [
         "/videos/{video_id}", endpoint=custom_video_response, methods=["GET", "POST"]
     ),
     WebSocketRoute("/ws", endpoint=Echo),
+    WebSocketRoute("/process", endpoint=process.websocket),
     *[WebSocketRoute(f"/controls/{serial._id}", endpoint=serial.websocket) for serial in SerialManager.get()],
     Mount(
         "/",
@@ -55,7 +55,6 @@ routes_app = [
     )
 ]
 
-# logger.info([f"/controls/{serial._id} | {serial.websocket}" for serial in SerialManager.get()])
 app = Starlette(debug=True, routes=routes_app, on_shutdown=[dbo.close])
 
 @app.on_event("shutdown")
