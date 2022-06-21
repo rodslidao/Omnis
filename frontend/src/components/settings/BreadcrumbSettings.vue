@@ -18,7 +18,7 @@
         <router-link :to="'/config'+item.to">
           <span
             :class="
-              $router.currentRoute.name == item.path
+              $t($router.currentRoute.meta.breadCrumb) == item.text
                 ? 'text-h4 text--primary'
                 : 'text-h6 text--grey'
             "

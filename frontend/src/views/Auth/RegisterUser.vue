@@ -1,6 +1,12 @@
 <template>
-  <div class="pt-4">
-    <v-form v-model="isValid" ref="form" rounded max-width="700px">
+  <div class="container mt-6">
+    <v-form
+      v-model="isValid"
+      ref="form"
+      rounded
+      max-width="700px"
+      lazy-validation
+    >
       <div class="d-flex mb-2">
         <v-text-field
           v-model="firstName"
@@ -9,6 +15,7 @@
           :label="$t('form.name')"
           :placeholder="$t('form.name')"
           outlined
+          required
           name="first_name"
           :dense="dense"
           rounded
@@ -22,6 +29,7 @@
           :label="$t('form.lastName')"
           :placeholder="$t('form.name')"
           outlined
+          required
           :dense="dense"
           rounded
         ></v-text-field>
@@ -43,10 +51,13 @@
         <v-select
           class="select ml-2"
           rounded
+          :label=" $t('levels.name')"
           v-model="selectedLevel"
+          :rules="[rules().required]"
           dense
           :items="levels"
           outlined
+          required
           item-text="text"
           item-value="lang"
         ></v-select>
@@ -69,12 +80,13 @@
         <v-text-field
           v-model="password"
           :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
-          :rules="[rules().required, rules().passwordMatch]"
+          :rules="[rules().required]"
           :type="show1 ? 'text' : 'password'"
           :label="$t('form.password')"
           :hint="$t('form.minCharacters', { count: 8 })"
           rounded
           outlined
+          required
           :dense="dense"
           @click:append="show1 = !show1"
         ></v-text-field>
@@ -84,24 +96,27 @@
           :append-icon="show2 ? 'mdi-eye' : 'mdi-eye-off'"
           :rules="[rules().required, rules().passwordMatch]"
           :type="show2 ? 'text' : 'password'"
-          :label="$t('form.password')"
+          :label="$t('form.confirmPassword')"
           :hint="$t('form.minCharacters', { count: 8 })"
           rounded
+          required
           :dense="dense"
           outlined
           @click:append="show2 = !show2"
         ></v-text-field>
       </div>
-      <v-divider class="mt-12"></v-divider>
-      <v-btn text> Cancel </v-btn>
-      <v-spacer></v-spacer>
-      <v-btn color="primary" text @click="submit"> Submit </v-btn>
+      <v-divider class="mt-4"></v-divider>
+      <div class="d-flex mt-4">
+        <v-spacer></v-spacer>
+        <v-btn color="primary" @click="submit" rounded>
+          {{ $t('buttons.register') }}
+        </v-btn>
+      </div>
     </v-form>
   </div>
 </template>
 
 <script>
-import { managers } from 'socket.io-client';
 export default {
   data: () => ({
     isValid: false,
@@ -159,23 +174,11 @@ export default {
 
         min: (v) =>
           v.length >= 8 || this.$t('form.minCharacters', { count: 8 }),
-        validEmail: (v) =>
-          !v ||
-          /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) ||
-          this.$t('form.validEmail'),
+        validEmail: (v) => /.+@.+\..+/.test(v) || this.$t('form.validEmail'),
 
         passwordMatch: (value) =>
           value === this.passwordConfirmation || this.$t('form.passwordMatch'),
       };
-    },
-
-    resetForm() {
-      this.errorMessages = [];
-      this.formHasErrors = false;
-
-      Object.keys(this.form).forEach((f) => {
-        this.$refs[f].reset();
-      });
     },
 
     submit() {
@@ -194,6 +197,11 @@ export default {
 </script>
 
 <style scoped>
+.container {
+  max-width: 600px;
+  margin: 0;
+  padding: 0;
+}
 .select {
   max-width: 20rem;
 }

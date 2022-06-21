@@ -1,5 +1,6 @@
 {
   "settings": {
+    "name": "Settings",
     "system": {
       "name": "System",
       "languageAndData": {
@@ -47,7 +48,7 @@
     "name": "Name",
     "lastName": "Last Name",
     "email": "Email",
-    "username": "Username",
+    "username": "Username (SSN)",
     "password": "Password",
     "confirmPassword": "Confirm Password",
     "showPassword": "Show Password",
@@ -56,13 +57,34 @@
     "validEmail": "This e-mail is not valid",
     "validPassword": "This password is not valid",
     "passwordMatch": "This passwords do not match",
-    "minCharacters": "This field must have at least {count} characters"
+    "minCharacters": "This field must have at least {count} characters",
+    "singIn":"Login",
+    "singInTitle": "Login"
   },
-  "levels":{
+  "levels": {
     "name": "Level",
     "operator": "Operator",
     "manager": "Manager",
     "developer": "Developer",
     "maintenance": "Maintenance"
+  },
+  "buttons": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "remove": "Remove",
+    "close": "Close",
+    "send": "Send",
+    "login": "Login",
+    "logout": "Logout",
+    "register": "Register",
+    "forgotPassword": "Forgot Password",
+    "resetPassword": "Reset Password",
+    "changePassword": "Change Password"
+  },
+  "prepositions":{
+    "or":"or"
   }
 }

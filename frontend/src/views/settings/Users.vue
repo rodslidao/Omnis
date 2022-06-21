@@ -1,14 +1,16 @@
 <template>
   <div class="process">
     <router-view> </router-view>
-    <settings-items
-      v-for="(item, index) in items"
-      :key="index"
-      :title="$t(item.title)"
-      :subtitle="$t(item.subtitle)"
-      :icon="item.icon"
-      :path="item.path"
-    ></settings-items>
+    <div v-if="$router.currentRoute.name !== 'registerUser'">
+      <settings-items
+        v-for="(item, index) in items"
+        :key="index"
+        :title="$t(item.title)"
+        :subtitle="$t(item.subtitle)"
+        :icon="item.icon"
+        :path="item.path"
+      ></settings-items>
+    </div>
   </div>
 </template>
 

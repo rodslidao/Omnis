@@ -127,8 +127,10 @@ export default {
 
 .setting-content {
   width: 100%;
+  max-width: 900px;
   height: 100%;
   overflow: auto;
+  margin: 0;
   /* padding: 0.5rem; */
   height: calc(100vh - 12rem);
 }

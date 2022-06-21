@@ -205,7 +205,7 @@ export default {
           this.$alertFeedback(
             'Não foi possível rodar programa',
             'error',
-            error
+            error,
           );
 
           // We restore the initial user input
@@ -248,7 +248,7 @@ export default {
           this.$alertFeedback(
             'Não foi possível parar a rotina',
             'error',
-            error
+            error,
           );
 
           // We restore the initial user input
@@ -294,7 +294,7 @@ export default {
           this.$alertFeedback(
             'Não foi possível rodar programa',
             'error',
-            error
+            error,
           );
 
           // We restore the initial user input
@@ -401,7 +401,7 @@ export default {
           this.$alertFeedback(
             'Não foi possível salvar o arquivo, erro ao conectar com servidor',
             'error',
-            error
+            error,
           );
 
           // We restore the initial user input
@@ -420,7 +420,7 @@ export default {
       download(
         JSON.stringify(this.tabList[this.selectedTabIndex]),
         `${fileName}.oms`,
-        'text/oms'
+        'text/oms',
       );
     },
 
@@ -433,12 +433,12 @@ export default {
       console.log(target.files[0].name.split('.').pop());
 
       if (
-        target.files[0].name.split('.').pop() !== 'oms' &&
-        target.files[0].name.split('.').pop() !== 'json'
+        target.files[0].name.split('.').pop() !== 'oms'
+        && target.files[0].name.split('.').pop() !== 'json'
       ) {
         this.$alertFeedback(
           'Arquivo inválido, seu arquivo deve ser um .oms',
-          'error'
+          'error',
         );
 
         return;
