@@ -97,8 +97,8 @@ Vue.prototype.$workbox = wb;
 new Vue({
   vuetify,
   i18n,
-  render: (h) => h(App),
   router,
   apolloProvider: createProvider(),
   store,
+  render: (h) => h(App),
 }).$mount('#app');

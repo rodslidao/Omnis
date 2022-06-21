@@ -9,7 +9,7 @@
     >
       <div class="d-flex mb-2">
         <v-text-field
-          v-model="firstName"
+          v-model="user.first_name"
           :rules="[rules().required]"
           :error-messages="errorMessages"
           :label="$t('form.name')"
@@ -23,10 +23,10 @@
         <v-text-field
           class="ml-2"
           name="last_name"
-          v-model="lastName"
+          v-model="user.last_name"
           :rules="[rules().required]"
           :error-messages="errorMessages"
-          :label="$t('form.lastName')"
+          :label="$t('form.last_name')"
           :placeholder="$t('form.name')"
           outlined
           required
@@ -38,7 +38,7 @@
         <v-text-field
           class="mb-2"
           name="username"
-          v-model="username"
+          v-model="user.username"
           :rules="[rules().required]"
           :error-messages="errorMessages"
           :label="$t('form.username')"
@@ -51,8 +51,8 @@
         <v-select
           class="select ml-2"
           rounded
-          :label=" $t('levels.name')"
-          v-model="selectedLevel"
+          :label="$t('levels.name')"
+          v-model="user.level"
           :rules="[rules().required]"
           dense
           :items="levels"
@@ -66,7 +66,7 @@
       <v-text-field
         class="mb-2"
         name="e-mail"
-        v-model="email"
+        v-model="user.email"
         :rules="[rules().validEmail]"
         :error-messages="errorMessages"
         :label="$t('form.email')"
@@ -78,7 +78,7 @@
       ></v-text-field>
       <div class="d-flex">
         <v-text-field
-          v-model="password"
+          v-model="user.password"
           :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
           :rules="[rules().required]"
           :type="show1 ? 'text' : 'password'"
@@ -108,7 +108,7 @@
       <v-divider class="mt-4"></v-divider>
       <div class="d-flex mt-4">
         <v-spacer></v-spacer>
-        <v-btn color="primary" @click="submit" rounded>
+        <v-btn color="primary" @click="singUpUser" rounded>
           {{ $t('buttons.register') }}
         </v-btn>
       </div>
@@ -117,21 +117,25 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex';
+
 export default {
   data: () => ({
     isValid: false,
     dense: true,
     errorMessages: '',
-    firstName: '',
-    lastName: '',
-    email: '',
-    username: '',
-    password: '',
+    user: {
+      first_name: '',
+      last_name: '',
+      email: '',
+      username: '',
+      password: '',
+      level: '',
+    },
     passwordConfirmation: '',
     formHasErrors: false,
     show1: false,
     show2: true,
-    selectedLevel: '',
   }),
 
   computed: {
@@ -151,8 +155,8 @@ export default {
   // computed: {
   //   form() {
   //     return {
-  //       firstName: this.firstName,
-  //       lastName: this.lastName,
+  //       first_name: this.first_name,
+  //       last_name: this.last_name,
   //       email: this.email,
   //       username: this.username,
   //       password: this.password,
@@ -162,12 +166,15 @@ export default {
   // },
 
   // watch: {
-  //   firstName() {
+  //   first_name() {
   //     this.errorMessages = '';
   //   },
   // },
 
   methods: {
+    ...mapActions({
+      registerUser: 'auth/registerUser',
+    }),
     rules() {
       return {
         required: (value) => !!value || 'Required.',
@@ -177,17 +184,15 @@ export default {
         validEmail: (v) => /.+@.+\..+/.test(v) || this.$t('form.validEmail'),
 
         passwordMatch: (value) =>
-          value === this.passwordConfirmation || this.$t('form.passwordMatch'),
+          value === true || this.$t('form.passwordMatch'),
+          // value === this.user.password || this.$t('form.passwordMatch'),
       };
     },
 
-    submit() {
+    singUpUser() {
       this.$refs.form.validate();
       if (this.isValid) {
-        console.log('Form is valid');
-        // this.$store.dispatch('registerUser', this.form).then(() => {
-        //   this.$router.push('/auth/login');
-        // });
+        this.registerUser(this.user);
       } else {
         this.formHasErrors = true;
       }
