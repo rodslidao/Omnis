@@ -87,7 +87,7 @@ Vue.use(VueHaptic, {
 
 // Vue.use(VueSocketIO, SocketInstance)
 // Vue.component(WebRTC.name, WebRTC);
-Vue.use(VueTheMask, JsonEditor, VueApexCharts, BaklavaVuePlugin, );
+Vue.use(VueTheMask, JsonEditor, VueApexCharts, BaklavaVuePlugin, i18n);
 Vue.use(AlertFeedback, {
   store,
 });

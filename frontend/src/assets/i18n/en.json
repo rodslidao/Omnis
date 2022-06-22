@@ -86,5 +86,19 @@
   },
   "prepositions":{
     "or":"or"
+  },
+  "greetings":{
+    "hello": "Hello"
+  },
+  "alerts": {
+    "loginFail" : "Failed to login, make sure your details are correct",
+    "runningProcess" : "The process is running",
+    "pauseSuccess" : "Process was paused",
+    "pauseFail" : "Fail to pause the process",
+    "failToRunProcess" : "Fail to run process",
+    "processStopped" : "The process was stopped",
+    "saveFail": "Could not save file",
+    "saveSuccess" : "The process was saved",
+    "invalidFile" : "Invalid file, your file must be an '.oms'"
   }
 }

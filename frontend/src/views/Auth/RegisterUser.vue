@@ -1,5 +1,5 @@
 <template>
-  <div class="container mt-6">
+  <div class="container mt-6 pr-4">
     <v-form
       v-model="isValid"
       ref="form"
@@ -26,7 +26,7 @@
           v-model="user.last_name"
           :rules="[rules().required]"
           :error-messages="errorMessages"
-          :label="$t('form.last_name')"
+          :label="$t('form.lastName')"
           :placeholder="$t('form.name')"
           outlined
           required

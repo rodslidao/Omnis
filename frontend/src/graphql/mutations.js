@@ -8,6 +8,7 @@ export const REGISTER_USER = gql`
     $email: String!
     $first_name: String!
     $last_name: String!
+    $level: String!
   ) {
     registerUser(
       newUser: {
@@ -16,6 +17,7 @@ export const REGISTER_USER = gql`
         email: $email
         first_name: $first_name
         last_name: $last_name
+        level: $level
       }
     ) {
       user {
@@ -25,6 +27,7 @@ export const REGISTER_USER = gql`
         email
         last_name
         first_name
+        level
       }
       token
     }

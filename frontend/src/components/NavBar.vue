@@ -57,7 +57,9 @@
       <v-icon dark color="red darken-1" v-show="!isConnected"
         >mdi-lan-disconnect</v-icon
       > -->
-      <login v-if="!isAuth"></login>
+
+      <login></login>
+
       <router-link to="/config">
         <v-btn icon v-if="$route.name != 'settings'">
           <v-icon dark id="tune">mdi-tune</v-icon>
@@ -72,7 +74,7 @@
 </template>
 
 <script>
-import { mapState, mapGetters } from 'vuex';
+import { mapState } from 'vuex';
 import RestartButton from '@/components/navbar/RestarButton.vue';
 import TabMenuNodes from '@/components/node/TabMenuNodes.vue';
 import Login from '@/views/Auth/Login.vue';
@@ -129,9 +131,6 @@ export default {
 
   computed: {
     ...mapState(['isConnected', 'configuration']),
-    ...mapGetters({
-      isAuth: 'auth/isAuth',
-    }),
   },
 };
 </script>

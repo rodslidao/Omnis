@@ -66,9 +66,7 @@
     <div class="pl-14 pr-2 setting-warper"> 
         <breadcrumb-settings></breadcrumb-settings>
       <div class="setting-content">
-        <transition>
           <router-view transition="fade-transition"></router-view>
-        </transition>
       </div>
     </div>
   </div>

@@ -193,7 +193,7 @@ export default {
         .then((data) => {
           // Result
           console.log(data);
-          this.$alertFeedback('Programa está sendo executado', 'success');
+          this.$alertFeedback('alerts.runningProcess', 'success');
           this.isLoading = false;
           // this.setSaved(this.selectedTabIndex);
         })
@@ -201,9 +201,8 @@ export default {
         .catch((error) => {
           // Error
           this.isLoading = false;
-          console.error('Não foi possível rodar o programa \n', error);
           this.$alertFeedback(
-            'Não foi possível rodar programa',
+            'alerts.failToRunProcess',
             'error',
             error,
           );
@@ -236,7 +235,7 @@ export default {
         .then((data) => {
           // Result
           console.log(data);
-          this.$alertFeedback('A rotina foi parada', 'success');
+          this.$alertFeedback('alerts.processStopped', 'success');
           this.isLoading = false;
           // this.setSaved(this.selectedTabIndex);
         })
@@ -246,7 +245,7 @@ export default {
           this.isLoading = false;
           console.error('Não foi possível salvar o arquivo \n', error);
           this.$alertFeedback(
-            'Não foi possível parar a rotina',
+            'alerts.saveFail',
             'error',
             error,
           );
@@ -282,7 +281,7 @@ export default {
         .then((data) => {
           // Result
           console.log(data);
-          this.$alertFeedback('Programa está sendo executado', 'success');
+          this.$alertFeedback('alerts.pauseSuccess', 'success');
           this.isLoading = false;
           // this.setSaved(this.selectedTabIndex);
         })
@@ -290,9 +289,8 @@ export default {
         .catch((error) => {
           // Error
           this.isLoading = false;
-          console.error('Não foi possível salvar o arquivo \n', error);
           this.$alertFeedback(
-            'Não foi possível rodar programa',
+            'alerts.pauseFail',
             'error',
             error,
           );
@@ -390,16 +388,15 @@ export default {
         .then((data) => {
           // Result
           console.log(data);
-          this.$alertFeedback('Arquivo salvo com sucesso', 'success');
+          this.$alertFeedback('alerts.saveSuccess', 'success');
           this.isLoading = false;
           // this.setSaved({ index: this.selectedTabIndex, value: true });
         })
         .catch((error) => {
           // Error
           this.isLoading = false;
-          console.error('Não foi possível salvar o arquivo \n', error);
           this.$alertFeedback(
-            'Não foi possível salvar o arquivo, erro ao conectar com servidor',
+            'alerts.saveFail',
             'error',
             error,
           );
@@ -437,7 +434,7 @@ export default {
         && target.files[0].name.split('.').pop() !== 'json'
       ) {
         this.$alertFeedback(
-          'Arquivo inválido, seu arquivo deve ser um .oms',
+          'alerts.invalidFile',
           'error',
         );
 
