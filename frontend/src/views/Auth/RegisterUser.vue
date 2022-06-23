@@ -108,7 +108,7 @@
       <v-divider class="mt-4"></v-divider>
       <div class="d-flex mt-4">
         <v-spacer></v-spacer>
-        <v-btn color="primary" @click="singUpUser" rounded>
+        <v-btn  color="primary" @click="singUpUser" rounded>
           {{ $t('buttons.register') }}
         </v-btn>
       </div>
@@ -121,7 +121,7 @@ import { mapActions } from 'vuex';
 
 export default {
   data: () => ({
-    isValid: false,
+    isValid: true,
     dense: true,
     errorMessages: '',
     user: {
@@ -152,6 +152,10 @@ export default {
       ];
     },
   },
+
+  // mounted() {
+  //   this.$refs.form.validate();
+  // },
   // computed: {
   //   form() {
   //     return {
@@ -184,14 +188,12 @@ export default {
         validEmail: (v) => /.+@.+\..+/.test(v) || this.$t('form.validEmail'),
 
         passwordMatch: (value) =>
-          value === true || this.$t('form.passwordMatch'),
-          // value === this.user.password || this.$t('form.passwordMatch'),
+          value === this.user.password || this.$t('form.passwordMatch'),
       };
     },
 
     singUpUser() {
-      this.$refs.form.validate();
-      if (this.isValid) {
+      if (this.$refs.form.validate()) {
         this.registerUser(this.user);
       } else {
         this.formHasErrors = true;

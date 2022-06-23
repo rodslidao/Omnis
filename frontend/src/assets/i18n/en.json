@@ -7,7 +7,7 @@
         "name": "Language and Data",
         "exhibitionLanguage": {
           "title": "Exhibition Language",
-          "subtitle": "The language of the entire program will be displayed in the selected language."
+          "subtitle": "The language of the entire program will be displayed in the selected language"
         }
       }
     },
@@ -19,11 +19,27 @@
       "matrix": {
         "name": "Matrix",
         "title": "Matrix",
-        "subtitle": "Create and edit the matrix to use in nodes."
+        "subtitle": "Create and edit the matrix to use in nodes"
       }
     },
     "users": {
       "name": "Users",
+      "user": "user",
+      "otherAccounts": "Other Accounts",
+      "accountsDetails": {
+        "name": "accountsDetails",
+        "title": "Account Details",
+        "subtitle": "View and edit your account details"
+      },
+      "fields":{
+        "level" : "Level",
+        "first_name": "Name",
+        "last_name": "Surname",
+        "username": "SSN",
+        "email": "Email",
+        "last_access": "Last Access"
+      },
+      "myAccount": "My Account",
       "registerUser": {
         "name": "New User",
         "title": "Register new User",
@@ -31,7 +47,8 @@
       },
       "listUsers": {
         "name": "List of users",
-        "subtitle": "List users and their roles. You can edit the users."
+        "title": "List of users",
+        "subtitle": "List users and their roles. You can edit the users"
       }
     },
     "networkAndInternet": {
@@ -58,7 +75,7 @@
     "validPassword": "This password is not valid",
     "passwordMatch": "This passwords do not match",
     "minCharacters": "This field must have at least {count} characters",
-    "singIn":"Login",
+    "singIn": "Login",
     "singInTitle": "Login"
   },
   "levels": {
@@ -70,6 +87,7 @@
   },
   "buttons": {
     "save": "Save",
+    "confirm": "Confirm",
     "cancel": "Cancel",
     "delete": "Delete",
     "edit": "Edit",
@@ -84,21 +102,32 @@
     "resetPassword": "Reset Password",
     "changePassword": "Change Password"
   },
-  "prepositions":{
-    "or":"or"
+  "prepositions": {
+    "or": "or"
   },
-  "greetings":{
+  "greetings": {
     "hello": "Hello"
   },
   "alerts": {
-    "loginFail" : "Failed to login, make sure your details are correct",
-    "runningProcess" : "The process is running",
-    "pauseSuccess" : "Process was paused",
-    "pauseFail" : "Fail to pause the process",
-    "failToRunProcess" : "Fail to run process",
-    "processStopped" : "The process was stopped",
+    "loginFail": "Failed to login, make sure your details are correct",
+    "runningProcess": "The process is running",
+    "pauseSuccess": "Process was paused",
+    "pauseFail": "Fail to pause the process",
+    "failToRunProcess": "Fail to run process",
+    "processStopped": "The process was stopped",
     "saveFail": "Could not save file",
-    "saveSuccess" : "The process was saved",
-    "invalidFile" : "Invalid file, your file must be an '.oms'"
+    "saveSuccess": "The process was saved",
+    "invalidFile": "Invalid file, your file must be an '.oms'"
+  },
+  "list": {
+    "sortBy": "Sort by",
+    "filterBy": "Filter by",
+    "Search": "Search",
+    "totalUsers": "total of users"
+  },
+  "dialogs": {
+    "removeConfirm" : "Are you sure you want to delete?",
+    "removeDescription" : "This {obj} will be deleted, are you sure you want to delete it?"
   }
+  
 }

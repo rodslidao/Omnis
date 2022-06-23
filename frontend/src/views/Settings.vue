@@ -1,5 +1,5 @@
 <template>
-  <div class="pt-10 d-flex settings">
+  <div class="pt-6 d-flex settings">
     <!-- <v-card elevation="12" width="256"> -->
     <v-navigation-drawer
       floating
@@ -8,21 +8,22 @@
       class="navigation"
       color="rgba(0,0,0,0)"
     >
-      <div class="user mx-4">
+      <div v-if="isAuth" class="user mx-4">
         <v-avatar color="primary" size="50">
-          <img v-if="user.avatar" :src="user.avatar" />
+          <img v-if="user.avatar_image" :src="user.avatar_image" />
           <span v-else
-            >{{ user.name.charAt(0)
-            }}{{ user.name.split(' ')[1].charAt(0) }}</span
+          class="text-capitalize"
+            >{{ user.first_name.charAt(0)
+            }}{{ user.last_name.split(' ')[0].charAt(0) }}</span
           >
         </v-avatar>
         <div class="ml-4">
-          <div class="text-subtitle font-weight-bold">
+          <div class="text-subtitle font-weight-bold text-capitalize">
             {{
-              `${user.name.split(' ')[0]} ${user.name.split(' ')[1].charAt(0)}.`
+              `${user.first_name} ${user.last_name.split(' ')[0].charAt(0)}.`
             }}
           </div>
-          <div class="text-subtitle-2">{{ user.level.title }}</div>
+          <div class="text-subtitle-2">{{ $t('levels.'+ user.level) }}</div>
         </div>
       </div>
 
@@ -63,16 +64,17 @@
       </v-list>
     </v-navigation-drawer>
     <!-- </v-card> -->
-    <div class="pl-14 pr-2 setting-warper"> 
-        <breadcrumb-settings></breadcrumb-settings>
+    <div class="pl-14 pr-2 setting-warper">
+      <breadcrumb-settings></breadcrumb-settings>
       <div class="setting-content">
-          <router-view transition="fade-transition"></router-view>
+        <router-view transition="fade-transition"></router-view>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import BreadcrumbSettings from '@/components/settings/BreadcrumbSettings.vue';
 import { menuList } from '@/components/settings/menuDescription';
 
@@ -86,19 +88,18 @@ export default {
   data() {
     return {
       userLogged: false,
-      user: {
-        level: {
-          title: 'Administrador',
-          type: 'admin',
-        },
-        name: 'Rodrigo Gomes',
-        avatar: 'https://i.pravatar.cc/50',
-      },
       group: null,
       search: null,
       select: null,
       items: menuList,
     };
+  },
+
+  computed: {
+    ...mapGetters({
+      user: 'auth/user',
+      isAuth: 'auth/isAuth',
+    }),
   },
   watch: {
     group() {
@@ -113,13 +114,14 @@ export default {
   align-items: center;
   width: 100%;
   margin-bottom: 2rem;
+  margin-top: 1rem;
 }
 
 .settings {
   height: 100%;
   background-color: rgb(253, 253, 253);
 }
-.setting-warper{
+.setting-warper {
   width: 100%;
 }
 

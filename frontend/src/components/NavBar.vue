@@ -62,7 +62,7 @@
 
       <router-link to="/config">
         <v-btn icon v-if="$route.name != 'settings'">
-          <v-icon dark id="tune">mdi-tune</v-icon>
+          <v-icon dark id="tune">mdi-cog </v-icon>
         </v-btn>
       </router-link>
       <!-- <template v-slot:extension v-if="$route.name == 'node'">

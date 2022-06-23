@@ -49,7 +49,7 @@ const actions = {
 
     // set token in localstorage
     localStorage.setItem('apollo-token', payload.token);
-    // localStorage.setItem('apollo-token', authenticateUser.token.split(' ')[1]);
+    // localStorage.setItem('apollo-token', payload.token.split(' ')[1]);
   },
   async getAuthUser({ commit, dispatch }) {
     try {

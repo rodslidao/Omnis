@@ -89,8 +89,8 @@
     </div>
     <div v-else>
       {{ $t('greetings.hello') }},
-      <span class="text-h6"> {{ user.first_name }}</span
-      >!
+      <span class="text-h6 text-capitalize"> {{ user.first_name }}</span
+      >
       <v-menu open-on-hover bottom offset-y>
         <template v-slot:activator="{ on, attrs }">
           <v-btn small text icon v-bind="attrs" v-on="on">
@@ -123,7 +123,8 @@ export default {
   data: () => ({
     dialog: false,
     valid: true,
-    items: [{ title: 'Click Me' }, { title: 'buttons.logout' }],
+    items: [],
+    // items: [{ title: 'Click Me' }, { title: 'buttons.logout' }],
     show1: false,
     checkbox: false,
     dense: false,

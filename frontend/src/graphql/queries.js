@@ -30,3 +30,18 @@ export const AUTHENTICATE_USER = gql`
     }
   }
 `;
+
+export const LIST_USER = gql`
+  query LIST_USER {
+    getUsersList {
+      _id
+      first_name
+      last_name
+      last_access
+      email
+      level
+      username
+      avatar_image
+    }
+  }
+`;

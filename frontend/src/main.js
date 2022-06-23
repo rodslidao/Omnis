@@ -9,6 +9,7 @@ import i18n from './i18n';
 // import {WebRTC} from 'vue-webrtc';
 
 import AlertFeedback from '@/plugins/alertFeedback';
+import timestampToDate from '@/plugins/dateTime';
 
 import { BaklavaVuePlugin } from '@baklavajs/plugin-renderer-vue';
 import '@baklavajs/plugin-renderer-vue/dist/styles.css';
@@ -91,6 +92,8 @@ Vue.use(VueTheMask, JsonEditor, VueApexCharts, BaklavaVuePlugin, i18n);
 Vue.use(AlertFeedback, {
   store,
 });
+
+Vue.use(timestampToDate);
 
 Vue.prototype.$workbox = wb;
 

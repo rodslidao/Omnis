@@ -81,4 +81,7 @@ export default {
 .breadcrumb{
   margin-left: -24px;
 }
+::v-deep .v-breadcrumbs{
+  padding-top:13px;
+}
 </style>
