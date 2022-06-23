@@ -1,4 +1,3 @@
-from multiprocessing import context
 from os import environ
 import uvicorn
 import socket
@@ -8,7 +7,7 @@ from api.queries import query
 from api.subscriptions import subscription
 from api.mutations import mutation
 
-from src.end_points import custom_video_response, Echo, Controls
+from src.end_points import custom_video_response, Echo
 from src.nodes.node_manager import NodeManager
 from src.manager.serial_manager import SerialManager
 from src.manager.camera_manager import CameraManager

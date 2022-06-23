@@ -1,9 +1,13 @@
 from os import environ
 from platform import system
 from threading import Thread
+from bson import encode
 from dotenv import load_dotenv
 from .log import logger, exception, custom_handler, logger, levels, lvl
 from .decorators import for_all_methods
+import jwt
+from graphql.type import GraphQLResolveInfo
+from graphql.error import GraphQLError
 
 from src.manager.mongo_manager import connectToMongo, getDb
 
@@ -12,7 +16,12 @@ environ.setdefault("SO", system())
 
 connectToMongo()
 dbo = getDb()
-# custom_handler(logger, "mongo", "json", dbo, levels[lvl])
+
+key_context = dbo.find_one("keys")
+from cryptography.hazmat.primitives.serialization import load_ssh_private_key, load_ssh_public_key
+with open(key_context["path"], "r") as private, open(key_context["path"]+'.pub', "r") as public:
+    private_key = load_ssh_private_key(private.read().encode(), key_context["pass"].encode())
+    public_key =  load_ssh_public_key(public.read().encode(), key_context["pass"].encode())
 
 from src.manager.serial_manager import SerialManager
 from src.manager.camera_manager import CameraManager
@@ -22,13 +31,33 @@ from src.nodes.serial.pins_obj import pin
 from src.nodes.serial.axes import axis
 from src.nodes.camera.custom_camera import Camera
 from src.nodes.alerts.alert_obj import Alert
+from src.utility.crud.user import User
+
+def auth(lvl=None):
+    def decorator(resolver):
+        def wrapper(obj, info: GraphQLResolveInfo, *args, **kwargs):
+            try:
+                token = info.context["request"].headers.get('authorization').split(' ')[-1]
+                header_data = jwt.get_unverified_header(token)
+                token = jwt.decode(token, key=public_key, algorithms=[header_data['alg']])
+            except Exception as e:
+                raise GraphQLError("Invalid credential")
+            else:
+                user = User(**token)
+                if user >= lvl:
+                    kwargs.update({'user':user})
+                    return resolver(obj, info, *args, **kwargs)
+                raise GraphQLError('Permission Denied')
+        return wrapper
+    return decorator
+
 
 pins = [pin(**p) for p in dbo.find_many("pins")]
 axes = [
     axis(**a)
     for a in dbo.find_many("machine_axis", data={"_id": 1, "name": 1, "board": 1})
 ]
-# logger.info(f"Aqui: {axes}")
+
 def Managers_Import(definitions):
     for collection, manager_class in definitions.items():
         for config in dbo.find_many(collection, {}):
@@ -61,13 +90,30 @@ def Managers_Import(definitions):
                         how_to_solve="Verifique se o dispositivo está conectado corretamente",
                         delay=3,
                     )
-
+                    exit()
 
 mangers = {
     "camera-manager": {"manager": CameraManager, "class": [Camera]},
     "serial-manager": {"manager": SerialManager, "class": [Serial, SerialGcodeOBJ]},
 }
 
-# def automatic_classes():
-# Thread(target=Managers_Import, args=(mangers,)).start()
-Managers_Import(mangers)
+
+# Managers_Import(mangers)
+
+from ariadne import ScalarType
+from bson import ObjectId
+ID = ScalarType("ID")
+
+@ID.serializer
+def ID_serializar(value):
+    logger.info('seta')
+    return value.srt
+
+@ID.value_parser
+def ID_v_parser(value):
+    if value:
+        return ObjectId(value)
+
+@ID.literal_parser
+def ID_l_parser(ast):
+    return ID_v_parser(str(ast.value))
