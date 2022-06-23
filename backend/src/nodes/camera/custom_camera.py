@@ -10,7 +10,7 @@ from cv2.aruco import (
     DetectorParameters_create,
     Dictionary_get,
     detectMarkers,
-    drawAxis,
+    # drawAxis,
     drawDetectedMarkers,
     estimatePoseSingleMarkers,
 )
@@ -91,25 +91,25 @@ class Camera(CamGear):
             parameters=self.aruco_parms,
         )
 
-    def draw_markers(self, size_of_marker=0.010):
-        corners, ids, rejected = self.detect_markers()
-        rvecs, tvecs, _ = estimatePoseSingleMarkers(
-            corners, size_of_marker, self.mtx, self.dist
-        )
-        length_of_axis = size_of_marker / 2
-        frame = drawDetectedMarkers(self.read().copy(), corners, ids)
+    # def draw_markers(self, size_of_marker=0.010):
+    #     corners, ids, rejected = self.detect_markers()
+    #     rvecs, tvecs, _ = estimatePoseSingleMarkers(
+    #         corners, size_of_marker, self.mtx, self.dist
+    #     )
+    #     length_of_axis = size_of_marker / 2
+    #     frame = drawDetectedMarkers(self.read().copy(), corners, ids)
         
-        if tvecs is not None:
-            for r, t in zip(rvecs, tvecs):
-                frame = drawAxis(
-                    frame,
-                    self.mtx,
-                    self.dist,
-                    r,
-                    t,
-                    length_of_axis,
-                )
-        return frame
+    #     if tvecs is not None:
+    #         for r, t in zip(rvecs, tvecs):
+    #             frame = drawAxis(
+    #                 frame,
+    #                 self.mtx,
+    #                 self.dist,
+    #                 r,
+    #                 t,
+    #                 length_of_axis,
+    #             )
+    #     return frame
 
     @staticmethod
     def estimate_pixel_cm_ratio(corners, aruco_size):
