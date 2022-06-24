@@ -136,7 +136,7 @@ def resolve_authUserProfile(obj, info, username=None, **kwargs):
             algorithm="EdDSA",
         )
         now = datetime.utcnow().timestamp()
-        dbo.update_one('users', {'_id':ObjectId(user['_id'])}, {'$set':{'last_access':now}})
+        dbo.update_one('users', {'_id':ObjectId(user['_id'])}, {'$set':{' ':now}})
         user.update({'last_access': now})
         return {"user": user, "token": token}
     raise GraphQLError("Invalid Login")

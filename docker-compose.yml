@@ -69,6 +69,7 @@ services:
     volumes:
       # Share /dev is insecure but is required for the camera and serial devices that not has connected to the host. ( disable this if all devices are connected to the host )
       - ./backend:/app
+      - ./.ssh:/.ssh
       - /home/ubuntu/.url_host:/app/.url_host
       - /dev:/dev
     command: python main.py
