@@ -106,18 +106,23 @@
     "or": "or"
   },
   "greetings": {
-    "hello": "Hello"
+    "hello": "Hello",
+    "welcome": "Welcome! "
   },
   "alerts": {
-    "loginFail": "Failed to login, make sure your details are correct",
-    "runningProcess": "The process is running",
-    "pauseSuccess": "Process was paused",
-    "pauseFail": "Fail to pause the process",
-    "failToRunProcess": "Fail to run process",
-    "processStopped": "The process was stopped",
-    "saveFail": "Could not save file",
-    "saveSuccess": "The process was saved",
-    "invalidFile": "Invalid file, your file must be an '.oms'"
+    "loginFail": "Failed to login, make sure your details are correct, 😢",
+    "runningProcess": "The process is running 🚀",
+    "pauseSuccess": "Process was paused ✋",
+    "pauseFail": "Fail to pause the process, 😢",
+    "failToRunProcess": "Failed to run process, 😢",
+    "RegisterUserFail": "Failed to register user, 😢",
+    "RegisterUserSuccess": "User registered successfully 🤙",
+    "processStopped": "The process was stopped ✋",
+    "saveFail": "Could not save file 😢",
+    "saveSuccess": "The process was saved 👌",
+    "invalidFile": "Invalid file, your file must be an '.oms' 😢",
+    "deleteFail" : "Could't possible to delete the {obj} 😢",
+    "deleteSuccess" : "The {obj} was deleted 👍"
   },
   "list": {
     "sortBy": "Sort by",

@@ -1,6 +1,7 @@
 /* eslint-disable no-shadow */
 import { REGISTER_USER, AUTHENTICATED_USER, AUTHENTICATE_USER } from '@/graphql';
 import { apolloClient } from '@/vue-apollo';
+import router from '../../router';
 
 import Vue from 'vue';
 
@@ -17,7 +18,7 @@ const getters = {
 };
 
 const actions = {
-  async loginUser({ dispatch }, userData) {
+  async loginUser({ dispatch, state }, userData) {
     try {
       const {
         data: { authenticateUser },
@@ -26,6 +27,10 @@ const actions = {
         variables: userData,
       });
       dispatch('setUserData', authenticateUser);
+      Vue.prototype.$alertFeedback(
+        'greetings.welcome',
+        'info',
+      );
     } catch (error) {
       Vue.prototype.$alertFeedback('alerts.loginFail', 'error', error);
     }
@@ -34,13 +39,20 @@ const actions = {
   // eslint-disable-next-line no-unused-vars
   async registerUser({ dispatch }, userData) {
     console.log(apolloClient);
-    const {
-      data: { registerUser },
-    } = await apolloClient.mutate({
-      mutation: REGISTER_USER,
-      variables: userData,
-    });
-    dispatch('setUserData', registerUser);
+    try {
+      const {
+        data: { registerUser },
+      } = await apolloClient.mutate({
+        mutation: REGISTER_USER,
+        variables: userData,
+      });
+      Vue.prototype.$alertFeedback('alerts.RegisterUserSuccess', 'success');
+      // router.go(-1);
+    } catch (error) {
+      Vue.prototype.$alertFeedback('alerts.RegisterUserFail', 'error', error);
+    }
+
+    // dispatch('setUserData', registerUser);
   },
 
   async setUserData({ commit }, payload) {
@@ -51,7 +63,9 @@ const actions = {
     localStorage.setItem('apollo-token', payload.token);
     // localStorage.setItem('apollo-token', payload.token.split(' ')[1]);
   },
+
   async getAuthUser({ commit, dispatch }) {
+    console.log();
     try {
       const {
         data: { authUserProfile },
@@ -63,8 +77,10 @@ const actions = {
       dispatch('logoutUser');
     }
   },
+
   logoutUser({ commit }) {
     commit('LOGOUT_USER');
+    localStorage.removeItem('apollo-token');
   },
 };
 

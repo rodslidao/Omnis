@@ -72,6 +72,7 @@
                   color="primary"
                   large
                   rounded
+                  :loading="loading && isAuth"
                   @click="authenticateUser()"
                 >
                   {{ $t('buttons.login') }}
@@ -89,8 +90,7 @@
     </div>
     <div v-else>
       {{ $t('greetings.hello') }},
-      <span class="text-h6 text-capitalize"> {{ user.first_name }}</span
-      >
+      <span class="text-h6 text-capitalize"> {{ user.first_name }}</span>
       <v-menu open-on-hover bottom offset-y>
         <template v-slot:activator="{ on, attrs }">
           <v-btn small text icon v-bind="attrs" v-on="on">
@@ -123,6 +123,7 @@ export default {
   data: () => ({
     dialog: false,
     valid: true,
+    loading: false,
     items: [],
     // items: [{ title: 'Click Me' }, { title: 'buttons.logout' }],
     show1: false,
@@ -144,9 +145,8 @@ export default {
     }),
 
     async authenticateUser() {
-      console.log('user', this.user);
+      this.loading = true;
       await this.loginUser(this.user);
-      this.dialog = false;
     },
     rules() {
       return {};

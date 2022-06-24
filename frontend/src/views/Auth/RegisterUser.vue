@@ -149,6 +149,14 @@ export default {
           text: this.$t('levels.manager'),
           value: 'manager',
         },
+        {
+          text: this.$t('levels.maintenance'),
+          value: 'maintenance',
+        },
+        {
+          text: this.$t('levels.developer'),
+          value: 'developer',
+        },
       ];
     },
   },
@@ -195,6 +203,7 @@ export default {
     singUpUser() {
       if (this.$refs.form.validate()) {
         this.registerUser(this.user);
+        this.$refs.form.reset()
       } else {
         this.formHasErrors = true;
       }

@@ -14,7 +14,7 @@ export default {
       options.store.dispatch(
         'alert/addItemList',
         { description: i18n.t(_description), type: _type, moreInfo: _moreInfo },
-        { root: true }
+        { root: true },
       );
     };
 

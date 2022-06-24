@@ -1,8 +1,9 @@
+/* eslint-disable no-underscore-dangle */
 <template>
   <!-- <v-card class="mb-4" min-height="100px" outlined> -->
   <div class="d-flex align-center p-4">
     <div>
-      <div class="d-flex">
+      <div class="d-flex align-center">
         <v-avatar color="primary" size="50">
           <img v-if="user.avatar_image" :src="user.avatar_image" />
           <span v-else class="text-capitalize"
@@ -12,7 +13,8 @@
         </v-avatar>
         <div class="pl-4 pr-4">
           <div class="text-h6 mb-1">
-            {{ user.first_name }} {{ user.last_name }}
+            <span class="text-capitalize">{{ user.first_name }}</span>
+            {{ user.last_name }}
           </div>
           <div class="text-body-2">
             {{ user.username }} <span class="mx-2">|</span> {{ user.email }}
@@ -61,7 +63,15 @@
 </template>
 
 <script>
+// import gql from 'graphql-tag';
+import { mapActions } from 'vuex';
 import DialogConfirmation from '@/components/settings/DialogConfirmation.vue';
+
+// const REMOVE_USER = gql`
+//   mutation ($_id: ID!) {
+//     deleteUser(_id: $_id)
+//   }
+// `;
 
 export default {
   components: { DialogConfirmation },
@@ -92,6 +102,15 @@ export default {
   },
 
   methods: {
+    ...mapActions({
+      updateUser: 'auth/updateUser',
+    }),
+
+    remove() {
+      this.$emit('remove-user', this.user._id);
+      this.dialogDelete = false;
+    },
+
     change(value) {
       // this.$emit('selected', value);
       this.$emit('update:selected', this.$event.target.checked);
@@ -101,10 +120,6 @@ export default {
     },
     edit() {
       console.log('edit');
-    },
-    remove() {
-      console.log('deletado');
-      this.dialogDelete = false;
     },
   },
 };

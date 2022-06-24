@@ -19,17 +19,6 @@ export const REGISTER_USER = gql`
         last_name: $last_name
         level: $level
       }
-    ) {
-      user {
-        _id
-        username
-        avatar_image
-        email
-        last_name
-        first_name
-        level
-      }
-      token
-    }
+    )
   }
 `;

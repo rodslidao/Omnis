@@ -18,9 +18,9 @@
         hide-details
         placeholder="Pesquisar"
       ></v-autocomplete>
-      <div class="d-flex justify-center align-center">
+      <div class=" sort d-flex justify-center align-center">
         <div class="">
-          {{ $t('list.sortBy') }}:<span>{{ dropdown.text }}</span>
+          {{ $t('list.sortBy') }}: <span class="font-weight-bold">{{ dropdown.text }}</span>
         </div>
         <v-menu bottom offset-y>
           <template v-slot:activator="{ on, attrs }">
@@ -46,7 +46,7 @@
       </div>
     </div>
     <div v-for="(item, index) in itemsCopy" :key="index">
-        <slot name="itemList" :data="item"></slot>
+      <slot name="itemList" :data="item"></slot>
     </div>
   </div>
 </template>
@@ -55,7 +55,7 @@
 // import SettingsListItemUser from './SettingsListItemUser.vue';
 
 export default {
-//   components: { SettingsListItemUser },
+  //   components: { SettingsListItemUser },
   props: {
     items: {
       type: Array,
@@ -109,8 +109,23 @@ export default {
     sort(item) {
       this.dropdown.value = item;
       this.dropdown.text = this.$t(`settings.users.fields.${item}`);
-      this.items.sort((a, b) => {
-        return a[item] - b[item];
+
+      console.log(item, typeof item);
+
+      this.itemsCopy.sort((a, b) => {
+        let fa = a[item];
+        let fb = b[item];
+
+        if (typeof fa === 'string') fa.toLowerCase();
+        if (typeof fb === 'string') fb.toLowerCase();
+
+        if (fa < fb) {
+          return -1;
+        }
+        if (fa > fb) {
+          return 1;
+        }
+        return 0;
       });
     },
 
@@ -125,5 +140,8 @@ export default {
 <style scoped>
 .search {
   max-width: 200px;
+}
+.sort {
+  height: 2.3rem;
 }
 </style>
