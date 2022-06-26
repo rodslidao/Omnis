@@ -28,12 +28,12 @@
     <v-spacer></v-spacer>
     <div class="d-flex">
       <dialog-confirmation
-        :visible="dialogDelete"
+        v-if="dialogDelete"
         :del="$t('settings.users.user')"
         @confirm-event="remove"
       ></dialog-confirmation>
       <v-chip class="mr-4">
-        {{ user.level }}
+        {{ $t('levels.' + user.level) }}
       </v-chip>
       <div>
         <v-menu transition="slide-x-transition" bottom left offset-x>
@@ -111,15 +111,16 @@ export default {
       this.dialogDelete = false;
     },
 
+    edit() {
+      this.$emit('edit-user', this.user);
+    },
+
     change(value) {
       // this.$emit('selected', value);
       this.$emit('update:selected', this.$event.target.checked);
     },
     dialog() {
       this.dialogDelete = true;
-    },
-    edit() {
-      console.log('edit');
     },
   },
 };

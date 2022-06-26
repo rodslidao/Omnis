@@ -26,6 +26,9 @@
       "name": "Users",
       "user": "user",
       "otherAccounts": "Other Accounts",
+      "editUser": {
+        "title": "Account Edit"
+      },
       "accountsDetails": {
         "name": "accountsDetails",
         "title": "Account Details",
@@ -121,8 +124,10 @@
     "saveFail": "Could not save file 😢",
     "saveSuccess": "The process was saved 👌",
     "invalidFile": "Invalid file, your file must be an '.oms' 😢",
-    "deleteFail" : "Could't possible to delete the {obj} 😢",
-    "deleteSuccess" : "The {obj} was deleted 👍"
+    "deleteFail" : "Could't possible to delete 😢",
+    "deleteSuccess" : "Was deleted 👍",
+    "updateUserSuccess" : "The data was updated👍",
+    "updateUserFail" : "Could't possible to update 😢"
   },
   "list": {
     "sortBy": "Sort by",
