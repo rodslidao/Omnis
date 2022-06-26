@@ -85,13 +85,12 @@
             <v-text-field
               v-model="user.password"
               :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
-              :rules="[rules().required]"
               :type="show1 ? 'text' : 'password'"
               :label="$t('form.password')"
               :hint="$t('form.minCharacters', { count: 8 })"
               rounded
               outlined
-              required
+              
               :dense="dense"
               @click:append="show1 = !show1"
             ></v-text-field>
@@ -99,12 +98,12 @@
               class="ml-4"
               v-model="passwordConfirmation"
               :append-icon="show2 ? 'mdi-eye' : 'mdi-eye-off'"
-              :rules="[rules().required, rules().passwordMatch]"
+              :rules="[ rules().passwordMatch]"
               :type="show2 ? 'text' : 'password'"
               :label="$t('form.confirmPassword')"
               :hint="$t('form.minCharacters', { count: 8 })"
               rounded
-              required
+              
               :dense="dense"
               outlined
               @click:append="show2 = !show2"
@@ -181,6 +180,7 @@ export default {
 
   mounted() {
     this.user = { ...this.userInfo };
+    this.user.password = ''
   },
 
   methods: {
