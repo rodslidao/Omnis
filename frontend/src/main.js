@@ -5,9 +5,11 @@ import VueTheMask from 'vue-the-mask';
 import VueHaptic from 'vue-haptic';
 import JsonEditor from 'vue-json-edit';
 import VueApexCharts from 'vue-apexcharts';
+import i18n from './i18n';
 // import {WebRTC} from 'vue-webrtc';
 
 import AlertFeedback from '@/plugins/alertFeedback';
+import timestampToDate from '@/plugins/dateTime';
 
 import { BaklavaVuePlugin } from '@baklavajs/plugin-renderer-vue';
 import '@baklavajs/plugin-renderer-vue/dist/styles.css';
@@ -86,17 +88,20 @@ Vue.use(VueHaptic, {
 
 // Vue.use(VueSocketIO, SocketInstance)
 // Vue.component(WebRTC.name, WebRTC);
-Vue.use(VueTheMask, JsonEditor, VueApexCharts, BaklavaVuePlugin, );
+Vue.use(VueTheMask, JsonEditor, VueApexCharts, BaklavaVuePlugin, i18n);
 Vue.use(AlertFeedback, {
   store,
 });
+
+Vue.use(timestampToDate);
 
 Vue.prototype.$workbox = wb;
 
 new Vue({
   vuetify,
-  render: (h) => h(App),
+  i18n,
   router,
   apolloProvider: createProvider(),
   store,
+  render: (h) => h(App),
 }).$mount('#app');
