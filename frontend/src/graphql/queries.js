@@ -10,6 +10,7 @@ export const AUTHENTICATED_USER = gql`
       last_name
       first_name
       level
+      last_access
     }
   }
 `;

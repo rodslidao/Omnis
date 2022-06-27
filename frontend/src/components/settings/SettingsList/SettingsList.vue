@@ -2,13 +2,12 @@
   <div>
     <div class="d-flex align-">
       <v-autocomplete
-        v-model="search"
+        v-model="model"
         :items="items"
-        @update:search-input.sync="filter()"
+        :search-input.sync="search"
         auto-select-first
-        cache-items
+        clearable
         :item-text="itemSearch"
-        @change="filter()"
         class="mx-4 mb-4 search"
         rounded
         filled
@@ -18,9 +17,10 @@
         hide-details
         placeholder="Pesquisar"
       ></v-autocomplete>
-      <div class=" sort d-flex justify-center align-center">
+      <div class="sort d-flex justify-center align-center">
         <div class="">
-          {{ $t('list.sortBy') }}: <span class="font-weight-bold">{{ dropdown.text }}</span>
+          {{ $t('list.sortBy') }}:
+          <span class="font-weight-bold">{{ dropdown.text }}</span>
         </div>
         <v-menu bottom offset-y>
           <template v-slot:activator="{ on, attrs }">
@@ -28,7 +28,10 @@
               <v-icon>mdi-chevron-down</v-icon>
             </v-btn>
           </template>
-
+          <!-- 
+              verifica items[0] antes de tentar pegar as 'chaves' dos dicionário
+              evitando que o Object.keys() resulte em erro.
+           -->
           <v-list>
             <v-list-item
               @click="sort(item)"
@@ -59,7 +62,7 @@ export default {
   props: {
     items: {
       type: Array,
-      default: () => [],
+      default: () => [{}],
     },
     itemSearch: {
       type: String,
@@ -75,7 +78,8 @@ export default {
     return {
       search: null,
       show: false,
-      itemsCopy: [],
+      // itemsCopy: [{}],
+      model: null,
       dropdown: {
         value: '',
         text: '',
@@ -84,25 +88,43 @@ export default {
   },
 
   watch: {
-    items() {
-      this.itemsCopy = this.items;
+    // items() {
+    //   this.makeCopy();
+    // },
+    search(newValue, oldValue) {
+      console.log(newValue, oldValue);
+      if (!newValue) {
+        this.makeCopy();
+        console.log('dasdad', this.itemsCopy);
+      }
+      // this.filter();
     },
   },
 
-  created() {
-    this.itemsCopy = this.items;
-    // console.log(this.itemsCopy);
+  computed: {
+    itemsCopy() {
+      return this.makeCopy();
+    },
   },
 
   methods: {
+    makeCopy() {
+      if (this.search) {
+        console.log('model', this.model);
+        console.log('search', this.search);
+        return this.items.filter((value) => {
+          return value[this.itemSearch] === this.search;
+        });
+      } 
+      return this.items;
+      // console.log('itemsCopy', this.itemsCopy);
+    },
+
     filter() {
       if (this.itemsCopy.length !== 0) {
         this.itemsCopy = this.items.filter((value) => {
-          console.log(value);
           return value[this.itemSearch] === this.search;
         });
-      } else {
-        this.itemsCopy = this.items;
       }
     },
 
@@ -139,7 +161,7 @@ export default {
 
 <style scoped>
 .search {
-  max-width: 200px;
+  max-width: 300px;
 }
 .sort {
   height: 2.3rem;

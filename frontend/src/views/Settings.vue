@@ -9,21 +9,15 @@
       color="rgba(0,0,0,0)"
     >
       <div v-if="isAuth" class="user mx-4">
-        <v-avatar color="primary" size="50">
+        <v-avatar color="primary" size="50" v-if="user">
           <img v-if="user.avatar_image" :src="user.avatar_image" />
-          <span v-else
-          class="text-capitalize"
-            >{{ user.first_name.charAt(0)
-            }}{{ user.last_name.split(' ')[0].charAt(0) }}</span
-          >
+          <span v-else class="text-capitalize">{{ getInitials }}</span>
         </v-avatar>
         <div class="ml-4">
           <div class="text-subtitle font-weight-bold text-capitalize">
-            {{
-              `${user.first_name} ${user.last_name.split(' ')[0].charAt(0)}.`
-            }}
+            {{ nameComplete }}
           </div>
-          <div class="text-subtitle-2">{{ $t('levels.'+ user.level) }}</div>
+          <div class="text-subtitle-2">{{ $t('levels.' + user.level) }}</div>
         </div>
       </div>
 
@@ -81,9 +75,9 @@ import { menuList } from '@/components/settings/menuDescription';
 export default {
   components: { BreadcrumbSettings },
 
-  created() {
-    this.$router.push({ name: 'system' });
-  },
+  // created() {
+  //   this.$router.push({ name: 'system' }).catch(() => {});
+  // },
 
   data() {
     return {
@@ -100,7 +94,22 @@ export default {
       user: 'auth/user',
       isAuth: 'auth/isAuth',
     }),
+
+    getInitials() {
+      return (
+        this.user?.first_name?.charAt(0) +
+        this.user?.last_name?.split(' ').at(-1).charAt(0)
+      );
+    },
+
+    nameComplete() {
+      return `${this.user?.first_name} ${this.user?.last_name
+        ?.split(' ')
+        .at(-1)
+        .charAt(0)}.`;
+    },
   },
+
   watch: {
     group() {
       this.drawer = false;

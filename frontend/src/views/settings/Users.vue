@@ -4,20 +4,18 @@
     <router-view> </router-view>
     <div v-if="$router.currentRoute.name !== 'registerUser'">
       <settings-title>{{ $t('settings.users.myAccount') }}</settings-title>
+      {{ user ? 'existe' : 'não existe' }}
       <settings-items
         :title="$t('settings.users.accountsDetails.title')"
         :subtitle="$t('settings.users.accountsDetails.subtitle')"
         icon="account-details"
         ><template v-slot:expand>
-          <div class="account-details">
+          <div class="account-details" v-if="user">
             <div class="d-flex align-center">
               <div class="d-flex flex-column align-center">
                 <v-avatar color="primary" size="50">
                   <img v-if="user.avatar_image" :src="user.avatar_image" />
-                  <span v-else class="text-capitalize"
-                    >{{ user.first_name.charAt(0)
-                    }}{{ user.last_name.split(' ')[0].charAt(0) }}</span
-                  >
+                  <!-- <span v-else class="text-uppercase">{{ getInitials }}</span> -->
                 </v-avatar>
                 <v-chip class="mt-2" small>
                   {{ $t('levels.' + user.level) }}
@@ -31,9 +29,6 @@
                 <div class="text-body-2">
                   {{ user.email }}
                 </div>
-                <!-- <div class="text-body-2">
-                  {{ $t('levels.' + user.level) }}
-                </div> -->
                 <div class="text-body-2">
                   {{ user.username }}
                 </div>
@@ -52,7 +47,6 @@
                 @cancel-event="editDialog = false"
               ></edit-user>
             </div>
-            <!-- </v-hover> -->
           </div>
         </template>
       </settings-items>
@@ -168,7 +162,7 @@ export default {
           icon: 'account-multiple',
         },
       ],
-      fieldsToIgnore: ['__typename', '_id', 'avatar_image'],
+      fieldsToIgnore: ['__typename', '_id', 'avatar_image', {}, []],
       datailAccountFields: ['first_name', 'last_name'],
       // getUsersList: [
       //   {
@@ -203,6 +197,12 @@ export default {
     ...mapGetters({
       user: 'auth/user',
     }),
+    getInitials() {
+      return (
+        this.user?.first_name.charAt(0) +
+        this.user?.last_name.split(' ').at(-1).charAt(0)
+      );
+    },
   },
 
   methods: {
@@ -238,21 +238,19 @@ export default {
     },
 
     async edit(user) {
-      const input = {
-        username: user.username,
-        password: user.password,
-        email: user.email,
-        first_name: user.first_name,
-        last_name: user.last_name,
-        level: user.level,
-      };
-
+      console.log('input', user);
       await this.$apollo
         .mutate({
           mutation: UPDATE_USER,
           variables: {
-            _id: this.user._id,
-            input,
+            // eslint-disable-next-line no-underscore-dangle
+            _id: user._id,
+            username: user.username,
+            password: user.password,
+            email: user.email,
+            first_name: user.first_name,
+            last_name: user.last_name,
+            level: user.level,
           },
         })
 

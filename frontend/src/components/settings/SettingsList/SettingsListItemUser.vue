@@ -1,14 +1,13 @@
 /* eslint-disable no-underscore-dangle */
 <template>
   <!-- <v-card class="mb-4" min-height="100px" outlined> -->
-  <div class="d-flex align-center p-4">
+  <div class="d-flex align-center p-4" v-if="user">
     <div>
       <div class="d-flex align-center">
         <v-avatar color="primary" size="50">
           <img v-if="user.avatar_image" :src="user.avatar_image" />
-          <span v-else class="text-capitalize"
-            >{{ user.first_name.charAt(0)
-            }}{{ user.last_name.split(' ')[0].charAt(0) }}</span
+          <span v-else class="text-uppercase"
+            >{{getInitials()}}</span
           >
         </v-avatar>
         <div class="pl-4 pr-4">
@@ -83,7 +82,6 @@ export default {
   },
   data() {
     return {
-      select: null,
       show: false,
       dialogDelete: false,
       items: [
@@ -106,6 +104,13 @@ export default {
       updateUser: 'auth/updateUser',
     }),
 
+    getInitials() {
+      return (
+        this.user?.first_name?.charAt(0)
+        + this.user?.last_name?.split(' ').at(-1).charAt(0)
+      );
+    },
+
     remove() {
       this.$emit('remove-user', this.user._id);
       this.dialogDelete = false;
@@ -115,10 +120,6 @@ export default {
       this.$emit('edit-user', this.user);
     },
 
-    change(value) {
-      // this.$emit('selected', value);
-      this.$emit('update:selected', this.$event.target.checked);
-    },
     dialog() {
       this.dialogDelete = true;
     },

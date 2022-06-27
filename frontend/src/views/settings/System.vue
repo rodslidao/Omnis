@@ -59,7 +59,7 @@ export default {
   methods: {
     changeLanguage(language) {
       localStorage.setItem('lang', language);
-      window.location.reload();
+      // window.location.reload();
     },
   },
 };

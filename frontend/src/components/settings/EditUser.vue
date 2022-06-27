@@ -90,7 +90,6 @@
               :hint="$t('form.minCharacters', { count: 8 })"
               rounded
               outlined
-              
               :dense="dense"
               @click:append="show1 = !show1"
             ></v-text-field>
@@ -98,12 +97,11 @@
               class="ml-4"
               v-model="passwordConfirmation"
               :append-icon="show2 ? 'mdi-eye' : 'mdi-eye-off'"
-              :rules="[ rules().passwordMatch]"
+              :rules="[rules().passwordMatch]"
               :type="show2 ? 'text' : 'password'"
               :label="$t('form.confirmPassword')"
               :hint="$t('form.minCharacters', { count: 8 })"
               rounded
-              
               :dense="dense"
               outlined
               @click:append="show2 = !show2"
@@ -180,11 +178,10 @@ export default {
 
   mounted() {
     this.user = { ...this.userInfo };
-    this.user.password = ''
+    this.user.password = '';
   },
 
   methods: {
-
     rules() {
       return {
         required: (value) => !!value || 'Required.',

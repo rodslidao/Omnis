@@ -59,7 +59,7 @@
           outlined
           required
           item-text="text"
-          item-value="lang"
+          item-value="value"
         ></v-select>
       </div>
 

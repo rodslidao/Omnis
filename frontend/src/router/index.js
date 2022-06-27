@@ -2,7 +2,6 @@ import Vue from 'vue';
 import Router from 'vue-router';
 
 import Dashboard from '@/views/Dashboard.vue';
-import Default from '@/views/settings/Default.vue';
 import Devices from '@/views/settings/Devices.vue';
 import Home from '@/views/Home.vue';
 import IntroLogo from '@/views/IntroLogo.vue';
@@ -33,15 +32,19 @@ const routes = [
   {
     name: 'settings',
     path: '/config',
+    redirect: '/config/system',
     component: Settings,
     meta: {
       breadCrumb: 'Configurações',
     },
     children: [
       {
-        component: Default,
-        name: 'default',
-        path: '',
+        name: 'system',
+        component: System,
+        path: 'system',
+        meta: {
+          breadCrumb: 'settings.system.name',
+        },
       },
       {
         name: 'network',
@@ -49,14 +52,6 @@ const routes = [
         path: 'network',
         meta: {
           breadCrumb: 'settings.networkAndInternet.name',
-        },
-      },
-      {
-        name: 'system',
-        component: System,
-        path: 'system',
-        meta: {
-          breadCrumb: 'settings.system.name',
         },
       },
       {
@@ -84,7 +79,7 @@ const routes = [
         ],
       },
       {
-        name:'personalize',
+        name: 'personalize',
         component: Personalize,
         path: 'settings.personalize.name',
       },
