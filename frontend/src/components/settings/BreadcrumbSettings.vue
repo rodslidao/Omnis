@@ -18,7 +18,7 @@
         <router-link :to="'/config'+item.to">
           <span
             :class="
-              $router.currentRoute.name == item.path
+              $t($router.currentRoute.meta.breadCrumb) == item.text
                 ? 'text-h4 text--primary'
                 : 'text-h6 text--grey'
             "
@@ -80,5 +80,8 @@ export default {
 <style lang="scss" scoped>
 .breadcrumb{
   margin-left: -24px;
+}
+::v-deep .v-breadcrumbs{
+  padding-top:13px;
 }
 </style>

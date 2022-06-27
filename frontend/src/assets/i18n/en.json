@@ -1,12 +1,13 @@
 {
   "settings": {
+    "name": "Settings",
     "system": {
       "name": "System",
       "languageAndData": {
         "name": "Language and Data",
         "exhibitionLanguage": {
           "title": "Exhibition Language",
-          "subtitle": "The language of the entire program will be displayed in the selected language."
+          "subtitle": "The language of the entire program will be displayed in the selected language"
         }
       }
     },
@@ -18,11 +19,40 @@
       "matrix": {
         "name": "Matrix",
         "title": "Matrix",
-        "subtitle": "Create and edit the matrix to use in nodes."
+        "subtitle": "Create and edit the matrix to use in nodes"
       }
     },
     "users": {
-      "name": "Users"
+      "name": "Users",
+      "user": "user",
+      "otherAccounts": "Other Accounts",
+      "editUser": {
+        "title": "Account Edit"
+      },
+      "accountsDetails": {
+        "name": "accountsDetails",
+        "title": "Account Details",
+        "subtitle": "View and edit your account details"
+      },
+      "fields":{
+        "level" : "Level",
+        "first_name": "Name",
+        "last_name": "Surname",
+        "username": "SSN",
+        "email": "Email",
+        "last_access": "Last Access"
+      },
+      "myAccount": "My Account",
+      "registerUser": {
+        "name": "New User",
+        "title": "Register new User",
+        "subtitle": "Create users."
+      },
+      "listUsers": {
+        "name": "List of users",
+        "title": "List of users",
+        "subtitle": "List users and their roles. You can edit the users"
+      }
     },
     "networkAndInternet": {
       "name": "Network & Internet"
@@ -33,5 +63,81 @@
     "support": {
       "name": "Support"
     }
+  },
+  "form": {
+    "name": "Name",
+    "lastName": "Last Name",
+    "email": "Email",
+    "username": "Username (SSN)",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "showPassword": "Show Password",
+    "register": "Register",
+    "required": "Hey! I'm required",
+    "validEmail": "This e-mail is not valid",
+    "validPassword": "This password is not valid",
+    "passwordMatch": "This passwords do not match",
+    "minCharacters": "This field must have at least {count} characters",
+    "singIn": "Login",
+    "singInTitle": "Login"
+  },
+  "levels": {
+    "name": "Level",
+    "operator": "Operator",
+    "manager": "Manager",
+    "developer": "Developer",
+    "maintenance": "Maintenance"
+  },
+  "buttons": {
+    "save": "Save",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "remove": "Remove",
+    "close": "Close",
+    "send": "Send",
+    "login": "Login",
+    "logout": "Logout",
+    "register": "Register",
+    "forgotPassword": "Forgot Password",
+    "resetPassword": "Reset Password",
+    "changePassword": "Change Password"
+  },
+  "prepositions": {
+    "or": "or"
+  },
+  "greetings": {
+    "hello": "Hello",
+    "welcome": "Welcome! "
+  },
+  "alerts": {
+    "loginFail": "Failed to login, make sure your details are correct, 😢",
+    "runningProcess": "The process is running 🚀",
+    "pauseSuccess": "Process was paused ✋",
+    "pauseFail": "Fail to pause the process, 😢",
+    "failToRunProcess": "Failed to run process, 😢",
+    "RegisterUserFail": "Failed to register user, 😢",
+    "RegisterUserSuccess": "User registered successfully 🤙",
+    "processStopped": "The process was stopped ✋",
+    "saveFail": "Could not save file 😢",
+    "saveSuccess": "The process was saved 👌",
+    "invalidFile": "Invalid file, your file must be an '.oms' 😢",
+    "deleteFail" : "Could't possible to delete 😢",
+    "deleteSuccess" : "Was deleted 👍",
+    "updateUserSuccess" : "The data was updated👍",
+    "updateUserFail" : "Could't possible to update 😢"
+  },
+  "list": {
+    "sortBy": "Sort by",
+    "filterBy": "Filter by",
+    "Search": "Search",
+    "totalUsers": "total of users"
+  },
+  "dialogs": {
+    "removeConfirm" : "Are you sure you want to delete?",
+    "removeDescription" : "This {obj} will be deleted, are you sure you want to delete it?"
   }
+  
 }

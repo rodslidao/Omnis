@@ -1,6 +1,8 @@
 <template>
   <div class="system">
-    <settings-title>{{$t('settings.system.languageAndData.name')}}</settings-title>
+    <settings-title>{{
+      $t('settings.system.languageAndData.name')
+    }}</settings-title>
     <router-view> </router-view>
     <settings-items
       v-for="(item, index) in items"
@@ -35,13 +37,13 @@ import SettingsTitle from '@/components/settings/SettingsTitle.vue';
 export default {
   components: { SettingsItems, SettingsTitle },
   data() {
-    const lang = localStorage.getItem('lang') || 'en'
+    const lang = localStorage.getItem('lang') || 'en';
     return {
       actualPath: '',
-      lang: lang,
+      lang,
       items: [
         {
-          title:'settings.system.languageAndData.exhibitionLanguage.title',
+          title: 'settings.system.languageAndData.exhibitionLanguage.title',
           subtitle:
             'settings.system.languageAndData.exhibitionLanguage.subtitle',
           icon: 'web',

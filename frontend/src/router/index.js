@@ -2,7 +2,6 @@ import Vue from 'vue';
 import Router from 'vue-router';
 
 import Dashboard from '@/views/Dashboard.vue';
-import Default from '@/views/settings/Default.vue';
 import Devices from '@/views/settings/Devices.vue';
 import Home from '@/views/Home.vue';
 import IntroLogo from '@/views/IntroLogo.vue';
@@ -20,6 +19,7 @@ import Process from '@/views/settings/Process.vue';
 import MatrixDirectionSelector from '@/components/node/config/matrix/MatrixDirectionSelector.vue';
 import Users from '@/views/settings/Users.vue';
 import Personalize from '@/views/settings/Personalize.vue';
+import RegisterUser from '@/views/Auth/RegisterUser.vue';
 
 Vue.use(Router);
 
@@ -32,15 +32,19 @@ const routes = [
   {
     name: 'settings',
     path: '/config',
+    redirect: '/config/system',
     component: Settings,
     meta: {
       breadCrumb: 'Configurações',
     },
     children: [
       {
-        component: Default,
-        name: 'default',
-        path: '',
+        name: 'system',
+        component: System,
+        path: 'system',
+        meta: {
+          breadCrumb: 'settings.system.name',
+        },
       },
       {
         name: 'network',
@@ -48,14 +52,6 @@ const routes = [
         path: 'network',
         meta: {
           breadCrumb: 'settings.networkAndInternet.name',
-        },
-      },
-      {
-        name: 'system',
-        component: System,
-        path: 'system',
-        meta: {
-          breadCrumb: 'settings.system.name',
         },
       },
       {
@@ -73,9 +69,17 @@ const routes = [
         meta: {
           breadCrumb: 'settings.users.name',
         },
+        children: [
+          {
+            name: 'registerUser',
+            component: RegisterUser,
+            path: ':register-user',
+            meta: { breadCrumb: 'settings.users.registerUser.name' },
+          },
+        ],
       },
       {
-        name:'personalize',
+        name: 'personalize',
         component: Personalize,
         path: 'settings.personalize.name',
       },
