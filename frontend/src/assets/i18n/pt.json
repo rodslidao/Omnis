@@ -1,0 +1,139 @@
+{
+  "settings": {
+    "name": "Configurações",
+    "system": {
+      "name": "Sistema",
+      "languageAndData": {
+        "name": "Idioma e Dados",
+        "exhibitionLanguage": {
+          "title": "Língua de Exposição",
+          "subtitle": "A linguagem de todo o programa será exibida no idioma selecionado"
+        }
+      }
+    },
+    "devices": {
+      "name": "Dispositivos"
+    },
+    "process": {
+      "name": "Processo",
+      "matrix": {
+        "name": "Matriz",
+        "title": "Matriz",
+        "subtitle": "Criar e editar a matriz para usar em nosmos"
+      }
+    },
+    "users": {
+      "name": "Utilizadores",
+      "user": "utilizador",
+      "otherAccounts": "Outras Contas",
+      "accountsDetails": {
+        "name": "contasDetails",
+        "title": "Detalhes da Conta",
+        "subtitle": "Ver e editar os detalhes da sua conta"
+      },
+      "fields": {
+        "level": "Nível",
+        "first_name": "Nome",
+        "last_name": "Sobrenome",
+        "username": "CPF",
+        "email": "Email",
+        "last_access": "Último Acesso"
+      },
+      "myAccount": "Minha Conta",
+      "registerUser": {
+        "name": "Novo Usuário",
+        "title": "Registrar novo usuário",
+        "subtitle": "Criar usuário."
+      },
+      "listUsers": {
+        "name": "Lista de usuário",
+        "title": "Lista de usuário",
+        "subtitle": "Lista usuários e regras, edição dos usuários"
+      }
+    },
+    "networkAndInternet": {
+      "name": "Rede & Internet"
+    },
+    "personalize": {
+      "name": "Personalizar"
+    },
+    "support": {
+      "name": "Suporte"
+    }
+  },
+  "form": {
+    "name": "Nome",
+    "lastName": "Last Nome",
+    "email": "Email",
+    "username": "CPF",
+    "password": "Senha",
+    "confirmPassword": "Confirmar senha",
+    "showPassword": "Mostrar senha",
+    "register": "Registrar",
+    "required": "Ei! Eu sou obrigatório",
+    "validEmail": "Esse e-mail não é valido",
+    "validPassword": "Senha inválida",
+    "passwordMatch": "As senha não são iguais",
+    "minCharacters": "This field must have at least {count} characters",
+    "singIn": "Login",
+    "singInTitle": "Login"
+  },
+  "levels": {
+    "name": "Nível",
+    "operator": "Operador",
+    "manager": "Gestor",
+    "developer": "Desenvolvedor",
+    "maintenance": "Manutenção"
+  },
+  "buttons": {
+    "save": "Salvar",
+    "confirm": "Confirmar",
+    "cancel": "Cancelar",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "remove": "Remove",
+    "close": "Close",
+    "send": "Send",
+    "login": "Login",
+    "logout": "Logout",
+    "register": "Register",
+    "forgotPassword": "Forgot Password",
+    "resetPassword": "Reset Password",
+    "changePassword": "Change Password"
+  },
+  "prepositions": {
+    "or": "or"
+  },
+  "greetings": {
+    "hello": "Hello",
+    "welcome": "Welcome! "
+  },
+  "alerts": {
+    "loginFail": "Failed to login, make sure your details are correct, 😢",
+    "runningProcess": "The process is running 🚀",
+    "pauseSuccess": "Process was paused ✋",
+    "pauseFail": "Fail to pause the process, 😢",
+    "failToRunProcess": "Failed to run process, 😢",
+    "RegisterUserFail": "Failed to register user, 😢",
+    "RegisterUserSuccess": "User registered successfully 🤙",
+    "processStopped": "The process was stopped ✋",
+    "saveFail": "Could not save file 😢",
+    "saveSuccess": "The process was saved 👌",
+    "invalidFile": "Invalid file, your file must be an '.oms' 😢",
+    "deleteFail": "Could't possible to delete the {obj} 😢",
+    "deleteSuccess": "The {obj} was deleted 👍"
+  },
+  "list": {
+    "sortBy": "Sort by",
+    "filterBy": "Filter by",
+    "Search": "Search",
+    "totalUsers": "total of users"
+  },
+  "dialogs": {
+    "removeConfirm": "Are you sure you want to delete?",
+    "removeDescription": "This {obj} will be deleted, are you sure you want to delete it?"
+  }
+
+  
+}

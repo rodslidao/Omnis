@@ -2,9 +2,9 @@
   <v-row justify="center">
     <v-dialog
       :dark="dark"
-      v-model="dialog"
+      v-model="visible"
       :persistent="persistent"
-      :max-width="maxWidth"
+      max-width="400"
     >
       <template v-slot:activator="{ on, attrs }">
         <div v-bind="attrs" v-on="on">
@@ -13,42 +13,38 @@
       </template>
       <v-card>
         <v-card-title class="text-h5">
-          {{ title ? title : $t('dialogs.removeConfirm') }}
+          {{ title ? title : 'Tem certeza que quer excluir?' }}
         </v-card-title>
         <v-card-text
           >{{
             description
               ? description
-              : $t('dialogs.removeDescription', { obj: del })
+              : 'Esse arquivo será excluído permanentemente, tem certeza que deseja exclui-lo?'
           }}
           <slot name="description"></slot>
         </v-card-text>
         <v-card-actions v-if="!del">
           <v-spacer></v-spacer>
-          <div v-if="!this.$slots.actions">
           <v-btn color="primary" text @click="$emit('cancel-event')" rounded>
-            {{ cancelText ? cancelText : $t('buttons.cancel') }}
+            {{ cancelText ? cancelText : 'Cancelar' }}
           </v-btn>
           <v-btn text @click="$emit('confirm-event')" rounded>
-            {{ confirmText ? confirmText : $t('buttons.confirm') }}
+            {{ confirmText ? confirmText : 'Confirmar' }}
           </v-btn>
-          </div>
-          <slot name="actions"></slot>
         </v-card-actions>
         <v-card-actions v-else>
           <v-spacer></v-spacer>
-          
-            <v-btn color="primary" text @click="$emit('cancel-event')" rounded>
-              Cancelar
-            </v-btn>
-            <v-btn
-              text
-              rounded
-              v-on:keyup.enter="$emit('confirm-event')"
-              @click="$emit('confirm-event')"
-            >
-              Confirmar
-            </v-btn>
+          <v-btn color="primary" text @click="$emit('cancel-event')" rounded>
+            Cancelar
+          </v-btn>
+          <v-btn
+            text
+            rounded
+            v-on:keyup.enter="$emit('confirm-event')"
+            @click="$emit('confirm-event')"
+          >
+            Confirmar
+          </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -62,14 +58,10 @@ export default {
     cancelText: String,
     title: String,
     description: String,
-    del: String,
+    del: Boolean,
     persistent: Boolean,
     dark: Boolean,
     visible: Boolean,
-    maxWidth: {
-      type: String,
-      default: '400',
-    },
   },
 
   data() {

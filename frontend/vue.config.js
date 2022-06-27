@@ -35,5 +35,14 @@ module.exports = {
     },
   },
 
+  pages: {
+    index: {
+      // entry for the page
+      entry: 'src/main.js',
+      filename: 'index.html',
+      title: 'Omnis',
+    },
+  },
+
   transpileDependencies: ['vuetify'],
 };
