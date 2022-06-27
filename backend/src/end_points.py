@@ -1,9 +1,6 @@
-from numpy import broadcast
-from src.nodes.alerts.alert_obj import Alert
 from src.nodes.node_manager import NodeManager
-from starlette.responses import StreamingResponse, JSONResponse
-from starlette.routing import Route
-from os.path import abspath, isfile
+from starlette.responses import StreamingResponse
+from os.path import abspath
 import simplejpeg
 from cv2 import imread, imencode
 from src.manager.camera_manager import CameraManager
@@ -14,19 +11,6 @@ from starlette.endpoints import WebSocketEndpoint
 from bson import ObjectId
 
 failpath = abspath("./src/imgs/no_image.jpg")
-
-
-def frameReader(request):
-    path = None
-    if request:
-        path = abspath(f"./src/imgs/{request.path_params['img_name']}")
-
-    if not isfile(path):
-        path, status_code = failpath, 400
-    else:
-        status_code = 200
-
-    return StreamingResponse(open(path, "rb"), status_code, media_type="image/jpeg")
 
 
 def encode(frame):

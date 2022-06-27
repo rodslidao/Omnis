@@ -98,7 +98,7 @@ mangers = {
 }
 
 
-# Managers_Import(mangers)
+Managers_Import(mangers)
 
 from ariadne import ScalarType
 from bson import ObjectId

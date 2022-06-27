@@ -125,7 +125,7 @@ class SerialGcodeOBJ(Serial):
                     )
                 )
                 if _type == "R":
-                    self.__status["position"] = _echo
+                    self.__status["jog_position"] = _echo
                     
                 return _echo
             except ValueError:  # ! Why this error?
