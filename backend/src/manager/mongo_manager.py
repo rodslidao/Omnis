@@ -100,7 +100,6 @@ class MongoOBJ:
         try:
             return self.dbo[collection_name].insert_one(data)
         except InvalidDocument:
-            # logger.critical(f"Invalid document: {data}")
             return self.dbo[collection_name].insert_one(
                 loads(dumps(data, cls=CustomEncoder))
             )
@@ -155,5 +154,6 @@ class MongoOBJ:
         return df.to_csv(index=False)
 
     def close(self):
-        logger.info("Closing connection to MongoDB")
+        logger.info("Closing connection to MongoDB...")
         self.client.close()
+        logger.info("closed.")

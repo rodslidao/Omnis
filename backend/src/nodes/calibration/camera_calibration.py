@@ -36,7 +36,7 @@ class Steps:
         return self.status
 
 
-CalibrationManager = SubscriptionFactory(calibrations, 'calibrations')
+# CalibrationManager = SubscriptionFactory(calibrations, 'calibrations')
 
 
 class CameraCalibration:
@@ -135,4 +135,4 @@ class CameraCalibration:
 
     def update(self, step_title, step_description, estimated_time=None):
         self.steps.next(step_description, step_title, estimated_time)
-        CalibrationManager.put(self.steps.get_status())
+        # CalibrationManager.put(self.steps.get_status())

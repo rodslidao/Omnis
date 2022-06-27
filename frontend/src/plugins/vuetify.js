@@ -6,6 +6,12 @@ import Vuetify from 'vuetify/lib';
 Vue.use(Vuetify);
 
 export default new Vuetify({
+  theme: {
+    options: {
+      customProperties: true,
+    },
+    // ...
+  },
   icons: {
     iconsfont: 'mdi',
   },

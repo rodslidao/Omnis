@@ -33,7 +33,7 @@ class ProcessNode(BaseNode):
         self.process = process
         NodeManager.addNode(self)
 
-    @Wizard._decorator
+    # @Wizard._decorator # Since this can be a start node, a wizar is not necessary
     def execute(self, message=""):
         if self.auto_run:
             self.on("Gatilho", True)

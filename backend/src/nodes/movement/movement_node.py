@@ -1,5 +1,4 @@
 from cmath import log
-from time import sleep
 from src.nodes.node_manager import NodeManager
 from src.nodes.base_node import BaseNode, Wizard
 from src.manager.serial_manager import SerialManager
@@ -22,14 +21,10 @@ class MovementNode(BaseNode):
         self.input_connections = input_connections
         self.serial_id = options["board"]["id"]
         self.serial = SerialManager.get_by_id(self.serial_id)
-        # if self.serial is not isinstance(self.serial, SerialGcodeOBJ):
-        #     raise Exception("Serial not found")
-            # self.on("Falha", "Serial not connected")
         self.axis = []
         self.coordinates = {}
         self.wait_for_this = [{k.lower():v for k,v in x['to'].items() if k == "name"} for x in self.input_connections]
         self.wait_checks = 0
-        logger.error(self.wait_for_this)
         for axi in options["axislist"]:
             if axi["isActive"]:
                 self.axis.append(axi["name"].lower())
@@ -41,7 +36,6 @@ class MovementNode(BaseNode):
 
     @Wizard._decorator
     def execute(self, message):
-        logger.info(f"{self.name} received message: {message}")
         action = message.targetName.lower()
         if action in self.axis:
             self.coordinates[action] = message.payload
@@ -51,8 +45,6 @@ class MovementNode(BaseNode):
             self.gatilho_f()
         else:
             logger.error(f"Waiting for {self.wait_checks}/{len(self.wait_for_this)}")
-        # else:
-        #     return getattr(self, action + "_f")(message.payload)
 
     def coordinates_f(self, payload):
         try:
@@ -81,8 +73,7 @@ class MovementNode(BaseNode):
             else:
                 self.serial.send("G90", log=False)
             # logger.info(f"coords: {movement}")
-            self.serial.M_G0(*movement, sync=True)
-            # sleep(t)
+            self.serial.G0(*movement)
             self.on("Sucesso", self.serial_id)
 
         else:

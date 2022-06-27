@@ -1,3 +1,5 @@
+from pickle import TRUE
+from turtle import update
 from .models import NodeSheet, ObjectId
 from ariadne import MutationType
 from src.nodes.alerts.alert_obj import Alert
@@ -14,12 +16,13 @@ from src.manager.serial_manager import SerialManager
 from src.nodes.process.process import process
 
 from src.utility.system.date import set_system_date
-from api import logger
+from api import logger, auth, dbo
 
 mutation = MutationType()
 
 
 @mutation.field("createNodeSheet")
+@auth('manager')
 def createNodeSheet_resolver(obj, info, _id, **kwargs):
     """Create a new NodeSheet object and return it like a payload"""
     returns = NodeSheet().create_node_sheet(_id, **kwargs)
@@ -27,6 +30,7 @@ def createNodeSheet_resolver(obj, info, _id, **kwargs):
 
 
 @mutation.field("saveNodeSheet")
+@auth('manager')
 def saveNodeSheet_resolver(obj, info, _id=None, **kwargs):
     """Create a new NodeSheet object and return it like a payload"""
     returns = NodeSheet().save_node_sheet(_id, **kwargs)
@@ -34,6 +38,7 @@ def saveNodeSheet_resolver(obj, info, _id=None, **kwargs):
 
 
 @mutation.field("updateNodeSheet")
+@auth('manager')
 def updateNodeSheet_resolver(obj, info, _id, **kwargs):
     """Update a NodeSheet by id and return it like a payload"""
     returns = NodeSheet().update_node_sheet(_id, **kwargs)
@@ -42,62 +47,67 @@ def updateNodeSheet_resolver(obj, info, _id, **kwargs):
 
 
 @mutation.field("deleteNodeSheet")
+@auth('manager')
 def deleteNodeSheet_resolver(obj, info, _id):
     """Delete a NodeSheet by id and return it like a payload"""
     returns = NodeSheet().delete_node_sheet(_id)
     return  returns
 
 @mutation.field("duplicateNodeSheet")
+@auth('manager')
 def duplicateNodeSheet_resolver(obj, info, _id):
     """Duplicate a NodeSheet by id and return it like a payload"""
     returns = NodeSheet().duplicate_node_sheet(_id)
     return  returns
 
 @mutation.field("startProcess")
+@auth('operator')
 def startProcess_resolver(obj, info, _id):
     """Start a process by id and return it like a payload"""
     process.start(_id)
-    returns = process.dict()
     return
 
 
 @mutation.field("stopProcess")
+@auth('operator')
 def stopProcess_resolver(obj, info):
     """Stop a process by id and return it like a payload"""
     process.stop()
-    returns = process.dict()
     return 
 
 
 @mutation.field("pauseProcess")
+@auth('operator')
 def pauseProcess_resolver(obj, info):
     """Pause a process by id and return it like a payload"""
     process.pause()
-    returns = process.dict()
     return
 
 
 @mutation.field("resumeProcess")
+@auth('operator')
 def resumeProcess_resolver(obj, info):
     """Resume a process by id and return it like a payload"""
     process.resume()
-    returns = process.dict()
     return 
 
 
 @mutation.field("loadConfig")
+@auth('operator')
 def loadConfig_resolver(obj, info, _id):
-    a = process.load(_id)
+    process.load(_id)
     logger.info("Loaded config with id {}".format(_id))
     return NodeSheet().getNodeSheetById(_id)
 
 
 @mutation.field("getLoadedConfig")
+@auth('viewer')
 def getLoadedConfig_resolver(obj, info):
     return process.getLoadedId()
 
 
 @mutation.field("createAlert")
+@auth('developer')
 async def createAlert_resolver(obj, info, input):
     """Create a new Alert object and return it like a payload"""
     returns = Alert(**input)
@@ -153,7 +163,7 @@ def createCamera_resolver(obj, info, **kwargs):
 @mutation.field("startCamera")
 def startCamera_resolver(obj, info, _id):
     """Start a camera by id and return it like a payload"""
-    camera = (CameraManager.get_by_id(_id)).start()
+    camera = (CameraManager.get_by_id(_id))
     returns = camera.to_dict()
     return {"data": returns}
 
@@ -193,7 +203,7 @@ def createSerial_resolver(obj, info, **kwargs):
 @mutation.field("startSerial")
 def startSerial_resolver(obj, info, _id):
     """Start a serial by id and return it like a payload"""
-    serial = SerialManager.get_by_id(_id).start()
+    serial = SerialManager.get_by_id(_id)
     returns = serial.to_dict()
     return  returns
 
@@ -207,6 +217,7 @@ def stopSerial_resolver(obj, info, _id):
 
 
 @mutation.field("sendSerial")
+@auth('operator')
 def sendSerial_resolver(obj, info, _id, payload):
     """Communicate a serial by id and return it like a payload"""
     return SerialManager.get_by_id(_id).send(payload).to_dict()
@@ -219,4 +230,23 @@ def syncHostTime_resolver(obj, info, timestamp):
         set_system_date(timestamp)
     except Exception:
         return False
+    return True
+
+# *  ----------- User ----------- * #
+@mutation.field("registerUser")
+@auth('manager')
+def registerUser_resolver(obj, info, **kwargs):
+    dbo.insert_one('users', kwargs['newUser'])
+    return True
+
+@mutation.field("deleteUser")
+@auth('manager')
+def deleteUser_resolver(obj, info, _id, user):
+    dbo.delete_one('users', {"_id": ObjectId(_id)})
+    return True
+
+@mutation.field("updateUser")
+@auth('manager')
+def updateUser_resolver(obj, info, _id, **kwargs):
+    dbo.update_one('users', {'_id':  ObjectId(_id)}, {"$set":kwargs['input']})
     return True

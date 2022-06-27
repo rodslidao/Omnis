@@ -1,8 +1,6 @@
 import asyncio
+import queue
 from ariadne import SubscriptionType
-from src.manager.camera_manager import CameraManager
-from src.manager.serial_manager import SerialManager
-from .store import alerts, calibrations, nodes
 
 from api.decorators import for_all_methods
 from api import logger, exception
@@ -16,28 +14,27 @@ Create a decorator to pass (self.name) attribute from SubscriptionFactory method
 @for_all_methods(exception(logger))
 class SubscriptionFactory:
     def __init__(self, store, name):
-        self.store = store
+        self.store = asyncio.Queue()
         self.name = name
 
         @subscription.source(self.name)
         async def alerts_source(obj, info):
-            queue = asyncio.Queue()
-            self.store.append(queue)
             try:
                 while True:
-                    yield await queue.get()
-            except asyncio.CancelledError:
-                self.store.remove(queue)
-                raise
+                    yield await self.store.get()
+            finally:
+                logger.info("closing...")
 
         @subscription.field(self.name)
         async def sub_resolver(obj, info):
             return obj
-
-    def put(self, alert):
+    
+    def put(self, info):
         """
-        Put alert to queue without await
+        Send a message to the subscription queue.
+        info (dict): message to be sent.
         """
-        for queue in self.store:
-            # logger.info(alert.__dict__)
-            queue.put_nowait(dict(alert.items()))
+        self.store.put_nowait(dict(info.items()))
+        
+        # self.store
+        logger.info("putting")

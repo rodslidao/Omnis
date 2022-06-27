@@ -239,7 +239,7 @@ export default {
           sent: false,
           message: newData.data.sendSerial.last_value_received,
         });
-        this.scrollToBottom();
+        // this.scrollToBottom();
       }
     },
     getSerials() {
@@ -291,7 +291,10 @@ export default {
 
             this.receivedData = data;
 
-            this.sendCommandList.push(this.message);
+            if (this.sendCommandList.at(-1) !== this.message) {
+              this.sendCommandList.push(this.message);
+            }
+
             this.selectedItemCommandList = this.sendCommandList.length;
             this.clearMessage();
 
