@@ -4,7 +4,6 @@
     <router-view> </router-view>
     <div v-if="$router.currentRoute.name !== 'registerUser'">
       <settings-title>{{ $t('settings.users.myAccount') }}</settings-title>
-      {{ user ? 'existe' : 'não existe' }}
       <settings-items
         :title="$t('settings.users.accountsDetails.title')"
         :subtitle="$t('settings.users.accountsDetails.subtitle')"

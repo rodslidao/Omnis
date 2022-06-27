@@ -44,6 +44,7 @@
         <v-card-text>
           <slot name="expand"> </slot>
         </v-card-text>
+        <v-divider v-if="dividerList"></v-divider>
       </div>
     </v-expand-transition>
   </v-card>
@@ -84,6 +85,7 @@ export default {
       type: String,
       default: '',
     },
+    dividerList: Boolean
   },
   data() {
     return {

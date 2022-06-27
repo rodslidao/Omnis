@@ -7,16 +7,27 @@
       :title="item.title"
       :subtitle="item.subtitle"
       :icon="item.icon"
-      :path="item.path"
-    ></settings-items>
+      divider-list
+    >
+      <template v-slot:expand>
+        <div v-for="(subItem, index) in item.subItens" :key="index">
+          <div class="d-flex">
+            <div class="text-h6">{{subItem.title}}</div>
+            <v-spacer></v-spacer>
+            <v-btn icon><v-icon>mdi-chevron-right</v-icon></v-btn>
+          </div>
+        </div>
+      </template>
+    </settings-items>
   </div>
 </template>
 
 <script>
 import SettingsItems from '../../components/settings/SettingsItems.vue';
+import SettingsTitle from '../../components/settings/SettingsTitle.vue';
 
 export default {
-  components: { SettingsItems },
+  components: { SettingsItems, SettingsTitle },
   data() {
     return {
       actualPath: '',
@@ -34,9 +45,13 @@ export default {
           // icon: 'application-brackets',
           icon: 'grid',
           path: 'process/matrix',
+          subItens: [
+            { title: 'Cadastrar', path: 'process/matrix-add' },
+            { title: 'Listar', path: 'process/matrix-list' },
+          ],
         },
         {
-          title: 'Processos',
+          title: 'Objects',
           subtitle: 'Gerência seus processos',
           icon: 'cog',
           path: 'process/process',
