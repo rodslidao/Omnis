@@ -1,7 +1,6 @@
 from datetime import datetime
 import threading
 from bson import ObjectId
-from pandas import value_counts
 from src.nodes.node_manager import NodeManager
 from src.nodes.alerts.alert_obj import Alert
 from api import logger, exception
@@ -12,7 +11,7 @@ from codetiming import Timer
 from src.end_points import Process as WebProcess
 from threading import Thread
 import asyncio
-
+from .target import targets, target
 
 class Process(threading.Thread):
     RUNNING = "RUNNING"
@@ -127,10 +126,10 @@ class sample_process:
         Thread(
             target=self.auto_update, name=f"{self._id}_auto_update", daemon=True
         ).start()
+        self.targets = targets.values
 
     @property
     def status(self):
-        logger.info(f"pss>>{self._id}:{id(self.process)}:{id(self.process.status_rtc)}")
         return self.process.status_rtc
 
     def auto_update(self):
@@ -174,7 +173,6 @@ class sample_process:
         self.process.pause()
         if internal:
             Alert("INFO", "Processo em pausa", "O processo foi parado automaticamente")
-        logger.info(f"pp>>{self._id}:{self.status}")
 
     def resume(self, internal=False):
         NodeManager.resume()
@@ -185,7 +183,6 @@ class sample_process:
                 "Processo em execução",
                 "O processo foi retomado automaticamente",
             )
-        logger.info(f"rr>>{self._id}:{self.status}")
 
     def stop(self, wait=True, internal=False):
         NodeManager.stop()

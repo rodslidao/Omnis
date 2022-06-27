@@ -52,7 +52,7 @@ def resolve_getCameras(obj, info, **kwargs):
 
 @query.field("getSketchList")
 @auth('viewer')
-def resolve_get_sketch_list(obj, info):
+def resolve_get_sketch_list(obj, info, **kwargs):
     print(NodeSheet().get_sketch_list()[0])
     return {"status": True, "data": list(NodeSheet().get_sketch_list())}
 
@@ -69,14 +69,14 @@ def resolve_getNodeInfo(obj, info, node_type, **kwargs):
 
 @query.field("getManutention")
 @auth('maintenance')
-def resolve_getManutention(obj, info):
+def resolve_getManutention(obj, info, **kwargs):
     """Get a Node by id and return it like a payload"""
     return {"status": True, "data": grok.get_url()}
 
 
 @query.field("getThr")
 @auth('developer')
-def resolve_getThr(obj, info):
+def resolve_getThr(obj, info, **kwargs):
     """Get a Node by id and return it like a payload"""
     return list([thread.name for thread in thread_enumerate()])
 
@@ -90,21 +90,21 @@ def resolve_calibrateCamera(obj, info, **kwargs):
 
 @query.field("getLoadedNodes")
 @auth('developer')
-def resolve_getLoadedNodes(obj, info):
+def resolve_getLoadedNodes(obj, info, **kwargs):
     """Get a Node by id and return it like a payload"""
     return NodeManager.getActiveNodes()
 
 
 @query.field("getLoadedConfig")
 @auth('developer')
-def resolve_getLoadedConfig(obj, info):
+def resolve_getLoadedConfig(obj, info, **kwargs):
     """Get a Node by id and return it like a payload"""
     return NodeSheet().getNodeSheetById(process.loaded_id)
 
 
 @query.field("getDevicesList")
 @auth('developer')
-def resolve_getDevicesList(obj, info):
+def resolve_getDevicesList(obj, info, **kwargs):
     """Get a Node by id and return it like a payload"""
     temp = list(dbo.find_many("pins"))
     for i in temp:
@@ -114,7 +114,7 @@ def resolve_getDevicesList(obj, info):
 
 @query.field("getAxisList")
 @auth('operator')
-def resolve_getAxisList(obj, info):
+def resolve_getAxisList(obj, info, **kwargs):
     """Get a Node by id and return it like a payload"""
     temp = list(dbo.find_many("machine_axis"))
     for i in temp:
@@ -123,13 +123,13 @@ def resolve_getAxisList(obj, info):
 
 @query.field("authenticateUser")
 def resolve_authUserProfile(obj, info, username=None, **kwargs):
-    keep = {"username":0, 'password':0}
+    keep = {'password':0}
     user = dbo.find_one("users", {"username": username}, keep)
     if not user:
         user = dbo.find_one("users", kwargs, keep)
     if user:
         payload = user.copy()
-        payload.update({"exp": datetime.now(tz=timezone.utc) + timedelta(hours=24), '_id': str(payload['_id'])})
+        payload.update({"exp": datetime.now(tz=timezone.utc) + timedelta(hours=payload.get('exp', 24)), '_id': str(payload['_id'])})
         token = jwt.encode(
             payload,
             key=private_key,
@@ -150,3 +150,12 @@ def resolve_authUserProfile(obj, info, user):
 @auth('manager')
 def  getUsersList_resolver(obj, info, user):
     return list(dbo.find_many('users', {}, {'password':0}))
+
+
+# *  ----------- Target ----------- * #
+from src.nodes.process.target import targets as tg, target
+
+@query.field("getTargetsList")
+@auth('operator')
+def getTargetsList(obj, info, **kwargs):
+    return list(tg.values.keys())

@@ -7,6 +7,7 @@ from .nodes.node_manager import NodeManager
 from .nodes.node_registry import NodeRegistry
 from .nodes.alerts.alert_obj import Alert
 from api import logger, exception, dbo
+from .nodes.process.target import targets
 
 variables = {
     '<color>': "#FFFFFF",
@@ -58,7 +59,6 @@ def getInterfaceByInterfaceId(nodeConfig, interfaceId):
             return data
     return None
 
-
 @exception(logger)
 def extractOptionsFromNode(node):
     node_options = node.get("options")
@@ -66,7 +66,7 @@ def extractOptionsFromNode(node):
     for option in node_options:
         if option[0].startswith("<") and option[0].endswith(">"):
             try:
-                options[option[0][1:-1]] = variables[option[0]]
+                options[option[0][1:-1]] = targets.values[option[0]]
             except KeyError:
                 raise KeyError(f"Variable {option[0]} not found at {node.get('name')}|{node.get('id')} during load. Aborting load.")
         else:

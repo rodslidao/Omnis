@@ -4,7 +4,7 @@ from .models import NodeSheet, ObjectId
 from ariadne import MutationType
 from src.nodes.alerts.alert_obj import Alert
 from numpy import uint8, frombuffer
-from cv2 import imdecode, imwrite
+from cv2 import imdecode, imwrite, log
 from os.path import abspath
 
 from src.nodes.camera.custom_camera import Camera
@@ -249,4 +249,14 @@ def deleteUser_resolver(obj, info, _id, user):
 @auth('manager')
 def updateUser_resolver(obj, info, _id, **kwargs):
     dbo.update_one('users', {'_id':  ObjectId(_id)}, {"$set":kwargs['input']})
+    return True
+
+# *  ----------- Target ----------- * #
+from src.nodes.process.target import targets as tg, target
+
+@mutation.field("updateTargets")
+@auth('operator')
+def updateTargets(obj, info, **kwargs):
+    # logger.info(f"{targets}{kwargs}")
+    tg(*list(map(target, kwargs['targets'])))
     return True

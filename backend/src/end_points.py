@@ -113,7 +113,6 @@ class Websocket(WebSocketEndpoint):
 
     async def broadcast_on_change(self, updated_info, payload={}):
         old_status = updated_info.copy()
-        logger.info(f"ws>>{self._id}:{id(updated_info)}")
         while True:
             if updated_info != old_status:
                 old_status = updated_info.copy()
