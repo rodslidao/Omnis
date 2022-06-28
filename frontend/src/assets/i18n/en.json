@@ -16,10 +16,31 @@
     },
     "process": {
       "name": "Process",
+      "process":{
+        "title": "Process",
+        "subtitle": "Create and edit the process"
+      },
+      "nodes":{
+        "name": "Nodes",
+        "title": "Nodes",
+        "subtitle": "Create and edit the program"
+      },
       "matrix": {
         "name": "Matrix",
         "title": "Matrix",
         "subtitle": "Create and edit the matrix to use in nodes"
+      },
+      "objects":{
+        "name": "Objects",
+        "title": "Objects",
+        "subtitle": "Create and edit the objects",
+        "addObject": "Register Object",
+        "listObject": "List Objects"
+      },
+      "variables": {
+        "name": "Variables",
+        "title": "Variables",
+        "subtitle": "Create and edit the variables"
       }
     },
     "users": {
@@ -98,6 +119,7 @@
     "remove": "Remove",
     "close": "Close",
     "send": "Send",
+    "list": "List",
     "login": "Login",
     "logout": "Logout",
     "register": "Register",

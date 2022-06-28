@@ -20,6 +20,7 @@ import MatrixDirectionSelector from '@/components/node/config/matrix/MatrixDirec
 import Users from '@/views/settings/Users.vue';
 import Personalize from '@/views/settings/Personalize.vue';
 import RegisterUser from '@/views/Auth/RegisterUser.vue';
+import ProcessObjects from '@/views/settings/ProcessObjects.vue';
 
 Vue.use(Router);
 
@@ -94,11 +95,17 @@ const routes = [
       {
         name: 'process',
         component: Process,
-        path: ':process',
+        path: 'process',
         meta: {
           breadCrumb: 'settings.process.name',
         },
         children: [
+          {
+            name: 'objects',
+            component: ProcessObjects,
+            path: 'object',
+            meta: { breadCrumb: 'settings.process.objects.name' },
+          },
           {
             name: 'matrix',
             component: MatrixDirectionSelector,

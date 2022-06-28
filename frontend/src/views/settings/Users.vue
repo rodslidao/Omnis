@@ -2,14 +2,14 @@
   <div class="process">
     <!-- {{ getUsersList }} -->
     <router-view> </router-view>
-    <div v-if="$router.currentRoute.name !== 'registerUser'">
+    <div v-if="$router.currentRoute.name == 'users'">
       <settings-title>{{ $t('settings.users.myAccount') }}</settings-title>
       <settings-items
         :title="$t('settings.users.accountsDetails.title')"
         :subtitle="$t('settings.users.accountsDetails.subtitle')"
         icon="account-details"
         ><template v-slot:expand>
-          <div class="account-details" v-if="user">
+          <div class="account-details ma-6" v-if="user">
             <div class="d-flex align-center">
               <div class="d-flex flex-column align-center">
                 <v-avatar color="primary" size="50">
@@ -49,9 +49,7 @@
           </div>
         </template>
       </settings-items>
-    </div>
-    <div>
-      <div v-if="$router.currentRoute.name !== 'registerUser'">
+      <div>
         <settings-title>{{
           $t('settings.users.otherAccounts')
         }}</settings-title>
