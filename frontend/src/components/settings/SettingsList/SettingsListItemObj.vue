@@ -28,8 +28,10 @@
       </div>
       <v-spacer></v-spacer>
       <div class="d-flex">
-        <v-btn icon @click="show = !show"
-          ><v-icon small class="mr-5">mdi-chevron-down</v-icon></v-btn
+        <v-btn class="mr-5" icon @click="show = !show"
+          ><v-icon>{{
+            show ? 'mdi-chevron-up' : 'mdi-chevron-down'
+          }}</v-icon></v-btn
         >
         <dialog-confirmation
           v-if="dialogDelete"
@@ -62,15 +64,21 @@
     </div>
     <v-expand-transition>
       <div v-show="show">
-        <v-divider></v-divider>
+        <!-- <v-divider></v-divider> -->
         <v-card-text>
           <v-data-table
+            :headers="headers"
             :items="detailItems"
             hide-default-header
             hide-default-footer
-            class="elevation-1"
-          ></v-data-table
-        ></v-card-text>
+          >
+            <template v-slot:item.field="{ item }">
+              <div class="font-weight-bold">
+                {{ item.field }}
+              </div>
+            </template></v-data-table
+          ></v-card-text
+        >
         <v-divider></v-divider>
       </div>
     </v-expand-transition>
@@ -93,8 +101,12 @@ export default {
       dialogDelete: false,
       headers: [
         {
-          field: 'dd',
-          value: 'name',
+          text: 'field',
+          value: 'field',
+        },
+        {
+          text: 'value',
+          value: 'value',
         },
       ],
       items: [
@@ -117,7 +129,7 @@ export default {
       return [
         {
           field: 'Cor',
-          value: this.obj.color,
+          value: `${this.obj.color.value} | ${this.obj.color.name}`,
         },
         {
           field: 'Supplier',
@@ -126,6 +138,7 @@ export default {
         {
           field: 'Parts',
           value: this.obj.parts,
+          value: `${this.obj.parts} ${this.obj.unit}`,
         },
         {
           field: 'Date',
@@ -145,6 +158,7 @@ export default {
     },
 
     remove() {
+      // eslint-disable-next-line no-underscore-dangle
       this.$emit('remove-obj', this.obj._id);
       this.dialogDelete = false;
     },

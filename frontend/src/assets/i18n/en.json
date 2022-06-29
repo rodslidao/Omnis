@@ -16,11 +16,11 @@
     },
     "process": {
       "name": "Process",
-      "process":{
+      "process": {
         "title": "Process",
         "subtitle": "Create and edit the process"
       },
-      "nodes":{
+      "nodes": {
         "name": "Nodes",
         "title": "Nodes",
         "subtitle": "Create and edit the program"
@@ -30,7 +30,7 @@
         "title": "Matrix",
         "subtitle": "Create and edit the matrix to use in nodes"
       },
-      "objects":{
+      "objects": {
         "name": "Objects",
         "title": "Objects",
         "subtitle": "Create and edit the objects",
@@ -55,8 +55,8 @@
         "title": "Account Details",
         "subtitle": "View and edit your account details"
       },
-      "fields":{
-        "level" : "Level",
+      "fields": {
+        "level": "Level",
         "first_name": "Name",
         "last_name": "Surname",
         "username": "SSN",
@@ -100,7 +100,14 @@
     "passwordMatch": "This passwords do not match",
     "minCharacters": "This field must have at least {count} characters",
     "singIn": "Login",
-    "singInTitle": "Login"
+    "singInTitle": "Login",
+    "description": "Description",
+    "part_number": "Part Number",
+    "supplier": "Supplier",
+    "parts": "Parts",
+    "unit": "Unit",
+    "date": "Date",
+    "color": "Color"
   },
   "levels": {
     "name": "Level",
@@ -125,7 +132,8 @@
     "register": "Register",
     "forgotPassword": "Forgot Password",
     "resetPassword": "Reset Password",
-    "changePassword": "Change Password"
+    "changePassword": "Change Password",
+    "search": "Search"
   },
   "prepositions": {
     "or": "or"
@@ -143,13 +151,13 @@
     "RegisterUserFail": "Failed to register user, 😢",
     "RegisterUserSuccess": "User registered successfully 🤙",
     "processStopped": "The process was stopped ✋",
-    "saveFail": "Could not save file 😢",
+    "saveFail": "Could not save 😢",
     "saveSuccess": "The process was saved 👌",
     "invalidFile": "Invalid file, your file must be an '.oms' 😢",
-    "deleteFail" : "Could't possible to delete 😢",
-    "deleteSuccess" : "Was deleted 👍",
-    "updateUserSuccess" : "The data was updated👍",
-    "updateUserFail" : "Could't possible to update 😢"
+    "deleteFail": "Could't possible to delete 😢",
+    "deleteSuccess": "Was deleted 👍",
+    "updateUserSuccess": "The data was updated👍",
+    "updateUserFail": "Could't possible to update 😢"
   },
   "list": {
     "sortBy": "Sort by",
@@ -158,8 +166,7 @@
     "totalUsers": "total of users"
   },
   "dialogs": {
-    "removeConfirm" : "Are you sure you want to delete?",
-    "removeDescription" : "This {obj} will be deleted, are you sure you want to delete it?"
+    "removeConfirm": "Are you sure you want to delete?",
+    "removeDescription": "This {obj} will be deleted, are you sure you want to delete it?"
   }
-  
 }

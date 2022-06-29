@@ -15,15 +15,15 @@
     <v-breadcrumbs :items="crumbs">
       <template v-slot:item="{ item }" class="text">
         <v-breadcrumbs-item>
-        <router-link :to="'/config'+item.to">
-          <span
-            :class="
-              $t($router.currentRoute.meta.breadCrumb) == item.text
-                ? 'text-h4 text--primary'
-                : 'text-h6 text--grey'
-            "
-            >{{ item.text }}</span
-          >
+          <router-link :to="makePath(item)">
+            <span
+              :class="
+                $t($router.currentRoute.meta.breadCrumb) == item.text
+                  ? 'text-h4 text--primary'
+                  : 'text-h6 text--grey'
+              "
+              >{{ item.text }}</span
+            >
           </router-link>
         </v-breadcrumbs-item>
       </template>
@@ -60,7 +60,7 @@ export default {
     crumbs() {
       const pathArray = this.$route.path.split('/');
       pathArray.shift();
-      // console.log(pathArray);
+      // console.log('path', pathArray);
       const breadcrumbs = pathArray.reduce((breadcrumbArray, path, idx) => {
         breadcrumbArray.push({
           path,
@@ -72,16 +72,39 @@ export default {
         // console.log('fasdfasdfa', breadcrumbArray);
         return breadcrumbArray.filter((a) => a.path !== 'config');
       }, []);
+      // console.log('breadcrumbs', breadcrumbs);
       return breadcrumbs;
+    },
+  },
+  methods: {
+    makePath(item) {
+
+      let finalIndex = this.crumbs.findIndex((object) => {
+        return object.path === item.path;
+      });
+
+      let path = '/';
+      // console.log(this.crumbs.map((el) => el.to));
+
+      const newPath = this.crumbs
+        .map((el) => el.to)
+        .reduce((previousValue, currentValue, index) => {
+          if (index <= finalIndex) {
+            path = (previousValue || '') + currentValue;
+          }
+          return path;
+        });
+
+      return `/config${newPath}`;
     },
   },
 };
 </script>
 <style lang="scss" scoped>
-.breadcrumb{
+.breadcrumb {
   margin-left: -24px;
 }
-::v-deep .v-breadcrumbs{
-  padding-top:13px;
+::v-deep .v-breadcrumbs {
+  padding-top: 13px;
 }
 </style>

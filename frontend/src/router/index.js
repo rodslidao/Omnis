@@ -21,6 +21,8 @@ import Users from '@/views/settings/Users.vue';
 import Personalize from '@/views/settings/Personalize.vue';
 import RegisterUser from '@/views/Auth/RegisterUser.vue';
 import ProcessObjects from '@/views/settings/ProcessObjects.vue';
+import ObjectRegister from '@/components/settings/process/ObjectRegister.vue';
+
 
 Vue.use(Router);
 
@@ -101,16 +103,18 @@ const routes = [
         },
         children: [
           {
-            name: 'objects',
+            name: 'object',
             component: ProcessObjects,
             path: 'object',
             meta: { breadCrumb: 'settings.process.objects.name' },
-          },
-          {
-            name: 'matrix',
-            component: MatrixDirectionSelector,
-            path: ':matrix',
-            meta: { breadCrumb: 'settings.process.matrix.name' },
+            children: [
+              {
+                name: 'add',
+                component: ObjectRegister,
+                path: 'add',
+                meta: { breadCrumb: 'settings.process.objects.addObject' },
+              },
+            ],
           },
         ],
       },

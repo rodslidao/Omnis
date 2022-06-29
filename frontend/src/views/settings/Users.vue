@@ -69,6 +69,7 @@
               :items="getUsersList"
               item-search="first_name"
               :fields-ignore="fieldsToIgnore"
+              translate-path="settings.users.fields"
             >
               <template #itemList="itemList">
                 <settings-list-item-user
@@ -204,7 +205,7 @@ export default {
 
   methods: {
     updateUser(user) {
-      console.log(user);
+      // console.log(user);
       this.userToEdit = user;
       this.editDialog = true;
     },
