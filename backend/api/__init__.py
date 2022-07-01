@@ -1,9 +1,6 @@
 from os import environ
 from platform import system
-from threading import Thread
-from bson import encode
 from dotenv import load_dotenv
-from platformdirs import user_cache_path
 from .log import logger, exception, custom_handler, logger, levels, lvl
 from .decorators import for_all_methods
 import jwt
