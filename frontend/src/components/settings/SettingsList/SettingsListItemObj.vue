@@ -18,7 +18,7 @@
             </div>
             <div class="font-weight-bold d-flex align-center">
               <div class="text-body-2 mr-1">color:</div>
-              {{ obj.color.name }}
+              {{ obj.color_name }}
             </div>
             <!-- <div class="text-body-2">
             {{ $timestampToDate(obj.date) }}
@@ -129,7 +129,7 @@ export default {
       return [
         {
           field: 'Cor',
-          value: `${this.obj.color.value} | ${this.obj.color.name}`,
+          value: `${this.obj.color_hex} | ${this.obj.color_name}`,
         },
         {
           field: 'Supplier',
@@ -137,7 +137,6 @@ export default {
         },
         {
           field: 'Parts',
-          value: this.obj.parts,
           value: `${this.obj.parts} ${this.obj.unit}`,
         },
         {

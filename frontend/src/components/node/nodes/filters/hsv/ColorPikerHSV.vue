@@ -69,7 +69,6 @@
             "
             v-if="selectedColor1"
             mode="rgba"
-            @update:color="printColor(rgba)"
           ></color-picker>
           <color-picker
             v-model="

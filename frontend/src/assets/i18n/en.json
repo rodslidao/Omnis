@@ -107,7 +107,12 @@
     "parts": "Parts",
     "unit": "Unit",
     "date": "Date",
-    "color": "Color"
+    "color": "Color",
+    "color_hex": "Color (Hexadecimal)",
+    "color_name": "Color Name",
+    "img": "Image",
+    "imgUrl": "Image URL",
+    "requiredFields": "This fields are required"
   },
   "levels": {
     "name": "Level",
@@ -157,7 +162,10 @@
     "deleteFail": "Could't possible to delete 😢",
     "deleteSuccess": "Was deleted 👍",
     "updateUserSuccess": "The data was updated👍",
-    "updateUserFail": "Could't possible to update 😢"
+    "updateUserFail": "Could't possible to update 😢",
+    "updateObjSuccess": "The object was updated👍",
+    "updateObjFail": "Could't possible to update 😢",
+    "copied": "👌 Copied "
   },
   "list": {
     "sortBy": "Sort by",

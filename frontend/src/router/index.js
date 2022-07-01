@@ -109,7 +109,7 @@ const routes = [
             meta: { breadCrumb: 'settings.process.objects.name' },
             children: [
               {
-                name: 'add',
+                name: 'objectRegister',
                 component: ObjectRegister,
                 path: 'add',
                 meta: { breadCrumb: 'settings.process.objects.addObject' },

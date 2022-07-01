@@ -34,6 +34,12 @@
                 <div class="text-body-2">
                   {{ $timestampToDate(user.last_access) }}
                 </div>
+                <div class="text-body-2 mt-1" v-if="user.level === 'developer'">
+                  {{ apolloToken.slice(0, 20) }}...
+                  <v-btn icon x-small @click="copy(apolloToken)"
+                    ><v-icon>mdi-content-copy</v-icon></v-btn
+                  >
+                </div>
               </div>
               <v-spacer></v-spacer>
               <v-btn icon @click="updateUser(user)"
@@ -96,6 +102,8 @@ import SettingsItems from '@/components/settings/SettingsItems.vue';
 import SettingsList from '@/components/settings/SettingsList/SettingsList.vue';
 import SettingsListItemUser from '@/components/settings/SettingsList/SettingsListItemUser.vue';
 import EditUser from '@/components/settings/EditUser.vue';
+
+import { useClipboard } from '@vueuse/core';
 
 const REMOVE_USER = gql`
   mutation REMOVE_USER($_id: ID!) {
@@ -201,9 +209,16 @@ export default {
         this.user?.last_name.split(' ').at(-1).charAt(0)
       );
     },
+    apolloToken() {
+      return localStorage.getItem('apollo-token');
+    },
   },
 
   methods: {
+    copy(string) {
+      console.log(useClipboard().copy(string));
+      this.$alertFeedback(this.$t('alerts.copied'), 'success');
+    },
     updateUser(user) {
       // console.log(user);
       this.userToEdit = user;
