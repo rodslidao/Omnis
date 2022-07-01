@@ -252,6 +252,6 @@ def load(node_id=None):
         loadConfig(sheet, LoadingMode)
         return True
     except Exception as e:
-        logger.error("Error loading config: {}".format(e))
+        logger.error(f"Loader: loading a Node_Sheet fail, reason:{e}")
         return False
 

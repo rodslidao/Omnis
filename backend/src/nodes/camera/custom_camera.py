@@ -62,12 +62,12 @@ class Camera(CamGear):
         for s in self.source:
             try:
                 super().__init__(s, **self.opt.get("props"))
-                logger.info(f"Camera {self.name} initialized with source {s}")
+                logger.debug(f"Camera {self.name} initialized with source {s}")
                 break
             except ValueError:
                 self.stop()
             except (error, RuntimeError):
-                logger.warning("Camera source: {} fail".format(s))
+                logger.debug("Camera source: {} fail".format(s))
 
         self.start()
         CameraManager.add(self)

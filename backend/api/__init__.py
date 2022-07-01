@@ -3,6 +3,7 @@ from platform import system
 from threading import Thread
 from bson import encode
 from dotenv import load_dotenv
+from platformdirs import user_cache_path
 from .log import logger, exception, custom_handler, logger, levels, lvl
 from .decorators import for_all_methods
 import jwt
@@ -41,12 +42,15 @@ def auth(lvl=None):
                 header_data = jwt.get_unverified_header(token)
                 token = jwt.decode(token, key=public_key, algorithms=[header_data['alg']])
             except Exception as e:
-                raise GraphQLError("Invalid credential")
+                logger.debug(f"Acess Denied, invalid or missing token: {e}.")
+                #raise GraphQLError("Invalid credential")
             else:
                 user = User(**token)
                 if user >= lvl:
+                    logger.debug(f"User: {user.json} requesting {resolver.__name__}")
                     kwargs.update({'user':user})
                     return resolver(obj, info, *args, **kwargs)
+                logger.debug(f"User: {user.json} don't has permissions to request {resolver.__name__}")
                 raise GraphQLError('Permission Denied')
         return wrapper
     return decorator
@@ -106,7 +110,6 @@ ID = ScalarType("ID")
 
 @ID.serializer
 def ID_serializar(value):
-    logger.info('seta')
     return value.srt
 
 @ID.value_parser
@@ -117,8 +120,3 @@ def ID_v_parser(value):
 @ID.literal_parser
 def ID_l_parser(ast):
     return ID_v_parser(str(ast.value))
-
-
-
-#  "eyJ0eXAiOiJKV1QiLCJhbGciOiJFZERTQSJ9.eyJfaWQiOiI2MmI0NmM3ZjE3NTRmZTljNzhhMjNkN2YiLCJhdmF0YXJfaW1hZ2UiOiJodHRwczovL3Bwcy53aGF0c2FwcC5uZXQvdi90NjEuMjQ2OTQtMjQvMTE3NzY1NzM0XzkyNTMyNTQ2Nzk1OTM5M182NTgzODkyNTE0OTQzNzU0NjI2X24uanBnP2NjYj0xMS00Jm9oPTAxX0FWeGxfblEtUWlWV01SdFhjV3BNYXhCUnV3TWtMdEsxLXpHaXNpMGhPczE4VGcmb2U9NjJDMkFFNTciLCJlbWFpbCI6ImhlbnJ5Y2tlLmJvenphQG9yYWtvbG8uY29tLmJyIiwibGFzdF9uYW1lIjoiQm96emEgU2NoZW5iZXJrIiwiZmlyc3RfbmFtZSI6IkhlbnJ5Y2tlIiwibGV2ZWwiOiJkZXZlbG9wZXIiLCJsYXN0X2FjY2VzcyI6MTY1NjAxNTU0NC43NjcyNDksImV4cCI6MTY1NjQxOTcyMH0.gEpdR50_E0tj5n_qXdfsBsFjhf9HXXcA5TRGYyjPOst5Ig2iCwN_twtmxQCGU0krOxLUO56r2WDvc8fV-EToCA"
-#  "eyJ0eXAiOiJKV1QiLCJhbGciOiJFZERTQSJ9.eyJfaWQiOiI2MmIzNTNjMjE3NTRmZTljNzhhMjNkNzMiLCJhdmF0YXJfaW1hZ2UiOiJodHRwczovL21lZGlhLWV4cDEubGljZG4uY29tL2Rtcy9pbWFnZS9DNEQwM0FRSEowd2phLXg5RXpBL3Byb2ZpbGUtZGlzcGxheXBob3RvLXNocmlua184MDBfODAwLzAvMTU4OTI0MjU1OTM3OD9lPTE2NjEzODU2MDAmdj1iZXRhJnQ9a0VJQ2JFekEzVVItRm41Q3FxTEJOYkZXREtIR1VfdjVDTkctQW5vS2pKRSIsImVtYWlsIjoicm9kcmlnby5nb21lc0BvcmFrb2xvLmNvbS5iciIsImxhc3RfbmFtZSI6IkdvbWVzIGRvcyBTYW50b3MiLCJmaXJzdF9uYW1lIjoiUm9kcmlnbyIsImxldmVsIjoiZGV2ZWxvcGVyIiwibGFzdF9hY2Nlc3MiOjE2NTYyODMzNzMuNDY0MDI2LCIgIjoxNjU2MzMzMjE5LjI0ODg5NiwiZXhwIjoxNjU2NDE5Nzk0fQ.MTiJjH5wY6gLiQPxfo-0biJqfSxnkN56dzmadgOgewzW6Ex4Ga81kb_r1H9KgBNoiwnlIrm-TFNBGpf11V5_Aw"

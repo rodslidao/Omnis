@@ -96,7 +96,7 @@ def resumeProcess_resolver(obj, info):
 @auth('operator')
 def loadConfig_resolver(obj, info, _id):
     process.load(_id)
-    logger.info("Loaded config with id {}".format(_id))
+    logger.debug("Query Loaded config with id {}".format(_id))
     return NodeSheet().getNodeSheetById(_id)
 
 
@@ -257,6 +257,5 @@ from src.nodes.process.target import targets as tg, target
 @mutation.field("updateTargets")
 @auth('operator')
 def updateTargets(obj, info, **kwargs):
-    # logger.info(f"{targets}{kwargs}")
     tg(*list(map(target, kwargs['targets'])))
     return True

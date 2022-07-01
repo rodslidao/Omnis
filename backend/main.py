@@ -8,7 +8,6 @@ from api.subscriptions import subscription
 from api.mutations import mutation
 
 from src.end_points import custom_video_response, Echo
-from src.nodes.node_manager import NodeManager
 from src.manager.serial_manager import SerialManager
 from src.manager.camera_manager import CameraManager
 from src.nodes.process.process import process
@@ -24,7 +23,6 @@ from ariadne import (
 from starlette.middleware.cors import CORSMiddleware
 from starlette.routing import Mount, WebSocketRoute
 from starlette.applications import Starlette
-from starlette.middleware import Middleware
 
 type_defs = ""
 for _file in ["schema", "inputs", "types", "results"]:
@@ -69,8 +67,6 @@ if environ.get("NODE_ENV") == "development":
     socketI.connect(("8.8.8.8", 80))
     host = socketI.getsockname()[0]
     socketI.close()
-elif environ.get("SERVER_IP"):
-    host = environ["SERVER_IP"]
 else:
     host = "0.0.0.0"
 

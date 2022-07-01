@@ -4,13 +4,13 @@ from pymongo.errors import ConnectionFailure
 from os import environ, getenv
 from api import logger, exception
 from api.decorators import for_all_methods
+from api.log import custom_handler, DEBUG, db_logger
 from pandas import DataFrame
 
 from numpy import integer, floating, ndarray
-
 from json import loads, dumps, JSONEncoder
-
 from bson.errors import InvalidDocument
+from threading import Event
 from bson import ObjectId
 
 load_dotenv()
@@ -37,7 +37,7 @@ requiredCollections = [
 
 @exception(logger)
 def getDb():
-    global _db
+    global _db, db_logger
     if _db is None:
         _db = MongoOBJ(environ.get("DB_NAME"), url)
     return _db
@@ -49,10 +49,9 @@ def connectToMongo(database="Teste"):
     for collectionName in requiredCollections:
         if collectionName not in _db.list_collection_names():
             _db.create_collection(collectionName)
-            logger.info(f"Created collection {collectionName}")
 
 
-@for_all_methods(exception(logger))
+# @for_all_methods(exception(logger))
 class CustomEncoder(JSONEncoder):
     def default(self, obj):
         if isinstance(obj, integer):
@@ -67,20 +66,25 @@ class CustomEncoder(JSONEncoder):
             return super(CustomEncoder, self).default(obj)
 
 
+
+
+
 @for_all_methods(exception(logger))
 class MongoOBJ:
     def __init__(self, db_name, db_url):
         self.dbo = self.connect(db_name, db_url)
+        self.closed = Event()
 
     def connect(self, db_name, db_url):
         try:
-            logger.info(f"Connecting to MongoDB using url: {db_url}")
+            logger.debug(f"Connecting to MongoDB using url: {db_url}")
             self.client = MongoClient(db_url)
             self.client.admin.command("ismaster")
         except ConnectionFailure:
             logger.error(f"Could not connect to MongoDB using url: {db_url}")
             raise
         else:
+            custom_handler(db_logger, "mongo", "json", self.client.get_database(db_name), DEBUG)
             logger.info("Connected to MongoDB")
             return self.client.get_database(db_name)
 
@@ -154,6 +158,7 @@ class MongoOBJ:
         return df.to_csv(index=False)
 
     def close(self):
-        logger.info("Closing connection to MongoDB...")
-        self.client.close()
-        logger.info("closed.")
+        if not self.closed.is_set():
+            self.client.close()
+            self.closed.set()
+            logger.debug("closed Mongodb connection.")

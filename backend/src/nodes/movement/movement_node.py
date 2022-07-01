@@ -44,7 +44,7 @@ class MovementNode(BaseNode):
         if self.wait_checks == len(self.wait_for_this) or action == "gatilho":
             self.gatilho_f()
         else:
-            logger.error(f"Waiting for {self.wait_checks}/{len(self.wait_for_this)}")
+            logger.warning(f"MovementNode: Waiting for {self.wait_checks}/{len(self.wait_for_this)} variables.")
 
     def coordinates_f(self, payload):
         try:
@@ -72,7 +72,6 @@ class MovementNode(BaseNode):
                 # t = 1  # ! Remove this line
             else:
                 self.serial.send("G90", log=False)
-            # logger.info(f"coords: {movement}")
             self.serial.G0(*movement)
             self.on("Sucesso", self.serial_id)
 
@@ -82,19 +81,6 @@ class MovementNode(BaseNode):
 
             if self.serial is None:
                 self.on("Falha","Serial not connected", pulse=True)
-
-    # def stop(self):
-    #     self.serial.stop()
-    #     super().stop()
-
-    # def resume(self):
-    #     logger.info(f"{self.name} resumed")
-    #     self.serial.resume()
-    #     super().stop()
-
-    # def pause(self):
-    #     self.serial.pause()
-    #     super().stop()
 
     def get_info(**kwargs):
         return {"options": SerialManager.get_info()}

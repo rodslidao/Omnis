@@ -1,4 +1,3 @@
-from bson import ObjectId
 from api import logger, exception
 from api.decorators import for_all_methods
 
