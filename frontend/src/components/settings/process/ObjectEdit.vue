@@ -6,8 +6,7 @@
     :persistent="true"
   >
     <template v-slot:description>
-      {{itemsList[0]}}
-      <div class="object-register" v-if="itemsList[0].value">
+      <div class="object-register pr-6 pt-6" v-if="itemsList[0].value">
         <v-form
           v-model="isValid"
           ref="form"
@@ -84,25 +83,28 @@
           </div>
         </v-form>
       </div>
+      <v-divider class="mt-4"></v-divider>
     </template>
     <template v-slot:actions>
-      <v-badge dot bordered color="error">
+      <!-- <v-badge dot bordered color="error">
         <div class="text-subtitle-2">
           {{ $t('form.requiredFields') }}
         </div></v-badge
       >
-      <v-spacer></v-spacer>
-      <v-btn text @click="$emit('cancel-event')" rounded>
-        {{ $t('buttons.cancel') }}
-      </v-btn>
-      <v-btn
-        color="primary"
-        rounded
-        v-on:keyup.enter="validate(obj)"
-        @click="validate(obj)"
-      >
-        {{ $t('buttons.edit') }}
-      </v-btn>
+      <v-spacer></v-spacer> -->
+      <div class="pb-4 pr-4">
+        <v-btn text @click="$emit('cancel-event')" rounded>
+          {{ $t('buttons.cancel') }}
+        </v-btn>
+        <v-btn
+          color="primary"
+          rounded
+          v-on:keyup.enter="validate(obj)"
+          @click="validate(obj)"
+        >
+          {{ $t('buttons.edit') }}
+        </v-btn>
+      </div>
     </template>
   </dialog-confirmation>
 </template>

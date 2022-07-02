@@ -1,7 +1,7 @@
 <template>
   <div class="mt-11">
     <router-view :key="$route.path" :items="model"> </router-view>
-    <div v-if="$router.currentRoute.name == 'object'" v-on="refetch()">
+    <div v-if="$router.currentRoute.name == 'object'">
       <settings-items
         :title="$t('settings.process.objects.addObject')"
         :subtitle="$t('settings.process.objects.subtitle')"
@@ -24,7 +24,7 @@
         <template #itemList="itemList">
           <settings-list-item-obj
             @remove-obj="remove"
-            @edit-obj="updateUser"
+            @edit-obj="updateObj"
             :obj="itemList.data"
           ></settings-list-item-obj>
           <v-divider></v-divider>
@@ -34,7 +34,7 @@
       <object-edit
         v-if="editDialog"
         :items="model"
-        @edit-user="edit"
+        @edit-obj="edit"
         @cancel-event="editDialog = false"
       ></object-edit>
     </div>
@@ -76,9 +76,7 @@ const UPDATE_OBJ = gql`
   mutation UPDATE_OBJ(
     $_id: ID!
     $color_hex: String
-    $color_hex: String
     $color_name: String
-    $date: String
     $description: String
     $img: String
     $name: String
@@ -91,7 +89,6 @@ const UPDATE_OBJ = gql`
       input: {
         color_hex: $color_hex
         color_name: $color_name
-        date: $date
         description: $description
         img: $img
         name: $name
@@ -216,10 +213,9 @@ export default {
 
   computed: {
     model() {
-      const list = this.getTargetsList;
-      console.log({ ...this.getTargetsList });
+      const list = this.objToEdit;
       if (list) {
-        console.log(list);
+        console.log('lista', list);
         const objList = [
           {
             field: 'name',
@@ -284,8 +280,8 @@ export default {
       this.$apollo.queries.getTargetsList.refetch();
     },
 
-    updateUser(user) {
-      this.objToEdit = user;
+    updateObj(obj) {
+      this.objToEdit = obj;
       this.editDialog = true;
     },
 
@@ -314,13 +310,13 @@ export default {
     },
 
     async edit(obj) {
-      console.log('edit', obj);
+      console.log('edit2', obj);
       await this.$apollo
         .mutate({
           mutation: UPDATE_OBJ,
           variables: {
             // eslint-disable-next-line no-underscore-dangle
-            _id: obj._id,
+            _id: this.objToEdit._id,
             color_hex: obj.color_hex,
             color_name: obj.color_name,
             date: obj.date,
