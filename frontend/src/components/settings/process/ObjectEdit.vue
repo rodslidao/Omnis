@@ -147,13 +147,13 @@ export default {
     },
 
     generateObj(item) {
-      console.log('dento', this.item);
+      // console.log('dento', this.item);
       this.obj[item.field] = item.value;
     },
 
     validate() {
       if (this.$refs.form.validate()) {
-        console.log(this.obj);
+        // console.log(this.obj);
         this.$emit('edit-obj', this.obj);
       } else {
         this.formHasErrors = true;

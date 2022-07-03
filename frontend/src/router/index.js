@@ -16,12 +16,13 @@ import Success from '@/views/Success.vue';
 import System from '@/views/settings/System.vue';
 import Support from '@/views/settings/Support.vue';
 import Process from '@/views/settings/Process.vue';
-import MatrixDirectionSelector from '@/components/node/config/matrix/MatrixDirectionSelector.vue';
 import Users from '@/views/settings/Users.vue';
 import Personalize from '@/views/settings/Personalize.vue';
 import RegisterUser from '@/views/Auth/RegisterUser.vue';
 import ProcessObjects from '@/views/settings/ProcessObjects.vue';
+import ProcessVariables from '@/views/settings/ProcessVariables.vue';
 import ObjectRegister from '@/components/settings/process/ObjectRegister.vue';
+import VariableRegister from '@/components/settings/process/VariableRegister.vue';
 
 
 Vue.use(Router);
@@ -112,7 +113,21 @@ const routes = [
                 name: 'objectRegister',
                 component: ObjectRegister,
                 path: 'add',
-                meta: { breadCrumb: 'settings.process.objects.addObject' },
+                meta: { breadCrumb: 'settings.process.objects.add' },
+              },
+            ],
+          },
+          {
+            name: 'variable',
+            component: ProcessVariables,
+            path: 'variable',
+            meta: { breadCrumb: 'settings.process.variables.name' },
+            children: [
+              {
+                name: 'variableRegister',
+                component: VariableRegister,
+                path: 'add',
+                meta: { breadCrumb: 'settings.process.variables.addVariable' },
               },
             ],
           },

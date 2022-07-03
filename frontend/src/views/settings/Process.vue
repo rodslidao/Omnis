@@ -73,13 +73,10 @@ export default {
           // ],
         },
         {
-          title: 'settings.process.process.title',
-          subtitle: 'settings.process.process.subtitle',
+          title: 'settings.process.variables.title',
+          subtitle: 'settings.process.variables.subtitle',
           icon: 'variable',
-          subItens: [
-            { title: 'Cadastrar', path: 'process/matrix-add' },
-            { title: 'Listar', path: 'process/matrix-list' },
-          ],
+          path: 'process/variable',
         },
       ],
     };

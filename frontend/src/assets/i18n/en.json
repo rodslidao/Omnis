@@ -34,13 +34,15 @@
         "name": "Objects",
         "title": "Objects",
         "subtitle": "Create and edit the objects",
-        "addObject": "Register Object",
+        "add": "Register Object",
         "listObject": "List Objects"
       },
       "variables": {
         "name": "Variables",
         "title": "Variables",
-        "subtitle": "Create and edit the variables"
+        "subtitle": "Create and edit the variables",
+        "add": "Register Object",
+        "list": "List Objects"
       }
     },
     "users": {
@@ -165,6 +167,8 @@
     "updateUserFail": "Could't possible to update 😢",
     "updateObjSuccess": "The object was updated👍",
     "updateObjFail": "Could't possible to update 😢",
+    "updateVariableSuccess": "The variable was updated👍",
+    "updateVariableFail": "Could't possible to update 😢",
     "copied": "👌 Copied "
   },
   "list": {

@@ -16,7 +16,7 @@
 
       <settings-list
         class="mt-4"
-        :items="getTargetsList"
+        :items="getVariableList"
         item-search="name"
         :fields-ignore="fieldsToIgnore"
         translate-path="form"
@@ -49,26 +49,20 @@ import SettingsTitle from '@/components/settings/SettingsTitle.vue';
 import SettingsListItemObj from '../../components/settings/SettingsList/SettingsListItemObj.vue';
 import ObjectEdit from '../../components/settings/process/ObjectEdit.vue';
 
-const LIST_OBJ = gql`
-  query LIST_OBJ {
-    getTargetsList {
+const LIST_VARIABLES = gql`
+  query LIST_VARIABLES {
+    getVariableList {
       _id
-      color_hex
-      color_name
-      date
-      description
-      img
       name
-      part_number
-      parts
-      supplier
+      default
+      atual
     }
   }
 `;
 
-const REMOVE_OBJ = gql`
-  mutation REMOVE_OBJ($_id: ID!) {
-    deleteTarget(_id: $_id)
+const REMOVE_VARIABLE = gql`
+  mutation REMOVE_VARIABLE($_id: ID!) {
+    deleteVariable(_id: $_id)
   }
 `;
 
@@ -113,101 +107,6 @@ export default {
       objToEdit: {},
       editDialog: false,
       fieldsToIgnore: ['__typename', '_id', 'img', {}, []],
-      // model: [
-      //   {
-      //     field: 'name',
-      //     value: this.getTargetsList.name,
-      //     title: 'name',
-      //     required: true,
-      //   },
-      //   {
-      //     field: 'description',
-      //     value: this.getTargetsList.description,
-      //     title: 'description',
-      //   },
-      //   {
-      //     field: 'part_number',
-      //     value: this.getTargetsList.part_number,
-      //     title: 'part_number',
-      //   },
-      //   {
-      //     field: 'supplier',
-      //     value: this.getTargetsList.supplier,
-      //     title: 'supplier',
-      //   },
-      //   {
-      //     field: 'parts',
-      //     value: this.getTargetsList.parts,
-      //     title: 'parts',
-      //   },
-      //   {
-      //     field: 'unit',
-      //     value: this.getTargetsList.unit,
-      //     title: 'unit',
-      //   },
-      //   {
-      //     field: 'color_hex',
-      //     value: this.getTargetsList.color_hex,
-      //     title: 'color',
-      //   },
-      //   {
-      //     field: 'color_name',
-      //     value: this.getTargetsList.color_name,
-      //     title: 'color',
-      //   },
-      //   {
-      //     field: 'img',
-      //     value: this.getTargetsList.img,
-      //     title: 'img',
-      //   },
-      // ],
-      // getTargetsList: [
-      //   {
-      //     _id: '6552818',
-      //     name: 'Ovo Caipira',
-      //     description: 'Ovo Jumbo galinhas livres',
-      //     part_number: '0549654488',
-      //     supplier: 'Meu ovo Favorito',
-      //     parts: 2,
-      //     unit: 'pçs',
-      //     date: 1656447628,
-      //     color: {
-      //       name: 'Vermelho',
-      //       value: '#fffff',
-      //     },
-      //     img: 'https://static8.depositphotos.com/1026550/1072/i/600/depositphotos_10727732-stock-photo-egg-with-clipping-path.jpg',
-      //   },
-      //   {
-      //     _id: '6552818',
-      //     name: 'Ovo Branco',
-      //     description: 'Ovo Jumbo galinhas livres',
-      //     part_number: '9658465421',
-      //     supplier: 'Granja Ovos',
-      //     parts: 4,
-      //     unit: 'mm',
-      //     date: 1656447628,
-      //     color: {
-      //       name: 'Branco',
-      //       value: '#FF0000',
-      //     },
-      //     img: 'https://www.supermercadosaturnino.com.br/media/catalog/product/cache/1/image/9df78eab33525d08d6e5fb8d27136e95/o/v/ovo_branco.jpg',
-      //   },
-      //   {
-      //     _id: '6552818',
-      //     name: 'Ovo de Codorna',
-      //     description: '',
-      //     part_number: '9658465421',
-      //     supplier: 'Granja de codorna',
-      //     parts: 4,
-      //     unit: 'mm',
-      //     date: 1656447628,
-      //     color: {
-      //       name: 'Manchado',
-      //       value: '',
-      //     },
-      //     img: 'http://img.sitemercado.com.br/produtos/ebce62c05eee918980bec59c386c655c553b828c955c73fe39bedf9483db78ca_full.jpg',
-      //   },
-      // ],
     };
   },
 
@@ -228,41 +127,6 @@ export default {
             value: list.description,
             title: 'description',
           },
-          {
-            field: 'part_number',
-            value: list.part_number,
-            title: 'part_number',
-          },
-          {
-            field: 'supplier',
-            value: list.supplier,
-            title: 'supplier',
-          },
-          {
-            field: 'parts',
-            value: list.parts,
-            title: 'parts',
-          },
-          {
-            field: 'unit',
-            value: list.unit,
-            title: 'unit',
-          },
-          {
-            field: 'color_hex',
-            value: list.color_hex,
-            title: 'color',
-          },
-          {
-            field: 'color_name',
-            value: list.color_name,
-            title: 'color',
-          },
-          {
-            field: 'img',
-            value: list.img,
-            title: 'img',
-          },
         ];
         return objList;
       }
@@ -272,12 +136,12 @@ export default {
 
   apollo: {
     // Simple query that will update the 'hello' vue property
-    getTargetsList: LIST_OBJ,
+    getVariableList: LIST_VARIABLES,
   },
 
   methods: {
     refetch() {
-      this.$apollo.queries.getTargetsList.refetch();
+      this.$apollo.queries.getVariableList.refetch();
     },
 
     updateObj(obj) {
@@ -289,14 +153,14 @@ export default {
       console.log('remove', _id);
       await this.$apollo
         .mutate({
-          mutation: REMOVE_OBJ,
+          mutation: REMOVE_VARIABLE,
           variables: {
             _id,
           },
         })
         .then(() => {
           // Result
-          this.$apollo.queries.getTargetsList.refetch();
+          this.$apollo.queries.getVariableList.refetch();
           this.$alertFeedback(this.$t('alerts.deleteSuccess'), 'success');
           // this.isLoading = false;
           // this.setSaved(this.selectedTabIndex);
@@ -331,15 +195,15 @@ export default {
 
         .then(() => {
           // Result
-          this.$apollo.queries.getTargetsList.refetch();
-          this.$alertFeedback(this.$t('alerts.updateObjSuccess'), 'success');
+          this.$apollo.queries.getVariableList.refetch();
+          this.$alertFeedback(this.$t('alerts.updateVariableSuccess'), 'success');
           this.editDialog = false;
         })
 
         .catch((error) => {
           // Error
           this.isLoading = false;
-          this.$alertFeedback(this.$t('alerts.updateObjFail'), 'error', error);
+          this.$alertFeedback(this.$t('alerts.updateVariableFail'), 'error', error);
           // We restore the initial user input
         });
     },
