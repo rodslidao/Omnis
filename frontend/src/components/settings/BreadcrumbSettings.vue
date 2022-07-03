@@ -72,29 +72,28 @@ export default {
         // console.log('fasdfasdfa', breadcrumbArray);
         return breadcrumbArray.filter((a) => a.path !== 'config');
       }, []);
-      // console.log('breadcrumbs', breadcrumbs);
+      console.log('breadcrumbs', breadcrumbs);
       return breadcrumbs;
     },
   },
   methods: {
     makePath(item) {
-
       let finalIndex = this.crumbs.findIndex((object) => {
         return object.path === item.path;
       });
 
       let path = '/';
       // console.log(this.crumbs.map((el) => el.to));
-
       const newPath = this.crumbs
         .map((el) => el.to)
         .reduce((previousValue, currentValue, index) => {
+          path = previousValue;
           if (index <= finalIndex) {
-            path = (previousValue || '') + currentValue;
+            path = previousValue + currentValue;
           }
           return path;
         });
-
+      // console.log('path', newPath);
       return `/config${newPath}`;
     },
   },
