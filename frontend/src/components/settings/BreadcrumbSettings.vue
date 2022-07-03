@@ -78,9 +78,7 @@ export default {
   },
   methods: {
     makePath(item) {
-      let finalIndex = this.crumbs.findIndex((object) => {
-        return object.path === item.path;
-      });
+      const finalIndex = this.crumbs.findIndex((object) => object.path === item.path);
 
       let path = '/';
       // console.log(this.crumbs.map((el) => el.to));
