@@ -1,42 +1,40 @@
 <template>
   <div class="mt-11">
-    <router-view :key="$route.path" :items="model"> </router-view>
-    <div v-if="$router.currentRoute.name == 'object'">
+    <router-view :key="$route.path" @refetch="refetch()" :items="model"> </router-view>
+    <div v-if="$router.currentRoute.name == 'myProcess'">
       <settings-items
-        :title="$t('settings.process.objects.add')"
-        :subtitle="$t('settings.process.objects.subtitle')"
+        :title="$t('settings.process.process.add')"
+        :subtitle="$t('settings.process.process.subtitle')"
         icon="cube"
         divider-list
-        path="object/add"
+        path="myProcess/add"
       ></settings-items>
 
-      <settings-title>{{
-        $t('settings.process.objects.list')
-      }}</settings-title>
+      <settings-title>{{ $t('settings.process.process.list') }}</settings-title>
 
       <settings-list
         class="mt-4"
-        :items="getVariableList"
+        :items="get_process_list"
         item-search="name"
         :fields-ignore="fieldsToIgnore"
         translate-path="form"
       >
         <template #itemList="itemList">
-          <settings-list-item-obj
+          <settings-list-item-process
             @remove-obj="remove"
             @edit-obj="updateObj"
             :obj="itemList.data"
-          ></settings-list-item-obj>
+          ></settings-list-item-process>
           <v-divider></v-divider>
         </template>
       </settings-list>
 
-      <object-edit
+      <process-edit
         v-if="editDialog"
         :items="model"
         @edit-obj="edit"
         @cancel-event="editDialog = false"
-      ></object-edit>
+      ></process-edit>
     </div>
   </div>
 </template>
@@ -46,49 +44,48 @@ import gql from 'graphql-tag';
 import SettingsItems from '@/components/settings/SettingsItems.vue';
 import SettingsList from '@/components/settings/SettingsList/SettingsList.vue';
 import SettingsTitle from '@/components/settings/SettingsTitle.vue';
-import SettingsListItemObj from '../../components/settings/SettingsList/SettingsListItemObj.vue';
-import ObjectEdit from '../../components/settings/process/ObjectEdit.vue';
+import SettingsListItemProcess from '@/components/settings/SettingsList/SettingsListItemProcess.vue';
+import ProcessEdit from '@/components/settings/process/ProcessEdit.vue';
 
-const LIST_VARIABLES = gql`
-  query LIST_VARIABLES {
-    getVariableList {
+const LIST_PROCESS = gql`
+  query LIST_PROCESS {
+    get_process_list {
       _id
+      created_at
+      created_by
+      date
+      description
+      edited_by
+      img
+      last_played
       name
-      default
-      atual
+      sketch
+      updated_at
     }
   }
 `;
 
-const REMOVE_VARIABLE = gql`
-  mutation REMOVE_VARIABLE($_id: ID!) {
-    deleteVariable(_id: $_id)
+const REMOVE_PROCESS = gql`
+  mutation REMOVE_PROCESS($_id: ID!) {
+    delete_process(_id: $_id)
   }
 `;
 
-const UPDATE_OBJ = gql`
-  mutation UPDATE_OBJ(
+const UPDATE_PROCESS = gql`
+  mutation UPDATE_PROCESS(
     $_id: ID!
-    $color_hex: String
-    $color_name: String
     $description: String
     $img: String
     $name: String
-    $part_number: String
-    $parts: Int
-    $supplier: String
+    $sketch: JSON
   ) {
-    updateTarget(
+    update_process(
       _id: $_id
       input: {
-        color_hex: $color_hex
-        color_name: $color_name
         description: $description
         img: $img
         name: $name
-        part_number: $part_number
-        parts: $parts
-        supplier: $supplier
+        sketch: $sketch
       }
     )
   }
@@ -98,9 +95,9 @@ export default {
   components: {
     SettingsItems,
     SettingsList,
-    SettingsListItemObj,
+    SettingsListItemProcess,
     SettingsTitle,
-    ObjectEdit,
+    ProcessEdit,
   },
   data() {
     return {
@@ -127,6 +124,16 @@ export default {
             value: list.description,
             title: 'description',
           },
+          {
+            field: 'sketch',
+            value: list.sketch,
+            title: 'sketch',
+          },
+          {
+            field: 'img',
+            value: list.img,
+            title: 'img',
+          },
         ];
         return objList;
       }
@@ -136,12 +143,12 @@ export default {
 
   apollo: {
     // Simple query that will update the 'hello' vue property
-    getVariableList: LIST_VARIABLES,
+    get_process_list: LIST_PROCESS,
   },
 
   methods: {
     refetch() {
-      this.$apollo.queries.getVariableList.refetch();
+      this.$apollo.queries.get_process_list.refetch();
     },
 
     updateObj(obj) {
@@ -153,14 +160,14 @@ export default {
       console.log('remove', _id);
       await this.$apollo
         .mutate({
-          mutation: REMOVE_VARIABLE,
+          mutation: REMOVE_PROCESS,
           variables: {
             _id,
           },
         })
         .then(() => {
           // Result
-          this.$apollo.queries.getVariableList.refetch();
+          this.$apollo.queries.get_process_list.refetch();
           this.$alertFeedback(this.$t('alerts.deleteSuccess'), 'success');
           // this.isLoading = false;
           // this.setSaved(this.selectedTabIndex);
@@ -177,33 +184,35 @@ export default {
       console.log('edit2', obj);
       await this.$apollo
         .mutate({
-          mutation: UPDATE_OBJ,
+          mutation: UPDATE_PROCESS,
           variables: {
             // eslint-disable-next-line no-underscore-dangle
             _id: this.objToEdit._id,
-            color_hex: obj.color_hex,
-            color_name: obj.color_name,
-            date: obj.date,
             description: obj.description,
             img: obj.img,
             name: obj.name,
-            part_number: obj.part_number,
-            parts: obj.parts,
-            supplier: obj.supplier,
+            sketch: obj.sketch,
           },
         })
 
         .then(() => {
           // Result
-          this.$apollo.queries.getVariableList.refetch();
-          this.$alertFeedback(this.$t('alerts.updateVariableSuccess'), 'success');
+          this.$apollo.queries.get_process_list.refetch();
+          this.$alertFeedback(
+            this.$t('alerts.updateProcessSuccess'),
+            'success',
+          );
           this.editDialog = false;
         })
 
         .catch((error) => {
           // Error
           this.isLoading = false;
-          this.$alertFeedback(this.$t('alerts.updateVariableFail'), 'error', error);
+          this.$alertFeedback(
+            this.$t('alerts.updateProcessFail'),
+            'error',
+            error,
+          );
           // We restore the initial user input
         });
     },

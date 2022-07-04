@@ -20,9 +20,11 @@ import Users from '@/views/settings/Users.vue';
 import Personalize from '@/views/settings/Personalize.vue';
 import RegisterUser from '@/views/Auth/RegisterUser.vue';
 import ProcessObjects from '@/views/settings/ProcessObjects.vue';
+import ProcessMyProcess from '@/views/settings/ProcessMyProcess.vue';
 import ProcessVariables from '@/views/settings/ProcessVariables.vue';
 import ObjectRegister from '@/components/settings/process/ObjectRegister.vue';
 import VariableRegister from '@/components/settings/process/VariableRegister.vue';
+import ProcessRegister from '@/components/settings/process/ProcessRegister.vue';
 
 
 Vue.use(Router);
@@ -103,6 +105,20 @@ const routes = [
           breadCrumb: 'settings.process.name',
         },
         children: [
+          {
+            name: 'myProcess',
+            component: ProcessMyProcess,
+            path: 'myProcess',
+            meta: { breadCrumb: 'settings.process.process.name' },
+            children: [
+              {
+                name: 'processRegister',
+                component: ProcessRegister,
+                path: 'add',
+                meta: { breadCrumb: 'settings.process.process.add' },
+              },
+            ],
+          },
           {
             name: 'object',
             component: ProcessObjects,
