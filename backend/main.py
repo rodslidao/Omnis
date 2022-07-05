@@ -2,13 +2,12 @@ from os import environ
 import uvicorn
 import socket
 
-from api import logger, dbo
+from api import logger, dbo, custom_types
 from api.queries import query
 from api.subscriptions import subscription
 from api.mutations import mutation
 
 from src.end_points import custom_video_response, Echo
-from src.nodes.node_manager import NodeManager
 from src.manager.serial_manager import SerialManager
 from src.manager.camera_manager import CameraManager
 from src.nodes.process.process import process
@@ -24,15 +23,21 @@ from ariadne import (
 from starlette.middleware.cors import CORSMiddleware
 from starlette.routing import Mount, WebSocketRoute
 from starlette.applications import Starlette
-from starlette.middleware import Middleware
+from os import listdir
+from os.path import exists as file_exists
 
 type_defs = ""
-for _file in ["schema", "inputs", "types", "results"]:
+for _file in ["schema", "inputs", "types", "results", "interfaces"]:
     type_defs += load_schema_from_path(f"./src/graphql/{_file}.graphql") + ("\n" * 2)
 
+for _dir in list(
+    filter(lambda x: not (x[-3:] == ".py" or x[0] == "_"), listdir("src/nodes"))
+):
+    if file_exists(f'src/nodes/{_dir}/{_dir}.graphql'):
+        type_defs += load_schema_from_path(f'src/nodes/{_dir}/{_dir}.graphql') + ("\n" * 2)
 
 schema = make_executable_schema(
-    type_defs, query, mutation, subscription, snake_case_fallback_resolvers
+    type_defs, query, mutation, subscription, snake_case_fallback_resolvers, *custom_types 
 )
 
 

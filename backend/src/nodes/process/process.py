@@ -88,7 +88,10 @@ class Process(threading.Thread):
         self.status = Process.STOPPED
         if wait:
             self.join(5)
-        self.runningTimer.stop()
+        try:
+            self.runningTimer.stop()
+        except Exception:
+            pass
         self.stop_time = datetime.now()
 
     def is_paused(self):
@@ -113,7 +116,7 @@ class Process(threading.Thread):
 
 
 @for_all_methods(exception(logger))
-class sample_process:
+class sample_process():
     def __init__(self, *args, **kwargs) -> None:
         self.loaded_id = None
         self.st = NodeManager.start
@@ -159,7 +162,6 @@ class sample_process:
         return self.loaded_id
 
     def start(self, _id=None, internal=False):
-        # self.process.stop(False)
         self.load(_id)
         self.process = Process(self.st, *self.args, **self.kwargs)
         self.process.start()

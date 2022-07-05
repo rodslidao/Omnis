@@ -62,3 +62,15 @@ input reg_user {
   last_name: String
   level: String
 }
+
+input reg_target{
+  name: String
+  description: String
+  part_number: String
+  supplier: String
+  parts: Int
+  unit: String
+  color_hex: String
+  color_name: String
+  img: String
+}

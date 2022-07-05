@@ -94,14 +94,6 @@ def resolve_getLoadedNodes(obj, info, **kwargs):
     """Get a Node by id and return it like a payload"""
     return NodeManager.getActiveNodes()
 
-
-@query.field("getLoadedConfig")
-@auth('developer')
-def resolve_getLoadedConfig(obj, info, **kwargs):
-    """Get a Node by id and return it like a payload"""
-    return NodeSheet().getNodeSheetById(process.loaded_id)
-
-
 @query.field("getDevicesList")
 @auth('developer')
 def resolve_getDevicesList(obj, info, **kwargs):
@@ -136,7 +128,7 @@ def resolve_authUserProfile(obj, info, username=None, **kwargs):
             algorithm="EdDSA",
         )
         now = datetime.utcnow().timestamp()
-        dbo.update_one('users', {'_id':ObjectId(user['_id'])}, {'$set':{' ':now}})
+        dbo.update_one('users', {'_id':ObjectId(user['_id'])}, {'$set':{'last_access':now}})
         user.update({'last_access': now})
         return {"user": user, "token": token}
     raise GraphQLError("Invalid Login")
@@ -150,12 +142,3 @@ def resolve_authUserProfile(obj, info, user):
 @auth('manager')
 def  getUsersList_resolver(obj, info, user):
     return list(dbo.find_many('users', {}, {'password':0}))
-
-
-# *  ----------- Target ----------- * #
-from src.nodes.process.target import targets as tg, target
-
-@query.field("getTargetsList")
-@auth('operator')
-def getTargetsList(obj, info, **kwargs):
-    return list(tg.values.keys())
