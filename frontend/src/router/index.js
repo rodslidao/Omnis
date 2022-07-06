@@ -22,8 +22,10 @@ import RegisterUser from '@/views/Auth/RegisterUser.vue';
 import ProcessObjects from '@/views/settings/ProcessObjects.vue';
 import ProcessMyProcess from '@/views/settings/ProcessMyProcess.vue';
 import ProcessVariables from '@/views/settings/ProcessVariables.vue';
+import ProcessMatrix from '@/views/settings/ProcessMatrix.vue';
 import ObjectRegister from '@/components/settings/process/ObjectRegister.vue';
 import VariableRegister from '@/components/settings/process/VariableRegister.vue';
+import MatrixRegister from '@/components/settings/process/MatrixRegister.vue';
 import ProcessRegister from '@/components/settings/process/ProcessRegister.vue';
 
 
@@ -116,6 +118,20 @@ const routes = [
                 component: ProcessRegister,
                 path: 'add',
                 meta: { breadCrumb: 'settings.process.process.add' },
+              },
+            ],
+          },
+          {
+            name: 'matrix',
+            component: ProcessMatrix,
+            path: 'matrix',
+            meta: { breadCrumb: 'settings.process.matrix.name' },
+            children: [
+              {
+                name: 'matrixRegister',
+                component: MatrixRegister,
+                path: 'add',
+                meta: { breadCrumb: 'settings.process.matrix.add' },
               },
             ],
           },

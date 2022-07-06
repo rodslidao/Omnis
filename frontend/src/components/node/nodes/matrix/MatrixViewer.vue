@@ -4,8 +4,14 @@
     {{ findSize }}
     <div class="main">
       <div class="warp">
-        <div class="blister" ref="blister">
+        {{ edit }}
+        <div
+          class="blister"
+          ref="blister"
+          :class="edit == 'distTotalX' ? 'hight-light-x' : ''"
+        >
           <div
+            :class="edit == 'distTotalY' ? 'hight-light-y' : ''"
             class="row"
             v-for="index in subdivisions.qtd.y"
             :key="index"
@@ -20,6 +26,7 @@
               >
                 <div
                   class="slotsRow"
+                  :class="selectedClass"
                   v-bind:style="styleObject.slotsRow"
                   v-for="index in slots.qtd.x"
                   :key="index"
@@ -59,6 +66,7 @@ export default {
   props: {
     slots: Object,
     subdivisions: Object,
+    edit: String,
   },
   // mounted() {
   //   console.log('mounted', this.slots, this.subdivisions);
@@ -91,21 +99,32 @@ export default {
   methods: {},
 
   computed: {
+    selectedClass() {
+      const list = {
+        distItemX: 'item-x',
+        distItemY: 'item-x',
+        itemsX: 'x',
+        itemsY: 'y',
+      };
+      console.log(`high-light-${list[this.edit]}`);
+      return `high-light-${list[this.edit]}`;
+    },
     styleObject() {
       const updatedStyleObject = {
         slots: {
-          height: `${this.slots.size.y * this.constant.x -1}px`,
-          width: `${this.slots.size.x * this.constant.x -1}px`,
-          marginTop: `${this.slots.margin.y * this.constant.x +1}px`,
+          height: `${this.slots.size.y * this.constant.x - 1}px`,
+          width: `${this.slots.size.x * this.constant.x - 1}px`,
+
+          marginTop: `${this.slots.margin.y * this.constant.x + 1}px`,
         },
         slotsRow: {
-          marginLeft: `${this.slots.margin.x * this.constant.x +1}px`,
+          marginLeft: `${this.slots.margin.x * this.constant.x + 1}px`,
         },
         subdivision: {
-          marginLeft: `${this.subdivisions.margin.x * this.constant.x +1}px`,
+          marginLeft: `${this.subdivisions.margin.x * this.constant.x + 1}px`,
         },
         row: {
-          marginTop: `${this.subdivisions.margin.y * this.constant.x +1}px`,
+          marginTop: `${this.subdivisions.margin.y * this.constant.x + 1}px`,
         },
       };
       return updatedStyleObject;
@@ -143,6 +162,27 @@ div {
   // padding: 8px;
   // border: solid 1px rgb(0, 0, 0);
 }
+
+.hight-light {
+  &-x {
+    border-top: 2px solid red;
+  }
+  &-y {
+    border-left: 2px solid red;
+  }
+
+  &-item-x {
+    border-top: 2px solid red;
+    background-color: white;
+  }
+  z-index: 2;
+
+  &-item-y {
+    border-left: 2px solid red;
+    background: #ff000053;
+  }
+}
+
 .main {
   padding: 0 1rem;
   display: flex;
@@ -215,7 +255,7 @@ div {
             margin-top: 0 !important;
             // background-color: rgb(0, 0, 0);
           }
-          background-color: #1e1e1e;
+          background-color: #00000085;
           box-shadow: inset 0 0 17px 2px rgb(0 0 0 / 18%);
           border-radius: 8%;
         }

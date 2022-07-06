@@ -50,21 +50,21 @@ export default {
         {
           text: 'Origem X',
           unit: '',
-          number: this.origin.x,
+          number: this.origin.x || '-',
           icon: 'mdi-alpha-x-circle',
           color: 'primary',
         },
         {
           text: 'Origem Y',
           unit: '',
-          number: this.origin.y,
+          number: this.origin.y || '-',
           icon: 'mdi-alpha-y-circle',
           color: 'primary',
         },
         {
           text: 'Linhas',
           unit: '',
-          number: lines,
+          number: lines || '-',
           icon: 'mdi-table-column',
           color: 'primary',
           rotateIcon: true,
@@ -72,7 +72,7 @@ export default {
         {
           text: 'Colunas',
           unit: '',
-          number: column,
+          number: column || '-',
           icon: 'mdi-table-column',
           color: 'primary',
         },
@@ -87,7 +87,7 @@ export default {
         {
           text: 'Total',
           unit: '',
-          number: total,
+          number: total || '-',
           icon: 'mdi-table-large',
           color: 'primary',
         },

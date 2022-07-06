@@ -59,7 +59,7 @@ export default {
           subtitle: 'settings.process.matrix.subtitle',
           // icon: 'application-brackets',
           icon: 'grid',
-          path: '/matrix',
+          path: 'process/matrix',
         },
         {
           title: 'settings.process.objects.title',

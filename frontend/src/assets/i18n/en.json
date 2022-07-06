@@ -38,7 +38,9 @@
       "matrix": {
         "name": "Matrix",
         "title": "Matrix",
-        "subtitle": "Create and edit the matrix to use in nodes"
+        "subtitle": "Create and edit the matrix to use in nodes",
+        "add": "Register new Matrix",
+        "list": "List Matrix"
       },
       "objects": {
         "name": "Objects",
@@ -132,7 +134,14 @@
     "username": "Username (SSN)",
     "validEmail": "This e-mail is not valid",
     "validPassword": "This password is not valid",
-    "user": "User"
+    "user": "User",
+    "subdivisions": "Subdivisions",
+    "quantityX": "Quantity X",
+    "quantityY": "Quantity Y",
+    "sizeX": "Size X",
+    "sizeY": "Size Y",
+    "slots": "Slots"
+
   },
   "levels": {
     "name": "Level",

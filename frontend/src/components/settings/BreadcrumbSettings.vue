@@ -72,7 +72,7 @@ export default {
         // console.log('fasdfasdfa', breadcrumbArray);
         return breadcrumbArray.filter((a) => a.path !== 'config');
       }, []);
-      console.log('breadcrumbs', breadcrumbs);
+      // console.log('breadcrumbs', breadcrumbs);
       return breadcrumbs;
     },
   },
