@@ -4,8 +4,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/css/chunk-vendors.605a31ba.css"
   },
   {
-    "revision": "530654a76ae5cd51bf28",
-    "url": "/css/index.b4bfb681.css"
+    "revision": "3580db5af766b8d9bbe3",
+    "url": "/css/index.1d4a1baa.css"
   },
   {
     "revision": "c5c1873073eaadb07d99d4eb037a4ee5",
@@ -124,7 +124,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/img/parallax-logo.972ebc01.svg"
   },
   {
-    "revision": "9adb72ba4fd87a2c2f34fc83cef9af6b",
+    "revision": "29d33f1df61a003766d311d1991faf5e",
     "url": "/index.html"
   },
   {
@@ -132,7 +132,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/js/chunk-vendors.c6dfbf72.js"
   },
   {
-    "revision": "530654a76ae5cd51bf28",
+    "revision": "3580db5af766b8d9bbe3",
     "url": "/js/index.c604dc9c.js"
   },
   {
