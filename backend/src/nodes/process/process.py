@@ -8,12 +8,9 @@ from api.decorators import for_all_methods
 from src.loader import load as load_conf
 from src.nodes.base_node import event_list
 from codetiming import Timer
-from src.end_points import Process as WebProcess
-from threading import Thread
-import asyncio
 from .target import targets, target
 
-class Process(threading.Thread):
+class Process_Thread(threading.Thread):
     RUNNING = "RUNNING"
     STOPPED = "STOPPED"
     PAUSED = "PAUSED"
@@ -21,10 +18,10 @@ class Process(threading.Thread):
     LOADING = "LOADING"
     LOADED = "LOADED"
 
-    def __init__(self, target, *args, **kwargs) -> None:
+    def __init__(self, target, _id=None, *args, **kwargs) -> None:
         threading.Thread.__init__(self)
-        self._id = ObjectId()
-        self.status = Process.STOPPED
+        self._id = ObjectId(_id)
+        self.status = Process_Thread.STOPPED
         self.errors = []
         self.format = "%m/%d/%y %H:%M:%S"
         Timer.timers.clear()
@@ -63,36 +60,39 @@ class Process(threading.Thread):
 
     def start(self):
         logger.info("Process Started")
-        self.status = Process.RUNNING
+        self.status = Process_Thread.RUNNING
         self.runningTimer.start()
-        self.start_time = datetime.now()
-        super().start()
+        self.start_time = datetime.utcnow().timestamp()
+        # super().start()
 
     def resume(self):
         self.paused.clear()
         self.resumed.set()
-        self.pausedTimer.stop()
+        try:
+            self.pausedTimer.stop()
+        except Exception:
+            pass
         logger.info("Process Resumed")
-        self.status = Process.RUNNING
+        self.status = Process_Thread.RUNNING
 
     def pause(self):
         self.paused.set()
         self.pausedTimer.start()
         logger.info("Process Paused")
-        self.status = Process.PAUSED
+        self.status = Process_Thread.PAUSED
 
     def stop(self, wait=True):
         self.stopped.set()
         self.resume()
         logger.info("Process Stopped")
-        self.status = Process.STOPPED
-        if wait:
-            self.join(5)
+        self.status = Process_Thread.STOPPED
+        # if wait:
+        #     self.join(5)
         try:
             self.runningTimer.stop()
         except Exception:
             pass
-        self.stop_time = datetime.now()
+        self.stop_time = datetime.utcnow().timestamp()
 
     def is_paused(self):
         return self.paused.is_set()
@@ -112,38 +112,42 @@ class Process(threading.Thread):
         self.__status["run_time"]=Timer.timers.get("Running", 0)
         self.__status["pause_time"]=Timer.timers.get("Paused", 0)
         self.__status["total_time"]=Timer.timers.get("Running", 0) + Timer.timers.get("Paused", 0)
+        # self.__status["now"] = datetime.utcnow().timestamp()
         return self.__status
 
 
 @for_all_methods(exception(logger))
 class sample_process():
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, name, img, description, sketch, created_by, created_at, _id=None,  *args, **kwargs) -> None:
+        self.__process = {}
+        self.__pointer = {'status':"Undefined"}
+        self._id = ObjectId(_id)
+        self.name = name
+        self.img = img
+        self.description = description
+        self.created_by = created_by
+        self.created_at = created_at
         self.loaded_id = None
+        self.sketch = sketch
         self.st = NodeManager.start
         self.args = args
         self.kwargs = kwargs
-        self._id = ObjectId("62b225701766eeeff3966337")
-        self.process = Process(self.st, *self.args, **self.kwargs)
+        self.process = Process_Thread(self.st, _id=self._id, *self.args, **self.kwargs)
         self.process.daemon = True
-        self.websocket = WebProcess(self._id, self.status)
-        Thread(
-            target=self.auto_update, name=f"{self._id}_auto_update", daemon=True
-        ).start()
         self.targets = targets.values
+
 
     @property
     def status(self):
+        #self.__pointer['status'] = self.process.status_rtc
         return self.process.status_rtc
 
-    def auto_update(self):
-        asyncio.run(self.websocket.broadcast_on_change(self.status))
-
-    def load(self, _id=None):
+    def load(self):
+        self.unload()
         if self.status.get("status", False):
-            self.unload()
-            a = load_conf(_id)
+            a = load_conf(self.sketch['_id'])
             if a:
-                self.loaded_id = _id
+                self.loaded_id = self.sketch['_id']
             else:
                 self.loaded_id = None
                 self.unload()
@@ -161,22 +165,22 @@ class sample_process():
     def getLoadedId(self):
         return self.loaded_id
 
-    def start(self, _id=None, internal=False):
-        self.load(_id)
-        self.process = Process(self.st, *self.args, **self.kwargs)
+    def start(self, internal=False, **kwargs):
+        self.load()
+        self.process = Process_Thread(self.st, _id=self._id, *self.args, **self.kwargs)
         self.process.start()
         if internal:
             Alert(
                 "INFO", "Processo iniciado", "O processo foi iniciado automaticamente"
             )
 
-    def pause(self, internal=False):
+    def pause(self, internal=False, **kwargs):
         NodeManager.pause()
         self.process.pause()
         if internal:
             Alert("INFO", "Processo em pausa", "O processo foi parado automaticamente")
 
-    def resume(self, internal=False):
+    def resume(self, internal=False,  **kwargs):
         NodeManager.resume()
         self.process.resume()
         if internal:
@@ -186,9 +190,9 @@ class sample_process():
                 "O processo foi retomado automaticamente",
             )
 
-    def stop(self, wait=True, internal=False):
+    def stop(self, wait=True, internal=False,  **kwargs):
         NodeManager.stop()
-        self.process.stop(wait)
+        self.process.stop()
         if internal:
             Alert("INFO", "Processo parado", "O processo foi parado automaticamente")
 
@@ -202,14 +206,14 @@ class sample_process():
         return self.process.is_stopped()
 
 
-process = sample_process()
 
 if __name__ == "__main__":
+    process = sample_process()
     import math
 
     def fatorial_calculator(n):
         return math.factorial(n)
 
-    example = Process(fatorial_calculator, 399999)
+    example = Process_Thread(fatorial_calculator, 399999)
     example.start()
     example.stop()

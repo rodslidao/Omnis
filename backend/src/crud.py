@@ -1,4 +1,4 @@
-from api import dbo, auth
+from api import dbo, auth, logger
 from api.mutations import mutation
 from api.queries import query
 from bson import ObjectId
@@ -57,16 +57,22 @@ class CRUD:
     def get_item(self, *args, **kwargs):
         return dbo.find_one(self.collection, {"_id": kwargs.pop("_id", ObjectId())})
 
-class SSPR:
+
+class SSPR(CRUD):
     """
     # Base class for mutations pattern
     S[tart], S[top], P[ause] and R[esume].
 
     All the mutations are defined as (function_{alias}), and need has the same authenticate level
     """
-    def __init__(self, alias, auth_level):
+
+    def __init__(self, alias, auth_level, **kwargs):
+        if kwargs.get("collection"):
+            super().__init__(**kwargs, auth_level=auth_level)
         self.alias = alias
         self.auth_level = auth_level
+
+        logger.info(f"sspr: {kwargs}, {self.alias}, {self.auth_level}")
 
         self.start = (auth(self.auth_level))(self.start)
         mutation.set_field(f"start_{self.alias}", self.start)
@@ -80,6 +86,9 @@ class SSPR:
         self.resume = (auth(self.auth_level))(self.resume)
         mutation.set_field(f"resume_{self.alias}", self.resume)
 
+        self.select = (auth(self.auth_level))(self.select)
+        mutation.set_field(f"select_{self.alias}", self.select)
+
     def start(self, *args, **kwargs):
         raise TypeError("start not implemented")
 
@@ -90,4 +99,7 @@ class SSPR:
         raise TypeError("pause not implemented")
 
     def resume(self, *args, **kwargs):
+        raise TypeError("resume not implemented")
+
+    def select(self, *args, **kwargs):
         raise TypeError("resume not implemented")

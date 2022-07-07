@@ -71,7 +71,7 @@ type Query {
   getSketchList: SketchListResult!
   getAxisList: [AxisResult!]
   getDevicesList: [DeviceResult!]
-  getNodeInfo(node_type: ID!, kwargs: JSON): NodeInfoResult!
+  getNodeInfo(node_type: String!, kwargs: JSON): NodeInfoResult!
 
   getCamera(_id: ID!): CameraResult!
   getCameras: CamerasResult!

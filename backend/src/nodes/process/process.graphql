@@ -26,14 +26,14 @@ extend type Query {
 
 extend type Mutation  {
   create_process(input: reg_process): Boolean
-  delete_process(_id: ID!): Boolean
   update_process(_id: ID!, input: reg_process): Boolean
+  delete_process(_id: ID!): Boolean
 
-  startProcess(_id: ID!): Boolean
-    stopProcess: Boolean
-    resumeProcess: Boolean
-    pauseProcess: Boolean
+  start_process: Boolean
+  stop_process:  Boolean
+  pause_process: Boolean
+  resume_process: Boolean
+  select_process(_id: ID!): Boolean
 
-    loadConfig(_id: ID!): NodeSheet
-    getLoadedConfig: ID!
+  getLoadedConfig: ID!
 }

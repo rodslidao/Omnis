@@ -1,6 +1,6 @@
 from src.nodes.node_manager import NodeManager
 from src.nodes.base_node import BaseNode, Wizard
-from src.nodes.process.process import process
+from src.manager.process_manager import ProcessManager as process
 from api import logger, exception
 from api.decorators import for_all_methods
 from threading import Thread

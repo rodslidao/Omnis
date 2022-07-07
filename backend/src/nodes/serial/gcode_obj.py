@@ -99,7 +99,8 @@ class SerialGcodeOBJ(Serial):
 
         logger.info(f"future: {future}")
         while (
-            any((math.ceil(v) != math.ceil(self.M114("R")[i])) for i, v in future)
+            # any((math.ceil(v) != math.ceil(self.M114("R")[i])) for i, v in future) #! Round is mandatory
+            any((v != self.M114("R")[i]) for i, v in future)
         ):
             continue
         return self.M114("R")

@@ -4,14 +4,17 @@ type matrix {
   slots: JSON
   subdivisions: JSON
   description: String
+  origin: JSON
+  part_number: String
 }
 
 input reg_matrix {
-  _id : ID!
   name: String
   slots: JSON
   subdivisions: JSON
   description: String
+  origin: JSON
+  part_number: String
 }
 
 extend type Query {

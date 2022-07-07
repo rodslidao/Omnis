@@ -46,7 +46,7 @@ def auth(lvl=None):
                 user = User(**token)
                 if user >= lvl:
                     kwargs.update({'user':user})
-                    return resolver(obj, info, *args, **kwargs)
+                    return resolver(*args, **kwargs)
                 raise GraphQLError('Permission Denied')
         return wrapper
     return decorator

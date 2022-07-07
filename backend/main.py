@@ -1,7 +1,6 @@
 from os import environ
 import uvicorn
 import socket
-
 from api import logger, dbo, custom_types
 from api.queries import query
 from api.subscriptions import subscription
@@ -10,7 +9,8 @@ from api.mutations import mutation
 from src.end_points import custom_video_response, Echo
 from src.manager.serial_manager import SerialManager
 from src.manager.camera_manager import CameraManager
-from src.nodes.process.process import process
+from src.manager.process_manager import ProcessManager as process
+
 from starlette.routing import Route
 
 from ariadne.asgi import GraphQL
