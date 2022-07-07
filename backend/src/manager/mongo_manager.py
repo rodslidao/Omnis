@@ -29,7 +29,7 @@ requiredCollections = [
     "node-sheets",
     "camera-manager",
     "serial-manager",
-    "blister-manager",
+    "matrix-manager",
     "last-values",
     "log",
 ]

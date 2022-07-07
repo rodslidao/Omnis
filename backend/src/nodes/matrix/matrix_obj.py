@@ -17,7 +17,7 @@ from cv2 import (
 
 from numpy import fliplr, rot90, flipud, array, meshgrid, arange, arange, ndindex
 from src.crud import CRUD
-CRUD("matrix", "operator")
+# CRUD("matrix", "operator")
 
 class Slot:
     """
@@ -173,11 +173,6 @@ class matrix_sorter:
     def get(tag, matrix):
         return getattr(matrix_sorter, tag[0:3])(matrix, tag[-1] == 'S')
 
-if __name__ == '__main__':
-    m = array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
-    print(matrix_sorter.get('BRL', m))
-    print(matrix_sorter.get('TRBS', m))
-    print(matrix_sorter.get('TRL', m))
 
 class Blister:
     """
@@ -378,3 +373,9 @@ class Blister:
 
     def __iter__(self):
         return self
+
+if __name__ == '__main__':
+    m = array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+    print(matrix_sorter.get('BRL', m))
+    print(matrix_sorter.get('TRBS', m))
+    print(matrix_sorter.get('TRL', m))

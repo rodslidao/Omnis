@@ -26,16 +26,20 @@ class CRUD:
         query.set_field(f"get_{self.collection}_item", self.get_item)
 
     def create(self, *args, **kwargs):
+        _id = ObjectId(kwargs.get("_id"))
         kwargs["input"].update(
             {
                 "created_by": kwargs["user"].db_pointer,
                 "created_at": datetime.utcnow().timestamp(),
+                "_id": _id
             }
         )
 
-        dbo.insert_one(self.collection, kwargs.pop("input", {}))
+        dbo.insert_one(kwargs.get('collection', self.collection), kwargs.get("input", {}))
+        return _id
 
     def update(self, *args, **kwargs):
+        _id = ObjectId(kwargs.get("_id"))
         kwargs["input"].update(
             {
                 "edited_by": kwargs["user"].db_pointer,
@@ -43,19 +47,20 @@ class CRUD:
             }
         )
         dbo.update_one(
-            self.collection,
-            {"_id": kwargs.pop("_id", ObjectId())},
-            {"$set": kwargs.pop("input", {})},
+            kwargs.get('collection', self.collection),
+            {"_id": _id},
+            {"$set": kwargs.get("input", {})},
         )
+        # return _id
 
     def delete(self, *args, **kwargs):
-        dbo.delete_one(self.collection, {"_id": kwargs.pop("_id", ObjectId())})
+        dbo.delete_one(kwargs.get('collection', self.collection), {"_id": ObjectId(kwargs.get("_id"))})
 
     def get_list(self, *args, **kwargs):
-        return dbo.find_many(self.collection)
+        return dbo.find_many(kwargs.get('collection', self.collection))
 
     def get_item(self, *args, **kwargs):
-        return dbo.find_one(self.collection, {"_id": kwargs.pop("_id", ObjectId())})
+        return dbo.find_one(kwargs.get('collection', self.collection), {"_id": ObjectId(kwargs.get("_id"))})
 
 
 class SSPR(CRUD):

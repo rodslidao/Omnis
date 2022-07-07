@@ -142,7 +142,7 @@ class MatrixNode(BaseNode):
             "options": list(
                 map(
                     MatrixNode.normalize_blister_get_info,
-                    dbo.find_many("blister-manager", {}),
+                    dbo.find_many("matrix-manager", {}),
                 )
             ),
         }
