@@ -1,0 +1,38 @@
+type object {
+  _id: ID!
+  name: String!
+  description: String
+  part_number: String
+  supplier: String
+  parts: Int
+  unit: String
+  color_hex: String
+  color_name: String
+  img: String
+  date: timestamptz
+  variables: [ID]
+}
+
+input reg_object {
+  name: String!
+  description: String
+  part_number: String
+  supplier: String
+  parts: Int
+  unit: String
+  color_hex: String
+  color_name: String
+  img: String
+  variables: [ID]
+}
+
+extend type Query {
+    get_object_list: [object]
+    get_object_item: object
+}
+
+extend type Mutation  {
+  create_object(input: reg_object): Boolean
+  delete_object(_id: ID!): Boolean
+  update_object(_id: ID!, input: reg_object): Boolean
+}

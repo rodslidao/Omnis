@@ -16,7 +16,7 @@ try:
         A = Slot(*config, scale=1)
         B = Slot(*config, scale=scale)
         C = Blister([20,10], "LC_Simplex_Virtual", B)
-        # dbo.insert_one('blister-manager', C.export())
+        # dbo.insert_one('matrix-manager', C.export())
         A = C.draw(cam.read())
         imwrite('./test.jpg', A)
         input("next..")

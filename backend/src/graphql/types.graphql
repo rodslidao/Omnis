@@ -137,18 +137,3 @@ type user_with_token{
   user: user
   token: String
 }
-
-type target {
-  _id: ID!
-  name: String!
-  description: String
-  part_number: String
-  supplier: String
-  parts: Int
-  unit: String
-  color_hex: String
-  color_name: String
-  img: String
-  date: timestamptz
-  variables: [ID]
-}

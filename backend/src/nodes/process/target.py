@@ -1,8 +1,5 @@
-from cv2 import log
-from pandas import value_counts
 from api import dbo
 from bson import ObjectId
-from api import logger
 class variable:
     def __init__(self, _id=None) -> None:
         self.update(_id)

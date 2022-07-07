@@ -10,6 +10,7 @@ from src.end_points import custom_video_response, Echo
 from src.manager.serial_manager import SerialManager
 from src.manager.camera_manager import CameraManager
 from src.manager.process_manager import ProcessManager as process
+from src.manager.matrix_manager import MatrixManager as matrix
 
 from starlette.routing import Route
 

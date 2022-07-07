@@ -8,7 +8,7 @@ from api.decorators import for_all_methods
 from src.loader import load as load_conf
 from src.nodes.base_node import event_list
 from codetiming import Timer
-from .target import targets, target
+# from .target import targets, target
 
 class Process_Thread(threading.Thread):
     RUNNING = "RUNNING"
@@ -134,7 +134,7 @@ class sample_process():
         self.kwargs = kwargs
         self.process = Process_Thread(self.st, _id=self._id, *self.args, **self.kwargs)
         self.process.daemon = True
-        self.targets = targets.values
+        # self.targets = targets.values
 
 
     @property

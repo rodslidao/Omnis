@@ -7,7 +7,7 @@ from .nodes.node_manager import NodeManager
 from .nodes.node_registry import NodeRegistry
 from .nodes.alerts.alert_obj import Alert
 from api import logger, exception, dbo
-from .nodes.process.target import targets
+# from .nodes.process.target import targets
 
 variables = {
  #   '<color>': "#FFFFFF",

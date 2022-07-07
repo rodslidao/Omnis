@@ -67,3 +67,5 @@ for mod in package_nodes:
             getattr(mod["package_name"], mod["class_name"]),
         )
     )
+
+from src.nodes.object.object import _object
