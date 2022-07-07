@@ -51,7 +51,7 @@ class CRUD:
             {"_id": _id},
             {"$set": kwargs.get("input", {})},
         )
-        return _id
+        # return _id
 
     def delete(self, *args, **kwargs):
         dbo.delete_one(kwargs.get('collection', self.collection), {"_id": ObjectId(kwargs.get("_id"))})

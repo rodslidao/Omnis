@@ -32,7 +32,7 @@ extend type Query {
 }
 
 extend type Mutation  {
-  create_object(input: reg_object): Boolean
-  delete_object(_id: ID!): Boolean
-  update_object(_id: ID!, input: reg_object): Boolean
+  create_object(input: reg_object): ID
+  delete_object(_id: ID!): ID
+  update_object(_id: ID!, input: reg_object): ID
 }
