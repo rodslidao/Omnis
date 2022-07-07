@@ -189,7 +189,7 @@ export default {
     }),
     rules() {
       return {
-        required: (value) => !!value || 'Required.',
+        required: (value) => !!value || 'form.required',
 
         min: (v) =>
           v.length >= 8 || this.$t('form.minCharacters', { count: 8 }),

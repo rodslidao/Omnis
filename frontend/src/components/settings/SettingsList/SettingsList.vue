@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="main">
     <div class="d-flex align-">
       <v-autocomplete
         v-model="model"
@@ -15,12 +15,15 @@
         prepend-inner-icon="mdi-magnify"
         hide-no-data
         hide-details
-        placeholder="Pesquisar"
+        :placeholder="$t('buttons.search')"
       ></v-autocomplete>
+      <v-spacer></v-spacer>
       <div class="sort d-flex justify-center align-center">
         <div class="">
           {{ $t('list.sortBy') }}:
-          <span class="font-weight-bold">{{ dropdown.text }}</span>
+          <span class="font-weight-bold">{{
+            dropdown.value ? $t(translatePath + '.' + dropdown.value) : '  '
+          }}</span>
         </div>
         <v-menu bottom offset-y>
           <template v-slot:activator="{ on, attrs }">
@@ -41,7 +44,7 @@
               v-show="!fieldsIgnore.includes(item)"
             >
               <v-list-item-title>{{
-                $t('settings.users.fields.' + item)
+                $t(translatePath + '.' + item)
               }}</v-list-item-title>
             </v-list-item>
           </v-list>
@@ -71,6 +74,10 @@ export default {
     fieldsIgnore: {
       type: Array,
       default: () => [],
+    },
+    translatePath: {
+      type: String,
+      default: '',
     },
   },
 
@@ -115,7 +122,7 @@ export default {
         return this.items.filter((value) => {
           return value[this.itemSearch] === this.search;
         });
-      } 
+      }
       return this.items;
       // console.log('itemsCopy', this.itemsCopy);
     },
@@ -160,6 +167,9 @@ export default {
 </script>
 
 <style scoped>
+.main {
+  max-width: 900px;
+}
 .search {
   max-width: 300px;
 }

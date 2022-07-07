@@ -2,15 +2,14 @@
   <div class="process">
     <!-- {{ getUsersList }} -->
     <router-view> </router-view>
-    <div v-if="$router.currentRoute.name !== 'registerUser'">
+    <div v-if="$router.currentRoute.name == 'users'">
       <settings-title>{{ $t('settings.users.myAccount') }}</settings-title>
-      {{ user ? 'existe' : 'não existe' }}
       <settings-items
         :title="$t('settings.users.accountsDetails.title')"
         :subtitle="$t('settings.users.accountsDetails.subtitle')"
         icon="account-details"
         ><template v-slot:expand>
-          <div class="account-details" v-if="user">
+          <div class="account-details ma-6" v-if="user">
             <div class="d-flex align-center">
               <div class="d-flex flex-column align-center">
                 <v-avatar color="primary" size="50">
@@ -35,6 +34,12 @@
                 <div class="text-body-2">
                   {{ $timestampToDate(user.last_access) }}
                 </div>
+                <div class="text-body-2 mt-1" v-if="user.level === 'developer'">
+                  {{ apolloToken.slice(0, 20) }}...
+                  <v-btn icon x-small @click="copy(apolloToken)"
+                    ><v-icon>mdi-content-copy</v-icon></v-btn
+                  >
+                </div>
               </div>
               <v-spacer></v-spacer>
               <v-btn icon @click="updateUser(user)"
@@ -50,9 +55,7 @@
           </div>
         </template>
       </settings-items>
-    </div>
-    <div>
-      <div v-if="$router.currentRoute.name !== 'registerUser'">
+      <div>
         <settings-title>{{
           $t('settings.users.otherAccounts')
         }}</settings-title>
@@ -72,6 +75,7 @@
               :items="getUsersList"
               item-search="first_name"
               :fields-ignore="fieldsToIgnore"
+              translate-path="settings.users.fields"
             >
               <template #itemList="itemList">
                 <settings-list-item-user
@@ -98,6 +102,8 @@ import SettingsItems from '@/components/settings/SettingsItems.vue';
 import SettingsList from '@/components/settings/SettingsList/SettingsList.vue';
 import SettingsListItemUser from '@/components/settings/SettingsList/SettingsListItemUser.vue';
 import EditUser from '@/components/settings/EditUser.vue';
+
+import { useClipboard } from '@vueuse/core';
 
 const REMOVE_USER = gql`
   mutation REMOVE_USER($_id: ID!) {
@@ -203,11 +209,18 @@ export default {
         this.user?.last_name.split(' ').at(-1).charAt(0)
       );
     },
+    apolloToken() {
+      return localStorage.getItem('apollo-token');
+    },
   },
 
   methods: {
+    copy(string) {
+      console.log(useClipboard().copy(string));
+      this.$alertFeedback(this.$t('alerts.copied'), 'success');
+    },
     updateUser(user) {
-      console.log(user);
+      // console.log(user);
       this.userToEdit = user;
       this.editDialog = true;
     },

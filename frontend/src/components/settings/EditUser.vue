@@ -52,7 +52,6 @@
               :dense="dense"
               rounded
             ></v-text-field>
-            {{ user.level }}
             <v-select
               class="select ml-2"
               rounded
@@ -85,7 +84,7 @@
             <v-text-field
               v-model="user.password"
               :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
-              :type="show1 ? 'text' : 'password'"
+              :type="show1 ? 'text' : 'current-password'"
               :label="$t('form.password')"
               :hint="$t('form.minCharacters', { count: 8 })"
               rounded
@@ -98,7 +97,7 @@
               v-model="passwordConfirmation"
               :append-icon="show2 ? 'mdi-eye' : 'mdi-eye-off'"
               :rules="[rules().passwordMatch]"
-              :type="show2 ? 'text' : 'password'"
+              :type="show2 ? 'text' : 'current-password'"
               :label="$t('form.confirmPassword')"
               :hint="$t('form.minCharacters', { count: 8 })"
               rounded

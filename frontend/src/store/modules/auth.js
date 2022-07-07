@@ -46,10 +46,10 @@ const actions = {
         mutation: REGISTER_USER,
         variables: userData,
       });
-      Vue.prototype.$alertFeedback('alerts.RegisterUserSuccess', 'success');
+      Vue.prototype.$alertFeedback('alerts.registerUserSuccess', 'success');
       // router.go(-1);
     } catch (error) {
-      Vue.prototype.$alertFeedback('alerts.RegisterUserFail', 'error', error);
+      Vue.prototype.$alertFeedback('alerts.registerUserFail', 'error', error);
     }
 
     // dispatch('setUserData', registerUser);

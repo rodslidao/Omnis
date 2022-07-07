@@ -16,10 +16,18 @@ import Success from '@/views/Success.vue';
 import System from '@/views/settings/System.vue';
 import Support from '@/views/settings/Support.vue';
 import Process from '@/views/settings/Process.vue';
-import MatrixDirectionSelector from '@/components/node/config/matrix/MatrixDirectionSelector.vue';
 import Users from '@/views/settings/Users.vue';
 import Personalize from '@/views/settings/Personalize.vue';
 import RegisterUser from '@/views/Auth/RegisterUser.vue';
+import ProcessObjects from '@/views/settings/ProcessObjects.vue';
+import ProcessMyProcess from '@/views/settings/ProcessMyProcess.vue';
+import ProcessVariables from '@/views/settings/ProcessVariables.vue';
+import ProcessMatrix from '@/views/settings/ProcessMatrix.vue';
+import ObjectRegister from '@/components/settings/process/ObjectRegister.vue';
+import VariableRegister from '@/components/settings/process/VariableRegister.vue';
+import MatrixRegister from '@/components/settings/process/MatrixRegister.vue';
+import MatrixEdit from '@/components/settings/process/MatrixEdit.vue';
+import ProcessRegister from '@/components/settings/process/ProcessRegister.vue';
 
 Vue.use(Router);
 
@@ -94,16 +102,74 @@ const routes = [
       {
         name: 'process',
         component: Process,
-        path: ':process',
+        path: 'process',
         meta: {
           breadCrumb: 'settings.process.name',
         },
         children: [
           {
+            name: 'myProcess',
+            component: ProcessMyProcess,
+            path: 'myProcess',
+            meta: { breadCrumb: 'settings.process.process.name' },
+            children: [
+              {
+                name: 'processRegister',
+                component: ProcessRegister,
+                path: 'add',
+                meta: { breadCrumb: 'settings.process.process.add' },
+              },
+            ],
+          },
+          {
             name: 'matrix',
-            component: MatrixDirectionSelector,
-            path: ':matrix',
+            component: ProcessMatrix,
+            path: 'matrix',
             meta: { breadCrumb: 'settings.process.matrix.name' },
+            children: [
+              {
+                name: 'matrixRegister',
+                component: MatrixRegister,
+                path: 'add',
+
+                meta: { breadCrumb: 'settings.process.matrix.add' },
+              },
+              {
+                name: 'matrixEdit',
+                component: MatrixEdit,
+                path: 'edit',
+                props: true,
+                meta: { breadCrumb: 'settings.process.matrix.edit' },
+              },
+            ],
+          },
+          {
+            name: 'object',
+            component: ProcessObjects,
+            path: 'object',
+            meta: { breadCrumb: 'settings.process.objects.name' },
+            children: [
+              {
+                name: 'objectRegister',
+                component: ObjectRegister,
+                path: 'add',
+                meta: { breadCrumb: 'settings.process.objects.add' },
+              },
+            ],
+          },
+          {
+            name: 'variable',
+            component: ProcessVariables,
+            path: 'variable',
+            meta: { breadCrumb: 'settings.process.variables.name' },
+            children: [
+              {
+                name: 'variableRegister',
+                component: VariableRegister,
+                path: 'add',
+                meta: { breadCrumb: 'settings.process.variables.addVariable' },
+              },
+            ],
           },
         ],
       },

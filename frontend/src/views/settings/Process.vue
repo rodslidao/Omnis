@@ -1,45 +1,81 @@
 <template>
   <div class="process">
-    <router-view> </router-view>
-    <settings-items
-      v-for="(item, index) in items"
-      :key="index"
-      :title="item.title"
-      :subtitle="item.subtitle"
-      :icon="item.icon"
-      :path="item.path"
-    ></settings-items>
+    <router-view :key="$route.path"> </router-view>
+    <div v-if="$router.currentRoute.name == 'process'">
+      <settings-title>{{ $t('settings.process.myProcess') }}</settings-title>
+      <settings-items
+        v-for="(item, index) in myProcess"
+        :key="index"
+        :title="$t(item.title)"
+        :subtitle="$t(item.subtitle)"
+        :icon="item.icon"
+        divider-list
+        :path="item.path"
+      >
+      </settings-items>
+      <settings-title>{{ $t('settings.process.otherSettings') }}</settings-title>
+      <settings-items
+        v-for="(item, index2) in otherSettings"
+        :key="index2"
+        :title="$t(item.title)"
+        :subtitle="$t(item.subtitle)"
+        :icon="item.icon"
+        divider-list
+        :path="item.path"
+      >
+      </settings-items>
+    </div>
   </div>
 </template>
 
 <script>
-import SettingsItems from '../../components/settings/SettingsItems.vue';
+import SettingsItems from '@/components/settings/SettingsItems.vue';
+import SettingsTitle from '@/components/settings/SettingsTitle.vue';
 
 export default {
-  components: { SettingsItems },
+  components: { SettingsItems, SettingsTitle },
   data() {
     return {
       actualPath: '',
-      items: [
+      myProcess: [
         {
-          title: 'Nós',
-          subtitle: 'Gerência seus nós',
+          title: 'settings.process.process.title',
+          subtitle: 'settings.process.process.subtitle',
+          // icon: 'application-brackets',
+          icon: 'cube-send',
+          path: 'process/myProcess',
+        },
+      ],
+      otherSettings: [
+        {
+          title: 'settings.process.nodes.title',
+          subtitle: 'settings.process.nodes.subtitle',
           // icon: 'application-brackets',
           icon: 'application',
           path: '/node',
         },
         {
-          title: 'Matriz',
-          subtitle: 'Crie novas matrizes',
+          title: 'settings.process.matrix.title',
+          subtitle: 'settings.process.matrix.subtitle',
           // icon: 'application-brackets',
           icon: 'grid',
           path: 'process/matrix',
         },
         {
-          title: 'Processos',
-          subtitle: 'Gerência seus processos',
-          icon: 'cog',
-          path: 'process/process',
+          title: 'settings.process.objects.title',
+          subtitle: 'settings.process.objects.subtitle',
+          icon: 'cube',
+          path: 'process/object',
+          // subItens: [
+          //   { title: 'buttons.register', path: 'process/object' },
+          //   { title: 'buttons.list', path: 'process/object' },
+          // ],
+        },
+        {
+          title: 'settings.process.variables.title',
+          subtitle: 'settings.process.variables.subtitle',
+          icon: 'variable',
+          path: 'process/variable',
         },
       ],
     };

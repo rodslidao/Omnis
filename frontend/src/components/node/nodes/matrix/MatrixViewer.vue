@@ -10,6 +10,7 @@
             v-for="index in subdivisions.qtd.y"
             :key="index"
             v-bind:style="styleObject.row"
+            :class="selectedClass"
           >
             <div class="line">
               <div
@@ -59,53 +60,52 @@ export default {
   props: {
     slots: Object,
     subdivisions: Object,
+    edit: String,
   },
-  // mounted() {
-  //   console.log('mounted', this.slots, this.subdivisions);
-  // },
 
   data: () => ({
     checkbox: true,
     checkboxList: [],
-
-    // slots: {
-    //   qtd: {
-    //     X: 6,
-    //     Y: 5,
-    //   },
-    //   margin: {
-    //     X: 5,
-    //     Y: 4.5,
-    //   },
-    //   size: { X: 38, Y: 38 },
-    // },
-    // subdivisions: {
-    //   // colunas, linhas
-    //   qtd: { X: 1, Y: 1 },
-    //   // largura, altura
-    //   margin: { X: 50, Y: 50 },
-    // },
     constant: 1,
   }),
 
   methods: {},
 
   computed: {
+    selectedClass() {
+      const list = {
+        quantityX: 'item-x',
+        quantityY: 'item-y',
+        sizeX: 'item-size-x',
+        sizeY: 'item-size-y',
+        marginX: 'item-margin-x',
+        marginY: 'item-margin-y',
+        sub_quantityX: 'sub-x',
+        sub_quantityY: 'sub-y',
+        sub_marginX: 'sub-margin-x',
+        sub_marginY: 'sub-margin-y',
+        originX: 'origin',
+        originY: 'origin',
+      };
+      return `highlight-${list[this.edit]}`;
+    },
+
     styleObject() {
       const updatedStyleObject = {
         slots: {
-          height: `${this.slots.size.y * this.constant.x -1}px`,
-          width: `${this.slots.size.x * this.constant.x -1}px`,
-          marginTop: `${this.slots.margin.y * this.constant.x +1}px`,
+          height: `${this.slots.size.y * this.constant.x - 1}px`,
+          width: `${this.slots.size.x * this.constant.x - 1}px`,
+
+          marginTop: `${this.slots.margin.y * this.constant.x + 1}px`,
         },
         slotsRow: {
-          marginLeft: `${this.slots.margin.x * this.constant.x +1}px`,
+          marginLeft: `${this.slots.margin.x * this.constant.x + 1}px`,
         },
         subdivision: {
-          marginLeft: `${this.subdivisions.margin.x * this.constant.x +1}px`,
+          marginLeft: `${this.subdivisions.margin.x * this.constant.x + 1}px`,
         },
         row: {
-          marginTop: `${this.subdivisions.margin.y * this.constant.x +1}px`,
+          marginTop: `${this.subdivisions.margin.y * this.constant.x + 1}px`,
         },
       };
       return updatedStyleObject;
@@ -113,7 +113,7 @@ export default {
 
     findSize() {
       // constant totalMainSize = this.frameWidth;
-      let counts = {
+      const counts = {
         qtd: { x: 0, y: 0 },
         margin: { x: 0, y: 0 },
         size: { x: 0, y: 0 },
@@ -122,12 +122,12 @@ export default {
       Object.keys(counts.qtd).forEach((i) => {
         counts.qtd[i] = this.slots.qtd[i] * this.subdivisions.qtd[i];
         counts.size[i] = counts.qtd[i] * this.slots.size[i];
-        counts.margin[i] =
-          this.slots.margin[i] * (counts.qtd[i] - 1) +
-          this.subdivisions.margin[i] * (this.subdivisions.qtd[i] - 1);
+        counts.margin[i] = this.slots.margin[i] * (counts.qtd[i] - 1)
+          + this.subdivisions.margin[i] * (this.subdivisions.qtd[i] - 1);
         counts.total[i] = this.width / (counts.size[i] + counts.margin[i]);
         // constant total = size + padding;
       });
+      // eslint-disable-next-line vue/no-side-effects-in-computed-properties
       this.constant = counts.total;
 
       return null;
@@ -139,10 +139,125 @@ export default {
 <style lang="scss" scoped>
 @import '~vuetify/src/styles/main.sass';
 
-div {
-  // padding: 8px;
-  // border: solid 1px rgb(0, 0, 0);
+$border-radius: 3px;
+$border-size: 2px;
+$color-x: red;
+$color-y: rgb(0, 255, 0);
+$border-x: $border-size solid $color-x;
+$border-y: $border-size solid $color-y;
+
+.highlight {
+  &-x {
+    border-top: $border-x;
+  }
+  &-y {
+    border-left: $border-y;
+  }
+
+  &-origin:first-child
+    > .line:first-child
+    > .subdivision:first-child
+    > .slotsRow
+    > .slots:first-child {
+    border: $border-x;
+  }
+
+  &-item-x:first-child
+    > .line:first-child
+    > .subdivision:first-child
+    > .slotsRow
+    > .slots:first-child {
+    border: $border-x;
+  }
+
+  &-item-y:first-child
+    > .line:first-child
+    > .subdivision:first-child
+    > .slotsRow:first-child
+    > .slots {
+    border: $border-y;
+  }
+
+  &-item-size-x:first-child
+    > .line:first-child
+    > .subdivision:first-child
+    > .slotsRow:first-child
+    > .slots:first-child {
+    border-top: $border-x;
+  }
+
+  &-item-size-y:first-child
+    > .line:first-child
+    > .subdivision:first-child
+    > .slotsRow:first-child
+    > .slots:first-child {
+    border-left: $border-y;
+  }
+
+  &-item-margin-x {
+    &:first-child
+      > .line:first-child
+      > .subdivision:first-child
+      > .slotsRow:nth-child(2)
+      > .slots:first-child {
+      border-left: $border-x;
+    }
+    &:first-child
+      > .line:first-child
+      > .subdivision:first-child
+      > .slotsRow:nth-child(1)
+      > .slots:first-child {
+      border-right: $border-x;
+    }
+  }
+
+  &-item-margin-y {
+    &:first-child
+      > .line:first-child
+      > .subdivision:first-child
+      > .slotsRow:nth-child(1)
+      > .slots:first-child {
+      border-bottom: $border-y;
+    }
+    &:first-child
+      > .line:first-child
+      > .subdivision:first-child
+      > .slotsRow:first-child
+      > .slots:nth-child(2) {
+      border-top: $border-y;
+    }
+  }
+
+  &-sub-margin-x {
+    &:first-child > .line:first-child > .subdivision:first-child {
+      box-shadow: $border-size 0px 0px $color-x;
+    }
+    &:first-child > .line:first-child > .subdivision:nth-child(2) {
+      box-shadow: (-1 * $border-size) 0px 0px 0px $color-x;
+    }
+  }
+
+  &-sub-margin-y {
+    &:first-child {
+      // box-shadow: 0px $border-size 0px $color-y,
+      box-shadow: 0px $border-size 0px $color-y;
+    }
+    &:nth-child(2) {
+      box-shadow: 0px (-1 * $border-size) 0px 0px $color-y;
+    }
+  }
+
+  &-sub-x:first-child > .line > .subdivision {
+    outline: $border-x;
+    border-radius: $border-radius;
+  }
+
+  &-sub-y > .line > .subdivision:first-child {
+    outline: $border-y;
+    border-radius: $border-radius;
+  }
 }
+
 .main {
   padding: 0 1rem;
   display: flex;
@@ -171,7 +286,7 @@ div {
       #1e4e84,
       #0b4171
     );
-    border-radius: 2%;
+    border-radius: 4 * $border-radius;
   }
   .blister {
     // border-color: aqua;
@@ -215,9 +330,9 @@ div {
             margin-top: 0 !important;
             // background-color: rgb(0, 0, 0);
           }
-          background-color: #1e1e1e;
+          background-color: #00000085;
           box-shadow: inset 0 0 17px 2px rgb(0 0 0 / 18%);
-          border-radius: 8%;
+          border-radius: $border-radius;
         }
       }
     }

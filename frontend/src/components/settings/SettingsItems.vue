@@ -41,9 +41,10 @@
     <v-expand-transition>
       <div v-show="show" v-if="!!this.$slots.expand">
         <v-divider></v-divider>
-        <v-card-text>
+        <v-card-text >
           <slot name="expand"> </slot>
         </v-card-text>
+        <v-divider v-if="dividerList"></v-divider>
       </div>
     </v-expand-transition>
   </v-card>
@@ -84,6 +85,7 @@ export default {
       type: String,
       default: '',
     },
+    dividerList: Boolean
   },
   data() {
     return {
@@ -107,4 +109,8 @@ export default {
 </script>
 
 <style scoped>
+.v-card__text{
+  padding-left: 0;
+  padding-right: 0;
+}
 </style>

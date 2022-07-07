@@ -16,10 +16,50 @@
     },
     "process": {
       "name": "Process",
+      "myProcess": "My Process",
+      "otherSettings": "Other Settings",
+      "editProcess": {
+        "title": "Process Edit"
+      },
+      "process": {
+        "name": "MyProcess",
+        "title": "Process",
+        "subtitle": "Create and edit the process",
+        "add": "Register new Process",
+        "list": "List Process",
+        "lastPlayed": "Last played",
+        "sketch": "Sketch"
+      },
+      "nodes": {
+        "name": "Nodes",
+        "title": "Nodes",
+        "subtitle": "Create and edit the program"
+      },
       "matrix": {
         "name": "Matrix",
         "title": "Matrix",
-        "subtitle": "Create and edit the matrix to use in nodes"
+        "subtitle": "Create and edit the matrix to use in nodes",
+        "add": "Register new Matrix",
+        "edit": "Edit Matrix",
+        "list": "List Matrix",
+        "slotsSubtitle": "Quantity of slots, margins and size",
+        "subdivisionsSubtitle": "If your matrix has a subdivision",
+        "originSubtitle": "Define distance matrix of 0 machine"
+        
+      },
+      "objects": {
+        "name": "Objects",
+        "title": "Objects",
+        "subtitle": "Create and edit the objects",
+        "add": "Register Object",
+        "list": "List Objects"
+      },
+      "variables": {
+        "name": "Variables",
+        "title": "Variables",
+        "subtitle": "Create and edit the variables",
+        "add": "Register Object",
+        "list": "List Objects"
       }
     },
     "users": {
@@ -34,8 +74,8 @@
         "title": "Account Details",
         "subtitle": "View and edit your account details"
       },
-      "fields":{
-        "level" : "Level",
+      "fields": {
+        "level": "Level",
         "first_name": "Name",
         "last_name": "Surname",
         "username": "SSN",
@@ -65,21 +105,55 @@
     }
   },
   "form": {
-    "name": "Name",
-    "lastName": "Last Name",
-    "email": "Email",
-    "username": "Username (SSN)",
-    "password": "Password",
+    "color_hex": "Color (Hexadecimal)",
+    "color_name": "Color Name",
+    "color": "Color",
     "confirmPassword": "Confirm Password",
-    "showPassword": "Show Password",
+    "created_at": "Created at",
+    "created_by": "Created by",
+    "date": "Date",
+    "description": "Description",
+    "edited_by": "Edited by",
+    "email": "Email",
+    "img": "Image",
+    "imgUrl": "Image URL",
+    "last_played": "Last Played",
+    "lastName": "Last Name",
+    "minCharacters": "This field must have at least {count} characters",
+    "name": "Name",
+    "part_number": "Part Number",
+    "parts": "Parts",
+    "password": "Password",
+    "passwordMatch": "This passwords do not match",
+    "process": "Process",
     "register": "Register",
     "required": "Hey! I'm required",
+    "requiredFields": "This fields are required",
+    "showPassword": "Show Password",
+    "singIn": "Login",
+    "singInTitle": "Login",
+    "sketch": "Sketch",
+    "supplier": "Supplier",
+    "unit": "Unit",
+    "updated_at": "Updated at",
+    "username": "Username (SSN)",
     "validEmail": "This e-mail is not valid",
     "validPassword": "This password is not valid",
-    "passwordMatch": "This passwords do not match",
-    "minCharacters": "This field must have at least {count} characters",
-    "singIn": "Login",
-    "singInTitle": "Login"
+    "user": "User",
+    "subdivisions": "Subdivisions",
+    "quantityX": "Quantity X",
+    "quantityY": "Quantity Y",
+    "sizeX": "Size X",
+    "sizeY": "Size Y",
+    "marginX": "Margin X",
+    "marginY": "Margin Y",
+    "slots": "Slots",
+    "originX": "Origin X",
+    "originY": "Origin Y",
+    "partNumber": "Part Number",
+    "partNumberAb": "PN",
+    "origin": "Origin"
+
   },
   "levels": {
     "name": "Level",
@@ -89,21 +163,23 @@
     "maintenance": "Maintenance"
   },
   "buttons": {
-    "save": "Save",
-    "confirm": "Confirm",
+    "add": "Add",
     "cancel": "Cancel",
+    "changePassword": "Change Password",
+    "close": "Close",
+    "confirm": "Confirm",
     "delete": "Delete",
     "edit": "Edit",
-    "add": "Add",
-    "remove": "Remove",
-    "close": "Close",
-    "send": "Send",
+    "forgotPassword": "Forgot Password",
+    "list": "List",
     "login": "Login",
     "logout": "Logout",
     "register": "Register",
-    "forgotPassword": "Forgot Password",
+    "remove": "Remove",
     "resetPassword": "Reset Password",
-    "changePassword": "Change Password"
+    "save": "Save",
+    "search": "Search",
+    "send": "Send"
   },
   "prepositions": {
     "or": "or"
@@ -113,21 +189,33 @@
     "welcome": "Welcome! "
   },
   "alerts": {
-    "loginFail": "Failed to login, make sure your details are correct, 😢",
-    "runningProcess": "The process is running 🚀",
-    "pauseSuccess": "Process was paused ✋",
-    "pauseFail": "Fail to pause the process, 😢",
+    "copied": "👌 Copied ",
+    "deleteFail": "Could't possible to delete 😢",
+    "deleteSuccess": "Was deleted 👍",
     "failToRunProcess": "Failed to run process, 😢",
-    "RegisterUserFail": "Failed to register user, 😢",
-    "RegisterUserSuccess": "User registered successfully 🤙",
-    "processStopped": "The process was stopped ✋",
-    "saveFail": "Could not save file 😢",
-    "saveSuccess": "The process was saved 👌",
     "invalidFile": "Invalid file, your file must be an '.oms' 😢",
-    "deleteFail" : "Could't possible to delete 😢",
-    "deleteSuccess" : "Was deleted 👍",
-    "updateUserSuccess" : "The data was updated👍",
-    "updateUserFail" : "Could't possible to update 😢"
+    "loginFail": "Failed to login, make sure your details are correct, 😢",
+    "pauseFail": "Fail to pause the process, 😢",
+    "pauseSuccess": "Process was paused ✋",
+    "processStopped": "The process was stopped ✋",
+    "registerUserFail": "Failed to register user, 😢",
+    "registerUserSuccess": "User registered successfully 🤙",
+    "registerMatrixFail": "Failed to register matrix, 😢",
+    "registerMatrixSuccess": "Matrix registered successfully 🤙",
+    "runningProcess": "The process is running 🚀",
+    "saveFail": "Could not save 😢",
+    "saveSuccess": "The process was saved 👌",
+    "updateObjFail": "Could't possible to update 😢",
+    "updateObjSuccess": "The object was updated👍",
+    "updateProcessFail": "Could't possible to update 😢",
+    "updateProcessSuccess": "The process was updated👍",
+    "updateUserFail": "Could't possible to update 😢",
+    "updateUserSuccess": "The data was updated👍",
+    "updateMatrixFail": "Could't possible to update the matrix😢",
+    "updateMatrixSuccess": "The matrix was updated👍",
+    "updateVariableFail": "Could't possible to update 😢",
+    "formError": "Some fields are required or wrong 😢",
+    "updateVariableSuccess": "The variable was updated👍"
   },
   "list": {
     "sortBy": "Sort by",
@@ -136,8 +224,7 @@
     "totalUsers": "total of users"
   },
   "dialogs": {
-    "removeConfirm" : "Are you sure you want to delete?",
-    "removeDescription" : "This {obj} will be deleted, are you sure you want to delete it?"
+    "removeConfirm": "Are you sure you want to delete?",
+    "removeDescription": "This {obj} will be deleted, are you sure you want to delete it?"
   }
-  
 }

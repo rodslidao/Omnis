@@ -3,10 +3,15 @@ const path = require('path');
 
 let envfile = '.env';
 if (process.env.NODE_ENV) {
-  envfile += '.' + process.env.NODE_ENV;
+  envfile += `.${process.env.NODE_ENV}`;
 }
 
-const result = dotenv.config({
+// const result = dotenv.config({
+//   silent: true,
+//   path: path.resolve('../', envfile),
+// });
+
+dotenv.config({
   silent: true,
   path: path.resolve('../', envfile),
 });
@@ -17,6 +22,9 @@ const result = dotenv.config({
 // }
 
 module.exports = {
+  devServer: {
+    // host: '192.168.18.8',
+  },
   pwa: {
     name: 'Parallax',
     themeColor: '#0D1D2D',
