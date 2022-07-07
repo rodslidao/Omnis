@@ -13,7 +13,7 @@
             <span class="text-h6 text-capitalize">{{ obj.name }}</span>
             <div class="text-subtitle-2">{{ obj.description }}</div>
             <div class="font-weight-bold d-flex align-center">
-              <div class="text-body-2 mr-1">Part Number:</div>
+              <div class="text-body-2 mr-1">{{$t('form.partNumberAb')}}:</div>
               {{ obj.part_number }}
             </div>
             <div class="font-weight-bold d-flex align-center">

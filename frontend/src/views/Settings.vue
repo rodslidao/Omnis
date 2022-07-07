@@ -136,7 +136,7 @@ export default {
 
 .setting-content {
   width: 100%;
-  max-width: 900px;
+  /* max-width: 900px; */
   height: 100%;
   overflow: auto;
   margin: 0;

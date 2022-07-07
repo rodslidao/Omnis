@@ -7,88 +7,77 @@
       max-width="700px"
       lazy-validation
     >
-      <!-- <div v-for="(item, index) in items" :key="index">
-        <v-row>
-          <v-col cols="4" class="d-flex align-center">
-            <v-badge dot bordered color="error" v-if="item.required">
-              <div class="font-weight-bold">
-                {{ $t('form.' + item.field) }}
-              </div></v-badge
+      <div class="d-flex flex-wrap">
+        <div class="form mb-4">
+          <div v-for="(subField, key) in fields2" :key="key">
+            <v-text-field
+              class="field mb-n6"
+              placeholder=""
+              outlined
+              rounded
+              v-model.number="fields2[key].value"
+              dense
+              :label="$t('form.' + key)"
+              max-width
+              :rules="isRequire(key) ? [rules().required] : [true]"
             >
-            <div v-else class="font-weight-bold">
-              {{ $t('form.' + item.field) }}
-            </div>
-          </v-col>
-          <v-col cols="8" class="field">
-            <v-row>
-              <v-text-field
-                placeholder=""
-                outlined
-                rounded
-                v-model.number="obj[item.field]"
-                type="number"
-                dense
-                :rules="item.required ? [rules().required] : [true]"
-                full-width
-                @keyup.enter="colorShow = false"
-              >
-              </v-text-field>
-            </v-row>
-          </v-col>
-        </v-row>
-      </div> -->
-      <!-- custom -->
-      <div v-for="(field, index) in fields" :key="index">
-        <v-row>
-          <div>
-            <div class="text-h6 font-weight-black">
-              {{ $t('form.' + field.title) }}
-            </div>
-            <div class="text-subtitle-2 mb-5">
-              {{ $t('form.' + field.subtitle) }}
-            </div>
-            <div class="d-flex flex-wrap">
-              <div v-for="(subField, index2) in field.fields" :key="index2">
-                <v-text-field
-                  class="subfields my-4"
-                  placeholder=""
-                  outlined
-                  rounded
-                  v-model.number="data[subField.obj]"
-                  :type="subField.type || 'number'"
-                  dense
-                  :label="$t('form.' + subField.title)"
-                  :suffix="subField.suffix"
-                  @focus="edit = subField.selected"
-                >
-                </v-text-field>
-              </div>
-              {{ data }}
-            </div>
+            </v-text-field>
           </div>
-        </v-row>
+          <!-- custom -->
+          <div v-for="(field, index) in fields" :key="index" class="mt-6">
+            <v-row>
+              <div>
+                <div class="text-h6 font-weight-black">
+                  {{ $t('form.' + field.title) }}
+                </div>
+                <div class="text-subtitle-2 mb-2">
+                  {{ $t('settings.process.matrix.' + field.subtitle) }}
+                </div>
+                <div class="d-flex flex-wrap">
+                  <div v-for="(subField, key) in field.fields" :key="key">
+                    <v-text-field
+                      class="subfields my-2"
+                      placeholder=""
+                      outlined
+                      :color="findColor(key)"
+                      rounded
+                      v-model.number="field.fields[key]"
+                      :type="subField.type || 'number'"
+                      dense
+                      oninput="if(this.value < 0) this.value = 0;"
+                      :label="$t('form.' + key)"
+                      :suffix="suffix(key)"
+                      @focus="
+                        field.title == 'subdivisions'
+                          ? (edit = 'sub_' + key)
+                          : (edit = key)
+                      "
+                      @blur="edit = ''"
+                    >
+                    </v-text-field>
+                  </div>
+                </div>
+              </div>
+            </v-row>
+          </div>
+        </div>
+        <div class="preview">
+          <matrix-info-resume
+            class="mt-4 d-xs-none"
+            :class="$vuetify.breakpoint.width < 690 ? 'd-none' : ''"
+            :origin="origin"
+            :slots="data.slots"
+            :subdivisions="data.subdivisions"
+          ></matrix-info-resume>
+          <matrix-viewer
+            class="viewer"
+            :edit="edited"
+            :slots="data.slots"
+            :subdivisions="data.subdivisions"
+          ></matrix-viewer>
+        </div>
       </div>
-      <v-divider class="my-4"></v-divider>
-      <!-- slots: {{ slots }} sub: {{ subdivisions }} -->
-      <matrix-info-resume
-        class="mt-4"
-        :origin="origin"
-        :slots="data.slots"
-        :subdivisions="data.subdivisions"
-      ></matrix-info-resume>
-      <matrix-viewer
-        class="viewer"
-        :edit="edited"
-        :slots="data.slots"
-        :subdivisions="data.subdivisions"
-      ></matrix-viewer>
-      <div class="d-flex mt-4">
-        <v-badge dot bordered color="error">
-          <div class="text-subtitle-2">
-            {{ $t('form.requiredFields') }}
-          </div></v-badge
-        >
-        <v-spacer></v-spacer>
+      <div class="button">
         <v-btn color="primary" @click="validate()" rounded>
           {{ $t('buttons.register') }}
         </v-btn>
@@ -104,27 +93,21 @@ import MatrixViewer from '../../node/nodes/matrix/MatrixViewer.vue';
 
 const ADD_MATRIX = gql`
   mutation ADD_MATRIX(
-    $color_hex: String
-    $color_name: String
     $description: String
-    $img: String
     $name: String
-    $part_number: String
-    $parts: Int
-    $supplier: String
-    $unit: String
+    $partNumber: String
+    $origin: JSON
+    $slots: JSON
+    $subdivisions: JSON
   ) {
-    createTarget(
+    create_matrix(
       input: {
-        color_hex: $color_hex
-        color_name: $color_name
         description: $description
-        img: $img
         name: $name
-        part_number: $part_number
-        parts: $parts
-        supplier: $supplier
-        unit: $unit
+        origin: $origin
+        partNumber: $partNumber
+        slots: $slots
+        subdivisions: $subdivisions
       }
     )
   }
@@ -142,15 +125,53 @@ export default {
       colorShow: false,
       picker: false,
       edit: '',
+      suffixList: ['sizeX', 'sizeY', 'marginX', 'marginY'],
+      requireList: ['name'],
       obj: { slotsX: 0 },
-      data: {
-        slots: {
-          qtd: { x: 5, y: 10 },
-          margin: { x: 3, y: 3 },
-          size: { x: 41, y: 24 },
+      fields2: {
+        name: {
+          value: '',
+          required: true,
         },
-        subdivisions: { qtd: { x: 1, y: 1 }, margin: { x: 0, y: 0 } },
+        description: {
+          value: '',
+        },
+        partNumber: {
+          value: '',
+        },
       },
+      fields: [
+        {
+          title: 'origin',
+          subtitle: 'originSubtitle',
+          fields: {
+            originX: 1,
+            originY: 1,
+          },
+        },
+        {
+          title: 'slots',
+          subtitle: 'slotsSubtitle',
+          fields: {
+            quantityX: 8,
+            quantityY: 8,
+            sizeX: 20,
+            sizeY: 20,
+            marginX: 2,
+            marginY: 2,
+          },
+        },
+        {
+          title: 'subdivisions',
+          subtitle: 'subdivisionsSubtitle',
+          fields: {
+            quantityX: 1,
+            quantityY: 1,
+            marginX: 0,
+            marginY: 0,
+          },
+        },
+      ],
     };
   },
 
@@ -168,120 +189,40 @@ export default {
 
     origin() {
       return {
-        x: this.obj.origemX,
-        y: this.obj.origemY,
+        x: this.fields[0].fields.originX,
+        y: this.fields[0].fields.originY,
       };
     },
 
-    fields() {
-      const obj = [
-        {
-          title: 'slots',
-          subtitle: 'Quantity of slots, margins and size',
-          fields: [
-            {
-              title: 'quantityX',
-              value: 0,
-              selected: 'distItemX',
-              // value: this.selected.slotsX,
-            },
-            {
-              title: 'quantityY',
-              value: 0,
-              selected: 'distItemY',
-              // value: this.selected.slotsX,
-            },
-            {
-              title: 'sizeX',
-              value: 0,
-              suffix: 'mm',
-              selected: 'distItemX',
-              // value: this.selected.slotsX,
-            },
-            {
-              title: 'sizeY',
-              value: 0,
-              suffix: 'mm',
-              selected: 'distItemY',
-              // value: this.selected.slotsX,
-            },
-            {
-              title: 'marginX',
-              value: 0,
-              suffix: 'mm',
-              selected: 'slots.margin.x',
-              // value: this.selected.slotsX,
-            },
-            {
-              title: 'marginY',
-              value: 0,
-              suffix: 'mm',
-              selected: 'slots.margin.y',
-              // value: this.obj.slotsX,
-            },
-          ],
+    data() {
+      const obj = {
+        slots: {
+          qtd: {
+            x: this.fields[1].fields.quantityX,
+            y: this.fields[1].fields.quantityY,
+          },
+          margin: {
+            x: this.fields[1].fields.marginX,
+            y: this.fields[1].fields.marginY,
+          },
+          size: {
+            x: this.fields[1].fields.sizeX,
+            y: this.fields[1].fields.sizeY,
+          },
         },
-      ];
+        subdivisions: {
+          qtd: {
+            x: this.fields[2].fields.quantityX,
+            y: this.fields[2].fields.quantityY,
+          },
+          margin: {
+            x: this.fields[2].fields.marginX,
+            y: this.fields[2].fields.marginY,
+          },
+        },
+      };
       return obj;
     },
-
-    // data() {
-    //   return {
-    //     slots: {
-    //       qtd: {
-    //         x: 1,
-    //         y: 1,
-    //       },
-    //       margin: {
-    //         x: 1,
-    //         y: 1,
-    //       },
-    //       size: {
-    //         x: 1,
-    //         y: 1,
-    //       },
-    //     },
-    //     subdivisions: {
-    //       qtd: {
-    //         x: 1,
-    //         y: 1,
-    //       },
-    //       margin: {
-    //         x: 1,
-    //         y: 1,
-    //       },
-    //     },
-    //   };
-    // },
-
-    // slots() {
-    //   return {
-    //     qtd: {
-    //       x: this.obj.slotsX || 1,
-    //       y: this.obj.slotsY || 1,
-    //     },
-    //     margin: {
-    //       x: this.obj.slotsMarginX || 1,
-    //       y: this.obj.slotsMarginY || 1,
-    //     },
-    //     size: {
-    //       x: this.obj.slotsSizeX || 1,
-    //       y: this.obj.slotsSizeY || 1,
-    //     },
-    //   };
-    // },
-    // subdivisions() {
-    //   return {
-    //     qtd: {
-    //       x: this.obj.subdivisionsX || 1,
-    //       y: this.obj.subdivisionsY || 1,
-    //     },
-    //     margin: {
-    //       x: this.obj.subdivisionsMarginX || 1,
-    //       y: this.obj.subdivisionsMarginY || 1,
-    //     },
-    //   };
-    // },
   },
 
   methods: {
@@ -291,43 +232,61 @@ export default {
       };
     },
 
+    findColor(key) {
+      if (key.slice(-1) === 'X') return 'error';
+      if (key.slice(-1) === 'Y') return 'success';
+      return '';
+    },
+
+    isRequire(key) {
+      if (this.requireList.includes(key)) return true;
+      return false;
+    },
+
     validate() {
       if (this.$refs.form.validate()) {
-        console.log(this.obj);
-        // this.addObject(this.obj);
+        this.addMatrix(this.obj);
       } else {
         this.formHasErrors = true;
+        this.$alertFeedback(this.$t('alerts.formError'), 'error');
       }
     },
 
-    async addObject(obj) {
-      console.log('input', obj);
+    suffix(key) {
+      if (this.suffixList.includes(key)) return 'mm';
+      return '';
+    },
 
+    async addMatrix() {
       await this.$apollo
         .mutate({
           mutation: ADD_MATRIX,
           variables: {
-            // eslint-disable-next-line no-underscore-dangle
-            color_hex: obj.color_hex,
-            description: obj.description,
-            img: obj.img,
-            name: obj.name,
-            part_number: obj.part_number,
-            parts: parseInt(obj.parts),
-            supplier: obj.supplier,
-            unit: obj.unit,
+            description: this.fields2.description.value,
+            name: this.fields2.name.value,
+            partNumber: this.fields2.partNumber.value,
+            origin: this.origin,
+            slots: this.data.slots,
+            subdivisions: this.data.subdivisions,
           },
         })
 
         .then(() => {
           // Result
-          this.$alertFeedback(this.$t('alerts.updateUserSuccess'), 'success');
-          this.$refs.form.reset();
+          this.$emit('refetch');
+          this.$alertFeedback(
+            this.$t('alerts.registerMatrixSuccess'),
+            'success',
+          );
         })
 
         .catch((error) => {
           // Error
-          this.$alertFeedback(this.$t('alerts.updateUserFail'), 'error', error);
+          this.$alertFeedback(
+            this.$t('alerts.registerMatrixFail'),
+            'error',
+            error,
+          );
           // We restore the initial user input
         });
     },
@@ -337,10 +296,28 @@ export default {
 
 <style lang="scss" scoped>
 .object-register {
-  max-width: 550px;
+  .form {
+    max-width: 650px;
+    min-width: 310px;
+    margin-right: 2rem;
+  }
+
+  .button {
+    position: absolute;
+    right: 22px;
+    bottom: 22px;
+  }
+
+  .preview {
+    max-width: 900px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 370px;
+  }
 
   .subfields {
-    max-width: 120px;
+    max-width: 150px;
   }
 
   .row {
@@ -349,10 +326,10 @@ export default {
   .viewer {
     margin-top: 20px;
     width: 100%;
-    height: 500px;
   }
   .field {
     padding: 1.5rem 0;
+    width: 100%;
   }
   ::v-deep .v-text-field__details {
     display: none;

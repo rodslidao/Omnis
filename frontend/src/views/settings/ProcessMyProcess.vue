@@ -1,6 +1,6 @@
 <template>
   <div class="mt-11">
-    <router-view :key="$route.path" @refetch="refetch()" :items="model"> </router-view>
+    <router-view @refetch="refetch()" :items="model"> </router-view>
     <div v-if="$router.currentRoute.name == 'myProcess'">
       <settings-items
         :title="$t('settings.process.process.add')"

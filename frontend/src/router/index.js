@@ -26,8 +26,8 @@ import ProcessMatrix from '@/views/settings/ProcessMatrix.vue';
 import ObjectRegister from '@/components/settings/process/ObjectRegister.vue';
 import VariableRegister from '@/components/settings/process/VariableRegister.vue';
 import MatrixRegister from '@/components/settings/process/MatrixRegister.vue';
+import MatrixEdit from '@/components/settings/process/MatrixEdit.vue';
 import ProcessRegister from '@/components/settings/process/ProcessRegister.vue';
-
 
 Vue.use(Router);
 
@@ -131,7 +131,15 @@ const routes = [
                 name: 'matrixRegister',
                 component: MatrixRegister,
                 path: 'add',
+
                 meta: { breadCrumb: 'settings.process.matrix.add' },
+              },
+              {
+                name: 'matrixEdit',
+                component: MatrixEdit,
+                path: 'edit',
+                props: true,
+                meta: { breadCrumb: 'settings.process.matrix.edit' },
               },
             ],
           },

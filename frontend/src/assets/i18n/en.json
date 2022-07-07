@@ -40,7 +40,12 @@
         "title": "Matrix",
         "subtitle": "Create and edit the matrix to use in nodes",
         "add": "Register new Matrix",
-        "list": "List Matrix"
+        "edit": "Edit Matrix",
+        "list": "List Matrix",
+        "slotsSubtitle": "Quantity of slots, margins and size",
+        "subdivisionsSubtitle": "If your matrix has a subdivision",
+        "originSubtitle": "Define distance matrix of 0 machine"
+        
       },
       "objects": {
         "name": "Objects",
@@ -140,7 +145,14 @@
     "quantityY": "Quantity Y",
     "sizeX": "Size X",
     "sizeY": "Size Y",
-    "slots": "Slots"
+    "marginX": "Margin X",
+    "marginY": "Margin Y",
+    "slots": "Slots",
+    "originX": "Origin X",
+    "originY": "Origin Y",
+    "partNumber": "Part Number",
+    "partNumberAb": "PN",
+    "origin": "Origin"
 
   },
   "levels": {
@@ -186,8 +198,10 @@
     "pauseFail": "Fail to pause the process, 😢",
     "pauseSuccess": "Process was paused ✋",
     "processStopped": "The process was stopped ✋",
-    "RegisterUserFail": "Failed to register user, 😢",
-    "RegisterUserSuccess": "User registered successfully 🤙",
+    "registerUserFail": "Failed to register user, 😢",
+    "registerUserSuccess": "User registered successfully 🤙",
+    "registerMatrixFail": "Failed to register matrix, 😢",
+    "registerMatrixSuccess": "Matrix registered successfully 🤙",
     "runningProcess": "The process is running 🚀",
     "saveFail": "Could not save 😢",
     "saveSuccess": "The process was saved 👌",
@@ -197,7 +211,10 @@
     "updateProcessSuccess": "The process was updated👍",
     "updateUserFail": "Could't possible to update 😢",
     "updateUserSuccess": "The data was updated👍",
+    "updateMatrixFail": "Could't possible to update the matrix😢",
+    "updateMatrixSuccess": "The matrix was updated👍",
     "updateVariableFail": "Could't possible to update 😢",
+    "formError": "Some fields are required or wrong 😢",
     "updateVariableSuccess": "The variable was updated👍"
   },
   "list": {

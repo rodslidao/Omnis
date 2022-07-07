@@ -1,142 +1,229 @@
 <template>
-  <dialog-confirmation
-    :title="$t('settings.users.editUser.title')"
-    description=" "
-    max-width="600"
-    :persistent="true"
-  >
-    <template v-slot:description>
-      <div class="object-register pr-6 pt-6" v-if="itemsList[0].value">
-        <v-form
-          v-model="isValid"
-          ref="form"
-          rounded
-          max-width="700px"
-          lazy-validation
-        >
-          <div
-            v-for="(item, index) in items"
-            :key="index"
-            v-on="generateObj(item)"
-          >
+  <div class="edit-matrix mt-11">
+    <v-form
+      v-model="isValid"
+      ref="form"
+      rounded
+      max-width="700px"
+      lazy-validation
+    >
+      <div class="d-flex flex-wrap">
+        <div class="form mb-4">
+          <div v-for="(subField, key) in fields2" :key="key">
+            <v-text-field
+              class="field mb-n6"
+              placeholder=""
+              outlined
+              rounded
+              v-model.number="fields2[key].value"
+              dense
+              :label="$t('form.' + key)"
+              max-width
+              :rules="isRequire(key) ? [rules().required] : [true]"
+            >
+            </v-text-field>
+          </div>
+          <!-- custom -->
+          <div v-for="(field, index) in fields" :key="index" class="mt-6">
             <v-row>
-              <v-col cols="4" class="d-flex align-center">
-                <!-- {{ item }} -->
-                <v-badge dot bordered color="error" v-if="item.required">
-                  <div class="font-weight-bold">
-                    {{ $t('form.' + item.field) }}
-                  </div></v-badge
-                >
-                <div v-else class="font-weight-bold">
-                  {{ $t('form.' + item.field) }}
+              <div>
+                <div class="text-h6 font-weight-black">
+                  {{ $t('form.' + field.title) }}
                 </div>
-              </v-col>
-              <v-col cols="8" class="field">
-                <v-row>
-                  <v-text-field
-                    placeholder=""
-                    outlined
-                    rounded
-                    v-model="obj[item.field]"
-                    dense
-                    :rules="item.required ? [rules().required] : [true]"
-                    full-width
-                    @keyup.enter="colorShow = false"
-                  >
-                    <template
-                      v-slot:prepend-inner
-                      v-if="item.field == 'color_hex'"
+                <div class="text-subtitle-2 mb-2">
+                  {{ $t('settings.process.matrix.' + field.subtitle) }}
+                </div>
+                <div class="d-flex flex-wrap">
+                  <div v-for="(subField, key) in field.fields" :key="key">
+                    <v-text-field
+                      class="subfields my-2"
+                      placeholder=""
+                      outlined
+                      :color="findColor(key)"
+                      rounded
+                      v-model.number="field.fields[key]"
+                      :type="subField.type || 'number'"
+                      dense
+                      oninput="if(this.value < 0) this.value = 0;"
+                      :label="$t('form.' + key)"
+                      :suffix="suffix(key)"
+                      @focus="
+                        field.title == 'subdivisions'
+                          ? (edit = 'sub_' + key)
+                          : (edit = key)
+                      "
+                      @blur="edit = ''"
                     >
-                      <v-badge
-                        class="mb-n2"
-                        bordered
-                        inline
-                        :color="obj[item.field]"
-                      ></v-badge>
-                    </template>
-                    <template v-slot:append v-if="item.field == 'color_hex'">
-                      <div>
-                        <v-btn
-                          small
-                          icon
-                          @click="(picker = !picker), (colorShow = !colorShow)"
-                          ><v-icon :color="colorShow ? 'success' : ''">{{
-                            !colorShow ? 'mdi-eyedropper-variant' : 'mdi-check'
-                          }}</v-icon></v-btn
-                        >
-                      </div>
-                    </template></v-text-field
-                  ></v-row
-                >
-                <v-row>
-                  <v-color-picker
-                    dot-size="25"
-                    v-if="colorShow && item.field == 'color_hex'"
-                    hide-inputs
-                    v-model="obj[item.field]"
-                    mode="hexa"
-                    @update:color="(a) => (obj[item.field] = a.hexa)"
-                  ></v-color-picker>
-                </v-row>
-              </v-col>
+                    </v-text-field>
+                  </div>
+                </div>
+              </div>
             </v-row>
           </div>
-        </v-form>
+        </div>
+        <div class="preview">
+          <matrix-info-resume
+            class="mt-4 d-xs-none"
+            :class="$vuetify.breakpoint.width < 690 ? 'd-none' : ''"
+            :origin="origin"
+            :slots="data.slots"
+            :subdivisions="data.subdivisions"
+          ></matrix-info-resume>
+          <matrix-viewer
+            class="viewer"
+            :edit="edited"
+            :slots="data.slots"
+            :subdivisions="data.subdivisions"
+          ></matrix-viewer>
+        </div>
       </div>
-      <v-divider class="mt-4"></v-divider>
-    </template>
-    <template v-slot:actions>
-      <!-- <v-badge dot bordered color="error">
-        <div class="text-subtitle-2">
-          {{ $t('form.requiredFields') }}
-        </div></v-badge
-      >
-      <v-spacer></v-spacer> -->
-      <div class="pb-4 pr-4">
-        <v-btn text @click="$emit('cancel-event')" rounded>
-          {{ $t('buttons.cancel') }}
-        </v-btn>
-        <v-btn
-          color="primary"
-          rounded
-          v-on:keyup.enter="validate(obj)"
-          @click="validate(obj)"
-        >
+      <div class="button">
+        <v-btn color="primary" @click="validate()" rounded>
           {{ $t('buttons.edit') }}
         </v-btn>
       </div>
-    </template>
-  </dialog-confirmation>
+    </v-form>
+  </div>
 </template>
 
 <script>
-import DialogConfirmation from '../DialogConfirmation.vue';
+import gql from 'graphql-tag';
+import MatrixInfoResume from '../../node/nodes/matrix/MatrixInfoResume.vue';
+import MatrixViewer from '../../node/nodes/matrix/MatrixViewer.vue';
+
+const UPDATE_MATRIX = gql`
+  mutation UPDATE_MATRIX(
+    $_id: ID!
+    $description: String
+    $name: String
+    $partNumber: String
+    $origin: JSON
+    $slots: JSON
+    $subdivisions: JSON
+  ) {
+    update_matrix(
+      _id: $_id
+      input: {
+        description: $description
+        name: $name
+        partNumber: $partNumber
+        origin: $origin
+        slots: $slots
+        subdivisions: $subdivisions
+      }
+    )
+  }
+`;
 
 export default {
-  components: { DialogConfirmation },
-  name: 'ObjectRegister',
+  components: { MatrixInfoResume, MatrixViewer },
+  name: 'MatrixEdit',
   props: {
-    items: Array,
+    items: Object,
   },
   data() {
     return {
       isValid: true,
       colorShow: false,
       picker: false,
-      obj: {},
-      show1: true,
-      itemsCopy: null,
+      edit: '',
+      suffixList: ['sizeX', 'sizeY', 'marginX', 'marginY'],
+      requireList: ['name'],
+      obj: { slotsX: 0 },
+      fields2: {
+        name: {
+          value: this.items.name,
+          required: true,
+        },
+        description: {
+          value: this.items.description,
+        },
+        partNumber: {
+          value: this.items.partNumber || '0',
+        },
+      },
+      fields: [
+        {
+          title: 'origin',
+          subtitle: 'originSubtitle',
+          fields: {
+            originX: this.items.originX || 0,
+            originY: this.items.originY || 0,
+          },
+        },
+        {
+          title: 'slots',
+          subtitle: 'slotsSubtitle',
+          fields: {
+            quantityX: this.items.slots.qtd.x,
+            quantityY: this.items.slots.qtd.y,
+            sizeX: this.items.slots.size.x,
+            sizeY: this.items.slots.size.y,
+            marginX: this.items.slots.margin.x,
+            marginY: this.items.slots.margin.y,
+          },
+        },
+        {
+          title: 'subdivisions',
+          subtitle: 'subdivisionsSubtitle',
+          fields: {
+            quantityX: this.items.subdivisions.qtd.x,
+            quantityY: this.items.subdivisions.qtd.y,
+            marginX: this.items.subdivisions.margin.x,
+            marginY: this.items.subdivisions.margin.y,
+          },
+        },
+      ],
     };
   },
 
-  computed: {
-    itemsList() {
-      return this.items;
-    },
-  },
+  // beforeCreated() {
+  //   this.items.forEach((item) => {
+  //     console.log(item);
+  //   });
+  // },
 
-  mounted() {
-    this.itemsCopy = { ...this.items };
+  computed: {
+    edited() {
+      return this.edit;
+    },
+
+    origin() {
+      return {
+        x: this.fields[0].fields.originX,
+        y: this.fields[0].fields.originY,
+      };
+    },
+
+    data() {
+      const obj = {
+        slots: {
+          qtd: {
+            x: this.fields[1].fields.quantityX,
+            y: this.fields[1].fields.quantityY,
+          },
+          margin: {
+            x: this.fields[1].fields.marginX,
+            y: this.fields[1].fields.marginY,
+          },
+          size: {
+            x: this.fields[1].fields.sizeX,
+            y: this.fields[1].fields.sizeY,
+          },
+        },
+        subdivisions: {
+          qtd: {
+            x: this.fields[2].fields.quantityX,
+            y: this.fields[2].fields.quantityY,
+          },
+          margin: {
+            x: this.fields[2].fields.marginX,
+            y: this.fields[2].fields.marginY,
+          },
+        },
+      };
+      return obj;
+    },
   },
 
   methods: {
@@ -146,29 +233,103 @@ export default {
       };
     },
 
-    generateObj(item) {
-      // console.log('dento', this.item);
-      this.obj[item.field] = item.value;
+    findColor(key) {
+      if (key.slice(-1) === 'X') return 'error';
+      if (key.slice(-1) === 'Y') return 'success';
+      return '';
+    },
+
+    isRequire(key) {
+      if (this.requireList.includes(key)) return true;
+      return false;
     },
 
     validate() {
       if (this.$refs.form.validate()) {
-        // console.log(this.obj);
-        this.$emit('edit-obj', this.obj);
+        this.addMatrix(this.obj);
       } else {
         this.formHasErrors = true;
+        this.$alertFeedback(this.$t('alerts.formError'), 'error');
       }
+    },
+
+    suffix(key) {
+      if (this.suffixList.includes(key)) return 'mm';
+      return '';
+    },
+
+    async addMatrix() {
+      await this.$apollo
+        .mutate({
+          mutation: UPDATE_MATRIX,
+          variables: {
+            // eslint-disable-next-line no-underscore-dangle
+            _id: this.items._id,
+            description: this.fields2.description.value,
+            name: this.fields2.name.value,
+            partNumber: this.fields2.partNumber.value,
+            origin: this.origin,
+            slots: this.data.slots,
+            subdivisions: this.data.subdivisions,
+          },
+        })
+
+        .then(() => {
+          // Result
+          this.$emit('refetch');
+          this.$alertFeedback(this.$t('alerts.updateMatrixSuccess'), 'success');
+        })
+
+        .catch((error) => {
+          console.log(error.graphQLErrors);
+          this.$alertFeedback(
+            this.$t('alerts.updateMatrixSuccess'),
+            'error',
+            error
+          );
+          // We restore the initial user input
+        });
     },
   },
 };
 </script>
 
 <style lang="scss" scoped>
-.object-register {
-  max-width: 550px;
+.edit-matrix {
+  .form {
+    max-width: 650px;
+    min-width: 310px;
+    margin-right: 2rem;
+  }
 
+  .button {
+    position: absolute;
+    right: 22px;
+    bottom: 22px;
+  }
+
+  .preview {
+    max-width: 900px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 370px;
+  }
+
+  .subfields {
+    max-width: 150px;
+  }
+
+  .row {
+    margin: 0;
+  }
+  .viewer {
+    margin-top: 20px;
+    width: 100%;
+  }
   .field {
     padding: 1.5rem 0;
+    width: 100%;
   }
   ::v-deep .v-text-field__details {
     display: none;

@@ -5,20 +5,25 @@
     <div class="d-flex align-center p-4" v-if="obj">
       <div>
         <div class="d-flex align-center">
-        <div class="viewer">
-         <matrix-viewer edit="distTotalX" v-if="obj.slots" :slots="obj.slots" :subdivisions="obj.subdivisions"></matrix-viewer>
-        </div>
+          <div class="viewer">
+            <matrix-viewer
+              edit="distTotalX"
+              v-if="obj.slots"
+              :slots="obj.slots"
+              :subdivisions="obj.subdivisions"
+            ></matrix-viewer>
+          </div>
           <div class="pl-4 pr-4">
             <span class="text-h6 text-capitalize">{{ obj.name }}</span>
             <div class="text-subtitle-2">{{ obj.description }}</div>
             <div class="font-weight-bold d-flex align-center">
-              <div class="text-body-2 mr-1">Part Number:</div>
+              <div class="text-body-2 mr-1">{{$t('form.partNumberAb')}}:</div>
               {{ obj.part_number }}
             </div>
-            <div class="font-weight-bold d-flex align-center">
+            <!-- <div class="font-weight-bold d-flex align-center">
               <div class="text-body-2 mr-1">color:</div>
               {{ obj.color_name }}
-            </div>
+            </div> -->
             <!-- <div class="text-body-2">
             {{ $timestampToDate(obj.date) }}
           </div> -->
@@ -128,10 +133,6 @@ export default {
     detailItems() {
       return [
         {
-          field: 'Cor',
-          value: `${this.obj.color_hex} | ${this.obj.color_name}`,
-        },
-        {
           field: 'Supplier',
           value: this.obj.supplier,
         },
@@ -158,12 +159,12 @@ export default {
 
     remove() {
       // eslint-disable-next-line no-underscore-dangle
-      this.$emit('remove-obj', this.obj._id);
+      this.$emit('remove', this.obj._id);
       this.dialogDelete = false;
     },
 
     edit() {
-      this.$emit('edit-obj', this.obj);
+      this.$emit('edit', this.obj);
     },
 
     dialog() {
@@ -174,9 +175,8 @@ export default {
 </script>
 
 <style>
-.viewer{
-  width: 600px;
-  height: 800px;
+.viewer {
+  width: 200px;
   /* width: 150px;
   height: 150px; */
 }
