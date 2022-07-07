@@ -45,6 +45,7 @@ class User(Person):
         self.avatar_image = avatar_image
         self.__level = level
         self._id = ObjectId(_id)
+        self.db_pointer = {"_id":self._id, "collection":"users"}
 
     @property
     def level(self):

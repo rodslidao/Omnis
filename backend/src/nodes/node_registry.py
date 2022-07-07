@@ -49,6 +49,7 @@ for _dir in list(
                 {
                     "package_name": f".{_dir}.{x[:-3]}",
                     "class_name": f"{x[0].upper()}{x[1:-8]}Node",
+                    "graphql": f"{_dir}.graphql"# if file_exists(f"{_dir}.graphql")  else False
                 }
             ),
             filter(lambda x: x[-8:] == "_node.py", listdir(f"src/nodes/{_dir}")),
@@ -57,6 +58,7 @@ for _dir in list(
 
 # import all the nodes in the list 'package_nodes',
 # and store them in the list 'nodeRegistry' using the RegEntry class
+
 for mod in package_nodes:
     mod["package_name"] = importlib.import_module(mod["package_name"], __package__)
     nodeRegistry.append(

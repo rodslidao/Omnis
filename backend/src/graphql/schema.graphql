@@ -2,6 +2,7 @@ scalar JSON
 scalar Decimal
 scalar Upload
 scalar timestamptz
+scalar DB_VALUE
 
 schema {
   mutation: Mutation
@@ -40,14 +41,6 @@ type Mutation {
   updateNodeSheet(_id: ID!, name: String, content: JSON): Boolean
   deleteNodeSheet(_id: ID!): Boolean
   duplicateNodeSheet(_id: ID!): Boolean
-  
-  startProcess(_id: ID!): Boolean
-  stopProcess: Boolean
-  resumeProcess: Boolean
-  pauseProcess: Boolean
-
-  loadConfig(_id: ID!): NodeSheet
-  getLoadedConfig: ID!
 
   createAlert(input: AlertInput!): AlertResult!
 
@@ -71,7 +64,6 @@ type Mutation {
   registerUser(newUser: reg_user): Boolean!
   deleteUser(_id: ID!): Boolean!
   updateUser(_id: ID!, input: reg_user): Boolean!
-  updateTargets(targets: [ID!]!): Boolean!
 }
 
 type Query {
@@ -79,7 +71,7 @@ type Query {
   getSketchList: SketchListResult!
   getAxisList: [AxisResult!]
   getDevicesList: [DeviceResult!]
-  getNodeInfo(node_type: ID!, kwargs: JSON): NodeInfoResult!
+  getNodeInfo(node_type: String!, kwargs: JSON): NodeInfoResult!
 
   getCamera(_id: ID!): CameraResult!
   getCameras: CamerasResult!
@@ -101,7 +93,6 @@ type Query {
   authenticateUser(username: String, password: String, email: String): user_with_token
   authUserProfile: user
   getUsersList: [user]
-  getTargetsList: [ID]
 }
 
 type Subscription {

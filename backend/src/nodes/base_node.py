@@ -12,7 +12,7 @@ from threading import Thread, Event
 import queue
 event_list = queue.Queue()
 
-from src.nodes.process.process import process
+from src.manager.process_manager import ProcessManager as process
 
 NODE_TYPE = "BASE_NODE"
 rtc_status = SubscriptionFactory(nodes, "nodes")
@@ -78,7 +78,7 @@ class BaseNode(Wizard):
         self.stop_event = Event()
         self.update_status({"status": "LOADED"})
         self.auto_run = options.get("auto_run", False)
-        logger.info("[%s] Node loaded", self)
+        # logger.info("[%s] Node loaded", self)
 
     def onSuccess(self, payload, additional=None):
         self.on("onSuccess", payload, additional)

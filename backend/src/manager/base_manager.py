@@ -4,23 +4,23 @@ from api.decorators import for_all_methods
 
 
 @for_all_methods(exception(logger))
-class BaseManager:
+class BaseManager(object):
     def __init__(self) -> None:
         self.store = {}
         self.queues = []
 
     def add(self, payload):
-        self.store[str(payload._id)] = payload
-        self.update()
+        self.store[payload._id] = payload
+        self.update_store()
 
-    def update(self):
+    def update_store(self):
         for queue in self.queues:
             for payload in self.store.values():
                 queue.put_nowait(payload.to_dict())
 
     def remove(self, payload):
         self.store.pop(payload._id, None)
-        self.update()
+        self.update_store()
 
     def get(self):
         return list(map(lambda x: x, self.store.values()))

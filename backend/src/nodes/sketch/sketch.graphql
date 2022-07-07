@@ -1,0 +1,39 @@
+type sketch {
+  _id: ID
+  parent_id: ID
+  label: String
+  key: ID
+  description: String
+  author: String
+  version: Int
+  last_access: Float
+  saved: Boolean
+  duplicated:Boolean
+  content: JSON
+  node_qtd: Int
+}
+
+input reg_sketch{
+  _id: ID
+  parent_id: ID
+  label: String
+  key: ID
+  description: String
+  author: String
+  version: Int
+  saved: Boolean
+  duplicated:Boolean
+  content: JSON
+  node_qtd: Int
+}
+
+extend type Query {
+    get_sketch_list: [sketch]
+    get_sketch_item: sketch
+}
+
+extend type Mutation  {
+  create_sketch(input: reg_sketch): Boolean
+  delete_sketch(_id: ID!): Boolean
+  update_sketch(_id: ID!, input: reg_sketch): Boolean
+}

@@ -89,31 +89,43 @@ class Websocket(WebSocketEndpoint):
         )
 
     async def _broadcast(self, payload: dict):
-        for client in self.connections.get(self._id, []):
+        for client in list(self.connections.get(self._id, [])):
             await self.send_to_client(client, payload)
 
     async def send_to_client(self, client, payload: dict):
-        await client.send_json(payload)
+        try:
+            # logger.info(f"send for {len(list(self.connections.get(self._id, [])))} clients")
+            await client.send_json(payload)
+        except RuntimeError:
+            logger.warning('Fail to send message on websocket.')
 
-    async def broadcast_on_change(self, updated_info, payload={}):
-        old_status = updated_info.copy()
+    async def broadcast_on_change(self, updated_info, payload={}, **kwargs):
+        # updated_info = getattr(updated_info_pointer, kwargs.get('attr', '__undefined_attr'), updated_info_pointer)
+        # old_status = updated_info.copy()
+        logger.info(f"{self._id} {id(updated_info)}")
         while True:
-            if updated_info != old_status:
-                old_status = updated_info.copy()
-                if self.connections.get(self._id):
-                    await self._broadcast(payload)
-                    await asyncio.sleep(0.01)
-            await asyncio.sleep(0.0001)
+            # if self._id == 'status':
+            #     logger.info(f"{self._id} {id(updated_info)} {updated_info.copy() != old_status}")
+            # if updated_info.copy() != old_status: #! Sometimes work, sometimes not, try use some ctype pointer instead dicts and props
+            await self._broadcast(payload)
+            await asyncio.sleep(float(kwargs.get('ms', 0.03))) #3ms
+                # await asyncio.sleep(0.01)
+                # old_status = updated_info.copy()
+            # await asyncio.sleep(0.01)
 
 
 class Process(Websocket):
-    def __init__(self, _id, status):
+    def __init__(self, _id, process):
         super().__init__(_id)
-        self.status = status
+        self.process = process
 
     async def _broadcast(self, *args):
-        await super()._broadcast(self.status)
-
+        await super()._broadcast(self.process.status)
+    
+    async def on_receive(self, websocket, data):
+        await super().on_receive(websocket, data)
+        await self._broadcast()
+        logger.info(f"fora: id_process_status: {id(self.process.status)} | id_process {id(self.process)}")
 
 class Controls(Websocket):
     def __init__(self, _id, serial):

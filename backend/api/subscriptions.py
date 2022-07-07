@@ -37,4 +37,4 @@ class SubscriptionFactory:
         self.store.put_nowait(dict(info.items()))
         
         # self.store
-        logger.info("putting")
+        # logger.info("putting")

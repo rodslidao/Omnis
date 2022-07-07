@@ -1,0 +1,29 @@
+type matrix {
+  _id : ID!
+  name: String
+  slots: JSON
+  subdivisions: JSON
+  description: String
+  origin: JSON
+  part_number: String
+}
+
+input reg_matrix {
+  name: String
+  slots: JSON
+  subdivisions: JSON
+  description: String
+  origin: JSON
+  part_number: String
+}
+
+extend type Query {
+    get_matrix_list: [matrix]
+    get_matrix_item: matrix
+}
+
+extend type Mutation  {
+  create_matrix(input: reg_matrix): Boolean
+  delete_matrix(_id: ID!): Boolean
+  update_matrix(_id: ID!, input: reg_matrix): Boolean
+}

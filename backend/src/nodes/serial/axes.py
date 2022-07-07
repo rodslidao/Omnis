@@ -13,7 +13,7 @@ class axis:
         return self.moving.is_set()
 
     def move(self, target):
-        self.position = target
+        self.position = target if target > 0 else 0
         self.moving.set()
         return self.__str__()
 
