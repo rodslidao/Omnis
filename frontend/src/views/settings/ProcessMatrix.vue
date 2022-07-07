@@ -50,6 +50,8 @@ const LIST_MATRIX = gql`
       description
       slots
       subdivisions
+      origin
+      part_number
     }
   }
 `;

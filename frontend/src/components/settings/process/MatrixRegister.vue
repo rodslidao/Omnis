@@ -1,5 +1,5 @@
 <template>
-  <div class="object-register mt-11">
+  <div class="object-register mt-n6">
     <v-form
       v-model="isValid"
       ref="form"
@@ -15,7 +15,7 @@
               placeholder=""
               outlined
               rounded
-              v-model.number="fields2[key].value"
+              v-model="fields2[key].value"
               dense
               :label="$t('form.' + key)"
               max-width
@@ -95,7 +95,7 @@ const ADD_MATRIX = gql`
   mutation ADD_MATRIX(
     $description: String
     $name: String
-    $partNumber: String
+    $part_number: String
     $origin: JSON
     $slots: JSON
     $subdivisions: JSON
@@ -105,7 +105,7 @@ const ADD_MATRIX = gql`
         description: $description
         name: $name
         origin: $origin
-        partNumber: $partNumber
+        part_number: $part_number
         slots: $slots
         subdivisions: $subdivisions
       }
@@ -136,7 +136,7 @@ export default {
         description: {
           value: '',
         },
-        partNumber: {
+        part_number: {
           value: '',
         },
       },
@@ -264,7 +264,7 @@ export default {
           variables: {
             description: this.fields2.description.value,
             name: this.fields2.name.value,
-            partNumber: this.fields2.partNumber.value,
+            part_number: this.fields2.part_number.value,
             origin: this.origin,
             slots: this.data.slots,
             subdivisions: this.data.subdivisions,

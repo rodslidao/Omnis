@@ -11,8 +11,8 @@
           >
         </v-avatar>
         <div class="pl-4 pr-4">
-          <div class="text-h6 mb-1">
-            <span class="text-capitalize">{{ user.first_name }}</span>
+          <div class="text-h6 font-weight-bold mb-1">
+            <span class="text-capitalize ">{{ user.first_name }}</span>
             {{ user.last_name }}
           </div>
           <div class="text-body-2">

@@ -92,13 +92,13 @@ const ADD_OBJECT = gql`
     $color_name: String
     $description: String
     $img: String
-    $name: String
+    $name: String!
     $part_number: String
     $parts: Int
     $supplier: String
     $unit: String
   ) {
-    createTarget(
+    create_object(
       input: {
         color_hex: $color_hex
         color_name: $color_name
@@ -169,6 +169,7 @@ export default {
         .then(() => {
           // Result
           this.$alertFeedback(this.$t('alerts.updateUserSuccess'), 'success');
+          this.$emit('refetch');
           this.$refs.form.reset();
         })
 

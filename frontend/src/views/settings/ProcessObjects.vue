@@ -1,6 +1,6 @@
 <template>
   <div class="mt-11">
-    <router-view :key="$route.path" :items="model"> </router-view>
+    <router-view :key="$route.path" @refetch="refetch" :items="model"> </router-view>
     <div v-if="$router.currentRoute.name == 'object'">
       <settings-items
         :title="$t('settings.process.objects.add')"
@@ -11,12 +11,12 @@
       ></settings-items>
 
       <settings-title>{{
-        $t('settings.process.objects.listObject')
+        $t('settings.process.objects.list')
       }}</settings-title>
 
       <settings-list
         class="mt-4"
-        :items="getTargetsList"
+        :items="get_object_list"
         item-search="name"
         :fields-ignore="fieldsToIgnore"
         translate-path="form"
@@ -51,7 +51,7 @@ import ObjectEdit from '../../components/settings/process/ObjectEdit.vue';
 
 const LIST_OBJ = gql`
   query LIST_OBJ {
-    getTargetsList {
+    get_object_list {
       _id
       color_hex
       color_name
@@ -68,7 +68,7 @@ const LIST_OBJ = gql`
 
 const REMOVE_OBJ = gql`
   mutation REMOVE_OBJ($_id: ID!) {
-    deleteTarget(_id: $_id)
+    delete_object(_id: $_id)
   }
 `;
 
@@ -79,12 +79,12 @@ const UPDATE_OBJ = gql`
     $color_name: String
     $description: String
     $img: String
-    $name: String
+    $name: String!
     $part_number: String
     $parts: Int
     $supplier: String
   ) {
-    updateTarget(
+    update_object(
       _id: $_id
       input: {
         color_hex: $color_hex
@@ -116,52 +116,52 @@ export default {
       // model: [
       //   {
       //     field: 'name',
-      //     value: this.getTargetsList.name,
+      //     value: this.get_object_list.name,
       //     title: 'name',
       //     required: true,
       //   },
       //   {
       //     field: 'description',
-      //     value: this.getTargetsList.description,
+      //     value: this.get_object_list.description,
       //     title: 'description',
       //   },
       //   {
       //     field: 'part_number',
-      //     value: this.getTargetsList.part_number,
+      //     value: this.get_object_list.part_number,
       //     title: 'part_number',
       //   },
       //   {
       //     field: 'supplier',
-      //     value: this.getTargetsList.supplier,
+      //     value: this.get_object_list.supplier,
       //     title: 'supplier',
       //   },
       //   {
       //     field: 'parts',
-      //     value: this.getTargetsList.parts,
+      //     value: this.get_object_list.parts,
       //     title: 'parts',
       //   },
       //   {
       //     field: 'unit',
-      //     value: this.getTargetsList.unit,
+      //     value: this.get_object_list.unit,
       //     title: 'unit',
       //   },
       //   {
       //     field: 'color_hex',
-      //     value: this.getTargetsList.color_hex,
+      //     value: this.get_object_list.color_hex,
       //     title: 'color',
       //   },
       //   {
       //     field: 'color_name',
-      //     value: this.getTargetsList.color_name,
+      //     value: this.get_object_list.color_name,
       //     title: 'color',
       //   },
       //   {
       //     field: 'img',
-      //     value: this.getTargetsList.img,
+      //     value: this.get_object_list.img,
       //     title: 'img',
       //   },
       // ],
-      // getTargetsList: [
+      // get_object_list: [
       //   {
       //     _id: '6552818',
       //     name: 'Ovo Caipira',
@@ -272,12 +272,12 @@ export default {
 
   apollo: {
     // Simple query that will update the 'hello' vue property
-    getTargetsList: LIST_OBJ,
+    get_object_list: LIST_OBJ,
   },
 
   methods: {
     refetch() {
-      this.$apollo.queries.getTargetsList.refetch();
+      this.$apollo.queries.get_object_list.refetch();
     },
 
     updateObj(obj) {
@@ -296,7 +296,7 @@ export default {
         })
         .then(() => {
           // Result
-          this.$apollo.queries.getTargetsList.refetch();
+          this.$apollo.queries.get_object_list.refetch();
           this.$alertFeedback(this.$t('alerts.deleteSuccess'), 'success');
           // this.isLoading = false;
           // this.setSaved(this.selectedTabIndex);
@@ -331,7 +331,7 @@ export default {
 
         .then(() => {
           // Result
-          this.$apollo.queries.getTargetsList.refetch();
+          this.$apollo.queries.get_object_list.refetch();
           this.$alertFeedback(this.$t('alerts.updateObjSuccess'), 'success');
           this.editDialog = false;
         })

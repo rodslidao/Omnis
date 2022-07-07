@@ -1,5 +1,5 @@
 <template>
-  <div class="edit-matrix mt-11">
+  <div class="edit-matrix mt-n6">
     <v-form
       v-model="isValid"
       ref="form"
@@ -96,7 +96,7 @@ const UPDATE_MATRIX = gql`
     $_id: ID!
     $description: String
     $name: String
-    $partNumber: String
+    $part_number: String
     $origin: JSON
     $slots: JSON
     $subdivisions: JSON
@@ -106,7 +106,7 @@ const UPDATE_MATRIX = gql`
       input: {
         description: $description
         name: $name
-        partNumber: $partNumber
+        part_number: $part_number
         origin: $origin
         slots: $slots
         subdivisions: $subdivisions
@@ -138,8 +138,8 @@ export default {
         description: {
           value: this.items.description,
         },
-        partNumber: {
-          value: this.items.partNumber || '0',
+        part_number: {
+          value: this.items.part_number,
         },
       },
       fields: [
@@ -147,8 +147,8 @@ export default {
           title: 'origin',
           subtitle: 'originSubtitle',
           fields: {
-            originX: this.items.originX || 0,
-            originY: this.items.originY || 0,
+            originX: this.items.origin.x,
+            originY: this.items.origin.y,
           },
         },
         {
@@ -267,7 +267,7 @@ export default {
             _id: this.items._id,
             description: this.fields2.description.value,
             name: this.fields2.name.value,
-            partNumber: this.fields2.partNumber.value,
+            part_number: this.fields2.part_number.value,
             origin: this.origin,
             slots: this.data.slots,
             subdivisions: this.data.subdivisions,

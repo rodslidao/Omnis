@@ -14,7 +14,7 @@
             ></matrix-viewer>
           </div>
           <div class="pl-4 pr-4">
-            <span class="text-h6 text-capitalize">{{ obj.name }}</span>
+            <span class="text-h6 text-capitalize font-weight-bold">{{ obj.name }}</span>
             <div class="text-subtitle-2">{{ obj.description }}</div>
             <div class="font-weight-bold d-flex align-center">
               <div class="text-body-2 mr-1">{{$t('form.partNumberAb')}}:</div>

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="main">
     <div class="d-flex align-">
       <v-autocomplete
         v-model="model"
@@ -167,6 +167,9 @@ export default {
 </script>
 
 <style scoped>
+.main {
+  max-width: 900px;
+}
 .search {
   max-width: 300px;
 }
