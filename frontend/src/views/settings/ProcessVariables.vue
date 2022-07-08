@@ -1,42 +1,34 @@
 <template>
   <div class="mt-11">
-    <router-view :key="$route.path" :items="model"> </router-view>
-    <div v-if="$router.currentRoute.name == 'object'">
+    <router-view :key="$route.path" @refetch="refetch()">
+    </router-view>
+    <div v-show="$router.currentRoute.name == 'variable'">
       <settings-items
-        :title="$t('settings.process.objects.add')"
-        :subtitle="$t('settings.process.objects.subtitle')"
+        :title="$t('settings.process.variables.add')"
+        :subtitle="$t('settings.process.variables.subtitle')"
         icon="cube"
         divider-list
-        path="object/add"
+        path="variable/add"
       ></settings-items>
 
-      <settings-title>{{
-        $t('settings.process.objects.list')
-      }}</settings-title>
+      <settings-title>{{ $t('settings.process.variables.list') }}</settings-title>
 
       <settings-list
         class="mt-4"
-        :items="getVariableList"
+        :items="get_variable_list"
         item-search="name"
         :fields-ignore="fieldsToIgnore"
         translate-path="form"
       >
         <template #itemList="itemList">
-          <settings-list-item-obj
-            @remove-obj="remove"
-            @edit-obj="updateObj"
+          <settings-list-item-variable
+            @remove="remove"
+            @edit="edit"
             :obj="itemList.data"
-          ></settings-list-item-obj>
+          ></settings-list-item-variable>
           <v-divider></v-divider>
         </template>
       </settings-list>
-
-      <object-edit
-        v-if="editDialog"
-        :items="model"
-        @edit-obj="edit"
-        @cancel-event="editDialog = false"
-      ></object-edit>
     </div>
   </div>
 </template>
@@ -46,51 +38,20 @@ import gql from 'graphql-tag';
 import SettingsItems from '@/components/settings/SettingsItems.vue';
 import SettingsList from '@/components/settings/SettingsList/SettingsList.vue';
 import SettingsTitle from '@/components/settings/SettingsTitle.vue';
-import SettingsListItemObj from '../../components/settings/SettingsList/SettingsListItemObj.vue';
-import ObjectEdit from '../../components/settings/process/ObjectEdit.vue';
+import SettingsListItemVariable from '@/components/settings/SettingsList/SettingsListItemVariable.vue';
 
-const LIST_VARIABLES = gql`
-  query LIST_VARIABLES {
-    getVariableList {
+const LIST_VARIABLE = gql`
+  query LIST_VARIABLE {
+    get_variable_list {
       _id
       name
-      default
-      atual
     }
   }
 `;
 
 const REMOVE_VARIABLE = gql`
   mutation REMOVE_VARIABLE($_id: ID!) {
-    deleteVariable(_id: $_id)
-  }
-`;
-
-const UPDATE_OBJ = gql`
-  mutation UPDATE_OBJ(
-    $_id: ID!
-    $color_hex: String
-    $color_name: String
-    $description: String
-    $img: String
-    $name: String
-    $part_number: String
-    $parts: Int
-    $supplier: String
-  ) {
-    updateTarget(
-      _id: $_id
-      input: {
-        color_hex: $color_hex
-        color_name: $color_name
-        description: $description
-        img: $img
-        name: $name
-        part_number: $part_number
-        parts: $parts
-        supplier: $supplier
-      }
-    )
+    delete_variable(_id: $_id)
   }
 `;
 
@@ -98,55 +59,39 @@ export default {
   components: {
     SettingsItems,
     SettingsList,
-    SettingsListItemObj,
+    SettingsListItemVariable,
     SettingsTitle,
-    ObjectEdit,
   },
   data() {
     return {
-      objToEdit: {},
-      editDialog: false,
       fieldsToIgnore: ['__typename', '_id', 'img', {}, []],
     };
   },
 
   computed: {
     model() {
-      const list = this.objToEdit;
-      if (list) {
-        // console.log('lista', list);
-        const objList = [
-          {
-            field: 'name',
-            value: list.name,
-            title: 'name',
-            required: true,
-          },
-          {
-            field: 'description',
-            value: list.description,
-            title: 'description',
-          },
-        ];
-        return objList;
-      }
-      return [];
+      const obj = this.objToEdit;
+      return obj;
     },
   },
 
   apollo: {
     // Simple query that will update the 'hello' vue property
-    getVariableList: LIST_VARIABLES,
+    get_variable_list: LIST_VARIABLE,
   },
 
   methods: {
     refetch() {
-      this.$apollo.queries.getVariableList.refetch();
+      this.$apollo.queries.get_variable_list.refetch();
     },
 
-    updateObj(obj) {
-      this.objToEdit = obj;
-      this.editDialog = true;
+    edit(obj) {
+      this.$router.push({
+        name: 'variableEdit',
+        params: {
+          items: obj, // or anything you want
+        },
+      });
     },
 
     async remove(_id) {
@@ -160,7 +105,7 @@ export default {
         })
         .then(() => {
           // Result
-          this.$apollo.queries.getVariableList.refetch();
+          this.refetch();
           this.$alertFeedback(this.$t('alerts.deleteSuccess'), 'success');
           // this.isLoading = false;
           // this.setSaved(this.selectedTabIndex);
@@ -169,41 +114,6 @@ export default {
           // Error
           this.isLoading = false;
           this.$alertFeedback(this.$t('alerts.deleteFail'), 'error', error);
-          // We restore the initial user input
-        });
-    },
-
-    async edit(obj) {
-      console.log('edit2', obj);
-      await this.$apollo
-        .mutate({
-          mutation: UPDATE_OBJ,
-          variables: {
-            // eslint-disable-next-line no-underscore-dangle
-            _id: this.objToEdit._id,
-            color_hex: obj.color_hex,
-            color_name: obj.color_name,
-            date: obj.date,
-            description: obj.description,
-            img: obj.img,
-            name: obj.name,
-            part_number: obj.part_number,
-            parts: obj.parts,
-            supplier: obj.supplier,
-          },
-        })
-
-        .then(() => {
-          // Result
-          this.$apollo.queries.getVariableList.refetch();
-          this.$alertFeedback(this.$t('alerts.updateVariableSuccess'), 'success');
-          this.editDialog = false;
-        })
-
-        .catch((error) => {
-          // Error
-          this.isLoading = false;
-          this.$alertFeedback(this.$t('alerts.updateVariableFail'), 'error', error);
           // We restore the initial user input
         });
     },

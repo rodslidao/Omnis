@@ -16,7 +16,6 @@
 <script>
 // import mixins from "../_linkers/conectors.js";
 import { mapActions, mapState } from 'vuex';
-import { socket_events, socket_actions } from '../socket/socketio';
 
 export default {
   // mixins: [mixins],
@@ -32,16 +31,16 @@ export default {
   }),
 
   mounted() {},
-  sockets: socket_events,
   methods: {
     ...mapActions(['startConnection', 'sendMessage']),
-    ...socket_actions,
     getElement(event) {
+      // eslint-disable-next-line no-restricted-globals
       if (!isNaN(event.target.duration) && !this.loaded) {
         // console.log(socket_actions)//("setup_objects");
         // socket_actions.call_function("setup_objects");
         this.duration = event.target.duration;
         this.nextPage(event.target.duration);
+        // eslint-disable-next-line no-param-reassign
         event.target.currentTime = 0;
         event.target.play();
         this.loaded = true;
@@ -50,7 +49,7 @@ export default {
 
     nextPage(timeout) {
       setTimeout(() => {
-        if (this.$route.name == 'intro-logo') {
+        if (this.$route.name === 'intro-logo') {
           // call_function('setup_objects')
           this.$router.push({ path: '/progress' }).catch(() => {});
         }

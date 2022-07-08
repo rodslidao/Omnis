@@ -139,7 +139,7 @@ export default {
 <style lang="scss" scoped>
 @import '~vuetify/src/styles/main.sass';
 
-$border-radius: 3px;
+$border-radius: 2px;
 $border-size: 2px;
 $color-x: red;
 $color-y: rgb(0, 255, 0);

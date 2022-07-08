@@ -58,8 +58,9 @@
         "name": "Variables",
         "title": "Variables",
         "subtitle": "Create and edit the variables",
-        "add": "Register Object",
-        "list": "List Objects"
+        "add": "Register new variable",
+        "edit": "Edit variable",
+        "list": "List variable"
       }
     },
     "users": {
@@ -179,7 +180,13 @@
     "resetPassword": "Reset Password",
     "save": "Save",
     "search": "Search",
+    "play": "Play",
+    "resume": "Resume",
+    "start": "Start",
+    "pause": "Pause",
+    "stop": "Stop",
     "send": "Send"
+
   },
   "prepositions": {
     "or": "or"
@@ -215,7 +222,11 @@
     "updateMatrixSuccess": "The matrix was updated👍",
     "updateVariableFail": "Could't possible to update 😢",
     "formError": "Some fields are required or wrong 😢",
+    "wsConnectSuccess": "Websocket was connected with successfully",
+    "wsConnectFail": "Could not connect to Websocket",
+    "wsConnecting": "Connecting to Websocket",
     "updateVariableSuccess": "The variable was updated👍"
+    
   },
   "list": {
     "sortBy": "Sort by",
