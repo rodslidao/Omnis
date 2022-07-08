@@ -41,8 +41,7 @@ class MatrixObjectManager(CRUD):
                 logger.info(f"{name}, {kwargs}")
                 _id = func(*args, **kwargs)
                 kwargs.update({"_id": _id})
-                logger.info(f"{name}, {kwargs}")
-                _kwargs = conversor(**kwargs)
+                _kwargs = conversor(**kwargs) if kwargs.get("input") else kwargs
                 _kwargs.update({"collection": name})
                 func(*args, **_kwargs)
                 return True

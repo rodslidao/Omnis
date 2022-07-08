@@ -78,7 +78,6 @@ class BaseNode(Wizard):
         self.stop_event = Event()
         self.update_status({"status": "LOADED"})
         self.auto_run = options.get("auto_run", False)
-        # logger.info("[%s] Node loaded", self)
 
     def onSuccess(self, payload, additional=None):
         self.on("onSuccess", payload, additional)

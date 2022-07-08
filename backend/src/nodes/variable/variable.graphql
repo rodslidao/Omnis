@@ -1,0 +1,19 @@
+type variable {
+    _id: ID
+    name: String
+}
+
+input reg_variable {
+    name: String
+}
+
+extend type Query {
+    get_variable_list: [variable]
+    get_variable_item: variable
+}
+
+extend type Mutation  {
+  create_variable(input: reg_variable): ID
+  delete_variable(_id: ID!): ID
+  update_variable(_id: ID!, input: reg_variable): ID
+}

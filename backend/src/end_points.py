@@ -96,7 +96,7 @@ class Websocket(WebSocketEndpoint):
         try:
             # logger.info(f"send for {len(list(self.connections.get(self._id, [])))} clients")
             await client.send_json(payload)
-        except RuntimeError:
+        except (RuntimeError, AttributeError):
             logger.warning('Fail to send message on websocket.')
 
     async def broadcast_on_change(self, updated_info, payload={}, **kwargs):
