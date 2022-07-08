@@ -1,5 +1,5 @@
 <template>
-  <div class="variable-register mt-11">
+  <div class="object-register mt-n6">
     <v-form
       v-model="isValid"
       ref="form"
@@ -7,74 +7,28 @@
       max-width="700px"
       lazy-validation
     >
-      <div v-for="(item, index) in items" :key="index" v-on="generateObj(item)">
-        <v-row>
-          <v-col cols="4" class="d-flex align-center">
-            <!-- {{ item }} -->
-            <v-badge dot bordered color="error" v-if="item.required">
-              <div class="font-weight-bold">
-                {{ $t('form.' + item.field) }}
-              </div></v-badge
+      <div class="d-flex flex-wrap">
+        <div class="form mb-4">
+          <div v-for="(subField, key) in fields" :key="key">
+            <v-text-field
+              class="field mb-n6"
+              placeholder=""
+              outlined
+              rounded
+              v-model.trim="fields[key].value"
+              dense
+              
+              :label="$t('form.' + key)"
+              max-width
+              :rules="isRequire(key) ? [rules().required] : [true]"
+              @keyup.enter="validate()"
             >
-            <div v-else class="font-weight-bold">
-              {{ $t('form.' + item.field) }}
-            </div>
-          </v-col>
-          <v-col cols="8" class="field">
-            <v-row>
-              <v-text-field
-                placeholder=""
-                outlined
-                rounded
-                v-model="obj[item.field]"
-                dense
-                :rules="item.required ? [rules().required] : [true]"
-                full-width
-                @keyup.enter="colorShow = false"
-              >
-                <template v-slot:prepend-inner v-if="item.field == 'color_hex'">
-                  <v-badge
-                    class="mb-n2"
-                    bordered
-                    inline
-                    :color="obj[item.field]"
-                  ></v-badge>
-                </template>
-                <template v-slot:append v-if="item.field == 'color_hex'">
-                  <div>
-                    <v-btn
-                      small
-                      icon
-                      @click="(picker = !picker), (colorShow = !colorShow)"
-                      ><v-icon :color="colorShow ? 'success' : ''">{{
-                        !colorShow ? 'mdi-eyedropper-variant' : 'mdi-check'
-                      }}</v-icon></v-btn
-                    >
-                  </div>
-                </template></v-text-field
-              ></v-row
-            >
-            <v-row>
-              <v-color-picker
-                dot-size="25"
-                v-if="colorShow && item.field == 'color_hex'"
-                hide-inputs
-                v-model="obj[item.field]"
-                mode="hexa"
-                @update:color="(a) => (obj[item.field] = a.hexa)"
-              ></v-color-picker>
-            </v-row>
-          </v-col>
-        </v-row>
+            </v-text-field>
+            {{newName}}
+          </div>
+        </div>
       </div>
-      <v-divider class="mt-4"></v-divider>
-      <div class="d-flex mt-4">
-        <v-badge dot bordered color="error">
-          <div class="text-subtitle-2">
-            {{ $t('form.requiredFields') }}
-          </div></v-badge
-        >
-        <v-spacer></v-spacer>
+      <div class="button">
         <v-btn color="primary" @click="validate()" rounded>
           {{ $t('buttons.register') }}
         </v-btn>
@@ -86,36 +40,14 @@
 <script>
 import gql from 'graphql-tag';
 
-const ADD_OBJECT = gql`
-  mutation ADD_OBJECT(
-    $color_hex: String
-    $color_name: String
-    $description: String
-    $img: String
-    $name: String
-    $part_number: String
-    $parts: Int
-    $supplier: String
-    $unit: String
-  ) {
-    createTarget(
-      input: {
-        color_hex: $color_hex
-        color_name: $color_name
-        description: $description
-        img: $img
-        name: $name
-        part_number: $part_number
-        parts: $parts
-        supplier: $supplier
-        unit: $unit
-      }
-    )
+const ADD_VARIABLE = gql`
+  mutation ADD_VARIABLE($name: String!) {
+    create_variable(input: { name: $name })
   }
 `;
 
 export default {
-  name: 'ObjectRegister',
+  name: 'VariableRegister',
   props: {
     items: Array,
   },
@@ -124,8 +56,34 @@ export default {
       isValid: true,
       colorShow: false,
       picker: false,
-      obj: {},
+      edit: '',
+      requireList: ['name'],
+      obj: { slotsX: 0 },
+      name: '',
+      fields: {
+        name: {
+          value: '',
+          required: true,
+        },
+      },
     };
+  },
+
+  beforeCreated() {
+    this.items.forEach((item) => {
+      console.log(item);
+      this.obj[item.field] = 1;
+    });
+  },
+
+  computed: {
+    edited() {
+      return this.edit;
+    },
+
+    newName() {
+      return this.name;
+    },
   },
 
   methods: {
@@ -135,82 +93,106 @@ export default {
       };
     },
 
-    generateObj(item) {
-      this.obj[item.field] = item.value;
+    toCase() {
+      const newName = this.fields.name.value.toUpperCase();
+      this.name = newName.replace(/\s/g, '-');
+    },
+
+    findColor(key) {
+      if (key.slice(-1) === 'X') return 'error';
+      if (key.slice(-1) === 'Y') return 'success';
+      return '';
+    },
+
+    isRequire(key) {
+      if (this.requireList.includes(key)) return true;
+      return false;
     },
 
     validate() {
       if (this.$refs.form.validate()) {
-        this.addObject(this.obj);
+        console.log(this.name);
+        // this.add(this.obj);
+        this.$refs.form.reset();
       } else {
         this.formHasErrors = true;
+        this.$alertFeedback(this.$t('alerts.formError'), 'error');
       }
     },
 
-    async addObject(obj) {
-      console.log('input', obj);
+    suffix(key) {
+      if (this.suffixList.includes(key)) return 'mm';
+      return '';
+    },
 
+    async add() {
       await this.$apollo
         .mutate({
-          mutation: ADD_OBJECT,
+          mutation: ADD_VARIABLE,
           variables: {
-            // eslint-disable-next-line no-underscore-dangle
-            color_hex: obj.color_hex,
-            description: obj.description,
-            img: obj.img,
-            name: obj.name,
-            part_number: obj.part_number,
-            parts: parseInt(obj.parts),
-            supplier: obj.supplier,
-            unit: obj.unit,
+            name: this.fields.name.value,
           },
         })
 
         .then(() => {
           // Result
-          this.$alertFeedback(this.$t('alerts.updateUserSuccess'), 'success');
-          this.$refs.form.reset();
+          this.$emit('refetch');
+          this.$alertFeedback(
+            this.$t('alerts.registerMatrixSuccess'),
+            'success'
+          );
         })
 
         .catch((error) => {
           // Error
-          this.$alertFeedback(this.$t('alerts.updateUserFail'), 'error', error);
+          this.$alertFeedback(
+            this.$t('alerts.registerMatrixFail'),
+            'error',
+            error
+          );
           // We restore the initial user input
         });
     },
   },
-
-  // computed: {
-  //   items() {
-  //     return [
-  //       {
-  //         field: 'name',
-  //         value: null,
-  //         title: 'name',
-  //         required: true,
-  //       },
-  //       {
-  //         field: 'description',
-  //         value: null,
-  //         title: 'description',
-  //       },
-  //       {
-  //         field: 'part_number',
-  //         value: null,
-  //         title: 'part_number',
-  //       },
-  //     ];
-  //   },
-  // },
 };
 </script>
 
 <style lang="scss" scoped>
-.variable-register {
-  max-width: 550px;
+.object-register {
+  .form {
+    max-width: 650px;
+    min-width: 310px;
+    margin-right: 2rem;
+  }
 
+  .button {
+    position: absolute;
+    right: 22px;
+    bottom: 22px;
+  }
+
+  .preview {
+    max-width: 900px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 370px;
+  }
+
+  .subfields {
+    max-width: 150px;
+  }
+
+  .row {
+    margin: 0;
+  }
+  .viewer {
+    margin-top: 20px;
+    width: 100%;
+  }
   .field {
     padding: 1.5rem 0;
+    width: 100%;
   }
   ::v-deep .v-text-field__details {
     display: none;

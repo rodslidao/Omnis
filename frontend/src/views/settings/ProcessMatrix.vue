@@ -1,13 +1,11 @@
 <template>
   <div class="mt-11">
-    <!-- {{get_matrix_list}} -->
-    {{ model }}
     <router-view :key="$route.path" @refetch="refetch()">
     </router-view>
     <div v-show="$router.currentRoute.name == 'matrix'">
       <settings-items
-        :title="$t('settings.process.process.add')"
-        :subtitle="$t('settings.process.process.subtitle')"
+        :title="$t('settings.process.matrix.add')"
+        :subtitle="$t('settings.process.matrix.subtitle')"
         icon="cube"
         divider-list
         path="matrix/add"
@@ -75,13 +73,6 @@ export default {
     };
   },
 
-  computed: {
-    model() {
-      const obj = this.objToEdit;
-      return obj;
-    },
-  },
-
   apollo: {
     // Simple query that will update the 'hello' vue property
     get_matrix_list: LIST_MATRIX,
@@ -112,7 +103,7 @@ export default {
         })
         .then(() => {
           // Result
-          this.$apollo.queries.get_matrix_list.refetch();
+          this.refetch();
           this.$alertFeedback(this.$t('alerts.deleteSuccess'), 'success');
           // this.isLoading = false;
           // this.setSaved(this.selectedTabIndex);

@@ -99,10 +99,10 @@ export default {
     //   this.makeCopy();
     // },
     search(newValue, oldValue) {
-      console.log(newValue, oldValue);
+      // console.log(newValue, oldValue);
       if (!newValue) {
         this.makeCopy();
-        console.log('dasdad', this.itemsCopy);
+        // console.log('dasdad', this.itemsCopy);
       }
       // this.filter();
     },
@@ -117,8 +117,8 @@ export default {
   methods: {
     makeCopy() {
       if (this.search) {
-        console.log('model', this.model);
-        console.log('search', this.search);
+        // console.log('model', this.model);
+        // console.log('search', this.search);
         return this.items.filter((value) => {
           return value[this.itemSearch] === this.search;
         });
@@ -139,7 +139,7 @@ export default {
       this.dropdown.value = item;
       this.dropdown.text = this.$t(`settings.users.fields.${item}`);
 
-      console.log(item, typeof item);
+      // console.log(item, typeof item);
 
       this.itemsCopy.sort((a, b) => {
         let fa = a[item];
