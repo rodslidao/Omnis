@@ -2,7 +2,7 @@
   <div class="background" ref="container">
     <span style="display: none">{{ selectedTabIndex }}</span>
     <baklava-editor :plugin="viewPlugin" class="baklava-editor" />
-    <Cartesian3D class="cartesian"></Cartesian3D>
+    <Cartesian3D height="10rem" class="cartesian"></Cartesian3D>
     <!-- <UseDraggable class="cartesian" :initialValue="{ x: 100, y: 100 }" v-slot="{ x, y }">
     </UseDraggable> -->
     <side-menu class="side-menu"></side-menu>

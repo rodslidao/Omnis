@@ -29,7 +29,7 @@
             <div v-else class="warper">
               <v-text-field
                 :label="$t('form.' + key) + (fields2[key].required ? '*' : '')"
-                class="select "
+                class="select"
                 placeholder=""
                 outlined
                 rounded
@@ -97,7 +97,7 @@
       </div>
       <div class="button">
         <v-btn color="primary" @click="validate()" rounded>
-          {{ $t('buttons.register') }}
+          {{ obj? $t('buttons.edit') : $t('buttons.register')}}
         </v-btn>
       </div>
     </v-form>
@@ -115,6 +115,30 @@ const LIST_VARIABLES = gql`
       _id
       name
     }
+  }
+`;
+
+const UPDATE_MATRIX = gql`
+  mutation UPDATE_MATRIX(
+    $_id: ID!
+    $description: String
+    $name: String
+    $part_number: String
+    $origin: JSON
+    $slots: JSON
+    $subdivisions: JSON
+  ) {
+    update_matrix(
+      _id: $_id
+      input: {
+        description: $description
+        name: $name
+        part_number: $part_number
+        origin: $origin
+        slots: $slots
+        subdivisions: $subdivisions
+      }
+    )
   }
 `;
 
@@ -146,30 +170,27 @@ export default {
   components: { MatrixInfoResume, MatrixViewer },
   name: 'ObjectRegister',
   props: {
-    items: Array,
+    obj: Object,
   },
   data() {
     return {
       isValid: true,
-      colorShow: false,
-      picker: false,
       edit: '',
       suffixList: ['sizeX', 'sizeY', 'marginX', 'marginY'],
       requireList: ['name'],
-      obj: { slotsX: 0 },
       fields2: {
         name: {
-          value: '',
+          value: this.obj?.name,
           required: true,
         },
         description: {
-          value: '',
+          value: this.obj?.description,
         },
         part_number: {
-          value: '',
+          value: this.obj?.part_number,
         },
         variable: {
-          value: '',
+          value: this.obj?.variable,
           required: true,
         },
       },
@@ -178,41 +199,34 @@ export default {
           title: 'origin',
           subtitle: 'originSubtitle',
           fields: {
-            originX: 1,
-            originY: 1,
+            originX: this.obj?.origin.x || 50,
+            originY: this.obj?.origin.y || 50,
           },
         },
         {
           title: 'slots',
           subtitle: 'slotsSubtitle',
           fields: {
-            quantityX: 8,
-            quantityY: 8,
-            sizeX: 20,
-            sizeY: 20,
-            marginX: 2,
-            marginY: 2,
+            quantityX: this.obj?.slots.qtd.x || 4,
+            quantityY: this.obj?.slots.qtd.y || 4,
+            sizeX: this.obj?.slots.size.x || 20,
+            sizeY: this.obj?.slots.size.y || 20,
+            marginX: this.obj?.slots.margin.x || 2,
+            marginY: this.obj?.slots.margin.y || 2,
           },
         },
         {
           title: 'subdivisions',
           subtitle: 'subdivisionsSubtitle',
           fields: {
-            quantityX: 1,
-            quantityY: 1,
-            marginX: 0,
-            marginY: 0,
+            quantityX: this.obj?.subdivisions.qtd.x || 1,
+            quantityY: this.obj?.subdivisions.qtd.y || 1,
+            marginX: this.obj?.subdivisions.margin.x || 0,
+            marginY: this.obj?.subdivisions.margin.y || 0,
           },
         },
       ],
     };
-  },
-
-  beforeCreated() {
-    this.items.forEach((item) => {
-      console.log(item);
-      this.obj[item.field] = 1;
-    });
   },
 
   apollo: {
@@ -283,7 +297,11 @@ export default {
 
     validate() {
       if (this.$refs.form.validate()) {
-        this.addMatrix(this.obj);
+        if (this.obj) {
+          this.editMatrix();
+        } else {
+          this.addMatrix();
+        }
       } else {
         this.formHasErrors = true;
         this.$alertFeedback(this.$t('alerts.formError'), 'error');
@@ -329,6 +347,40 @@ export default {
           // We restore the initial user input
         });
     },
+
+    async editMatrix() {
+      await this.$apollo
+        .mutate({
+          mutation: UPDATE_MATRIX,
+          variables: {
+            // eslint-disable-next-line no-underscore-dangle
+            _id: this.obj._id,
+            description: this.fields2.description.value,
+            name: this.fields2.name.value,
+            part_number: this.fields2.part_number.value,
+            origin: this.origin,
+            slots: this.data.slots,
+            subdivisions: this.data.subdivisions,
+            variable: this.fields2.variable.value,
+          },
+        })
+
+        .then(() => {
+          // Result
+          this.$emit('refetch');
+          this.$alertFeedback(this.$t('alerts.updateMatrixSuccess'), 'success');
+          this.$router.back();
+        })
+
+        .catch((error) => {
+          this.$alertFeedback(
+            this.$t('alerts.updateMatrixSuccess'),
+            'error',
+            error
+          );
+          // We restore the initial user input
+        });
+    },
   },
 };
 </script>
@@ -357,7 +409,7 @@ export default {
 
   .subfields {
     max-width: 150px;
-      ::v-deep .v-text-field__details {
+    ::v-deep .v-text-field__details {
       display: none;
     }
   }

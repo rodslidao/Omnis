@@ -25,8 +25,7 @@ import ProcessVariables from '@/views/settings/ProcessVariables.vue';
 import ProcessMatrix from '@/views/settings/ProcessMatrix.vue';
 import ObjectRegister from '@/components/settings/process/ObjectRegister.vue';
 import VariableRegister from '@/components/settings/process/VariableRegister.vue';
-import MatrixRegister from '@/components/settings/process/MatrixRegister.vue';
-import MatrixEdit from '@/components/settings/process/MatrixEdit.vue';
+import MatrixEditor from '@/components/settings/process/MatrixEditor.vue';
 import VariableEdit from '@/components/settings/process/VariableEdit.vue';
 import ProcessEditor from '@/components/settings/process/ProcessEditor.vue';
 
@@ -138,14 +137,14 @@ const routes = [
             children: [
               {
                 name: 'matrixRegister',
-                component: MatrixRegister,
+                component: MatrixEditor,
                 path: 'add',
-
+                props: true,
                 meta: { breadCrumb: 'settings.process.matrix.add' },
               },
               {
                 name: 'matrixEdit',
-                component: MatrixEdit,
+                component: MatrixEditor,
                 path: 'edit',
                 props: true,
                 meta: { breadCrumb: 'settings.process.matrix.edit' },

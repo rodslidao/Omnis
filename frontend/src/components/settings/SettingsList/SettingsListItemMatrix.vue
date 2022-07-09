@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/no-parsing-error -->
 /* eslint-disable no-underscore-dangle */
 <template>
   <!-- <v-card class="mb-4" min-height="100px" outlined> -->
@@ -24,7 +25,12 @@
             </div>
             <div class="font-weight-bold d-flex align-center">
               <div class="text-body-2 mr-1">{{ $t('form.variable') }}:</div>
-              <v-chip v-for="(item, index) in obj.variable" :key="index">
+              <v-chip
+                class="mr-2"
+                small
+                v-for="(item, index) in obj.variable"
+                :key="index"
+              >
                 {{ item.name }}</v-chip
               >
             </div>
@@ -87,10 +93,29 @@
             <template v-slot:item.field="{ item }">
               <div class="font-weight-bold">
                 {{ item.field }}
+                <!-- {{typeof item.value}} -->
               </div>
-            </template></v-data-table
-          ></v-card-text
-        >
+            </template>
+            <template v-slot:item.value="{ item }">
+              <div   v-if="typeof item.value === 'object'" >
+                <div
+                  v-for="(sub, index) in Object.entries(item.value)"
+                  :key="index"
+                >
+                  <div class="font-weight-bold d-flex">
+                    {{ sub[0] }}:
+                    <div>
+                      &nbsp X:<span class="font-weight-regular">{{
+                        sub[1].x
+                      }}</span>
+                      Y:<span class="font-weight-regular">{{ sub[1].y }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div v-else>{{item.value}}</div>
+            </template> </v-data-table
+        ></v-card-text>
         <v-divider></v-divider>
       </div>
     </v-expand-transition>
@@ -138,20 +163,23 @@ export default {
   },
 
   computed: {
-    
     detailItems() {
       return [
         {
-          field: 'Supplier',
+          field: this.$t('form.origin'),
+          value: `x:${this.obj.origin.x}   y:${this.obj.origin.y}`,
+        },
+        {
+          field: this.$t('form.supplier'),
           value: this.obj.supplier,
         },
         {
-          field: 'Parts',
-          value: `${this.obj.parts} ${this.obj.unit}`,
+          field: this.$t('form.slots'),
+          value: this.obj.slots,
         },
         {
-          field: 'Date',
-          value: this.$timestampToDate(this.obj.date),
+          field: this.$t('form.subdivisions'),
+          value: this.obj.subdivisions,
         },
       ];
     },

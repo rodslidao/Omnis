@@ -1,6 +1,8 @@
 <template>
   <div class="main d-flex flex-column">
-    <div class="animation"><cartesian-3d></cartesian-3d></div>
+    <div class="animation d-flex align-center justify-center">
+      <cartesian-3d lockView height="20rem"> </cartesian-3d>
+    </div>
     <div class="resume d-flex align-center justify-center">
       <process-manager-button></process-manager-button>
     </div>
@@ -12,24 +14,31 @@ import ProcessManagerButton from '@/components/ProcessManagerButton.vue';
 import Cartesian3d from '../components/node/Cartesian3d.vue';
 
 export default {
-  components: { ProcessManagerButton, Cartesian3d, },
+  components: { ProcessManagerButton, Cartesian3d },
 };
 </script>
 
 <style lang="scss" scoped>
-.main{
+.main {
   height: 100%;
-  div{
+  background-image: linear-gradient(
+    to bottom,
+    #ff4814,
+    #ff6b85,
+    #ffa2d3,
+    #f9d6fc,
+    #ffffff
+  );
+
+  div {
     // border: 1px solid red;
   }
-  .animation{
+  .animation {
     height: 60%;
     width: 100%;
-    background: rgb(75, 75, 75);
-background: linear-gradient(180deg, rgb(44, 44, 44) 48%, rgba(255,255,255,0) 100%);
   }
-  .resume{
- height: 40%;
+  .resume {
+    height: 40%;
   }
 }
 </style>

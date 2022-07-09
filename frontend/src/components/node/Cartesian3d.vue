@@ -3,12 +3,12 @@
   <div
     class="cartesian-container"
     :style="cssVars"
-    @click="isometric = !isometric"
+    @click="lockView ? '' : (isometric = !isometric)"
   >
     <!-- <v-btn icon color="primary" @click="isometric = !isometric">
       <v-icon>mdi-{{!isometric ? 'square' : 'cube'}}</v-icon>
     </v-btn> -->
-    <div class="perspective" :style="isometric ? 'transform: none' : ''">
+    <div class="perspective" :style="!isometric ? 'transform: none' : ''">
       <div class="cube">
         <div class="shadow"></div>
       </div>
@@ -19,9 +19,12 @@
 <script>
 import { mapState } from 'vuex';
 
-import gql from 'graphql-tag';
-
 export default {
+  props: {
+    lockView: Boolean,
+    height: String || Number,
+  },
+
   data() {
     return {
       isometric: true,
@@ -31,7 +34,7 @@ export default {
         '--position-x': 0,
         '--position-y': 0,
         '--position-z': 40,
-        '--aaaaaaaaaaaaaaa': 2,
+        '--container-height': this.height || '10rem',
       },
     };
   },
@@ -41,13 +44,13 @@ export default {
   },
 
   methods: {
-    generate() {
-      setInterval(() => {
-        this.cssVars['--position-x'] = Math.floor(Math.random() * 1000);
-        this.cssVars['--position-y'] = Math.floor(Math.random() * 800);
-        this.cssVars['--position-z'] = Math.floor(Math.random() * 70);
-      }, 3000);
-    },
+    // generate() {
+    //   setInterval(() => {
+    //     this.cssVars['--position-x'] = Math.floor(Math.random() * 1000);
+    //     this.cssVars['--position-y'] = Math.floor(Math.random() * 800);
+    //     this.cssVars['--position-z'] = Math.floor(Math.random() * 70);
+    //   }, 3000);
+    // },
   },
 
   computed: {
@@ -116,7 +119,8 @@ export default {
   --y-machine: 800;
   --z-machine: 70;
 
-  --container-height: 10em;
+  --position: absolute;
+  --container-height: 100%;
   --scale-factor: calc(var(--container-height) / var(--y-machine));
   --container-width: calc(var(--scale-factor) * var(--x-machine));
 
@@ -128,16 +132,17 @@ export default {
   box-shadow: 0 0 0 0.1em hsla(0, 0%, 0%, 0.2);
   height: calc(var(--container-height) + var(--cube-size));
   width: calc(var(--container-width) + var(--cube-size));
-  left: 50%;
   content: '';
   display: block;
-  position: absolute;
-  top: 50%;
+  /* position: absolute; */
+  /* left: 50%;
+  top: 50%; */
   transform: rotateX(70deg) rotateY(0deg) rotateZ(45deg);
   transform-style: preserve-3d;
   border-top: 2px solid;
   border-image: linear-gradient(to right, rgb(0, 255, 81), rgba(0, 0, 0, 0)) 1
     5%;
+  border-radius: 0 5px 5px 5px;
 }
 .perspective:after {
   content: '';
@@ -199,13 +204,13 @@ export default {
   background-color: #00000065;
   filter: blur(4px);
   transform: translateZ(
-    calc(-1*
-        (var(--cube-size) + var(--scale-factor) *
-          (-1 * var(--position-z) + var(--z-machine))
-         ) )
+    calc(
+      -1 * (var(--cube-size) + var(--scale-factor) *
+            (-1 * var(--position-z) + var(--z-machine)))
+    )
   );
   color: white;
-  content: "calc(-1*(var(--cube-size) + var(--scale-factor) * var(--position-z)))";
+  content: 'calc(-1*(var(--cube-size) + var(--scale-factor) * var(--position-z)))';
   transition: 0.25s;
 }
 

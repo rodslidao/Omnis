@@ -1,7 +1,6 @@
 <template>
   <div class="mt-11">
-    <router-view :key="$route.path" @refetch="refetch()">
-    </router-view>
+    <router-view :key="$route.path" @refetch="refetch()"> </router-view>
     <div v-show="$router.currentRoute.name == 'matrix'">
       <settings-items
         :title="$t('settings.process.matrix.add')"
@@ -50,6 +49,7 @@ const LIST_MATRIX = gql`
       subdivisions
       origin
       part_number
+      variable
     }
   }
 `;
@@ -69,7 +69,15 @@ export default {
   },
   data() {
     return {
-      fieldsToIgnore: ['__typename', '_id', 'img', {}, []],
+      fieldsToIgnore: [
+        '__typename',
+        '_id',
+        'img',
+        'slots',
+        'subdivisions',
+        'origin',
+        'variable',
+      ],
     };
   },
 
@@ -84,10 +92,12 @@ export default {
     },
 
     edit(obj) {
+      console.log(obj);
+
       this.$router.push({
         name: 'matrixEdit',
         params: {
-          items: obj, // or anything you want
+          obj, // or anything you want
         },
       });
     },

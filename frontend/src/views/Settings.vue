@@ -2,20 +2,23 @@
   <div class="pt-6 d-flex settings">
     <!-- <v-card elevation="12" width="256"> -->
     <v-navigation-drawer
-      hide-overlay
+      expand-on-hover
       floating
       permanent
+      mini-variant-width="62"
       width="300"
       class="navigation"
       color="rgba(0,0,0,0)"
     >
-      <div v-if="isAuth" class="user mx-4">
-        <v-avatar color="primary" size="50" v-if="user">
+      <div v-if="isAuth" class="user ml-1 mr-4">
+        <v-avatar color="primary" size="40" v-if="user">
           <img v-if="user.avatar_image" :src="user.avatar_image" />
           <span v-else class="text-capitalize">{{ getInitials }}</span>
         </v-avatar>
         <div class="ml-4">
-          <div class="text-subtitle font-weight-bold text-capitalize">
+          <div
+            class="text-subtitle font-weight-bold text-capitalize complete-name"
+          >
             {{ nameComplete }}
           </div>
           <div class="text-subtitle-2">{{ $t('levels.' + user.level) }}</div>
@@ -36,7 +39,7 @@
         hide-details
         placeholder="Pesquisar"
       ></v-autocomplete> -->
-      <v-list dense rounded>
+      <v-list dense rounded nav>
         <v-list-item-group
           v-model="group"
           active-class="primary--text text--accent-4"
@@ -125,6 +128,11 @@ export default {
   width: 100%;
   margin-bottom: 2rem;
   margin-top: 1rem;
+}
+
+.complete-name {
+  display: inline-block;
+  white-space: nowrap;
 }
 
 .settings {

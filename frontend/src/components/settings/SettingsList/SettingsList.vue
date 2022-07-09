@@ -19,12 +19,16 @@
       ></v-autocomplete>
       <v-spacer></v-spacer>
       <div class="sort d-flex justify-center align-center">
+        <v-btn class="mr-4" small icon @click="items.reverse()">
+          <v-icon>mdi-swap-vertical</v-icon>
+        </v-btn>
         <div class="">
           {{ $t('list.sortBy') }}:
           <span class="font-weight-bold">{{
             dropdown.value ? $t(translatePath + '.' + dropdown.value) : '  '
           }}</span>
         </div>
+
         <v-menu bottom offset-y>
           <template v-slot:activator="{ on, attrs }">
             <v-btn small text icon v-bind="attrs" v-on="on">

@@ -143,8 +143,6 @@ export default {
   data() {
     return {
       isValid: true,
-      colorShow: false,
-      picker: false,
       obj: {},
       textFieldsIgnore: ['sketch', 'matrix', 'object'],
       autocompleteInclude: ['matrix', 'object'],
@@ -231,7 +229,7 @@ export default {
             this.$t('alerts.updateProcessSuccess'),
             'success',
           );
-          this.editDialog = false;
+          this.$router.back()
         })
 
         .catch((error) => {
