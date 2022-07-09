@@ -69,3 +69,4 @@ for mod in package_nodes:
     )
 
 from src.nodes.object.object import _object
+from src.nodes.variable.variable import __variable

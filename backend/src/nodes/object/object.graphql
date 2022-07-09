@@ -10,7 +10,7 @@ type object {
   color_name: String
   img: String
   date: timestamptz
-  variables: [ID]
+  variable: [ID]
 }
 
 input reg_object {
@@ -23,7 +23,7 @@ input reg_object {
   color_hex: String
   color_name: String
   img: String
-  variables: [ID]
+  variable: [JSON]
 }
 
 extend type Query {

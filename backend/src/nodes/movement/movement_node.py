@@ -87,14 +87,15 @@ class MovementNode(BaseNode):
     #     self.serial.stop()
     #     super().stop()
 
-    # def resume(self):
-    #     logger.info(f"{self.name} resumed")
-    #     self.serial.resume()
-    #     super().stop()
+    def resume(self):
+        logger.info(f"{self.name} resumed")
+        self.serial.resume()
+        super().resume()
 
-    # def pause(self):
-    #     self.serial.pause()
-    #     super().stop()
+    def pause(self):
+        logger.info(f"{self.name} resumed")
+        self.serial.pause()
+        super().pause()
 
     def get_info(**kwargs):
         return {"options": SerialManager.get_info()}
