@@ -26,7 +26,8 @@
         "title": "Process",
         "subtitle": "Create and edit the process",
         "add": "Register new Process",
-        "list": "List Process",
+        "edit": "Edit process",
+        "list": "List process",
         "lastPlayed": "Last played",
         "sketch": "Sketch"
       },
@@ -52,6 +53,7 @@
         "title": "Objects",
         "subtitle": "Create and edit the objects",
         "add": "Register Object",
+        "edit": "Edit Object",
         "list": "List Objects"
       },
       "variables": {
@@ -153,6 +155,9 @@
     "originY": "Origin Y",
     "partNumber": "Part Number",
     "partNumberAb": "PN",
+    "variable": "Variable",
+    "matrix": "Matrix",
+    "object": "Object",
     "origin": "Origin"
 
   },

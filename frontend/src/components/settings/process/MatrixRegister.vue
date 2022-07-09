@@ -10,18 +10,36 @@
       <div class="d-flex flex-wrap">
         <div class="form mb-4">
           <div v-for="(subField, key) in fields2" :key="key">
-            <v-text-field
-              class="field mb-n6"
-              placeholder=""
-              outlined
+            <v-autocomplete
+              class=""
+              v-if="key == 'variable'"
+              :label="$t('form.' + key) + (fields2[key].required ? '*' : '')"
               rounded
+              multiple
+              outlined
               v-model="fields2[key].value"
-              dense
-              :label="$t('form.' + key)"
-              max-width
               :rules="isRequire(key) ? [rules().required] : [true]"
-            >
-            </v-text-field>
+              :items="get_variable_list"
+              item-text="name"
+              return-object
+              chips
+              deletable-chips
+            ></v-autocomplete>
+
+            <div v-else class="warper">
+              <v-text-field
+                :label="$t('form.' + key) + (fields2[key].required ? '*' : '')"
+                class="select "
+                placeholder=""
+                outlined
+                rounded
+                v-model="fields2[key].value"
+                dense
+                max-width
+                :rules="isRequire(key) ? [rules().required] : [true]"
+              >
+              </v-text-field>
+            </div>
           </div>
           <!-- custom -->
           <div v-for="(field, index) in fields" :key="index" class="mt-6">
@@ -91,6 +109,15 @@ import gql from 'graphql-tag';
 import MatrixInfoResume from '../../node/nodes/matrix/MatrixInfoResume.vue';
 import MatrixViewer from '../../node/nodes/matrix/MatrixViewer.vue';
 
+const LIST_VARIABLES = gql`
+  query LIST_VARIABLES {
+    get_variable_list {
+      _id
+      name
+    }
+  }
+`;
+
 const ADD_MATRIX = gql`
   mutation ADD_MATRIX(
     $description: String
@@ -99,6 +126,7 @@ const ADD_MATRIX = gql`
     $origin: JSON
     $slots: JSON
     $subdivisions: JSON
+    $variable: [JSON]
   ) {
     create_matrix(
       input: {
@@ -108,6 +136,7 @@ const ADD_MATRIX = gql`
         part_number: $part_number
         slots: $slots
         subdivisions: $subdivisions
+        variable: $variable
       }
     )
   }
@@ -138,6 +167,10 @@ export default {
         },
         part_number: {
           value: '',
+        },
+        variable: {
+          value: '',
+          required: true,
         },
       },
       fields: [
@@ -180,6 +213,11 @@ export default {
       console.log(item);
       this.obj[item.field] = 1;
     });
+  },
+
+  apollo: {
+    // Simple query that will update the 'hello' vue property
+    get_variable_list: LIST_VARIABLES,
   },
 
   computed: {
@@ -268,6 +306,7 @@ export default {
             origin: this.origin,
             slots: this.data.slots,
             subdivisions: this.data.subdivisions,
+            variable: this.fields2.variable.value,
           },
         })
 
@@ -276,7 +315,7 @@ export default {
           this.$emit('refetch');
           this.$alertFeedback(
             this.$t('alerts.registerMatrixSuccess'),
-            'success',
+            'success'
           );
         })
 
@@ -285,7 +324,7 @@ export default {
           this.$alertFeedback(
             this.$t('alerts.registerMatrixFail'),
             'error',
-            error,
+            error
           );
           // We restore the initial user input
         });
@@ -318,6 +357,9 @@ export default {
 
   .subfields {
     max-width: 150px;
+      ::v-deep .v-text-field__details {
+      display: none;
+    }
   }
 
   .row {
@@ -326,13 +368,6 @@ export default {
   .viewer {
     margin-top: 20px;
     width: 100%;
-  }
-  .field {
-    padding: 1.5rem 0;
-    width: 100%;
-  }
-  ::v-deep .v-text-field__details {
-    display: none;
   }
 }
 </style>

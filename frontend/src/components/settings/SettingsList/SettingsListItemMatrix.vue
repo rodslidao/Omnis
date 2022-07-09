@@ -14,11 +14,19 @@
             ></matrix-viewer>
           </div>
           <div class="pl-4 pr-4">
-            <span class="text-h6 text-capitalize font-weight-bold">{{ obj.name }}</span>
+            <span class="text-h6 text-capitalize font-weight-bold">{{
+              obj.name
+            }}</span>
             <div class="text-subtitle-2">{{ obj.description }}</div>
             <div class="font-weight-bold d-flex align-center">
-              <div class="text-body-2 mr-1">{{$t('form.partNumberAb')}}:</div>
+              <div class="text-body-2 mr-1">{{ $t('form.partNumberAb') }}:</div>
               {{ obj.part_number }}
+            </div>
+            <div class="font-weight-bold d-flex align-center">
+              <div class="text-body-2 mr-1">{{ $t('form.variable') }}:</div>
+              <v-chip v-for="(item, index) in obj.variable" :key="index">
+                {{ item.name }}</v-chip
+              >
             </div>
             <!-- <div class="font-weight-bold d-flex align-center">
               <div class="text-body-2 mr-1">color:</div>
@@ -130,6 +138,7 @@ export default {
   },
 
   computed: {
+    
     detailItems() {
       return [
         {

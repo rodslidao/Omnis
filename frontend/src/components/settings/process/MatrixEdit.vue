@@ -246,7 +246,7 @@ export default {
 
     validate() {
       if (this.$refs.form.validate()) {
-        this.addMatrix(this.obj);
+        this.editMatrix(this.obj);
       } else {
         this.formHasErrors = true;
         this.$alertFeedback(this.$t('alerts.formError'), 'error');
@@ -258,7 +258,7 @@ export default {
       return '';
     },
 
-    async addMatrix() {
+    async editMatrix() {
       await this.$apollo
         .mutate({
           mutation: UPDATE_MATRIX,

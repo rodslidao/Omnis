@@ -22,19 +22,19 @@
         <template #itemList="itemList">
           <settings-list-item-process
             @remove-obj="remove"
-            @edit-obj="updateObj"
+            @edit-obj="edit"
             :obj="itemList.data"
           ></settings-list-item-process>
           <v-divider></v-divider>
         </template>
       </settings-list>
 
-      <process-edit
+      <!-- <process-edit
         v-if="editDialog"
         :items="model"
-        @edit-obj="edit"
+        @edit="edit"
         @cancel-event="editDialog = false"
-      ></process-edit>
+      ></process-edit> -->
     </div>
   </div>
 </template>
@@ -45,11 +45,11 @@ import SettingsItems from '@/components/settings/SettingsItems.vue';
 import SettingsList from '@/components/settings/SettingsList/SettingsList.vue';
 import SettingsTitle from '@/components/settings/SettingsTitle.vue';
 import SettingsListItemProcess from '@/components/settings/SettingsList/SettingsListItemProcess.vue';
-import ProcessEdit from '@/components/settings/process/ProcessEdit.vue';
 
 const LIST_PROCESS = gql`
   query LIST_PROCESS {
     get_process_list {
+      name
       _id
       created_at
       created_by
@@ -58,9 +58,10 @@ const LIST_PROCESS = gql`
       edited_by
       img
       last_played
-      name
       sketch
       updated_at
+      matrix
+      object
     }
   }
 `;
@@ -71,39 +72,28 @@ const REMOVE_PROCESS = gql`
   }
 `;
 
-const UPDATE_PROCESS = gql`
-  mutation UPDATE_PROCESS(
-    $_id: ID!
-    $description: String
-    $img: String
-    $name: String
-    $sketch: JSON
-  ) {
-    update_process(
-      _id: $_id
-      input: {
-        description: $description
-        img: $img
-        name: $name
-        sketch: $sketch
-      }
-    )
-  }
-`;
-
 export default {
   components: {
     SettingsItems,
     SettingsList,
     SettingsListItemProcess,
     SettingsTitle,
-    ProcessEdit,
   },
   data() {
     return {
       objToEdit: {},
       editDialog: false,
-      fieldsToIgnore: ['__typename', '_id', 'img', {}, []],
+      fieldsToIgnore: [
+        '__typename',
+        '_id',
+        'img',
+        'created_at',
+        'created_by',
+        'edited_by',
+        'updated_at',
+        'last_played',
+        'date',
+      ],
     };
   },
 
@@ -130,6 +120,16 @@ export default {
             title: 'sketch',
           },
           {
+            field: 'matrix',
+            value: list.matrix,
+            title: 'matrix',
+          },
+          {
+            field: 'object',
+            value: list.object,
+            title: 'object',
+          },
+          {
             field: 'img',
             value: list.img,
             title: 'img',
@@ -149,11 +149,6 @@ export default {
   methods: {
     refetch() {
       this.$apollo.queries.get_process_list.refetch();
-    },
-
-    updateObj(obj) {
-      this.objToEdit = obj;
-      this.editDialog = true;
     },
 
     async remove(_id) {
@@ -180,41 +175,27 @@ export default {
         });
     },
 
-    async edit(obj) {
-      console.log('edit2', obj);
-      await this.$apollo
-        .mutate({
-          mutation: UPDATE_PROCESS,
-          variables: {
-            // eslint-disable-next-line no-underscore-dangle
-            _id: this.objToEdit._id,
-            description: obj.description,
-            img: obj.img,
-            name: obj.name,
-            sketch: obj.sketch,
-          },
-        })
+    edit(obj) {
 
-        .then(() => {
-          // Result
-          this.$apollo.queries.get_process_list.refetch();
-          this.$alertFeedback(
-            this.$t('alerts.updateProcessSuccess'),
-            'success',
-          );
-          this.editDialog = false;
-        })
+      const newObject = [];
 
-        .catch((error) => {
-          // Error
-          this.isLoading = false;
-          this.$alertFeedback(
-            this.$t('alerts.updateProcessFail'),
-            'error',
-            error,
-          );
-          // We restore the initial user input
-        });
+      Object.entries(obj).forEach((a) => {
+        if (!this.fieldsToIgnore.includes(a[0])) {
+          newObject.push({
+            field: a[0],
+            value: a[1],
+            title: a[0],
+          });
+          if (a[0] === 'name') newObject.at(-1).required = true;
+        }
+      });
+
+      this.$router.push({
+        name: 'processEdit',
+        params: {
+          items: newObject, // or anything you want
+        },
+      });
     },
   },
 };

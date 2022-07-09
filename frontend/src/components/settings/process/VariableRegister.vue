@@ -17,7 +17,6 @@
               rounded
               v-model.trim="fields[key].value"
               dense
-              
               :label="$t('form.' + key)"
               max-width
               :rules="isRequire(key) ? [rules().required] : [true]"

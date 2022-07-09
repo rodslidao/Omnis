@@ -1,97 +1,79 @@
 <template>
   <dialog-confirmation
-    :title="$t('settings.users.editUser.title')"
+    :title="$t('settings.process.objects.edit')"
     description=" "
     max-width="600"
     :persistent="true"
   >
     <template v-slot:description>
       <div class="object-register pr-6 pt-6" v-if="itemsList[0].value">
-        <v-form
-          v-model="isValid"
-          ref="form"
-          rounded
-          max-width="700px"
-          lazy-validation
-        >
+        <v-form v-model="isValid" ref="form" max-width="700px" lazy-validation>
           <div
             v-for="(item, index) in items"
             :key="index"
             v-on="generateObj(item)"
           >
-            <v-row>
-              <v-col cols="4" class="d-flex align-center">
-                <!-- {{ item }} -->
-                <v-badge dot bordered color="error" v-if="item.required">
-                  <div class="font-weight-bold">
-                    {{ $t('form.' + item.field) }}
-                  </div></v-badge
-                >
-                <div v-else class="font-weight-bold">
-                  {{ $t('form.' + item.field) }}
-                </div>
-              </v-col>
-              <v-col cols="8" class="field">
-                <v-row>
-                  <v-text-field
-                    placeholder=""
-                    outlined
-                    rounded
-                    v-model="obj[item.field]"
-                    dense
-                    :rules="item.required ? [rules().required] : [true]"
-                    full-width
-                    @keyup.enter="colorShow = false"
+            <v-autocomplete
+              class="select"
+              v-if="item.field == 'variable'"
+              :label="$t('form.' + item.field) + (item.required ? '*' : '')"
+              rounded
+              multiple
+              outlined
+              v-model="obj[item.field]"
+              :rules="item.required ? [rules().required] : [true]"
+              @change="print(obj[item.field])"
+              :items="get_variable_list"
+              item-text="name"
+              return-object
+              chips
+              deletable-chips
+            ></v-autocomplete>
+            <v-text-field
+              v-else
+              :label="$t('form.' + item.field) + (item.required ? '*' : '')"
+              rounded
+              outlined
+              v-model="obj[item.field]"
+              dense
+              :rules="item.required ? [rules().required] : [true]"
+              @keyup.enter="colorShow = false"
+            >
+              <template v-slot:prepend-inner v-if="item.field == 'color_hex'">
+                <v-badge
+                  class="mb-n2"
+                  bordered
+                  inline
+                  :color="obj[item.field]"
+                ></v-badge>
+              </template>
+              <template v-slot:append v-if="item.field == 'color_hex'">
+                <div>
+                  <v-btn
+                    small
+                    icon
+                    @click="(picker = !picker), (colorShow = !colorShow)"
+                    ><v-icon :color="colorShow ? 'success' : ''">{{
+                      !colorShow ? 'mdi-eyedropper-variant' : 'mdi-check'
+                    }}</v-icon></v-btn
                   >
-                    <template
-                      v-slot:prepend-inner
-                      v-if="item.field == 'color_hex'"
-                    >
-                      <v-badge
-                        class="mb-n2"
-                        bordered
-                        inline
-                        :color="obj[item.field]"
-                      ></v-badge>
-                    </template>
-                    <template v-slot:append v-if="item.field == 'color_hex'">
-                      <div>
-                        <v-btn
-                          small
-                          icon
-                          @click="(picker = !picker), (colorShow = !colorShow)"
-                          ><v-icon :color="colorShow ? 'success' : ''">{{
-                            !colorShow ? 'mdi-eyedropper-variant' : 'mdi-check'
-                          }}</v-icon></v-btn
-                        >
-                      </div>
-                    </template></v-text-field
-                  ></v-row
-                >
-                <v-row>
-                  <v-color-picker
-                    dot-size="25"
-                    v-if="colorShow && item.field == 'color_hex'"
-                    hide-inputs
-                    v-model="obj[item.field]"
-                    mode="hexa"
-                    @update:color="(a) => (obj[item.field] = a.hexa)"
-                  ></v-color-picker>
-                </v-row>
-              </v-col>
-            </v-row>
+                </div>
+              </template></v-text-field
+            >
+
+            <v-color-picker
+              dot-size="25"
+              v-if="colorShow && item.field == 'color_hex'"
+              hide-inputs
+              v-model="obj[item.field]"
+              mode="hexa"
+              @update:color="(a) => (obj[item.field] = a.hexa)"
+            ></v-color-picker>
           </div>
         </v-form>
       </div>
-      <v-divider class="mt-4"></v-divider>
     </template>
     <template v-slot:actions>
-      <!-- <v-badge dot bordered color="error">
-        <div class="text-subtitle-2">
-          {{ $t('form.requiredFields') }}
-        </div></v-badge
-      >
-      <v-spacer></v-spacer> -->
       <div class="pb-4 pr-4">
         <v-btn text @click="$emit('cancel-event')" rounded>
           {{ $t('buttons.cancel') }}
@@ -110,7 +92,17 @@
 </template>
 
 <script>
+import gql from 'graphql-tag';
 import DialogConfirmation from '../DialogConfirmation.vue';
+
+const LIST_VARIABLES = gql`
+  query LIST_VARIABLES {
+    get_variable_list {
+      _id
+      name
+    }
+  }
+`;
 
 export default {
   components: { DialogConfirmation },
@@ -127,6 +119,14 @@ export default {
       show1: true,
       itemsCopy: null,
     };
+  },
+
+  created() {
+    console.log(this.items);
+  },
+
+  apollo: {
+    get_variable_list: LIST_VARIABLES,
   },
 
   computed: {
@@ -170,8 +170,8 @@ export default {
   .field {
     padding: 1.5rem 0;
   }
-  ::v-deep .v-text-field__details {
-    display: none;
-  }
+  // ::v-deep .v-text-field__details {
+  //   // display: none;
+  // }
 }
 </style>

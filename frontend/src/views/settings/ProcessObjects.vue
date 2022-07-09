@@ -1,6 +1,7 @@
 <template>
   <div class="mt-11">
-    <router-view :key="$route.path" @refetch="refetch" :items="model"> </router-view>
+    <router-view :key="$route.path" @refetch="refetch" :items="model">
+    </router-view>
     <div v-if="$router.currentRoute.name == 'object'">
       <settings-items
         :title="$t('settings.process.objects.add')"
@@ -10,9 +11,7 @@
         path="object/add"
       ></settings-items>
 
-      <settings-title>{{
-        $t('settings.process.objects.list')
-      }}</settings-title>
+      <settings-title>{{ $t('settings.process.objects.list') }}</settings-title>
 
       <settings-list
         class="mt-4"
@@ -62,6 +61,7 @@ const LIST_OBJ = gql`
       part_number
       parts
       supplier
+      variable
     }
   }
 `;
@@ -83,6 +83,7 @@ const UPDATE_OBJ = gql`
     $part_number: String
     $parts: Int
     $supplier: String
+    $variable: [JSON]
   ) {
     update_object(
       _id: $_id
@@ -95,6 +96,7 @@ const UPDATE_OBJ = gql`
         part_number: $part_number
         parts: $parts
         supplier: $supplier
+        variable: $variable
       }
     )
   }
@@ -112,102 +114,7 @@ export default {
     return {
       objToEdit: {},
       editDialog: false,
-      fieldsToIgnore: ['__typename', '_id', 'img', {}, []],
-      // model: [
-      //   {
-      //     field: 'name',
-      //     value: this.get_object_list.name,
-      //     title: 'name',
-      //     required: true,
-      //   },
-      //   {
-      //     field: 'description',
-      //     value: this.get_object_list.description,
-      //     title: 'description',
-      //   },
-      //   {
-      //     field: 'part_number',
-      //     value: this.get_object_list.part_number,
-      //     title: 'part_number',
-      //   },
-      //   {
-      //     field: 'supplier',
-      //     value: this.get_object_list.supplier,
-      //     title: 'supplier',
-      //   },
-      //   {
-      //     field: 'parts',
-      //     value: this.get_object_list.parts,
-      //     title: 'parts',
-      //   },
-      //   {
-      //     field: 'unit',
-      //     value: this.get_object_list.unit,
-      //     title: 'unit',
-      //   },
-      //   {
-      //     field: 'color_hex',
-      //     value: this.get_object_list.color_hex,
-      //     title: 'color',
-      //   },
-      //   {
-      //     field: 'color_name',
-      //     value: this.get_object_list.color_name,
-      //     title: 'color',
-      //   },
-      //   {
-      //     field: 'img',
-      //     value: this.get_object_list.img,
-      //     title: 'img',
-      //   },
-      // ],
-      // get_object_list: [
-      //   {
-      //     _id: '6552818',
-      //     name: 'Ovo Caipira',
-      //     description: 'Ovo Jumbo galinhas livres',
-      //     part_number: '0549654488',
-      //     supplier: 'Meu ovo Favorito',
-      //     parts: 2,
-      //     unit: 'pçs',
-      //     date: 1656447628,
-      //     color: {
-      //       name: 'Vermelho',
-      //       value: '#fffff',
-      //     },
-      //     img: 'https://static8.depositphotos.com/1026550/1072/i/600/depositphotos_10727732-stock-photo-egg-with-clipping-path.jpg',
-      //   },
-      //   {
-      //     _id: '6552818',
-      //     name: 'Ovo Branco',
-      //     description: 'Ovo Jumbo galinhas livres',
-      //     part_number: '9658465421',
-      //     supplier: 'Granja Ovos',
-      //     parts: 4,
-      //     unit: 'mm',
-      //     date: 1656447628,
-      //     color: {
-      //       name: 'Branco',
-      //       value: '#FF0000',
-      //     },
-      //     img: 'https://www.supermercadosaturnino.com.br/media/catalog/product/cache/1/image/9df78eab33525d08d6e5fb8d27136e95/o/v/ovo_branco.jpg',
-      //   },
-      //   {
-      //     _id: '6552818',
-      //     name: 'Ovo de Codorna',
-      //     description: '',
-      //     part_number: '9658465421',
-      //     supplier: 'Granja de codorna',
-      //     parts: 4,
-      //     unit: 'mm',
-      //     date: 1656447628,
-      //     color: {
-      //       name: 'Manchado',
-      //       value: '',
-      //     },
-      //     img: 'http://img.sitemercado.com.br/produtos/ebce62c05eee918980bec59c386c655c553b828c955c73fe39bedf9483db78ca_full.jpg',
-      //   },
-      // ],
+      fieldsToIgnore: ['__typename', '_id', 'img'],
     };
   },
 
@@ -257,6 +164,12 @@ export default {
             field: 'color_name',
             value: list.color_name,
             title: 'color',
+          },
+          {
+            field: 'variable',
+            value: list.variable,
+            title: 'color',
+            required: true,
           },
           {
             field: 'img',
@@ -326,6 +239,7 @@ export default {
             part_number: obj.part_number,
             parts: obj.parts,
             supplier: obj.supplier,
+            variable: obj.variable,
           },
         })
 

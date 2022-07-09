@@ -2,6 +2,7 @@
   <div class="pt-6 d-flex settings">
     <!-- <v-card elevation="12" width="256"> -->
     <v-navigation-drawer
+      hide-overlay
       floating
       permanent
       width="300"

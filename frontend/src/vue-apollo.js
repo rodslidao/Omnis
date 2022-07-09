@@ -2,7 +2,7 @@ import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { createApolloClient, restartWebsockets } from 'vue-cli-plugin-apollo/graphql-client';
-
+import { InMemoryCache } from 'apollo-cache-inmemory';
 import { setContext } from 'apollo-link-context';
 
 // Install the vue plugin
@@ -46,6 +46,10 @@ const defaultOptions = {
   // note: don't override httpLink here, specify httpLink options in the
   // httpLinkOptions property of defaultOptions.
   link: authLink,
+
+  cache: new InMemoryCache({
+    addTypename: false,
+  }),
 
   // Override default cache
   // cache:

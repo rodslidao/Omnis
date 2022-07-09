@@ -1,79 +1,74 @@
 <template>
   <div class="object-register mt-11">
-    <v-form
-      v-model="isValid"
-      ref="form"
-      rounded
-      max-width="700px"
-      lazy-validation
-    >
+    <v-form v-model="isValid" ref="form" max-width="700px" lazy-validation>
       <div v-for="(item, index) in items" :key="index" v-on="generateObj(item)">
-        <v-row>
-          <v-col cols="4" class="d-flex align-center">
-            <!-- {{ item }} -->
-            <v-badge dot bordered color="error" v-if="item.required">
-              <div class="font-weight-bold">
-                {{ $t('form.' + item.field) }}
-              </div></v-badge
-            >
-            <div v-else class="font-weight-bold">
-              {{ $t('form.' + item.field) }}
-            </div>
-          </v-col>
-          <v-col cols="8" class="field">
-            <v-row>
-              <v-text-field
-                placeholder=""
-                outlined
-                rounded
-                v-model="obj[item.field]"
-                dense
-                :rules="item.required ? [rules().required] : [true]"
-                full-width
-                @keyup.enter="colorShow = false"
+        <v-autocomplete
+          class="select"
+          v-if="item.field == 'variable'"
+          :label="$t('form.' + item.field) + (item.required ? '*' : '')"
+          rounded
+          multiple
+          outlined
+          v-model="obj[item.field]"
+          :rules="item.required ? [rules().required] : [true]"
+          dense
+          :items="get_variable_list"
+          item-text="name"
+          return-object
+          chips
+          deletable-chips
+        ></v-autocomplete>
+
+        <v-text-field
+          v-else
+          :label="$t('form.' + item.field) + (item.required ? '*' : '')"
+          placeholder=""
+          outlined
+          rounded
+          v-model="obj[item.field]"
+          dense
+          :rules="item.required ? [rules().required] : [true]"
+          full-width
+          @keyup.enter="colorShow = false"
+        >
+          <template v-slot:prepend-inner v-if="item.field == 'color_hex'">
+            <v-badge
+              class="mb-n2"
+              bordered
+              inline
+              :color="obj[item.field]"
+            ></v-badge>
+          </template>
+          <template v-slot:append v-if="item.field == 'color_hex'">
+            <div>
+              <v-btn
+                small
+                icon
+                @click="(picker = !picker), (colorShow = !colorShow)"
+                ><v-icon :color="colorShow ? 'success' : ''">{{
+                  !colorShow ? 'mdi-eyedropper-variant' : 'mdi-check'
+                }}</v-icon></v-btn
               >
-                <template v-slot:prepend-inner v-if="item.field == 'color_hex'">
-                  <v-badge
-                    class="mb-n2"
-                    bordered
-                    inline
-                    :color="obj[item.field]"
-                  ></v-badge>
-                </template>
-                <template v-slot:append v-if="item.field == 'color_hex'">
-                  <div>
-                    <v-btn
-                      small
-                      icon
-                      @click="(picker = !picker), (colorShow = !colorShow)"
-                      ><v-icon :color="colorShow ? 'success' : ''">{{
-                        !colorShow ? 'mdi-eyedropper-variant' : 'mdi-check'
-                      }}</v-icon></v-btn
-                    >
-                  </div>
-                </template></v-text-field
-              ></v-row
-            >
-            <v-row>
-              <v-color-picker
-                dot-size="25"
-                v-if="colorShow && item.field == 'color_hex'"
-                hide-inputs
-                v-model="obj[item.field]"
-                mode="hexa"
-                @update:color="(a) => (obj[item.field] = a.hexa)"
-              ></v-color-picker>
-            </v-row>
-          </v-col>
-        </v-row>
+            </div>
+          </template>
+        </v-text-field>
+       
+        <v-color-picker
+          dot-size="25"
+          v-if="colorShow && item.field == 'color_hex'"
+          hide-inputs
+          v-model="obj[item.field]"
+          mode="hexa"
+          @update:color="(a) => (obj[item.field] = a.hexa)"
+        ></v-color-picker>
       </div>
       <v-divider class="mt-4"></v-divider>
       <div class="d-flex mt-4">
-        <v-badge dot bordered color="error">
+        <!-- <v-badge dot bordered color="error">
           <div class="text-subtitle-2">
             {{ $t('form.requiredFields') }}
           </div></v-badge
-        >
+        > -->
         <v-spacer></v-spacer>
         <v-btn color="primary" @click="validate()" rounded>
           {{ $t('buttons.register') }}
@@ -86,6 +81,15 @@
 <script>
 import gql from 'graphql-tag';
 
+const LIST_VARIABLES = gql`
+  query LIST_VARIABLES {
+    get_variable_list {
+      _id
+      name
+    }
+  }
+`;
+
 const ADD_OBJECT = gql`
   mutation ADD_OBJECT(
     $color_hex: String
@@ -97,6 +101,7 @@ const ADD_OBJECT = gql`
     $parts: Int
     $supplier: String
     $unit: String
+    $variable: [JSON]
   ) {
     create_object(
       input: {
@@ -109,6 +114,7 @@ const ADD_OBJECT = gql`
         parts: $parts
         supplier: $supplier
         unit: $unit
+        variable: $variable
       }
     )
   }
@@ -119,6 +125,7 @@ export default {
   props: {
     items: Array,
   },
+
   data() {
     return {
       isValid: true,
@@ -126,6 +133,10 @@ export default {
       picker: false,
       obj: {},
     };
+  },
+
+  apollo: {
+    get_variable_list: LIST_VARIABLES,
   },
 
   methods: {
@@ -163,6 +174,7 @@ export default {
             parts: parseInt(obj.parts),
             supplier: obj.supplier,
             unit: obj.unit,
+            variable: obj.variable,
           },
         })
 
@@ -180,59 +192,6 @@ export default {
         });
     },
   },
-
-  // computed: {
-  //   items() {
-  //     return [
-  //       {
-  //         field: 'name',
-  //         value: null,
-  //         title: 'name',
-  //         required: true,
-  //       },
-  //       {
-  //         field: 'description',
-  //         value: null,
-  //         title: 'description',
-  //       },
-  //       {
-  //         field: 'part_number',
-  //         value: null,
-  //         title: 'part_number',
-  //       },
-  //       {
-  //         field: 'supplier',
-  //         value: null,
-  //         title: 'supplier',
-  //       },
-  //       {
-  //         field: 'parts',
-  //         value: null,
-  //         title: 'parts',
-  //       },
-  //       {
-  //         field: 'unit',
-  //         value: null,
-  //         title: 'unit',
-  //       },
-  //       {
-  //         field: 'color_hex',
-  //         value: '#ffff',
-  //         title: 'color',
-  //       },
-  //       {
-  //         field: 'color_name',
-  //         value: '',
-  //         title: 'color',
-  //       },
-  //       {
-  //         field: 'img',
-  //         value: null,
-  //         title: 'img',
-  //       },
-  //     ];
-  //   },
-  // },
 };
 </script>
 
@@ -244,33 +203,7 @@ export default {
     padding: 1.5rem 0;
   }
   ::v-deep .v-text-field__details {
-    display: none;
+    // display: none;
   }
 }
-
-// $text-size: 3rem;
-// $sub-text-size: 2rem;
-// .v-text-field ::v-deep {
-//   align-self: center;
-//   padding-top: 0;
-
-//   .v-select__selections {
-//     font-size: $text-size;
-//     line-height: 1.1em;
-//   }
-
-//   input {
-//     font-size: $text-size;
-//     font-weight: 100;
-//     text-transform: capitalize;
-//     max-height: 50px;
-//   }
-
-//   label {
-//     font-size: $text-size;
-//   }
-//   .v-text-field button {
-//     font-size: $text-size;
-//   }
-// }
 </style>

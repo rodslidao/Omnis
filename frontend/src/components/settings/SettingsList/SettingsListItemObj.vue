@@ -13,7 +13,7 @@
             <span class="text-h6 text-capitalize">{{ obj.name }}</span>
             <div class="text-subtitle-2">{{ obj.description }}</div>
             <div class="font-weight-bold d-flex align-center">
-              <div class="text-body-2 mr-1">{{$t('form.partNumberAb')}}:</div>
+              <div class="text-body-2 mr-1">{{ $t('form.partNumberAb') }}:</div>
               {{ obj.part_number }}
             </div>
             <div class="font-weight-bold d-flex align-center">
@@ -128,19 +128,23 @@ export default {
     detailItems() {
       return [
         {
-          field: 'Cor',
+          field: this.$t('form.variable'),
+          value: this.obj.variable?.map((a) => a.name).join(', '),
+        },
+        {
+          field: this.$t('form.color'),
           value: `${this.obj.color_hex} | ${this.obj.color_name}`,
         },
         {
-          field: 'Supplier',
+          field: this.$t('form.supplier'),
           value: this.obj.supplier,
         },
         {
-          field: 'Parts',
+          field: this.$t('form.parts'),
           value: `${this.obj.parts} ${this.obj.unit}`,
         },
         {
-          field: 'Date',
+          field: this.$t('form.date'),
           value: this.$timestampToDate(this.obj.date),
         },
       ];
