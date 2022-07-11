@@ -88,6 +88,7 @@ export default {
 
   methods: {
     refetch() {
+      console.log('atualizou');
       this.$apollo.queries.get_matrix_list.refetch();
     },
 

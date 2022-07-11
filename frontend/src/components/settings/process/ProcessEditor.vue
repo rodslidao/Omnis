@@ -52,7 +52,7 @@
       <div class="d-flex mt-4">
         <v-spacer></v-spacer>
         <v-btn color="primary" @click="validate()" rounded>
-          {{ $t('buttons.register') }}
+          {{ obj ? $t('buttons.edit') : $t('buttons.register') }}
         </v-btn>
       </div>
     </v-form>
@@ -175,7 +175,11 @@ export default {
           // eslint-disable-next-line no-underscore-dangle
           _id: oldSelected?._id,
         };
-        this.addObject(this.obj);
+        if (this.obj) {
+          this.editMatrix();
+        } else {
+          this.addMatrix(this.obj);
+        }
       } else {
         this.formHasErrors = true;
       }
@@ -205,8 +209,7 @@ export default {
           this.$alertFeedback(this.$t('alerts.updateUserFail'), 'error', error);
         });
     },
-    async edit(obj) {
-      console.log('edit2', obj);
+    async editMatrix(obj) {
       await this.$apollo
         .mutate({
           mutation: UPDATE_PROCESS,
@@ -229,7 +232,7 @@ export default {
             this.$t('alerts.updateProcessSuccess'),
             'success',
           );
-          this.$router.back()
+          this.$router.back();
         })
 
         .catch((error) => {

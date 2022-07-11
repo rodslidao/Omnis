@@ -22,7 +22,6 @@
               outlined
               v-model="obj[item.field]"
               :rules="item.required ? [rules().required] : [true]"
-              @change="print(obj[item.field])"
               :items="get_variable_list"
               item-text="name"
               return-object

@@ -118,6 +118,7 @@ export default {
             field: 'sketch',
             value: list.sketch,
             title: 'sketch',
+            required: true,
           },
           {
             field: 'matrix',
@@ -176,7 +177,6 @@ export default {
     },
 
     edit(obj) {
-
       const newObject = [];
 
       Object.entries(obj).forEach((a) => {

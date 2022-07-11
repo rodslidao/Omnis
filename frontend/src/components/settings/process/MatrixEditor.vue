@@ -97,7 +97,7 @@
       </div>
       <div class="button">
         <v-btn color="primary" @click="validate()" rounded>
-          {{ obj? $t('buttons.edit') : $t('buttons.register')}}
+          {{ obj ? $t('buttons.edit') : $t('buttons.register') }}
         </v-btn>
       </div>
     </v-form>
@@ -127,6 +127,7 @@ const UPDATE_MATRIX = gql`
     $origin: JSON
     $slots: JSON
     $subdivisions: JSON
+    $variable: [JSON]
   ) {
     update_matrix(
       _id: $_id
@@ -137,6 +138,7 @@ const UPDATE_MATRIX = gql`
         origin: $origin
         slots: $slots
         subdivisions: $subdivisions
+        variable: $variable
       }
     )
   }
@@ -333,7 +335,7 @@ export default {
           this.$emit('refetch');
           this.$alertFeedback(
             this.$t('alerts.registerMatrixSuccess'),
-            'success'
+            'success',
           );
         })
 
@@ -349,6 +351,7 @@ export default {
     },
 
     async editMatrix() {
+      console.log(this.fields2.variable.value);
       await this.$apollo
         .mutate({
           mutation: UPDATE_MATRIX,
@@ -367,6 +370,7 @@ export default {
 
         .then(() => {
           // Result
+
           this.$emit('refetch');
           this.$alertFeedback(this.$t('alerts.updateMatrixSuccess'), 'success');
           this.$router.back();
