@@ -6,6 +6,7 @@ type matrix {
   description: String
   origin: JSON
   part_number: String
+  variable: [JSON]
 }
 
 input reg_matrix {

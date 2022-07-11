@@ -1,2 +1,2 @@
 from src.crud import CRUD
-CRUD("sketch", "operator")
+__sketch = CRUD("sketch", "operator")

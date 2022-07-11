@@ -58,7 +58,6 @@ class SerialGcodeOBJ(Serial):
             self.send(msg)
         self.pins = pins
         self.axes = axes
-        logger.info(axes)
         self.resume()
         self.websocket = Controls(self._id, self)
         Thread(target=self.auto_update, name=f"{_id}_auto_update", daemon=True).start()

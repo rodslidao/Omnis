@@ -102,7 +102,6 @@ class Websocket(WebSocketEndpoint):
     async def broadcast_on_change(self, updated_info, payload={}, **kwargs):
         # updated_info = getattr(updated_info_pointer, kwargs.get('attr', '__undefined_attr'), updated_info_pointer)
         # old_status = updated_info.copy()
-        logger.info(f"{self._id} {id(updated_info)}")
         while True:
             # if self._id == 'status':
             #     logger.info(f"{self._id} {id(updated_info)} {updated_info.copy() != old_status}")
@@ -125,7 +124,6 @@ class Process(Websocket):
     async def on_receive(self, websocket, data):
         await super().on_receive(websocket, data)
         await self._broadcast()
-        logger.info(f"fora: id_process_status: {id(self.process.status)} | id_process {id(self.process)}")
 
 class Controls(Websocket):
     def __init__(self, _id, serial):

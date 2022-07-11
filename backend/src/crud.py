@@ -77,8 +77,6 @@ class SSPR(CRUD):
         self.alias = alias
         self.auth_level = auth_level
 
-        logger.info(f"sspr: {kwargs}, {self.alias}, {self.auth_level}")
-
         self.start = (auth(self.auth_level))(self.start)
         mutation.set_field(f"start_{self.alias}", self.start)
 

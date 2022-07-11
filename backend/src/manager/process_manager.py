@@ -15,7 +15,6 @@ class ProcessObjectManager(SSPR, BaseManager):
         for process in dbo.find_many(self.collection):
             self.add(Process(**process))
             self.selected_process_id = process['_id']
-            logger.info(self.selected_process_id)
 
         self.websocket = WebProcess(self._id, self.process)
         Thread(

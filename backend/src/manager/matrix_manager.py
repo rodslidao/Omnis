@@ -38,7 +38,6 @@ class MatrixObjectManager(CRUD):
     def change_collection(name, conversor):
         def resolver(func):
             def wrapper(*args, **kwargs):
-                logger.info(f"{name}, {kwargs}")
                 _id = func(*args, **kwargs)
                 kwargs.update({"_id": _id})
                 _kwargs = conversor(**kwargs) if kwargs.get("input") else kwargs
@@ -50,7 +49,6 @@ class MatrixObjectManager(CRUD):
 
     @change_collection("matrix-manager", fake_resolver)
     def create(self, *args, **kwargs):
-        logger.info("Aqui")
         return CRUD.create(self, *args, **kwargs)
 
     @change_collection("matrix-manager", fake_resolver)
