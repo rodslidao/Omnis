@@ -50,13 +50,6 @@ def resolve_getCameras( **kwargs):
     return {"status": True, "data": CameraManager.get()}
 
 
-@query.field("getSketchList")
-@auth('viewer')
-def resolve_get_sketch_list( **kwargs):
-    print(NodeSheet().get_sketch_list()[0])
-    return {"status": True, "data": list(NodeSheet().get_sketch_list())}
-
-
 @query.field("getNodeInfo")
 @auth('operator')
 def resolve_getNodeInfo( node_type, **kwargs):

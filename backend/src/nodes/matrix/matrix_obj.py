@@ -17,7 +17,7 @@ from cv2 import (
 
 from numpy import fliplr, rot90, flipud, array, meshgrid, arange, arange, ndindex
 from src.crud import CRUD
-# CRUD("matrix", "operator")
+__matrix = CRUD("matrix", "operator")
 
 class Slot:
     """

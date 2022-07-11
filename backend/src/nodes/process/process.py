@@ -118,13 +118,13 @@ class Process_Thread(threading.Thread):
 
 @for_all_methods(exception(logger))
 class sample_process():
-    def __init__(self, name, img, description, sketch, created_by, created_at, _id=None,  *args, **kwargs) -> None:
+    def __init__(self, name, sketch, created_by, created_at, _id=None,  *args, **kwargs) -> None:
         self.__process = {}
         self.__pointer = {'status':"Undefined"}
         self._id = ObjectId(_id)
         self.name = name
-        self.img = img
-        self.description = description
+        # self.img = img
+        # self.description = description
         self.created_by = created_by
         self.created_at = created_at
         self.loaded_id = None

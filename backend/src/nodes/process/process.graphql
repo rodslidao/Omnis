@@ -10,6 +10,8 @@ type process implements metadata {
   created_by: DB_VALUE!
   edited_by: DB_VALUE
   updated_at: timestamptz
+  matrix: [JSON]
+  object: [JSON]
 }
 
 input reg_process {
@@ -17,6 +19,8 @@ input reg_process {
   name: String
   description: String 
   sketch: JSON
+  matrix: [JSON]
+  object: [JSON]
 }
 
 extend type Query {

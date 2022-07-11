@@ -101,7 +101,6 @@ class MatrixNode(BaseNode):
             "extra": convert_to_array(subdivisions["margin"]),
             "scale": float(options["matrix"]["scale"])
         }
-        logger.info(f"{slot_config}, {shape}")
         self.blister = Blister(shape=shape, name=options["matrix"]["name"], _id=options["matrix"]["id"],  slot_config=slot_config, order=options["matrix"]["order"])
         # logger.info(f"MatrixNode {} created.")
         # logger.info(f"{self.blister.data}")
