@@ -73,7 +73,7 @@ export default {
 
   watch: {
     '$store.state.node.controls': function (newData) {
-      console.log('dataaa', newData);
+      // console.log('dataaa', newData);
       if (newData.jog_position) {
         const pos = newData.jog_position;
         // this.cssUpdate(pos.X, pos.Y, pos.Z);0

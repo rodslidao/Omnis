@@ -5,7 +5,7 @@
       <!-- <router-link to="/"> -->
       <v-btn
         icon
-        @click="$router.go(-1)"
+        to="/progress"
         alt
         v-if="$router.currentRoute.path.split('/')[1] == 'config'"
       >

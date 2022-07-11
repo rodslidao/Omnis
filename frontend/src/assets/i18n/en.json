@@ -241,6 +241,8 @@
   },
   "dialogs": {
     "removeConfirm": "Are you sure you want to delete?",
-    "removeDescription": "This {obj} will be deleted, are you sure you want to delete it?"
+    "removeDescription": "This {obj} will be deleted, are you sure you want to delete it?",
+    "selectObject": "Select an object which you want to mount.",
+    "selectMatrix": "Select a matrix which you want to mount."
   }
 }

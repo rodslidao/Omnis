@@ -94,6 +94,7 @@ export default {
         'last_played',
         'date',
       ],
+      requireFields: ['name', 'sketch'],
     };
   },
 
@@ -181,19 +182,21 @@ export default {
 
       Object.entries(obj).forEach((a) => {
         if (!this.fieldsToIgnore.includes(a[0])) {
+          console.log(a[0], a[1]);
           newObject.push({
             field: a[0],
             value: a[1],
             title: a[0],
           });
-          if (a[0] === 'name') newObject.at(-1).required = true;
+          if (this.requireFields.includes(a[0])) newObject.at(-1).required = true;
         }
       });
 
       this.$router.push({
         name: 'processEdit',
         params: {
-          items: newObject, // or anything you want
+          items: newObject,
+          id: obj._id, // or anything you want
         },
       });
     },

@@ -1,8 +1,8 @@
 <template>
-  <div v-if="getSketchList" class="d-flex">
+  <div v-if="get_sketch_list" class="d-flex">
     <v-data-table
       :headers="headers"
-      :items="getSketchList.data"
+      :items="get_sketch_list"
       sort-by="_id"
       :sort-desc="true"
       class="elevation-1 table-warper"
@@ -11,27 +11,27 @@
         itemsPerPageAllText: 'Todos',
       }"
     >
-      <template v-slot:item.label="{ item }" class="name">
+      <template v-slot:item.name="{ item }" class="name">
         <div
           v-if="!(selectedId == item._id && editNameMode)"
-          @dblclick="editTextIntention(item._id, 'name', item.label)"
+          @dblclick="editTextIntention(item._id, 'name', item.name)"
         >
-          {{ item.label }}
+          {{ item.name }}
           <v-icon v-if="runningFileId == item._id" small color="green"
             >mdi-play-circle</v-icon
           >
         </div>
         <div v-else class="mb-n5 mt-n6">
           <v-text-field
-            :append-outer-icon="item.label ? 'mdi-check' : null"
-            @click:append-outer="edit(item._id, item.label, item.description)"
+            :append-outer-icon="item.name ? 'mdi-check' : null"
+            @click:append-outer="edit(item._id, item.name, item.description)"
             autofocus
-            :value="item.label"
-            v-model="item.label"
+            :value="item.name"
+            v-model="item.name"
             @keyup.enter="
-              item.label != ''
-                ? edit(item._id, item.label, item.description)
-                : item.label
+              item.name != ''
+                ? edit(item._id, item.name, item.description)
+                : item.name
             "
             single-line
             full-width
@@ -52,13 +52,13 @@
         <div v-else class="mb-n5 mt-n6">
           <v-text-field
             :append-outer-icon="item.description ? 'mdi-check' : null"
-            @click:append-outer="edit(item._id, item.label, item.description)"
+            @click:append-outer="edit(item._id, item.name, item.description)"
             autofocus
             :value="item.description"
             v-model="item.description"
             @keyup.enter="
               item.description != ''
-                ? edit(item._id, item.label, item.description)
+                ? edit(item._id, item.name, item.description)
                 : item.description
             "
             single-line
@@ -119,38 +119,27 @@ import DialogConfirmation from '@/components/settings/DialogConfirmation.vue';
 
 const GET_SKETCH_LIST = gql`
   query {
-    getSketchList {
-      data {
-        _id
-        version
-        label
-        description
-        node_qtd
-        author
-        last_access
-      }
+    get_sketch_list {
+      _id
+      version
+      name
+      description
+      node_qtd
+      author
+      last_access
     }
   }
 `;
 
 const SAVE_NODE_SHEET = gql`
-  mutation ($id: ID!, $label: String, $description: String) {
-    saveNodeSheet(_id: $id, label: $label, description: $description) {
-      data {
-        _id
-        label
-        description
-        node_qtd
-        author
-        last_access
-      }
-    }
+  mutation ($id: ID!, $name: String, $description: String) {
+    update_sketch(_id: $id, input: { name: $name, description: $description })
   }
 `;
 
 const DELETE_NODE_SHEET = gql`
   mutation ($id: ID!) {
-    deleteNodeSheet(_id: $id)
+    delete_sketch(_id: $id)
   }
 `;
 
@@ -163,8 +152,8 @@ const DUPLICATE_NODE_SHEET = gql`
 const LOAD_CONFIG = gql`
   mutation ($_id: ID!) {
     loadConfig(_id: $_id) {
-      _id
-      label
+     _id
+      name
       description
       version
       node_qtd
@@ -174,7 +163,7 @@ const LOAD_CONFIG = gql`
       content
       saved
       duplicated
-    }
+      }
   }
 `;
 // const LOAD_CONFIG = gql`
@@ -192,7 +181,7 @@ const LOAD_CONFIG = gql`
 //     getLoadedConfig(_id: $id) {
 //       data {
 //         _id
-//         label
+//         name
 //         description
 //         node_qtd
 //         author
@@ -213,7 +202,7 @@ export default {
         {
           text: 'Nome',
           align: 'start',
-          value: 'label',
+          value: 'name',
         },
         { text: 'Descrição', value: 'description' },
         { text: 'Versão', value: 'version' },
@@ -277,7 +266,7 @@ export default {
   },
 
   apollo: {
-    getSketchList: {
+    get_sketch_list: {
       query: GET_SKETCH_LIST,
       fetchPolicy: 'network-only',
       // nextFetchPolicy: 'network-only',
@@ -288,7 +277,7 @@ export default {
     ...mapActions('node', ['loadTabId']),
 
     initialize() {
-      this.$apollo.queries.getSketchList.refetch();
+      this.$apollo.queries.get_sketch_list.refetch();
       // this.files = [
       //   {
       //     name: 'Pega de conectores',
@@ -302,7 +291,7 @@ export default {
       // ];
     },
 
-    async edit(id, label, description) {
+    async edit(id, name, description) {
       this.editNameMode = false;
       this.editDescriptionMode = false;
       this.selectedId = null;
@@ -312,13 +301,13 @@ export default {
           mutation: SAVE_NODE_SHEET,
           variables: {
             id,
-            label,
+            name,
             description,
           },
         })
         .then(() => {
           // Result
-          this.$apollo.queries.getSketchList.refetch();
+          this.$apollo.queries.get_sketch_list.refetch();
           this.$alertFeedback('seu arquivo foi editado com sucesso', 'success');
           // this.isLoading = false;
           // this.setSaved(this.selectedTabIndex);
@@ -383,7 +372,7 @@ export default {
 
         .then(() => {
           // Result
-          this.$apollo.queries.getSketchList.refetch();
+          this.$apollo.queries.get_sketch_list.refetch();
           this.$alertFeedback(
             'Seu arquivo foi deletado com sucesso',
             'success'
@@ -418,7 +407,7 @@ export default {
 
         .then(() => {
           // Result
-          this.$apollo.queries.getSketchList.refetch();
+          this.$apollo.queries.get_sketch_list.refetch();
           this.$alertFeedback(
             'Seu arquivo foi duplicado com sucesso',
             'success'

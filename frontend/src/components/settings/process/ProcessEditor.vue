@@ -8,18 +8,20 @@
       lazy-validation
     >
       <div v-for="(item, index) in items" :key="index" v-on="generateObj(item)">
-        <v-select
+        <v-autocomplete
           class="select"
           v-if="item.field == 'sketch'"
           :label="$t('form.' + item.field) + (item.required ? '*' : '')"
           rounded
-          v-model="obj[item.field]"
-          dense
-          :items="get_sketch_list"
           outlined
-          item-text="label"
+          dense
+          v-model="obj[item.field]"
+          :rules="item.required ? [rules().required] : [true]"
+          :items="get_sketch_list"
+          item-text="name"
+           item-value="_id"
           return-object
-        ></v-select>
+        ></v-autocomplete>
         <v-text-field
           v-if="!textFieldsIgnore.includes(item.field)"
           :label="$t('form.' + item.field) + (item.required ? '*' : '')"
@@ -66,7 +68,7 @@ const LIST_SKETCH = gql`
   query LIST_SKETCH {
     get_sketch_list {
       _id
-      label
+      name
     }
   }
 `;
@@ -139,6 +141,7 @@ export default {
   name: 'ObjectRegister',
   props: {
     items: Array,
+    id: String,
   },
   data() {
     return {
@@ -150,7 +153,6 @@ export default {
   },
 
   apollo: {
-    // Simple query that will update the 'hello' vue property
     get_sketch_list: LIST_SKETCH,
     get_object_list: LIST_OBJECT,
     get_matrix_list: LIST_MATRIX,
@@ -165,6 +167,7 @@ export default {
 
     generateObj(item) {
       this.obj[item.field] = item.value;
+      console.log('generate', this.obj);
     },
 
     validate() {
@@ -176,7 +179,7 @@ export default {
           _id: oldSelected?._id,
         };
         if (this.obj) {
-          this.editMatrix();
+          this.editMatrix(this.obj);
         } else {
           this.addMatrix(this.obj);
         }
@@ -210,12 +213,13 @@ export default {
         });
     },
     async editMatrix(obj) {
+      console.log(obj);
       await this.$apollo
         .mutate({
           mutation: UPDATE_PROCESS,
           variables: {
             // eslint-disable-next-line no-underscore-dangle
-            _id: this.objToEdit._id,
+            _id: this.id,
             description: obj.description,
             img: obj.img,
             name: obj.name,
@@ -230,7 +234,7 @@ export default {
           this.$emit('refetch');
           this.$alertFeedback(
             this.$t('alerts.updateProcessSuccess'),
-            'success',
+            'success'
           );
           this.$router.back();
         })
@@ -241,7 +245,7 @@ export default {
           this.$alertFeedback(
             this.$t('alerts.updateProcessFail'),
             'error',
-            error,
+            error
           );
           // We restore the initial user input
         });

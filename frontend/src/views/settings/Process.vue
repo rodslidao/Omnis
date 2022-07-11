@@ -1,6 +1,6 @@
 <template>
   <div class="process">
-    <router-view :key="$route.path"> </router-view>
+    <router-view> </router-view>
     <div v-if="$router.currentRoute.name == 'process'">
       <settings-title>{{ $t('settings.process.myProcess') }}</settings-title>
       <settings-items
