@@ -23,19 +23,12 @@
         <template #itemList="itemList">
           <settings-list-item-obj
             @remove-obj="remove"
-            @edit-obj="updateObj"
+            @edit-obj="edit"
             :obj="itemList.data"
           ></settings-list-item-obj>
           <v-divider></v-divider>
         </template>
       </settings-list>
-
-      <object-edit
-        v-if="editDialog"
-        :items="model"
-        @edit-obj="edit"
-        @cancel-event="editDialog = false"
-      ></object-edit>
     </div>
   </div>
 </template>
@@ -46,7 +39,6 @@ import SettingsItems from '@/components/settings/SettingsItems.vue';
 import SettingsList from '@/components/settings/SettingsList/SettingsList.vue';
 import SettingsTitle from '@/components/settings/SettingsTitle.vue';
 import SettingsListItemObj from '../../components/settings/SettingsList/SettingsListItemObj.vue';
-import ObjectEdit from '../../components/settings/process/ObjectEdit.vue';
 
 const LIST_OBJ = gql`
   query LIST_OBJ {
@@ -72,43 +64,12 @@ const REMOVE_OBJ = gql`
   }
 `;
 
-const UPDATE_OBJ = gql`
-  mutation UPDATE_OBJ(
-    $_id: ID!
-    $color_hex: String
-    $color_name: String
-    $description: String
-    $img: String
-    $name: String!
-    $part_number: String
-    $parts: Int
-    $supplier: String
-    $variable: [JSON]
-  ) {
-    update_object(
-      _id: $_id
-      input: {
-        color_hex: $color_hex
-        color_name: $color_name
-        description: $description
-        img: $img
-        name: $name
-        part_number: $part_number
-        parts: $parts
-        supplier: $supplier
-        variable: $variable
-      }
-    )
-  }
-`;
-
 export default {
   components: {
     SettingsItems,
     SettingsList,
     SettingsListItemObj,
     SettingsTitle,
-    ObjectEdit,
   },
   data() {
     return {
@@ -193,9 +154,28 @@ export default {
       this.$apollo.queries.get_object_list.refetch();
     },
 
-    updateObj(obj) {
-      this.objToEdit = obj;
-      this.editDialog = true;
+    edit(obj) {
+      const newObject = [];
+
+      Object.entries(obj).forEach((a) => {
+        if (!this.fieldsToIgnore.includes(a[0])) {
+          console.log(a[0], a[1]);
+          newObject.push({
+            field: a[0],
+            value: a[1],
+            title: a[0],
+          });
+          if (this.requireFields.includes(a[0])) newObject.at(-1).required = true;
+        }
+      });
+
+      this.$router.push({
+        name: 'objectEdit',
+        params: {
+          items: newObject,
+          id: obj._id, // or anything you want
+        },
+      });
     },
 
     async remove(_id) {
@@ -222,41 +202,6 @@ export default {
         });
     },
 
-    async edit(obj) {
-      console.log('edit2', obj);
-      await this.$apollo
-        .mutate({
-          mutation: UPDATE_OBJ,
-          variables: {
-            // eslint-disable-next-line no-underscore-dangle
-            _id: this.objToEdit._id,
-            color_hex: obj.color_hex,
-            color_name: obj.color_name,
-            date: obj.date,
-            description: obj.description,
-            img: obj.img,
-            name: obj.name,
-            part_number: obj.part_number,
-            parts: obj.parts,
-            supplier: obj.supplier,
-            variable: obj.variable,
-          },
-        })
-
-        .then(() => {
-          // Result
-          this.$apollo.queries.get_object_list.refetch();
-          this.$alertFeedback(this.$t('alerts.updateObjSuccess'), 'success');
-          this.editDialog = false;
-        })
-
-        .catch((error) => {
-          // Error
-          this.isLoading = false;
-          this.$alertFeedback(this.$t('alerts.updateObjFail'), 'error', error);
-          // We restore the initial user input
-        });
-    },
   },
 };
 </script>

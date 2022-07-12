@@ -163,6 +163,13 @@ const routes = [
                 path: 'add',
                 meta: { breadCrumb: 'settings.process.objects.add' },
               },
+              {
+                name: 'objectEdit',
+                component: ObjectRegister,
+                path: 'edit',
+                props: true,
+                meta: { breadCrumb: 'settings.process.objects.edit' },
+              },
             ],
           },
           {
