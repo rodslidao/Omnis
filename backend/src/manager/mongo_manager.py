@@ -1,4 +1,4 @@
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 from pymongo import MongoClient
 from pymongo.errors import ConnectionFailure
 from os import environ, getenv
@@ -11,15 +11,13 @@ from numpy import integer, floating, ndarray
 from json import loads, dumps, JSONEncoder
 
 from bson.errors import InvalidDocument
-from bson import ObjectId
+from bson import DBRef, ObjectId
 
 load_dotenv()
-
-db_port = environ.get("DB_PORT", "27017")
-db_ip = getenv("DB_HOST")
+load_dotenv(f'.env.{environ.get("NODE_ENV")}')
 
 url = (
-    f"mongodb://{db_ip}:{db_port}/"
+    f"mongodb://{getenv('DB_HOST', '0.0.0.0')}:{environ.get('DB_PORT', '27017')}/"
     if environ.get("DB_MODE") != "cloud"
     else f"mongodb+srv://{getenv('DB_USER')}:{getenv('DB_PASS')}@cluster0.diykb.mongodb.net/test?retryWrites=true&w=majority"
 )
@@ -112,10 +110,25 @@ class MongoOBJ:
                 loads(dumps(data, cls=CustomEncoder))
             )
 
-    def find_one(self, collection_name, query={}, data={}):
-        return self.dbo[collection_name].find_one(query, data)
+    def resolve_ref(self, cursor):
+        if isinstance(cursor, (dict, list, DBRef)):
+            if isinstance(cursor, DBRef):
+                return self.find_one(cursor.collection, {'_id':cursor.id})
+            for key, value in (cursor.items() if isinstance(cursor, dict) else enumerate(cursor)):
+                if isinstance(value, DBRef):
+                    cursor[key] = self.find_one(value.collection, {'_id':value.id})
+                if isinstance(value, list):
+                    cursor[key] = map(self.resolve_ref, value)
+        return cursor
 
-    def find_many(self, collection_name, query={}, data={}):
+    def find_one(self, collection_name, query={}, data={}, **kwargs):
+        if kwargs.get('ref'):
+            return self.resolve_ref(dict(self.dbo[collection_name].find_one(query, data)))
+        return dict(self.dbo[collection_name].find_one(query, data))
+
+    def find_many(self, collection_name, query={}, data={}, **kwargs):
+        if kwargs.get('ref'):
+            return [self.resolve_ref(dict(value)) for value in self.dbo[collection_name].find(query, data)]
         return self.dbo[collection_name].find(query, data)
 
     def update_one(self, collection_name, query, data, options={}):

@@ -1,3 +1,5 @@
+scalar DBREF_variable
+
 type variable {
     _id: ID
     name: String

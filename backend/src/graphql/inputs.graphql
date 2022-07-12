@@ -1,4 +1,4 @@
-input NodeSheetInput {
+input NodeSheetInput{
   name: String!
 }
 

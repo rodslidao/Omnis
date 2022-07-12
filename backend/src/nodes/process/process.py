@@ -1,4 +1,5 @@
 from datetime import datetime
+from pickle import FALSE
 import threading
 from bson import ObjectId
 from src.nodes.node_manager import NodeManager
@@ -142,12 +143,12 @@ class sample_process():
         #self.__pointer['status'] = self.process.status_rtc
         return self.process.status_rtc
 
-    def load(self):
+    def load(self, _id=False):
         self.unload()
         if self.status.get("status", False):
-            a = load_conf(self.sketch['_id'])
+            a = load_conf(self.sketch._id if not _id else _id)
             if a:
-                self.loaded_id = self.sketch['_id']
+                self.loaded_id = self.sketch._id if not _id else _id
             else:
                 self.loaded_id = None
                 self.unload()

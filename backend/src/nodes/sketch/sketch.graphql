@@ -1,7 +1,9 @@
+scalar DBREF_sketch
+
 type sketch {
   _id: ID
   parent_id: ID
-  label: String
+  name: String
   key: ID
   description: String
   author: String
@@ -16,7 +18,7 @@ type sketch {
 input reg_sketch{
   _id: ID
   parent_id: ID
-  label: String
+  name: String
   key: ID
   description: String
   author: String

@@ -2,7 +2,7 @@ from api import dbo, auth, logger
 from api.mutations import mutation
 from api.queries import query
 from bson import ObjectId
-from datetime import datetime
+from datetime import datetime    
 
 
 class CRUD:
@@ -29,7 +29,7 @@ class CRUD:
         _id = ObjectId(kwargs.get("_id"))
         kwargs["input"].update(
             {
-                "created_by": kwargs["user"].db_pointer,
+                "created_by": kwargs["user"].dbref,
                 "created_at": datetime.utcnow().timestamp(),
                 "_id": _id
             }
@@ -42,7 +42,7 @@ class CRUD:
         _id = ObjectId(kwargs.get("_id"))
         kwargs["input"].update(
             {
-                "edited_by": kwargs["user"].db_pointer,
+                "edited_by": kwargs["user"].dbref,
                 "updated_at": datetime.utcnow().timestamp(),
             }
         )
@@ -57,10 +57,10 @@ class CRUD:
         dbo.delete_one(kwargs.get('collection', self.collection), {"_id": ObjectId(kwargs.get("_id"))})
 
     def get_list(self, *args, **kwargs):
-        return dbo.find_many(kwargs.get('collection', self.collection))
+        return dbo.find_many(kwargs.get('collection', self.collection), ref=True)
 
     def get_item(self, *args, **kwargs):
-        return dbo.find_one(kwargs.get('collection', self.collection), {"_id": ObjectId(kwargs.get("_id"))})
+        return dbo.find_one(kwargs.get('collection', self.collection), {"_id": ObjectId(kwargs.get("_id"))}, ref=True)
 
 
 class SSPR(CRUD):

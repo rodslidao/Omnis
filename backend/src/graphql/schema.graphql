@@ -68,7 +68,6 @@ type Mutation {
 
 type Query {
   getNodeSheet(_id: ID!): NodeSheetResult!
-  getSketchList: SketchListResult!
   getAxisList: [AxisResult!]
   getDevicesList: [DeviceResult!]
   getNodeInfo(node_type: String!, kwargs: JSON): NodeInfoResult!
