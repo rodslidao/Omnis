@@ -19,7 +19,7 @@
               v-for="(item, index) in step1 ? get_object_list : get_matrix_list"
               :key="index"
               class="d-flex my-2"
-              @click="selectedMatrix(item)"
+              @click="step1 ? selectedObject(item) : selectedMatrix(item)"
             >
               <div class="viewer">
                 <!-- <matrix-viewer
@@ -117,7 +117,10 @@ const LIST_PROCESS = gql`
     get_process_list {
       _id
       name
-      object
+      object {
+        name
+        _id
+      }
     }
   }
 `;
@@ -127,7 +130,6 @@ const LIST_OBJECT = gql`
     get_object_list {
       _id
       name
-      variable
     }
   }
 `;
@@ -137,7 +139,6 @@ const LIST_MATRIX = gql`
     get_matrix_list {
       _id
       name
-      variable
     }
   }
 `;
@@ -196,16 +197,16 @@ export default {
   },
 
   methods: {
+    selectedObject(object) {
+      console.log(this.get_process_list.object.filter((item) => item.name !== object.name));
+      console.log(object.name);
+    },
+
     selectedMatrix(item) {
       this.step1 = false;
       this.step2 = true;
 
-      console.log(this.get_process_list);
-    },
-
-    selectedObject(item) {
-      this.step1 = false;
-      this.step2 = false;
+      const filteredProcessList = this.get_process_list.filter(item.name);
     },
 
     async sendCommand(command) {

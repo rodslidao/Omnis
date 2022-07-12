@@ -49,7 +49,10 @@ const LIST_MATRIX = gql`
       subdivisions
       origin
       part_number
-      variable
+      variable {
+        name
+        _id
+      }
     }
   }
 `;

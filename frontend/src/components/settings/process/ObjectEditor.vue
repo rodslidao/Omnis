@@ -11,7 +11,9 @@
           outlined
           v-model="obj[item.field]"
           :rules="item.required ? [rules().required] : [true]"
-          :items="get_variable_list"
+          :items="
+            item.field == 'variable' ? get_variable_list : get_matrix_list
+          "
           item-text="name"
           return-object
           chips
@@ -69,7 +71,7 @@
         > -->
         <v-spacer></v-spacer>
         <v-btn color="primary" @click="validate()" rounded>
-          {{ $t('buttons.register') }}
+          {{ obj ? $t('buttons.edit') : $t('buttons.register') }}
         </v-btn>
       </div>
     </v-form>
@@ -88,6 +90,15 @@ const LIST_VARIABLES = gql`
   }
 `;
 
+const LIST_MATRIX = gql`
+  query LIST_MATRIX {
+    get_matrix_list {
+      _id
+      name
+    }
+  }
+`;
+
 const ADD_OBJECT = gql`
   mutation ADD_OBJECT(
     $color_hex: String
@@ -99,8 +110,8 @@ const ADD_OBJECT = gql`
     $parts: Int
     $supplier: String
     $unit: String
-    $variable: [JSON]
-    $matrix: [matrix]
+    $variable: [DBREF_variable]
+    $matrix: [DBREF_matrix]
   ) {
     create_object(
       input: {
@@ -131,8 +142,8 @@ const UPDATE_OBJ = gql`
     $part_number: String
     $parts: Int
     $supplier: String
-    $variable: [JSON]
-    $matrix: [matrix]
+    $variable: [DBREF_variable]
+    $matrix: [DBREF_matrix]
   ) {
     update_object(
       _id: $_id
@@ -157,6 +168,7 @@ export default {
   props: {
     items: Array,
     id: String,
+    edit: Boolean,
   },
 
   data() {
@@ -171,6 +183,7 @@ export default {
 
   apollo: {
     get_variable_list: LIST_VARIABLES,
+    get_matrix_list: LIST_MATRIX,
   },
 
   methods: {
@@ -186,7 +199,11 @@ export default {
 
     validate() {
       if (this.$refs.form.validate()) {
-        this.addObject(this.obj);
+        if (this.edit) {
+          this.aditObject(this.obj);
+        } else {
+          this.addObject(this.obj);
+        }
       } else {
         this.formHasErrors = true;
       }
@@ -209,6 +226,7 @@ export default {
             supplier: obj.supplier,
             unit: obj.unit,
             variable: obj.variable,
+            matrix: obj.matrix,
           },
         })
 
@@ -233,7 +251,7 @@ export default {
           mutation: UPDATE_OBJ,
           variables: {
             // eslint-disable-next-line no-underscore-dangle
-            _id: this.objToEdit._id,
+            _id: this.id,
             color_hex: obj.color_hex,
             color_name: obj.color_name,
             date: obj.date,
@@ -249,16 +267,15 @@ export default {
 
         .then(() => {
           // Result
-          this.$apollo.queries.get_object_list.refetch();
+          this.$emit('refetch');
           this.$alertFeedback(this.$t('alerts.updateObjSuccess'), 'success');
-          this.editDialog = false;
+          this.$router.back();
         })
 
         .catch((error) => {
           // Error
           this.isLoading = false;
           this.$alertFeedback(this.$t('alerts.updateObjFail'), 'error', error);
-          // We restore the initial user input
         });
     },
   },

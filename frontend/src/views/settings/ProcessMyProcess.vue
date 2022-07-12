@@ -28,13 +28,6 @@
           <v-divider></v-divider>
         </template>
       </settings-list>
-
-      <!-- <process-edit
-        v-if="editDialog"
-        :items="model"
-        @edit="edit"
-        @cancel-event="editDialog = false"
-      ></process-edit> -->
     </div>
   </div>
 </template>
@@ -52,16 +45,27 @@ const LIST_PROCESS = gql`
       name
       _id
       created_at
-      created_by
+      created_by {
+        first_name
+        last_name
+      }
       date
       description
-      edited_by
+      edited_by {
+        first_name
+        last_name
+      }
       img
       last_played
-      sketch
+      sketch {
+        name
+        _id
+      }
       updated_at
-      matrix
-      object
+      object {
+        name
+        _id
+      }
     }
   }
 `;
@@ -120,11 +124,6 @@ export default {
             value: list.sketch,
             title: 'sketch',
             required: true,
-          },
-          {
-            field: 'matrix',
-            value: list.matrix,
-            title: 'matrix',
           },
           {
             field: 'object',
@@ -196,7 +195,9 @@ export default {
         name: 'processEdit',
         params: {
           items: newObject,
+          // eslint-disable-next-line no-underscore-dangle
           id: obj._id, // or anything you want
+          edit: true,
         },
       });
     },

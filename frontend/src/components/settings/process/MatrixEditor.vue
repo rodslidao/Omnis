@@ -127,7 +127,7 @@ const UPDATE_MATRIX = gql`
     $origin: JSON
     $slots: JSON
     $subdivisions: JSON
-    $variable: [JSON]
+    $variable: [DBREF_variable]
   ) {
     update_matrix(
       _id: $_id
@@ -193,7 +193,6 @@ export default {
         },
         variable: {
           value: this.obj?.variable,
-          required: true,
         },
       },
       fields: [

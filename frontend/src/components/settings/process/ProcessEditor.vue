@@ -7,23 +7,9 @@
       max-width="700px"
       lazy-validation
     >
-      <div v-for="(item, index) in items" :key="index" v-on="generateObj(item)">
-        <v-autocomplete
-          class="select"
-          v-if="item.field == 'sketch'"
-          :label="$t('form.' + item.field) + (item.required ? '*' : '')"
-          rounded
-          outlined
-          dense
-          v-model="obj[item.field]"
-          :rules="item.required ? [rules().required] : [true]"
-          :items="get_sketch_list"
-          item-text="name"
-           item-value="_id"
-          return-object
-        ></v-autocomplete>
+      <div v-for="(item, index) in items" :key="index">
         <v-text-field
-          v-if="!textFieldsIgnore.includes(item.field)"
+          v-if="!autocompleteInclude.includes(item.field)"
           :label="$t('form.' + item.field) + (item.required ? '*' : '')"
           placeholder=""
           outlined
@@ -39,22 +25,24 @@
           v-if="autocompleteInclude.includes(item.field)"
           :label="$t('form.' + item.field) + (item.required ? '*' : '')"
           rounded
-          multiple
+          :multiple="item.field != 'sketch'"
           outlined
           v-model="obj[item.field]"
           :rules="item.required ? [rules().required] : [true]"
-          :items="item.field == 'object' ? get_object_list : get_matrix_list"
+          :items="item.field == 'object' ? get_object_list : get_sketch_list"
           item-text="name"
+          item-value="_id"
           return-object
-          chips
-          deletable-chips
+          :chips="item.field != 'sketch'"
+          :deletable-chips="item.field != 'sketch'"
         ></v-autocomplete>
       </div>
+
       <v-divider class="mt-4"></v-divider>
       <div class="d-flex mt-4">
         <v-spacer></v-spacer>
         <v-btn color="primary" @click="validate()" rounded>
-          {{ obj ? $t('buttons.edit') : $t('buttons.register') }}
+          {{ edit ? $t('buttons.edit') : $t('buttons.register') }}
         </v-btn>
       </div>
     </v-form>
@@ -93,12 +81,11 @@ const LIST_MATRIX = gql`
 
 const ADD_PROCESS = gql`
   mutation ADD_PROCESS(
-    $sketch: JSON
+    $sketch: DBREF_sketch
     $description: String
     $img: String
     $name: String
-    $matrix: [JSON]
-    $object: [JSON]
+    $object: [DBREF_object]
   ) {
     create_process(
       input: {
@@ -106,7 +93,6 @@ const ADD_PROCESS = gql`
         sketch: $sketch
         img: $img
         name: $name
-        matrix: $matrix
         object: $object
       }
     )
@@ -119,9 +105,8 @@ const UPDATE_PROCESS = gql`
     $description: String
     $img: String
     $name: String
-    $sketch: JSON
-    $matrix: [JSON]
-    $object: [JSON]
+    $sketch: DBREF_sketch
+    $object: [DBREF_object]
   ) {
     update_process(
       _id: $_id
@@ -130,7 +115,6 @@ const UPDATE_PROCESS = gql`
         img: $img
         name: $name
         sketch: $sketch
-        matrix: $matrix
         object: $object
       }
     )
@@ -142,14 +126,20 @@ export default {
   props: {
     items: Array,
     id: String,
+    edit: Boolean,
   },
   data() {
     return {
       isValid: true,
       obj: {},
-      textFieldsIgnore: ['sketch', 'matrix', 'object'],
-      autocompleteInclude: ['matrix', 'object'],
+      autocompleteInclude: ['object', 'sketch'],
     };
+  },
+
+  beforeMount() {
+    this.items.forEach((item) => {
+      this.generateObj(item);
+    });
   },
 
   apollo: {
@@ -167,28 +157,21 @@ export default {
 
     generateObj(item) {
       this.obj[item.field] = item.value;
-      console.log('generate', this.obj);
     },
 
     validate() {
       if (this.$refs.form.validate()) {
-        const oldSelected = this.obj.sketch;
-        this.obj.sketch = {
-          name: oldSelected?.label,
-          // eslint-disable-next-line no-underscore-dangle
-          _id: oldSelected?._id,
-        };
-        if (this.obj) {
-          this.editMatrix(this.obj);
+        if (this.edit) {
+          this.editProcess(this.obj);
         } else {
-          this.addMatrix(this.obj);
+          this.addProcess(this.obj);
         }
       } else {
         this.formHasErrors = true;
       }
     },
 
-    async addObject(obj) {
+    async addProcess(obj) {
       await this.$apollo
         .mutate({
           mutation: ADD_PROCESS,
@@ -197,6 +180,7 @@ export default {
             img: obj.img,
             name: obj.name,
             sketch: obj.sketch,
+            object: obj.object,
           },
         })
 
@@ -212,8 +196,7 @@ export default {
           this.$alertFeedback(this.$t('alerts.updateUserFail'), 'error', error);
         });
     },
-    async editMatrix(obj) {
-      console.log(obj);
+    async editProcess(obj) {
       await this.$apollo
         .mutate({
           mutation: UPDATE_PROCESS,
@@ -224,7 +207,6 @@ export default {
             img: obj.img,
             name: obj.name,
             sketch: obj.sketch,
-            matrix: obj.matrix,
             object: obj.object,
           },
         })
@@ -234,7 +216,7 @@ export default {
           this.$emit('refetch');
           this.$alertFeedback(
             this.$t('alerts.updateProcessSuccess'),
-            'success'
+            'success',
           );
           this.$router.back();
         })
@@ -245,7 +227,7 @@ export default {
           this.$alertFeedback(
             this.$t('alerts.updateProcessFail'),
             'error',
-            error
+            error,
           );
           // We restore the initial user input
         });
@@ -260,9 +242,6 @@ export default {
 
   .field {
     padding: 1.5rem 0;
-  }
-  ::v-deep .v-text-field__details {
-    // display: none;
   }
 }
 </style>

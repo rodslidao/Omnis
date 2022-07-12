@@ -23,7 +23,7 @@ import ProcessObjects from '@/views/settings/ProcessObjects.vue';
 import ProcessMyProcess from '@/views/settings/ProcessMyProcess.vue';
 import ProcessVariables from '@/views/settings/ProcessVariables.vue';
 import ProcessMatrix from '@/views/settings/ProcessMatrix.vue';
-import ObjectRegister from '@/components/settings/process/ObjectRegister.vue';
+import ObjectEditor from '@/components/settings/process/ObjectEditor.vue';
 import VariableRegister from '@/components/settings/process/VariableRegister.vue';
 import MatrixEditor from '@/components/settings/process/MatrixEditor.vue';
 import VariableEdit from '@/components/settings/process/VariableEdit.vue';
@@ -158,14 +158,14 @@ const routes = [
             meta: { breadCrumb: 'settings.process.objects.name' },
             children: [
               {
-                name: 'objectRegister',
-                component: ObjectRegister,
+                name: 'objectEditor',
+                component: ObjectEditor,
                 path: 'add',
                 meta: { breadCrumb: 'settings.process.objects.add' },
               },
               {
                 name: 'objectEdit',
-                component: ObjectRegister,
+                component: ObjectEditor,
                 path: 'edit',
                 props: true,
                 meta: { breadCrumb: 'settings.process.objects.edit' },

@@ -44,16 +44,23 @@ const LIST_OBJ = gql`
   query LIST_OBJ {
     get_object_list {
       _id
-      color_hex
-      color_name
-      date
-      description
-      img
       name
+      description
       part_number
       parts
       supplier
-      variable
+      color_name
+      color_hex
+      date
+      img
+      matrix {
+        name
+        _id
+      }
+      variable {
+        name
+        _id
+      }
     }
   }
 `;
@@ -76,6 +83,7 @@ export default {
       objToEdit: {},
       editDialog: false,
       fieldsToIgnore: ['__typename', '_id', 'img'],
+      requireFields: ['name'],
     };
   },
 
@@ -130,7 +138,11 @@ export default {
             field: 'variable',
             value: list.variable,
             title: 'color',
-            required: true,
+          },
+          {
+            field: 'matrix',
+            value: list.matrix,
+            title: 'matrix',
           },
           {
             field: 'img',
@@ -165,7 +177,8 @@ export default {
             value: a[1],
             title: a[0],
           });
-          if (this.requireFields.includes(a[0])) newObject.at(-1).required = true;
+          if (this.requireFields.includes(a[0]))
+            newObject.at(-1).required = true;
         }
       });
 
@@ -174,6 +187,7 @@ export default {
         params: {
           items: newObject,
           id: obj._id, // or anything you want
+          edit: true,
         },
       });
     },
@@ -201,7 +215,6 @@ export default {
           // We restore the initial user input
         });
     },
-
   },
 };
 </script>
