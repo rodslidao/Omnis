@@ -1,3 +1,5 @@
+scalar DBREF_matrix
+
 type matrix {
   _id : ID!
   name: String
@@ -6,7 +8,7 @@ type matrix {
   description: String
   origin: JSON
   part_number: String
-  variable: [JSON]
+  variable: [variable]
 }
 
 input reg_matrix {
@@ -16,7 +18,7 @@ input reg_matrix {
   description: String
   origin: JSON
   part_number: String
-  variable: [JSON]
+  variable: [DBREF_variable]
 }
 
 extend type Query {

@@ -1,6 +1,6 @@
 interface metadata {
   created_at: timestamptz!
-  created_by: DB_VALUE!
-  edited_by: DB_VALUE
+  created_by: user!
+  edited_by: user
   updated_at: timestamptz
 }

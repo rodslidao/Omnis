@@ -228,7 +228,7 @@ def loadConfig(NodeSheet, mode=LoadingMode):
 
     numberOfNodesTotal += len(NodeSheet.get("nodes"))
 
-
+    return NodeSheet
 @exception(logger)
 def saveNodeChange(nodeChange):
     dbo.get_collection("node-history").insert_one(nodeChange)
@@ -244,14 +244,14 @@ def load(node_id=None):
                 current_loaded_query,
                 {"$set": {"sheet-id": ObjectId(node_id)}},
             )
-            sheet = NodeSheet().getNodeSheetById(node_id)["content"]
+            sheet = NodeSheet().getNodeSheetById(node_id)
         else:
             sheet = NodeSheet().getNodeSheetById(
                 dbo.find_one("last-values", current_loaded_query)["sheet-id"]
-            )["content"]
+            )
         NodeManager.clear()
-        loadConfig(sheet, LoadingMode)
-        return True
+        loadConfig(sheet["content"], LoadingMode)
+        return sheet
     except Exception as e:
         logger.error("Error loading config: {}".format(e))
         return False

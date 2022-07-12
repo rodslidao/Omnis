@@ -1,3 +1,5 @@
+scalar DBREF_object
+
 type object {
   _id: ID!
   name: String!
@@ -10,7 +12,8 @@ type object {
   color_name: String
   img: String
   date: timestamptz
-  variable: [ID]
+  variable: [variable]
+  matrix: [matrix]
 }
 
 input reg_object {
@@ -23,7 +26,8 @@ input reg_object {
   color_hex: String
   color_name: String
   img: String
-  variable: [JSON]
+  variable: [DBREF_variable]
+  matrix: [DBREF_matrix]
 }
 
 extend type Query {

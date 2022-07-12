@@ -2,7 +2,8 @@ from src.manager.base_manager import BaseManager
 from src.crud import SSPR
 from src.nodes.process.process import sample_process as Process
 from src.end_points import Process as WebProcess
-from api import logger, dbo
+from api import logger, dbo, auth
+from api.mutations import mutation
 
 from threading import Thread
 import asyncio
@@ -21,6 +22,9 @@ class ProcessObjectManager(SSPR, BaseManager):
             target=self.auto_update, name=f"{self._id}_auto_update", daemon=True
         ).start()
 
+        self.loadConfig = (auth(auth_level))(self.loadConfig)
+        mutation.set_field(f"loadConfig", self.loadConfig)
+
     def auto_update(self):
         asyncio.run(self.websocket.broadcast_on_change(self.process.status))
 
@@ -38,7 +42,6 @@ class ProcessObjectManager(SSPR, BaseManager):
         self.get_by_id(self.selected_process_id).resume()
 
     def select(self, _id, **kwargs):
-        logger.info(f"{_id}, {type(_id)} {kwargs}")
         self.process = _id
         logger.info(self.process)
 
@@ -54,10 +57,12 @@ class ProcessObjectManager(SSPR, BaseManager):
     def process(self, _id):
         self.selected_process_id = _id
 
-    # @property
-    # def status(self):
-    #     logger.info(f"dentro: id_process_status: {id(self.process.status)} | id_process {id(self.process)}")
-    #     return self.process.status
+    
+    def load(self, _id):
+        self.process.load(_id)
+
+    def loadConfig(self, _id, user):
+        return self.process.load(_id)
 
 
 

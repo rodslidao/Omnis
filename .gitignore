@@ -14,6 +14,7 @@ Docker/data/*
 *.csv
 *.save
 .env
+*.development
 backend/src/logs/untimed_log.json
 backend/src/logs/timed_log.json
 *.ssh
