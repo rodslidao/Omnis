@@ -232,7 +232,7 @@ export default {
     connectToWebsocket() {
       console.log(this.$t('alerts.wsConnecting'));
       this.WebSocket = new WebSocket(
-        `ws://${process.env.VUE_APP_URL_API_IP}:${process.env.VUE_APP_URL_API_STREAMING_PORT}/process`
+        `ws://${process.env.VUE_APP_URL_API_IP}:${process.env.VUE_APP_URL_API_PORTTREAMING_PORT}/process`
       );
 
       this.WebSocket.onmessage = (event) => {

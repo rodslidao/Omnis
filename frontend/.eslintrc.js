@@ -9,6 +9,7 @@ module.exports = {
   },
   rules: {
     'linebreak-style': 0,
+    'no-underscore-dangle': 'off',
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'graphql/template-strings': [
