@@ -2,7 +2,7 @@
   <div>
     <div class="text-center">
       <v-dialog v-model="dialogStart" width="600">
-        <v-card>
+        <v-card  :loading="$apollo.loading">
           <v-card-title class="text-h4 lighten-2 d-flex flex-nowrap">
             <v-btn v-if="step2" icon @click="(step1 = true), (step2 = false)"
               ><v-icon>mdi-arrow-left</v-icon>
@@ -13,22 +13,25 @@
               }}
             </div>
           </v-card-title>
-          <v-card-text max-height="50vh">
+          <v-card-text max-height="50vh" >
             <v-card
               link
-              v-for="(item, index) in step1 ? get_object_list : get_matrix_list"
+              v-for="(item, index) in step1
+                ? get_object_list
+                : (!step3
+                ? get_matrix_list
+                : process)"
               :key="index"
               class="d-flex my-2"
-              @click="step1 ? selectedObject(item) : selectedMatrix(item)"
+              @click="
+                step1
+                  ? selectedObject(item)
+                  : (!step3
+                  ? selectedMatrix(item)
+                  : select(item._id))
+              "
             >
-              <div class="viewer">
-                <!-- <matrix-viewer
-                  edit="distTotalX"
-                  v-if="item.slots"
-                  :slots="item.slots"
-                  :subdivisions="item.subdivisions"
-                ></matrix-viewer> -->
-              </div>
+              <div class="viewer"></div>
               <div class="pl-4 pr-4 my-4">
                 <span
                   class="text-subtitle text-capitalize font-weight-bold"
@@ -55,19 +58,6 @@
       >
       {{ status[actualStatus].text }}
     </v-btn>
-    <!-- <v-btn
-      rounded
-      x-large
-      color="warning"
-      dark
-      class="mr-3"
-      @click="sendCommand(status[actualStatus].command)"
-    >
-      <span
-        ><v-icon left>mdi-{{ status[actualStatus].icon }}</v-icon></span
-      >
-      {{ status[actualStatus].text }}
-    </v-btn> -->
     <v-btn
       v-if="actualStatus != 'stopped'"
       rounded
@@ -120,6 +110,10 @@ const LIST_PROCESS = gql`
       object {
         name
         _id
+        matrix {
+          name
+          _id
+        }
       }
     }
   }
@@ -134,12 +128,10 @@ const LIST_OBJECT = gql`
   }
 `;
 
-const LIST_MATRIX = gql`
-  query LIST_MATRIX {
-    get_matrix_list {
-      _id
-      name
-    }
+const SELECT_PROCESS = gql`
+  mutation SELECT_PROCESS($_id: ID!) {
+    select_process(_id: $_id)
+    start_process
   }
 `;
 
@@ -154,6 +146,10 @@ export default {
       filteredList: [],
       step1: false,
       step2: false,
+      step3: false,
+      process_object_link: [],
+      get_matrix_list: [],
+      process: [],
     };
   },
 
@@ -164,7 +160,6 @@ export default {
   apollo: {
     get_process_list: LIST_PROCESS,
     get_object_list: LIST_OBJECT,
-    get_matrix_list: LIST_MATRIX,
   },
 
   computed: {
@@ -197,16 +192,71 @@ export default {
   },
 
   methods: {
-    selectedObject(object) {
-      console.log(this.get_process_list.object.filter((item) => item.name !== object.name));
-      console.log(object.name);
+    async select(_id) {
+      console.log('select', _id);
+      await this.$apollo
+        .mutate({
+          mutation: SELECT_PROCESS,
+          variables: {
+            _id,
+          },
+        })
+        .then(() => {
+          // Result
+          this.dialogStart = false
+        })
+        .catch((error) => {
+          // Error
+          this.isLoading = false;
+          this.$alertFeedback(this.$t('alerts.deleteFail'), 'error', error);
+          // We restore the initial user input
+        });
     },
 
-    selectedMatrix(item) {
+    selectedObject(object) {
+      // Separa todos os processos que tem esse objeto
+      this.process_object_link = this.get_process_list.filter(
+        (element) =>
+          element.object.filter((item) => item.name === object.name).length
+      );
       this.step1 = false;
-      this.step2 = true;
+      this.get_matrix_list = [];
 
-      const filteredProcessList = this.get_process_list.filter(item.name);
+      // Separa as matrizes desses objetos, em uma lista a parte
+      this.process_object_link.forEach((element) => {
+        element.object.forEach((object) => {
+          object.matrix.forEach((matrix) => {
+            this.get_matrix_list.push(matrix);
+          });
+        });
+      });
+
+      // Remove as duplicatas (quando mais de um objeto usa a mesma matriz)
+      this.get_matrix_list = this.get_matrix_list.filter(
+        (thing, index, self) =>
+          self.findIndex((t) => t._id === thing._id) === index
+      );
+    },
+
+    selectedMatrix(matrix) {
+      // Filtra dentro dos processos selecionados anteriormente, somente aqueles que possuem um objeto,
+      // que possua a matrix selecionada.
+      this.process = this.process_object_link.filter(
+        (element) =>
+          element.object.filter(
+            (object) =>
+              object.matrix.filter((matrixx) => matrixx.name == matrix.name)
+                .length
+          ).length
+      );
+
+      this.step3 = true;
+    },
+
+    selectedProcess(process) {
+      console.log('index', process);
+      this.step3 = false;
+      this.dialogStart = false;
     },
 
     async sendCommand(command) {
@@ -216,7 +266,6 @@ export default {
         })
 
         .then(() => {
-          this.$alertFeedback(this.$t('alerts.updateMatrixSuccess'), 'success');
         })
 
         .catch((error) => {
@@ -232,7 +281,7 @@ export default {
     connectToWebsocket() {
       console.log(this.$t('alerts.wsConnecting'));
       this.WebSocket = new WebSocket(
-        `ws://${process.env.VUE_APP_URL_API_IP}:${process.env.VUE_APP_URL_API_PORTTREAMING_PORT}/process`
+        `ws://${process.env.VUE_APP_URL_API_IP}:${process.env.VUE_APP_URL_API_PORT}/process`
       );
 
       this.WebSocket.onmessage = (event) => {

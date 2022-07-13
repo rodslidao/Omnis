@@ -251,7 +251,7 @@ export default {
     // eslint-disable-next-line consistent-return
     UrlMaker() {
       const { id } = this.node;
-      const url = `http://${process.env.VUE_APP_URL_API_IP}:${process.env.VUE_APP_URL_API_PORTTREAMING_PORT}/videos/${id}`;
+      const url = `http://${process.env.VUE_APP_URL_API_IP}:${process.env.VUE_APP_URL_API_PORT}/videos/${id}`;
       if (id !== null) {
         return url;
       }

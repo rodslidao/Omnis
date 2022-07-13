@@ -262,6 +262,7 @@ export default {
             parts: obj.parts,
             supplier: obj.supplier,
             variable: obj.variable,
+            matrix: obj.matrix,
           },
         })
 
