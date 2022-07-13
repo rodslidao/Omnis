@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve --port 80 --no-fix",
+    "serve": "vue-cli-service serve --port 80",
     "build": "vue-cli-service build --no-fix",
     "lint": "vue-cli-service lint --no-fix",
     "electron:build": "vue-cli-service electron:build",
@@ -43,7 +43,7 @@
     "vue-socket.io-extended": "^4.2.0",
     "vue-tabs-chrome": "^0.10.0",
     "vue-the-mask": "^0.11.1",
-    "vuetify": "^2.2.11",
+    "vuetify": "^2.6.7",
     "vuex": "^3.5.1"
   },
   "devDependencies": {
@@ -65,7 +65,7 @@
     "less": "^3.12.2",
     "less-loader": "^7.0.1",
     "material-design-icons-iconfont": "^6.1.0",
-    "sass": "^1.19.0",
+    "sass": "~1.32.6",
     "sass-loader": "^8.0.0",
     "vue-cli-plugin-apollo": "~0.22.2",
     "vue-cli-plugin-electron-builder": "~2.0.0-rc.4",
