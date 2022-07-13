@@ -20,4 +20,3 @@ COPY . .
 
 ENV PATH=/root/.local:$PATH
 ENTRYPOINT ["python", "main.py"]
-# CMD [ "python", "main.py" ]
