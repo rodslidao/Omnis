@@ -28,7 +28,7 @@ export default {
   data() {
     return {
       isometric: true,
-      receivedData: null,
+      jogPosition: null,
       cssVars: {
         // '--position-x': this.receivedData.X ? this.receivedData.X : 0,
         '--position-x': 0,
@@ -43,6 +43,10 @@ export default {
     // this.generate();
   },
 
+  created() {
+    this.connectToWebsocket();
+  },
+
   methods: {
     // generate() {
     //   setInterval(() => {
@@ -51,59 +55,43 @@ export default {
     //     this.cssVars['--position-z'] = Math.floor(Math.random() * 70);
     //   }, 3000);
     // },
+
+    connectToWebsocket() {
+      console.log(this.$t('alerts.wsConnecting'));
+      this.WebSocket = new WebSocket(
+        `ws://${process.env.VUE_APP_URL_API_IP}:${process.env.VUE_APP_URL_API_PORT}/controls/6244b0ad3a8338aceae46cf1`
+      );
+
+      this.WebSocket.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        // console.log('veio websoket', data);
+        this.jogPosition = data.jog_position;
+      };
+
+      this.WebSocket.onopen = (event) => {
+        // console.log(event);
+        console.log(this.$t('alerts.wsConnectSuccess'));
+      };
+    },
   },
 
   computed: {
     ...mapState('node', {
       controls: (state) => state.controls,
     }),
-
-    // cssUpdate(x, y, z) {
-    //   // sort random number each 2 seconds
-    //   console.log(x, y, z);
-    //   return {
-    //     // '--position-x': this.receivedData.X ? this.receivedData.X : 0,
-    //     '--position-x': x,
-    //     '--position-y': y,
-    //     '--position-z': y,
-    //     '--aaaaaaaaaaaaaaa': 2,
-    //   };
-    // },
   },
 
   watch: {
-    '$store.state.node.controls': function (newData) {
+    jogPosition(newData) {
       // console.log('dataaa', newData);
-      if (newData.jog_position) {
-        const pos = newData.jog_position;
+      if (newData) {
         // this.cssUpdate(pos.X, pos.Y, pos.Z);0
-        this.cssVars['--position-x'] = pos.X;
-        this.cssVars['--position-y'] = pos.Y;
-        this.cssVars['--position-z'] = pos.Z;
+        this.cssVars['--position-x'] = newData.X;
+        this.cssVars['--position-y'] = newData.Y;
+        this.cssVars['--position-z'] = newData.Z;
       }
     },
   },
-
-  // apollo: {
-  //   $subscribe: {
-  //     // When a tag is added
-  //     controls: {
-  //       query: gql`
-  //         subscription {
-  //           controls {
-  //             jog_position
-  //           }
-  //         }
-  //       `,
-  //       // Result hook
-  //       // Don't forget to destructure `data`
-  //       result({ data }) {
-  //         this.receivedData = data;
-  //         // cabo a result
-  //       },
-  //     },
-  //   },
-  // },
 };
 </script>
 
@@ -140,8 +128,7 @@ export default {
   transform: rotateX(70deg) rotateY(0deg) rotateZ(45deg);
   transform-style: preserve-3d;
   border-top: 2px solid;
-  border-image: linear-gradient(to right, rgb(0, 255, 81), rgba(0, 0, 0, 0)) 1
-    5%;
+  border-image: linear-gradient(to right, red, rgba(0, 0, 0, 0)) 1 5%;
   border-radius: 0 5px 5px 5px;
 }
 .perspective:after {
@@ -164,7 +151,9 @@ export default {
   height: calc(var(--container-height) + var(--cube-size));
   width: calc(var(--container-width) + var(--cube-size));
   border-left: 2px solid;
-  border-image: linear-gradient(to bottom, red, rgba(0, 0, 0, 0)) 1 100%;
+
+  border-image: linear-gradient(to bottom, rgb(0, 255, 81), rgba(0, 0, 0, 0)) 1
+    100%;
 }
 .cube,
 .shadow,
