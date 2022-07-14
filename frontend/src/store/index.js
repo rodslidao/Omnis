@@ -6,6 +6,7 @@ import Vuex from 'vuex';
 import node from './modules/node';
 import alert from './modules/alert';
 import auth from './modules/auth';
+import controls from './modules/controls';
 
 // import serverJson from "@/engine/data/json/config/editable/server.json";
 Vue.use(Vuex);
@@ -16,6 +17,7 @@ const store = new Vuex.Store({
     node,
     alert,
     auth,
+    controls,
   },
 });
 export { store };

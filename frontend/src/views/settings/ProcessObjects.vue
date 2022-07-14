@@ -177,8 +177,7 @@ export default {
             value: a[1],
             title: a[0],
           });
-          if (this.requireFields.includes(a[0]))
-            newObject.at(-1).required = true;
+          if (this.requireFields.includes(a[0])) newObject.at(-1).required = true;
         }
       });
 

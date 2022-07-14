@@ -175,7 +175,7 @@ export default {
         const data = newData.jog_position;
         Object.entries(data).forEach(([axis, val]) => {
           const index = this.variableList.findIndex(
-            (item) => axis === item.name
+            (item) => axis === item.name,
             // console.log('axis', axis, val)
           );
           if (index !== -1) {
