@@ -109,7 +109,7 @@ def resolve_getAxisList( **kwargs):
 @query.field("authenticateUser")
 def resolve_authUserProfile(obj, info, username=None, **kwargs):
     keep = {'password':0}
-    user = dbo.find_one("users", {"username": username}, keep)
+    user = dbo.find_one("users", {"username": username}, keep) if username else False
     if not user:
         user = dbo.find_one("users", kwargs, keep)
     if user:

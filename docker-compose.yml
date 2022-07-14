@@ -1,7 +1,7 @@
 version: "3.1"
 services:
   mongo:
-    profiles: ["production"]
+    profiles: ["production", "development"]
     privileged: true
     image: mongo:4.2
     container_name: mongo_c
@@ -18,7 +18,7 @@ services:
       - ./mongodb:/data/db
  
   mongo-express:
-    profiles: ["production"]
+    profiles: ["production","development"]
     privileged: true
     image: mongo-express:latest
     restart: always

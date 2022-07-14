@@ -101,25 +101,25 @@ class Websocket(WebSocketEndpoint):
 
     async def broadcast_on_change(self, updated_info, payload={}, **kwargs):
         # updated_info = getattr(updated_info_pointer, kwargs.get('attr', '__undefined_attr'), updated_info_pointer)
-        # old_status = updated_info.copy()
+        old_status = self.parser(updated_info).copy()
         while True:
-            # if self._id == 'status':
-            #     logger.info(f"{self._id} {id(updated_info)} {updated_info.copy() != old_status}")
-            # if updated_info.copy() != old_status: #! Sometimes work, sometimes not, try use some ctype pointer instead dicts and props
-            await self._broadcast(payload)
-            await asyncio.sleep(float(kwargs.get('ms', 0.03))) #3ms
+            
+            if self.parser(updated_info) != old_status:
+                old_status = self.parser(updated_info).copy()
+                await self._broadcast(self.parser(payload))
+                await asyncio.sleep(float(kwargs.get('ms', 0.03))) #3ms
                 # await asyncio.sleep(0.01)
-                # old_status = updated_info.copy()
-            # await asyncio.sleep(0.01)
-
+            await asyncio.sleep(0.03)
+    def parser(self, info):
+        return info if not callable(info) else info()
 
 class Process(Websocket):
     def __init__(self, _id, process):
         super().__init__(_id)
         self.process = process
 
-    async def _broadcast(self, *args):
-        await super()._broadcast(self.process.status)
+    # async def _broadcast(self, *args):
+    #     await super()._broadcast(self.process.status)
     
     async def on_receive(self, websocket, data):
         await super().on_receive(websocket, data)
@@ -130,8 +130,8 @@ class Controls(Websocket):
         super().__init__(_id)
         self.serial = serial
 
-    async def _broadcast(self, *args):
-        await super()._broadcast(self.serial.status)
+    # async def _broadcast(self, *args):
+    #     await super()._broadcast(self.serial.status)
 
     async def on_receive(self, websocket, data):
         if data["context"] == "movementScale":
