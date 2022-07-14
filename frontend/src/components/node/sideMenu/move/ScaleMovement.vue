@@ -24,12 +24,8 @@ export default {
       stepSelected: '1',
       stepsList: [
         {
-          name: '0,01',
-          value: '0.01',
-        },
-        {
-          name: '0,1',
-          value: '0.1',
+          name: '0,2',
+          value: '0.2',
         },
         {
           name: '1',
