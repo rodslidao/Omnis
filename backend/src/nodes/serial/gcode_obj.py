@@ -63,10 +63,10 @@ class SerialGcodeOBJ(Serial):
         Thread(target=self.auto_update, name=f"{_id}_auto_update", daemon=True).start()
 
     def auto_update(self):
-        asyncio.run(self.websocket.broadcast_on_change(self.status))
+        asyncio.run(self.websocket.broadcast_on_change(self.status, self.status))
 
 
-    @property
+    
     def status(self):
         return self.__status
 
@@ -85,10 +85,10 @@ class SerialGcodeOBJ(Serial):
         # Create a coordinate string based in args.
         cords = ""
         for pos in args:
-            cords += f"{pos[0].upper()}{round(float(pos[1]), 3)} "
+            cords += f"{pos[0].upper()}{round(float(pos[1]), 1)} "
 
         # Send machine to the coordinate string
-        self.super_send(f"G0 {cords}")
+        self.super_send(f"G1 {cords}")
         for _ in range(5):
             try:
                 future = self.M114().items()
@@ -98,9 +98,10 @@ class SerialGcodeOBJ(Serial):
 
         logger.info(f"future: {future}")
         while (
-            # any((math.ceil(v) != math.ceil(self.M114("R")[i])) for i, v in future) #! Round is mandatory
-            any((v != self.M114("R")[i]) for i, v in future)
+            any((round(v,1) != round(self.M114("R")[i],1)) for i, v in future) #! Round is mandatory
+            # any((v != self.M114("R")[i]) for i, v in future)
         ):
+            logger.info(f"future: {future}")
             continue
         return self.M114("R")
     
@@ -115,6 +116,7 @@ class SerialGcodeOBJ(Serial):
         """
         for echo in self.super_send(f"M114 {_type}", echo=True, log=False):
             txt = echo
+            logger.info(echo)
             for n in sequence:
                 txt = txt.replace(n, "")
             try:

@@ -45,7 +45,7 @@ class User(Person):
         self.avatar_image = avatar_image
         self.__level = level
         self._id = ObjectId(_id)
-        self.dbref = {"$id":self._id, "$ref":"users"}
+        self.dbref = {"$ref":"users", "$id":self._id}
 
     @property
     def level(self):

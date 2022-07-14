@@ -51,15 +51,15 @@ class CRUD:
             {"_id": _id},
             {"$set": kwargs.get("input", {})},
         )
-        # return _id
+        
 
     def delete(self, *args, **kwargs):
         dbo.delete_one(kwargs.get('collection', self.collection), {"_id": ObjectId(kwargs.get("_id"))})
 
-    def get_list(self, *args, **kwargs):
+    async def get_list(self, *args, **kwargs):
         return dbo.find_many(kwargs.get('collection', self.collection), ref=True)
 
-    def get_item(self, *args, **kwargs):
+    async def get_item(self, *args, **kwargs):
         return dbo.find_one(kwargs.get('collection', self.collection), {"_id": ObjectId(kwargs.get("_id"))}, ref=True)
 
 

@@ -2,7 +2,7 @@ from dotenv import load_dotenv, find_dotenv
 from pymongo import MongoClient
 from pymongo.errors import ConnectionFailure
 from os import environ, getenv
-from api import logger, exception
+from api import logger, exception, levels, lvl
 from api.decorators import for_all_methods
 from pandas import DataFrame
 
@@ -113,13 +113,15 @@ class MongoOBJ:
     def resolve_ref(self, cursor):
         if isinstance(cursor, (dict, list, DBRef)):
             if isinstance(cursor, DBRef):
-                return self.find_one(cursor.collection, {'_id':cursor.id})
+                return self.find_one(cursor.collection, {'_id':cursor.id}, ref=True)
             for key, value in (cursor.items() if isinstance(cursor, dict) else enumerate(cursor)):
-                if isinstance(value, DBRef):
-                    cursor[key] = self.find_one(value.collection, {'_id':value.id})
-                if isinstance(value, list):
-                    cursor[key] = map(self.resolve_ref, value)
+                if key in ['object', 'matrix','sketch', 'variable']:
+                    if isinstance(value, DBRef):
+                        cursor[key] = self.find_one(value.collection, {'_id':value.id}, ref=True)
+                    if isinstance(value, list):
+                        cursor[key] = map(self.resolve_ref, value)
         return cursor
+
 
     def find_one(self, collection_name, query={}, data={}, **kwargs):
         if kwargs.get('ref'):

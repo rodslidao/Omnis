@@ -16,7 +16,7 @@ class ProcessObjectManager(SSPR, BaseManager):
         for process in dbo.find_many(self.collection):
             self.add(Process(**process))
             self.selected_process_id = process['_id']
-
+        self.__status = [self.process]
         self.websocket = WebProcess(self._id, self.process)
         Thread(
             target=self.auto_update, name=f"{self._id}_auto_update", daemon=True
@@ -26,11 +26,10 @@ class ProcessObjectManager(SSPR, BaseManager):
         mutation.set_field(f"loadConfig", self.loadConfig)
 
     def auto_update(self):
-        asyncio.run(self.websocket.broadcast_on_change(self.process.status))
+        asyncio.run(self.websocket.broadcast_on_change(self.status, self.status))
 
     def start(self, **kwargs):
         self.get_by_id(self.selected_process_id).start()
-        # logger.info(f"start: {id(self.status)}, {self.status}")
 
     def stop(self,  **kwargs):
         self.get_by_id(self.selected_process_id).stop()
@@ -41,9 +40,15 @@ class ProcessObjectManager(SSPR, BaseManager):
     def resume(self, **kwargs):
         self.get_by_id(self.selected_process_id).resume()
 
+    def status_generator(self, process):
+        def status():
+            return process.status
+        return status()
+
     def select(self, _id, **kwargs):
         self.process = _id
-        logger.info(self.process)
+        self.__status[0] = self.process
+        logger.info(self.status)
 
     def __call__(self, process=None):
         if process: self.process = process
@@ -57,6 +62,8 @@ class ProcessObjectManager(SSPR, BaseManager):
     def process(self, _id):
         self.selected_process_id = _id
 
+    def status(self):
+        return self.__status[0].status
     
     def load(self, _id):
         self.process.load(_id)

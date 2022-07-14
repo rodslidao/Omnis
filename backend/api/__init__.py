@@ -146,7 +146,7 @@ def DB_VALUE_serializar(value, collection=None):
 @DB_VALUE.value_parser
 def DB_VALUE_v_parser(value, collection=None):
     if isinstance(value, dict):
-        return {'$id': ID_v_parser(value['_id']), "$ref":value.get('ref', collection)}
+        return {"$ref":value.get('ref', collection), '$id': ID_v_parser(value['_id'])}
     elif isinstance(value, list):
         if not collection:
             return list(map(DB_VALUE_v_parser, value))

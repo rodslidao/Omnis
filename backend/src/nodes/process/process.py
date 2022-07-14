@@ -1,5 +1,4 @@
 from datetime import datetime
-from pickle import FALSE
 import threading
 from bson import ObjectId
 from src.nodes.node_manager import NodeManager
@@ -60,10 +59,10 @@ class Process_Thread(threading.Thread):
         logger.info("Process Thread Stopped - Normally")
 
     def start(self):
-        logger.info("Process Started")
         self.status = Process_Thread.RUNNING
         self.runningTimer.start()
         self.start_time = datetime.utcnow().timestamp()
+        logger.info("Process Started")
         # super().start()
 
     def resume(self):
@@ -113,6 +112,7 @@ class Process_Thread(threading.Thread):
         self.__status["run_time"]=Timer.timers.get("Running", 0)
         self.__status["pause_time"]=Timer.timers.get("Paused", 0)
         self.__status["total_time"]=Timer.timers.get("Running", 0) + Timer.timers.get("Paused", 0)
+        # logger.info(self.status)
         # self.__status["now"] = datetime.utcnow().timestamp()
         return self.__status
 
@@ -146,9 +146,10 @@ class sample_process():
     def load(self, _id=False):
         self.unload()
         if self.status.get("status", False):
-            a = load_conf(self.sketch._id if not _id else _id)
+            logger.info(self.sketch)
+            a = load_conf(self.sketch.id if not _id else _id)
             if a:
-                self.loaded_id = self.sketch._id if not _id else _id
+                self.loaded_id = self.sketch.id if not _id else _id
             else:
                 self.loaded_id = None
                 self.unload()
