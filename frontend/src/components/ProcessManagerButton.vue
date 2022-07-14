@@ -2,7 +2,7 @@
   <div>
     <div class="text-center">
       <v-dialog v-model="dialogStart" width="600">
-        <v-card  :loading="$apollo.loading">
+        <v-card :loading="$apollo.loading">
           <v-card-title class="text-h4 lighten-2 d-flex flex-nowrap">
             <v-btn v-if="step2" icon @click="(step1 = true), (step2 = false)"
               ><v-icon>mdi-arrow-left</v-icon>
@@ -13,22 +13,22 @@
               }}
             </div>
           </v-card-title>
-          <v-card-text max-height="50vh" >
+          <v-card-text max-height="50vh">
             <v-card
               link
               v-for="(item, index) in step1
                 ? get_object_list
-                : (!step3
+                : !step3
                 ? get_matrix_list
-                : process)"
+                : process"
               :key="index"
               class="d-flex my-2"
               @click="
                 step1
                   ? selectedObject(item)
-                  : (!step3
+                  : !step3
                   ? selectedMatrix(item)
-                  : select(item._id))
+                  : selectedProcess(item._id)
               "
             >
               <div class="viewer"></div>
@@ -51,7 +51,7 @@
       color="warning"
       dark
       class="mr-3"
-      @click="(dialogStart = true), (step1 = true)"
+      @click="commandSelector()"
     >
       <span
         ><v-icon left>mdi-{{ status[actualStatus].icon }}</v-icon></span
@@ -192,7 +192,7 @@ export default {
   },
 
   methods: {
-    async select(_id) {
+    async selectedProcess(_id) {
       console.log('select', _id);
       await this.$apollo
         .mutate({
@@ -203,7 +203,7 @@ export default {
         })
         .then(() => {
           // Result
-          this.dialogStart = false
+          this.dialogStart = false;
         })
         .catch((error) => {
           // Error
@@ -253,10 +253,14 @@ export default {
       this.step3 = true;
     },
 
-    selectedProcess(process) {
-      console.log('index', process);
-      this.step3 = false;
-      this.dialogStart = false;
+    commandSelector() {
+      const status = this.status[this.actualStatus].command;
+      if (status === START) {
+        this.dialogStart = true;
+        this.step1 = true;
+      } else {
+        this.sendCommand(status);
+      }
     },
 
     async sendCommand(command) {
@@ -265,8 +269,7 @@ export default {
           mutation: command,
         })
 
-        .then(() => {
-        })
+        .then(() => {})
 
         .catch((error) => {
           this.$alertFeedback(

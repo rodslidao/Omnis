@@ -41,7 +41,7 @@ export default {
     },
 
     connectToWebsocket() {
-      console.log('Starting WebSocket to WebSocket Server');
+      console.log(this.$t('alerts.wsConnecting'));
       this.WebSocket = new WebSocket(
         `ws://${process.env.VUE_APP_URL_API_IP}:${process.env.VUE_APP_URL_API_PORT}/controls/6244b0ad3a8338aceae46cf1`
       );
@@ -54,7 +54,7 @@ export default {
 
       this.WebSocket.onopen = (event) => {
         console.log(event);
-        console.log('Successfully connected to the echo websocket server...');
+        console.log(this.$t('alerts.wsConnectSuccess'));
       };
     },
   },
