@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-btn icon v-if="$route.name == 'settings'" @click="restartDialog = true">
+    <v-btn icon @click="restartDialog = true">
       <v-icon dark>mdi-restart</v-icon>
     </v-btn>
 
@@ -44,14 +44,11 @@
 </template>
 
 <script>
-import { mapMutations } from 'vuex';
-import { actions } from '@/store/index';
 
 export default {
   name: 'RestartButton',
 
   data: () => ({
-    actions,
     restartDialog: false,
     dilogText: {
       title: 'Tem certeza que quer reiniciar o sistema?',
@@ -73,7 +70,6 @@ export default {
   },
 
   methods: {
-    ...mapMutations(['SEND_MESSAGE']),
     request() {
       fetch(
         `http://${

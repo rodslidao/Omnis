@@ -16,8 +16,10 @@ export default {
     controls: {},
     newTab: {
       label: '',
+      name: '',
       _id: null,
       key: null,
+      created: false,
       description: 'Descrição',
       author: 'Autor',
       last_access: new Date().getTime(),
@@ -36,6 +38,7 @@ export default {
     // não usados ainda
     runningTabId: null,
     selectedTabKey: null,
+    selectedTabIndex: 0,
     renamingIndex: null,
     saveNode: null,
     deletedNode: null,
@@ -65,7 +68,7 @@ export default {
       state.runningTabId = state.selectedTabId;
     },
 
-    addNewTab: (state) => {
+    addNewTab: (state, payload) => {
       // console.log('addNewTab');
       const idGenerated = ObjectID().toHexString();
 
@@ -78,6 +81,7 @@ export default {
       state.newTab.parent_id = idGenerated;
       state.newTab.label = tabSketchName;
       state.newTab.content = state.contentDefault;
+      state.newTab.created = payload.created;
 
       // if (state.newTab.content.nodes) {
       //   console.log('old', state.newTab.content.nodes[0].id);
@@ -106,6 +110,8 @@ export default {
       }
 
       const foundNewIndex = state.tabList.findIndex((tab) => tab.key === newKey);
+
+      state.selectedTabIndex = foundNewIndex;
 
       // console.log('antiga', foundOldIndex);
       // console.log('atual', foundNewIndex);
@@ -150,18 +156,18 @@ export default {
       state.tabList = state.tabList.filter((tab) => tab.id !== payload);
     },
 
-    updateNodeContent: (state, payload) => {
-      const itemSelected = state.tabList[payload.index];
-      if (itemSelected) {
-        if (payload.index < state.tabList.length) {
-          itemSelected.content = payload.content;
-        }
-        // console.log(payload);
-        if (itemSelected.duplicated) {
-          itemSelected.duplicated = payload.duplicated;
-        }
-      }
-    },
+    // updateNodeContent: (state, payload) => {
+    //   const itemSelected = state.tabList[payload.index];
+    //   if (itemSelected) {
+    //     if (payload.index < state.tabList.length) {
+    //       itemSelected.content = payload.content;
+    //     }
+    //     // console.log(payload);
+    //     if (itemSelected.duplicated) {
+    //       itemSelected.duplicated = payload.duplicated;
+    //     }
+    //   }
+    // },
 
     updateByProperty: (state, payload) => {
       // console.log('updateByProperty', payload);
@@ -188,6 +194,7 @@ export default {
     },
 
     setSaved: (state, { index, value }) => {
+      console.log(index, value);
       state.tabList[index].saved = value;
       // console.log(state.tabList[index].saved);
     },
@@ -225,7 +232,8 @@ export default {
       } else {
         // console.log('não existe uma tab igual');
         state.newTab._id = data._id;
-        state.newTab.label = data.label;
+        state.newTab.name = data.name;
+        state.newTab.label = data.name;
         state.newTab.key = data._id;
         state.newTab.parent_id = data._id;
         state.newTab.description = data.description;
@@ -267,8 +275,8 @@ export default {
       commit('play');
     },
 
-    addNewTab({ commit }) {
-      commit('addNewTab');
+    addNewTab({ commit }, payload) {
+      commit('addNewTab', payload);
     },
 
     duplicateTab({ commit }, payload) {
@@ -279,25 +287,13 @@ export default {
       commit('removeTabByKey', payload);
     },
 
-    removeTabByIndex({ commit }, payload) {
-      commit('removeTabByIndex', payload);
-    },
-
-    selectTabByIndex({ commit }, payload) {
-      commit('selectTabByIndex', payload);
-    },
-
-    updateTabById({ commit }, payload) {
-      commit('updateTabById', payload);
-    },
-
     updateSelectedTab({ commit }, payload) {
       commit('updateSelectedTab', payload);
     },
 
-    updateNodeContent({ commit }, payload) {
-      commit('updateNodeContent', payload);
-    },
+    // updateNodeContent({ commit }, payload) {
+    //   commit('updateNodeContent', payload);
+    // },
 
     updateContentDefault({ commit }, payload) {
       commit('updateContentDefault', payload);
@@ -323,18 +319,6 @@ export default {
     },
     updateControls({ commit }, payload) {
       commit('updateControls', payload);
-    },
-
-    /**
-     * demonstrate an async task
-     */
-    asyncIncrement({ commit }, incrementalObject) {
-      setTimeout(() => {
-        /**
-         * am done, kindly call appropriate mutation
-         */
-        commit('asyncIncrement', incrementalObject);
-      }, 3000);
     },
   },
 };

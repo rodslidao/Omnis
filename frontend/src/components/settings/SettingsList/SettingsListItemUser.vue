@@ -47,8 +47,9 @@
               v-for="(item, index) in items"
               :key="index"
               link
+              @click="item.function()"
             >
-              <v-list-item-title @click="item.function()"
+              <v-list-item-title
                 ><v-icon small class="mr-5">mdi-{{ item.btnIcon }}</v-icon
                 >{{ $t(item.title) }}
               </v-list-item-title>

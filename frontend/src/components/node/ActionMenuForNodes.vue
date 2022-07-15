@@ -99,7 +99,9 @@
 <script>
 import { mapState, mapActions, mapGetters } from 'vuex';
 import gql from 'graphql-tag';
-import saveNodeSheet from '@/graphql/nodes/SaveNodeSheet';
+
+import { UPDATE_SKETCH, CREATE_SKETCH } from '@/graphql';
+
 import SketchExplorer from '@/components/node/SketchExplorer.vue';
 import SerialMonitor from '@/components/SerialMonitor.vue';
 
@@ -112,7 +114,6 @@ export default {
 
   data() {
     return {
-      saveNodeSheet,
       folderDialog: false,
       serialDialog: false,
       fab: false,
@@ -187,11 +188,7 @@ export default {
         .catch((error) => {
           // Error
           this.isLoading = false;
-          this.$alertFeedback(
-            'alerts.failToRunProcess',
-            'error',
-            error,
-          );
+          this.$alertFeedback('alerts.failToRunProcess', 'error', error);
 
           // We restore the initial user input
         });
@@ -226,11 +223,7 @@ export default {
           // Error
           this.isLoading = false;
           console.error('Não foi possível salvar o arquivo \n', error);
-          this.$alertFeedback(
-            'alerts.saveFail',
-            'error',
-            error,
-          );
+          this.$alertFeedback('alerts.saveFail', 'error', error);
 
           // We restore the initial user input
         });
@@ -271,11 +264,7 @@ export default {
         .catch((error) => {
           // Error
           this.isLoading = false;
-          this.$alertFeedback(
-            'alerts.pauseFail',
-            'error',
-            error,
-          );
+          this.$alertFeedback('alerts.pauseFail', 'error', error);
 
           // We restore the initial user input
         });
@@ -337,8 +326,82 @@ export default {
     //       // We restore the initial user input
     //     });
     // },
-
     async save() {
+      const tabToSave = this.selectedTab;
+      this.isLoading = true;
+
+      if (tabToSave.created && !tabToSave.saved) {
+        console.log('create');
+        console.log('tab to create', tabToSave);
+
+        await this.$apollo
+          .mutate({
+            mutation: CREATE_SKETCH,
+            variables: {
+              // eslint-disable-next-line no-underscore-dangle
+              _id: tabToSave._id,
+              parent_id: tabToSave.parent_id,
+              name: tabToSave.label,
+              description: `${tabToSave.name} descrição`,
+              version: tabToSave.version,
+              // key: tabToSave.key,
+              saved: tabToSave.saved,
+              duplicated: tabToSave.duplicated,
+              content: this.editor.save(),
+            },
+          })
+          .then((data) => {
+            // Result
+            this.$alertFeedback('alerts.saveSuccess', 'success');
+            this.isLoading = false;
+            console.log(this.selectedTabIndex);
+            this.setSaved({ index: this.selectedTabIndex, value: true });
+          })
+          .catch((error) => {
+            // Error
+            this.isLoading = false;
+            this.$alertFeedback('alerts.saveFail', 'error', error);
+
+            // We restore the initial user input
+          });
+      } else {
+        console.log('update');
+        console.log('tab to update', tabToSave);
+
+        await this.$apollo
+          .mutate({
+            mutation: UPDATE_SKETCH,
+            variables: {
+              // eslint-disable-next-line no-underscore-dangle
+              _id: tabToSave._id,
+              parent_id: tabToSave.parent_id,
+              name: tabToSave.label,
+              description: `${tabToSave.name} descrição`,
+              version: tabToSave.version,
+              // key: tabToSave.key,
+              saved: tabToSave.saved,
+              duplicated: tabToSave.duplicated,
+              content: this.editor.save(),
+            },
+          })
+          .then((data) => {
+            // Result
+            console.log(data);
+            this.$alertFeedback('alerts.saveSuccess', 'success');
+            this.isLoading = false;
+            // this.setSaved({ index: this.selectedTabIndex, value: true });
+          })
+          .catch((error) => {
+            // Error
+            this.isLoading = false;
+            this.$alertFeedback('alerts.saveFail', 'error', error);
+
+            // We restore the initial user input
+          });
+      }
+    },
+
+    async save2() {
       console.log('save');
       this.isLoading = true;
       console.log(" :salvo com sucesso!'");
@@ -353,7 +416,7 @@ export default {
             // eslint-disable-next-line no-underscore-dangle
             _id: tabToSave._id,
             parent_id: tabToSave.parent_id,
-            label: tabToSave.label,
+            name: tabToSave.label,
             description: `${tabToSave.name} descrição`,
             version: tabToSave.version,
             // key: tabToSave.key,
@@ -377,11 +440,7 @@ export default {
         .catch((error) => {
           // Error
           this.isLoading = false;
-          this.$alertFeedback(
-            'alerts.saveFail',
-            'error',
-            error,
-          );
+          this.$alertFeedback('alerts.saveFail', 'error', error);
 
           // We restore the initial user input
         });
@@ -399,7 +458,7 @@ export default {
       download(
         JSON.stringify(this.tabList[this.selectedTabIndex]),
         `${fileName}.oms`,
-        'text/oms',
+        'text/oms'
       );
     },
 
@@ -412,13 +471,10 @@ export default {
       console.log(target.files[0].name.split('.').pop());
 
       if (
-        target.files[0].name.split('.').pop() !== 'oms'
-        && target.files[0].name.split('.').pop() !== 'json'
+        target.files[0].name.split('.').pop() !== 'oms' &&
+        target.files[0].name.split('.').pop() !== 'json'
       ) {
-        this.$alertFeedback(
-          'alerts.invalidFile',
-          'error',
-        );
+        this.$alertFeedback('alerts.invalidFile', 'error');
 
         return;
       }

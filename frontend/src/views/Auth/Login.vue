@@ -36,6 +36,7 @@
                 outlined
                 :dense="dense"
                 rounded
+                @keyup.enter="authenticateUser()"
               ></v-text-field>
 
               <div class="d-flex justify-center mb-6">
@@ -103,9 +104,9 @@
             <v-list-item-title>{{ item.title }}</v-list-item-title>
           </v-list-item>
           <v-divider></v-divider>
-          <v-list-item link>
+          <v-list-item link  @click="logoutUser()">
             <v-list-item-title
-              ><span @click="logoutUser()">
+              ><span>
                 {{ $t('buttons.logout') }}
               </span></v-list-item-title
             >
