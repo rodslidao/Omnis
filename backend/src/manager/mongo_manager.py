@@ -4,7 +4,7 @@ from pymongo.errors import ConnectionFailure
 from os import environ, getenv
 from api import logger, exception, levels, lvl, custom_handler
 from api.decorators import for_all_methods
-from api.log import custom_handler, DEBUG, db_logger
+from api.log import custom_handler, DEBUG
 from pandas import DataFrame
 
 from numpy import integer, floating, ndarray
@@ -35,7 +35,7 @@ requiredCollections = [
 
 @exception(logger)
 def getDb():
-    global _db, db_logger
+    global _db
     if _db is None:
         _db = MongoOBJ(environ.get("DB_NAME"), url)
         custom_handler(logger, "mongo", "json",  _db, levels[lvl])
@@ -83,7 +83,6 @@ class MongoOBJ:
             logger.error(f"Could not connect to MongoDB using url: {db_url}")
             raise
         else:
-            custom_handler(db_logger, "mongo", "json", self.client.get_database(db_name), DEBUG)
             logger.info("Connected to MongoDB")
             return self.client.get_database(db_name)
 

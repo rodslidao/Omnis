@@ -50,7 +50,8 @@ def auth(lvl=None):
                 if user >= lvl:
                     logger.debug(f"User: {user.json} requesting {resolver.__name__}")
                     kwargs.update({'user':user})
-                    return resolver(obj, info, *args, **kwargs)
+                    return resolver(*args, **kwargs)
+                    # return resolver(obj, info, *args, **kwargs)
                 logger.debug(f"User: {user.json} don't has permissions to request {resolver.__name__}")
                 raise GraphQLError('Permission Denied')
         return wrapper
