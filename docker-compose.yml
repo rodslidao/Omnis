@@ -39,6 +39,9 @@ services:
       - mongo
     volumes: 
       - ./mongodb:/data/db
+    logging:
+      options:
+        max-size: 50m
 
   backend:
     profiles: ["production", "development"]
@@ -75,6 +78,11 @@ services:
     command: python main.py
     depends_on:
       - mongo-express
+    logging:
+      options:
+        max-size: 50m
+    # depends_on:
+    #   - mongo-express
       
   frontend:
     profiles: ["production"]
@@ -95,6 +103,9 @@ services:
       - backend
     depends_on:
       - backend
+    logging:
+      options:
+        max-size: 50m
 
 networks: 
   bind-network:

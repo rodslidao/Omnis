@@ -27,6 +27,7 @@ from starlette.applications import Starlette
 from os import listdir
 from os.path import exists as file_exists
 
+
 type_defs = ""
 for _file in ["schema", "inputs", "types", "results", "interfaces"]:
     type_defs += load_schema_from_path(f"./src/graphql/{_file}.graphql") + ("\n" * 2)
@@ -75,8 +76,6 @@ if environ.get("NODE_ENV") == "development":
     socketI.connect(("8.8.8.8", 80))
     host = socketI.getsockname()[0]
     socketI.close()
-elif environ.get("SERVER_IP"):
-    host = environ["SERVER_IP"]
 else:
     host = "0.0.0.0"
 

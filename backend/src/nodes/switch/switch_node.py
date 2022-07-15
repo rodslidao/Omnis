@@ -29,10 +29,6 @@ class SwitchNode(BaseNode):
         if target in self.variables:                                           #? Esperar todas as variaveis? similar ao de movimentação?
             self.inputs[str(target)] = message.payload
             result = eval(self.expression, self.inputs.copy())
-            logger.info("Variables: {}".format(self.inputs))
-            logger.info("Expression: {}".format(self.expression))
-            logger.info("Result: {}".format(result))
-            logger.info("Output: {}".format(self.results[result]))
             self.on("Sucesso" if result else "Falha", self.results[result])
         elif target in ["Verdadeiro", "Falso"]:
             self.results[self.translator[target]] = message.payload

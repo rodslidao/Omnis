@@ -23,8 +23,7 @@ class SubscriptionFactory:
                 while True:
                     yield await self.store.get()
             finally:
-                pass
-                # logger.info("closing...")
+                logger.debug(f"Subscription: {self.name} closing...")
 
         @subscription.field(self.name)
         async def sub_resolver(obj, info):
@@ -36,6 +35,3 @@ class SubscriptionFactory:
         info (dict): message to be sent.
         """
         self.store.put_nowait(dict(info.items()))
-        
-        # self.store
-        # logger.info("putting")

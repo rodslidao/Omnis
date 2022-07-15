@@ -15,8 +15,8 @@
       </settings-items>
       <settings-title>{{ $t('settings.process.otherSettings') }}</settings-title>
       <settings-items
-        v-for="(item, index2) in otherSettings"
-        :key="index2"
+        v-for="(item, index) in otherSettings"
+        :key="index + 'A'"
         :title="$t(item.title)"
         :subtitle="$t(item.subtitle)"
         :icon="item.icon"

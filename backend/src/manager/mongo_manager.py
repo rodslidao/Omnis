@@ -4,12 +4,11 @@ from pymongo.errors import ConnectionFailure
 from os import environ, getenv
 from api import logger, exception, levels, lvl, custom_handler
 from api.decorators import for_all_methods
+from api.log import custom_handler, DEBUG, db_logger
 from pandas import DataFrame
 
 from numpy import integer, floating, ndarray
-
 from json import loads, dumps, JSONEncoder
-
 from bson.errors import InvalidDocument
 from bson import DBRef, ObjectId
 from threading import Event
@@ -36,7 +35,7 @@ requiredCollections = [
 
 @exception(logger)
 def getDb():
-    global _db
+    global _db, db_logger
     if _db is None:
         _db = MongoOBJ(environ.get("DB_NAME"), url)
         custom_handler(logger, "mongo", "json",  _db, levels[lvl])
@@ -49,10 +48,9 @@ def connectToMongo(database="Teste"):
     for collectionName in requiredCollections:
         if collectionName not in _db.list_collection_names():
             _db.create_collection(collectionName)
-            logger.info(f"Created collection {collectionName}")
 
 
-@for_all_methods(exception(logger))
+# @for_all_methods(exception(logger))
 class CustomEncoder(JSONEncoder):
     def default(self, obj):
         if isinstance(obj, integer):
@@ -67,6 +65,9 @@ class CustomEncoder(JSONEncoder):
             return super(CustomEncoder, self).default(obj)
 
 
+
+
+
 @for_all_methods(exception(logger))
 class MongoOBJ:
     def __init__(self, db_name, db_url):
@@ -75,13 +76,14 @@ class MongoOBJ:
 
     def connect(self, db_name, db_url):
         try:
-            logger.info(f"Connecting to MongoDB using url: {db_url}")
+            logger.debug(f"Connecting to MongoDB using url: {db_url}")
             self.client = MongoClient(db_url)
             self.client.admin.command("ismaster")
         except ConnectionFailure:
             logger.error(f"Could not connect to MongoDB using url: {db_url}")
             raise
         else:
+            custom_handler(db_logger, "mongo", "json", self.client.get_database(db_name), DEBUG)
             logger.info("Connected to MongoDB")
             return self.client.get_database(db_name)
 

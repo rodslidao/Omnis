@@ -3,6 +3,7 @@
     <!-- <v-app-bar style="-webkit-app-region: drag" app dense> -->
     <v-app-bar :dark="$route.name == 'node'" v-if="$route.name != 'intro-logo'">
       <!-- <router-link to="/"> -->
+
       <v-btn
         icon
         to="/progress"
@@ -69,6 +70,10 @@
       <TabMenuNodes></TabMenuNodes>
     </template> -->
     </v-app-bar>
+    <v-progress-linear
+      v-if="$route.name != 'node' && $apollo.loading"
+      indeterminate
+    ></v-progress-linear>
     <TabMenuNodes v-show="$route.name == 'node'"></TabMenuNodes>
   </div>
 </template>

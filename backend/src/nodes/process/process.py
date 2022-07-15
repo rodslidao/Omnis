@@ -48,15 +48,13 @@ class Process_Thread(threading.Thread):
     def run(self):
         while not self.stopped.is_set():
             while self.paused.is_set():
-                logger.info("Process Paused - loop_info")
                 self.resumed.wait()
-                logger.info("Process Resumed - loop_info")
                 self.resumed.clear()
             if not self.stopped.is_set() and not self.paused.is_set():
                 self.target(*self.args, **self.kwargs)
                 event_list.join()
-                logger.info("Process END [reseting] - loop_info")
-        logger.info("Process Thread Stopped - Normally")
+                logger.debug("Process: restarting automatically")
+        logger.debug("Process: end")
 
     def start(self):
         self.status = Process_Thread.RUNNING
