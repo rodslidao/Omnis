@@ -5,7 +5,7 @@ from src.nodes.node_manager import NodeManager
 from src.nodes.alerts.alert_obj import Alert
 from api import logger, exception
 from api.decorators import for_all_methods
-from src.loader import load as load_conf
+# from src.loader import load as load_conf
 from src.nodes.base_node import event_list
 from codetiming import Timer
 # from .target import targets, target
@@ -143,32 +143,10 @@ class sample_process():
         #self.__pointer['status'] = self.process.status_rtc
         return self.process.status_rtc
 
-    def load(self, _id=False):
-        self.unload()
-        if self.status.get("status", False):
-            logger.info(self.sketch)
-            a = load_conf(self.sketch.id if not _id else _id)
-            if a:
-                self.loaded_id = self.sketch.id if not _id else _id
-            else:
-                self.loaded_id = None
-                self.unload()
-            return a
-        return False
-
-    def unload(self):
-        if self.loaded_id is not None:
-            NodeManager.stop()
-            NodeManager.clear()
-            self.loaded_id = None
-            return True
-        return False
-
     def getLoadedId(self):
         return self.loaded_id
 
     def start(self, internal=False, **kwargs):
-        self.load()
         self.process = Process_Thread(self.st, _id=self._id, *self.args, **self.kwargs)
         self.process.start()
         if internal:

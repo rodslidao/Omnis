@@ -16,51 +16,6 @@ from api import logger, auth, dbo
 
 mutation = MutationType()
 
-@mutation.field("createNodeSheet")
-@auth("manager")
-def createNodeSheet_resolver( _id, **kwargs):
-    """Create a new NodeSheet object and return it like a payload"""
-    returns = NodeSheet().create_node_sheet(_id, **kwargs)
-    return returns
-
-
-@mutation.field("saveNodeSheet")
-@auth("manager")
-def saveNodeSheet_resolver( _id=None, **kwargs):
-    """Create a new NodeSheet object and return it like a payload"""
-    returns = NodeSheet().save_node_sheet(_id, **kwargs)
-    return {"data": returns}
-
-
-@mutation.field("updateNodeSheet")
-@auth("manager")
-def updateNodeSheet_resolver( _id, **kwargs):
-    """Update a NodeSheet by id and return it like a payload"""
-    returns = NodeSheet().update_node_sheet(_id, **kwargs)
-    return returns
-
-
-@mutation.field("deleteNodeSheet")
-@auth("manager")
-def deleteNodeSheet_resolver( _id, **kwargs):
-    """Delete a NodeSheet by id and return it like a payload"""
-    returns = NodeSheet().delete_node_sheet(_id)
-    return returns
-
-
-@mutation.field("duplicateNodeSheet")
-@auth("manager")
-def duplicateNodeSheet_resolver( _id, **kwargs):
-    """Duplicate a NodeSheet by id and return it like a payload"""
-    returns = NodeSheet().duplicate_node_sheet(_id)
-    return returns
-
-
-@mutation.field("getLoadedConfig")
-@auth("viewer")
-def getLoadedConfig_resolver( **kwargs):
-    return process.getLoadedId()
-
 
 @mutation.field("createAlert")
 @auth("developer")

@@ -101,9 +101,8 @@ class MatrixNode(BaseNode):
             "extra": convert_to_array(subdivisions["margin"]),
             "scale": float(options["matrix"]["scale"])
         }
-        self.blister = Blister(shape=shape, name=options["matrix"]["name"], _id=options["matrix"]["id"],  slot_config=slot_config, order=options["matrix"]["order"])
-        # logger.info(f"MatrixNode {} created.")
-        # logger.info(f"{self.blister.data}")
+        # self.blister = Blister(shape=shape, name=options["matrix"]["name"], _id=options["matrix"]["id"],  slot_config=slot_config, order=options["matrix"]["order"])
+        # self.blister = Blister(**dbo.find_one('matrix-manager', {'_id':ObjectId(options["matrix"]["id"])}))
         self.auto_run = options.get("auto_run", False)
         NodeManager.addNode(self)
     @Wizard._decorator

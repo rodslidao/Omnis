@@ -25,18 +25,19 @@ input reg_process {
 
 extend type Query {
     get_process_list: [process]
-    get_process_item: process
+    get_process_item(_id: ID!): process
 }
 
 extend type Mutation  {
   create_process(input: reg_process): ID
-  update_process(_id: ID!, input: reg_process): Boolean
-  delete_process(_id: ID!): Boolean
+  update_process(_id: ID!, input: reg_process): ID
+  delete_process(_id: ID!): ID
+  duplicate_process(_id: ID!): ID
   start_process: Boolean
   stop_process:  Boolean
   pause_process: Boolean
   resume_process: Boolean
   select_process(_id: ID!): Boolean
-  loadConfig(_id: ID!): sketch
+  load_config(_id: ID!): sketch
   getLoadedConfig: ID!
 }

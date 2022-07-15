@@ -1,8 +1,8 @@
-from dotenv import load_dotenv, find_dotenv
+from dotenv import load_dotenv
 from pymongo import MongoClient
 from pymongo.errors import ConnectionFailure
 from os import environ, getenv
-from api import logger, exception, levels, lvl
+from api import logger, exception, levels, lvl, custom_handler
 from api.decorators import for_all_methods
 from pandas import DataFrame
 
@@ -12,6 +12,7 @@ from json import loads, dumps, JSONEncoder
 
 from bson.errors import InvalidDocument
 from bson import DBRef, ObjectId
+from threading import Event
 
 load_dotenv()
 load_dotenv(f'.env.{environ.get("NODE_ENV")}')
@@ -38,6 +39,7 @@ def getDb():
     global _db
     if _db is None:
         _db = MongoOBJ(environ.get("DB_NAME"), url)
+        custom_handler(logger, "mongo", "json",  _db, levels[lvl])
     return _db
 
 
@@ -69,6 +71,7 @@ class CustomEncoder(JSONEncoder):
 class MongoOBJ:
     def __init__(self, db_name, db_url):
         self.dbo = self.connect(db_name, db_url)
+        self.closed = Event()
 
     def connect(self, db_name, db_url):
         try:
@@ -169,6 +172,7 @@ class MongoOBJ:
         return df.to_csv(index=False)
 
     def close(self):
-        logger.info("Closing connection to MongoDB...")
-        self.client.close()
-        logger.info("closed.")
+        if not self.closed.is_set():
+            logger.info("Database connection Closed.")
+            self.client.close()
+            self.closed.set()

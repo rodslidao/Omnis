@@ -23,7 +23,8 @@ class SubscriptionFactory:
                 while True:
                     yield await self.store.get()
             finally:
-                logger.info("closing...")
+                pass
+                # logger.info("closing...")
 
         @subscription.field(self.name)
         async def sub_resolver(obj, info):

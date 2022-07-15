@@ -55,6 +55,7 @@ services:
 
     environment:
       DB_HOST: mongo_c
+      LOG_LEVEL: ${LOG_LEVEL}
     # links:
     #   - mongo
     networks:
@@ -72,8 +73,8 @@ services:
       - /home/ubuntu/.url_host:/app/.url_host
       - /dev:/dev
     command: python main.py
-    # depends_on:
-    #   - mongo-express
+    depends_on:
+      - mongo-express
       
   frontend:
     profiles: ["production"]

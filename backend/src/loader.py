@@ -1,13 +1,13 @@
 from enum import Enum
 from datetime import datetime
 from bson import ObjectId
-from api.models import NodeSheet
+# from .manager.process_manager import ProcessManager as process
+# from api.models import NodeSheet
 
 from .nodes.node_manager import NodeManager
 from .nodes.node_registry import NodeRegistry
 from .nodes.alerts.alert_obj import Alert
 from api import logger, exception, dbo
-# from .nodes.process.target import targets
 
 variables = {
  #   '<color>': "#FFFFFF",
@@ -234,25 +234,29 @@ def saveNodeChange(nodeChange):
     dbo.get_collection("node-history").insert_one(nodeChange)
 
 
-@exception(logger)
-def load(node_id=None):
-    try:
-        current_loaded_query = {"description": "current-config-loaded-id"}
-        if node_id is not None:
-            dbo.update_one(
-                "last-values",
-                current_loaded_query,
-                {"$set": {"sheet-id": ObjectId(node_id)}},
-            )
-            sheet = NodeSheet().getNodeSheetById(node_id)
-        else:
-            sheet = NodeSheet().getNodeSheetById(
-                dbo.find_one("last-values", current_loaded_query)["sheet-id"]
-            )
-        NodeManager.clear()
-        loadConfig(sheet["content"], LoadingMode)
-        return sheet
-    except Exception as e:
-        logger.error("Error loading config: {}".format(e))
-        return False
+# @exception(logger)
+# def load(node_id=None):
+#     try:
+#         current_loaded_query = {"description": "current-config-loaded-id"}
+#         if node_id is not None:
+#             dbo.update_one(
+#                 "last-values",
+#                 current_loaded_query,
+#                 {"$set": {"sheet-id": ObjectId(node_id)}},
+#             )
+#             logger.warning(node_id)
+#             sheet = dbo.find_one(process.collection, {'_id':node_id})
+#             # sheet = NodeSheet().getNodeSheetById(node_id)
+#         else:
+#             logger.warning(node_id)
+#             sheet = dbo.find_one(process.collection, {'_id':node_id})
+#             # sheet = NodeSheet().getNodeSheetById(
+#             #     dbo.find_one("last-values", current_loaded_query)["sheet-id"]
+#             # )
+#         NodeManager.clear()
+#         loadConfig(sheet["content"], LoadingMode)
+#         return sheet
+#     except Exception as e:
+#         logger.error("Error loading config: {}".format(e))
+#         return False
 

@@ -19,6 +19,9 @@ class CRUD:
         self.delete = (auth(self.auth_level))(self.delete)
         mutation.set_field(f"delete_{self.collection}", self.delete)
 
+        self.duplicate = (auth(self.auth_level))(self.duplicate)
+        mutation.set_field(f"duplicate_{self.collection}", self.duplicate)
+
         self.get_list = (auth(self.auth_level))(self.get_list)
         query.set_field(f"get_{self.collection}_list", self.get_list)
 
@@ -34,7 +37,6 @@ class CRUD:
                 "_id": _id
             }
         )
-
         dbo.insert_one(kwargs.get('collection', self.collection), kwargs.get("input", {}))
         return _id
 
@@ -51,10 +53,19 @@ class CRUD:
             {"_id": _id},
             {"$set": kwargs.get("input", {})},
         )
+        return _id
+
+    def duplicate(self, *args, **kwargs):
+        item = self.get_item(args, **kwargs)
+        item.pop('_id')
+        return self.create(*args, input=item)
         
 
+
     def delete(self, *args, **kwargs):
-        dbo.delete_one(kwargs.get('collection', self.collection), {"_id": ObjectId(kwargs.get("_id"))})
+        _id = ObjectId(kwargs.get("_id"))
+        dbo.delete_one(kwargs.get('collection', self.collection), {"_id": _id})
+        return _id
 
     async def get_list(self, *args, **kwargs):
         return dbo.find_many(kwargs.get('collection', self.collection), ref=True)
