@@ -43,7 +43,7 @@ class NodeSheet:
 
     def duplicate_node_sheet(self, _id):
         """Duplicate a NodeSheet by id"""
-        logger.info(f"Duplicating NodeSheet [{_id}]")
+        logger.debug(f"Duplicating NodeSheet [{_id}]")
         self.NodeSheet = dbo.find_one("node-sheets", {"_id": ObjectId(_id)})
         self.NodeSheet["_id"] = ObjectId()
         self.NodeSheet["date"] = datetime.utcnow().timestamp()
@@ -53,23 +53,22 @@ class NodeSheet:
     
     def create_node_sheet(self, _id, **kwargs):
         """Create a new NodeSheet object"""
-        logger.info(f"Creating new NodeSheet with id: {_id}")
+        logger.debug(f"Creating new NodeSheet with id: {_id}")
         return dbo.insert_one("node-sheets", {"_id": ObjectId(_id), **kwargs}) is not None
 
     def getNodeSheetById(self, _id):
         """Get a NodeSheet by id"""
-        logger.debug(f"Getting NodeSheet by id: {_id}")
         self.NodeSheet = dbo.find_one("node-sheets", {"_id": ObjectId(_id)})
         return self._format()
 
     def update_node_sheet(self, _id, **kwargs):
         """Update a NodeSheet by id"""
-        logger.info(f"Updating NodeSheet [{_id}]")
+        logger.debug(f"Updating NodeSheet [{_id}]")
         return dbo.update_one("node-sheets", {"_id": ObjectId(_id)}, {"$set": kwargs}) is not None
 
     def delete_node_sheet(self, _id):
         """Delete a NodeSheet by id"""
-        logger.info(f"Deleting NodeSheet [{_id}]")
+        logger.debug(f"Deleting NodeSheet [{_id}]")
         return dbo.delete_one("node-sheets", {"_id": ObjectId(_id)}) is not None
 
     def get_sketch_list(self):

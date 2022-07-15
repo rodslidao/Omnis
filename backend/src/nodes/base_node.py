@@ -1,3 +1,4 @@
+from email import message_from_bytes
 from src.nodes.alerts.alert_obj import Alert
 from src.message import Message
 from src.nodes.node_manager import NodeManager
@@ -35,7 +36,7 @@ class Wizard(object):
 
     @_decorator
     def execute(self):
-        logger.error("normal call")
+        logger.error("The Wizard decorator should decorate an node 'execute' function.")
 
     _decorator = staticmethod(_decorator)
 
@@ -78,6 +79,8 @@ class BaseNode(Wizard):
         self.stop_event = Event()
         self.update_status({"status": "LOADED"})
         self.auto_run = options.get("auto_run", False)
+        logger.debug("[%s] Node loaded", self)
+
 
     def onSuccess(self, payload, additional=None):
         self.on("onSuccess", payload, additional)
@@ -116,7 +119,7 @@ class BaseNode(Wizard):
                 if self.stop_event.isSet():
                     return self.resume()
 
-            logger.info(f"[{self}] Sending message to node [{node_to_run}]")
+            logger.debug(f"[{self}] Sending message {message} to node [{node_to_run}]")
             if node_to_run and not self.stop_event.isSet():
                 event_list.put(message._id)
                 self.update_status(

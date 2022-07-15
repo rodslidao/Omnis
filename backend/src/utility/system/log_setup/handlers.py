@@ -53,14 +53,17 @@ class MongoHandler(Handler):
 
     def __init__(self, database, level=10, collection="log"):
         super().__init__(level)
+        print(database, level, collection)
         self.database = database
         self.collection = collection
 
     def emit(self, record):
+        print('record', record)
         r = record.__dict__.copy()
         r["created"] = datetime.fromtimestamp(record.created)
         try:
-            self.database.insert_one(self.collection, r)
+            if not self.database.closed.is_set():
+                self.database.insert_one(self.collection, r)
         except Exception as e:
             print("MongoHandler-EEEEE", e)
 

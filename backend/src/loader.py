@@ -253,6 +253,6 @@ def load(node_id=None):
         loadConfig(sheet["content"], LoadingMode)
         return sheet
     except Exception as e:
-        logger.error("Error loading config: {}".format(e))
+        logger.error(f"Loader: loading a Node_Sheet fail, reason:{e}")
         return False
 

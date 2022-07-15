@@ -33,7 +33,6 @@ async def custom_video_response(scope):
     """
     Return a async video streaming response for `frame_producer2` generator
     """
-    logger.info(scope)
     assert scope["type"] in ["http", "https"]
     await asyncio.sleep(0.00001)
     return StreamingResponse(
@@ -84,7 +83,7 @@ class Websocket(WebSocketEndpoint):
 
     async def on_disconnect(self, websocket, close_code=100):
         self.connections.get(self._id, set()).remove(websocket)
-        logger.info(
+        logger.debug(
             f"[{self._id}]: {len(self.connections.get(self._id))} remaining sessions"
         )
 
@@ -155,6 +154,6 @@ class Controls(Websocket):
             axis.move(axis.position + axis.step * (1 if not data["isNegative"] else -1))
             axis.position = self.serial.G0(axis())[axis.name]
         else:
-            logger.info(data)
+            logger.debug(f"Websocket: unknow request {data}")
 
         await websocket.send_json({"respose": "ok"})

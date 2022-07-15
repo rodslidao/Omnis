@@ -14,6 +14,7 @@ lvl = "debug"
 
 log_paths = ["src/logs/untimed_log.json", "src/logs/timed_log.json"]
 logger = default_setup(getLogger(str(__name__)), *log_paths, level=levels[lvl])
+db_logger = getLogger(str(__name__)+'_dbo')
 
 if __name__ == "__main__":
 

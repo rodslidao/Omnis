@@ -39,6 +39,9 @@ services:
       - mongo
     volumes: 
       - ./mongodb:/data/db
+    logging:
+      options:
+        max-size: 50m
 
   backend:
     profiles: ["production", "development"]
@@ -72,6 +75,9 @@ services:
       - /home/ubuntu/.url_host:/app/.url_host
       - /dev:/dev
     command: python main.py
+    logging:
+      options:
+        max-size: 50m
     # depends_on:
     #   - mongo-express
       
@@ -94,6 +100,9 @@ services:
       - backend
     depends_on:
       - backend
+    logging:
+      options:
+        max-size: 50m
 
 networks: 
   bind-network:

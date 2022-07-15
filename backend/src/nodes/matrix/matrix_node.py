@@ -102,8 +102,6 @@ class MatrixNode(BaseNode):
             "scale": float(options["matrix"]["scale"])
         }
         self.blister = Blister(shape=shape, name=options["matrix"]["name"], _id=options["matrix"]["id"],  slot_config=slot_config, order=options["matrix"]["order"])
-        # logger.info(f"MatrixNode {} created.")
-        # logger.info(f"{self.blister.data}")
         self.auto_run = options.get("auto_run", False)
         NodeManager.addNode(self)
     @Wizard._decorator

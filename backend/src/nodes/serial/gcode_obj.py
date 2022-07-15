@@ -95,8 +95,6 @@ class SerialGcodeOBJ(Serial):
                 if future: break
             except AttributeError:
                 pass
-
-        logger.info(f"future: {future}")
         while (
             any((round(v,1) != round(self.M114("R")[i],1)) for i, v in future) #! Round is mandatory
             # any((v != self.M114("R")[i]) for i, v in future)
@@ -131,7 +129,7 @@ class SerialGcodeOBJ(Serial):
                     
                 return _echo
             except ValueError:  # ! Why this error?
-                # logger.info('[SerialGcodeOBJ] M114 error: "{}"'.format(echo))
+                logger.warning(f"Serial: {self.name} fail to decode custom M114. Raw payload: {echo}")
                 pass
 
     def M42(self, _id, _value):
@@ -157,9 +155,9 @@ class SerialGcodeOBJ(Serial):
         if sender:
             args = command_splited[1] if len(command_splited) > 1 else []
             kwargs = command_splited[-1] if isinstance(command_splited[-1], dict) else {}
-            logger.info(f"{command_splited[0].upper()}: {sender(*args, **kwargs)}")
+            logger.debug(f"Serial: [Custom GCODE] {command_splited[0].upper()}: {sender(*args, **kwargs)}")
         else:
-            # logger.info(f"Invalid: {command_splited[0].upper()}")
+            logger.warning(f"Serial: [Custom GCODE] {command_splited[0].upper()} can't be found.")
             self.last_value_received=['Invalid: {}'.format(command_splited[0].upper())]
         return self
 
