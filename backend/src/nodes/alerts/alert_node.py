@@ -8,7 +8,7 @@ class AlertNode(BaseNode):
     def __init__(self, name, id, options, output_connections, input_connections):
         super().__init__(name, NODE_TYPE, id, options, output_connections)
         self.input_connections = input_connections
-        self.tile = options["tile"]
+        self.title = options["title"]
         self.level = options["level"]    
         self.title = options["title"]    
         self.description = options["description"]    
@@ -19,4 +19,4 @@ class AlertNode(BaseNode):
 
     @Wizard._decorator
     def execute(self, message=""):
-        Alert(self.tile, self.level, self.title, self.description, self.how_to_solve, self.button_text, self.button_action)
+        Alert(self.title, self.level, self.title, self.description, self.how_to_solve, self.button_text, self.button_action)

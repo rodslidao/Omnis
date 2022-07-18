@@ -1,5 +1,7 @@
 from src.manager.base_manager import BaseManager
+from src.nodes.node_manager import NodeManager
 from src.crud import SSPR
+from src.loader import loadConfig, LoadingMode
 from src.nodes.process.process import sample_process as Process
 from src.end_points import Process as WebProcess
 from api import logger, dbo, auth
@@ -13,32 +15,34 @@ class ProcessObjectManager(SSPR, BaseManager):
         SSPR.__init__(self, alias=alias, auth_level=auth_level, collection=collection)
         BaseManager.__init__(self)
         self._id = "status"
+        self.loaded_id = None
         for process in dbo.find_many(self.collection):
             self.add(Process(**process))
             self.selected_process_id = process['_id']
         self.__status = [self.process]
-        self.websocket = WebProcess(self._id, self.process)
+        self.websocket = WebProcess(self._id, self.status)
         Thread(
             target=self.auto_update, name=f"{self._id}_auto_update", daemon=True
         ).start()
 
-        self.loadConfig = (auth(auth_level))(self.loadConfig)
-        mutation.set_field(f"loadConfig", self.loadConfig)
+        self.load_config = (auth(auth_level))(self.load_config)
+        mutation.set_field(f"load_config", self.load_config)
 
     def auto_update(self):
         asyncio.run(self.websocket.broadcast_on_change(self.status, self.status))
 
     def start(self, **kwargs):
-        self.get_by_id(self.selected_process_id).start()
+        self.load(kwargs.get('_id'))
+        self.process.start()
 
     def stop(self,  **kwargs):
-        self.get_by_id(self.selected_process_id).stop()
+        self.process.stop()
 
     def pause(self,  **kwargs):
-        self.get_by_id(self.selected_process_id).pause()
+        self.process.pause()
     
     def resume(self, **kwargs):
-        self.get_by_id(self.selected_process_id).resume()
+        self.process.resume()
 
     def status_generator(self, process):
         def status():
@@ -48,7 +52,6 @@ class ProcessObjectManager(SSPR, BaseManager):
     def select(self, _id, **kwargs):
         self.process = _id
         self.__status[0] = self.process
-        logger.info(self.status)
 
     def __call__(self, process=None):
         if process: self.process = process
@@ -56,7 +59,16 @@ class ProcessObjectManager(SSPR, BaseManager):
 
     @property
     def process(self):
-        return self.store[self.selected_process_id]
+        atual = self.store.get(self.selected_process_id, False)
+        if atual:
+            return atual
+        else:
+            config = dbo.find_one(self.collection, {'_id':self.selected_process_id})
+            if config:
+                self.add(Process(**config))
+                return self.process
+            else:
+                raise KeyError("PROCESS NOT FOUND, IF EXIST TRY REBOOT")
     
     @process.setter
     def process(self, _id):
@@ -65,12 +77,27 @@ class ProcessObjectManager(SSPR, BaseManager):
     def status(self):
         return self.__status[0].status
     
-    def load(self, _id):
-        self.process.load(_id)
 
-    def loadConfig(self, _id, user):
-        return self.process.load(_id)
+    def load(self, _id=False):
+        self.unload()
+        full_sketch = dbo.find_one('sketch', self.process.sketch.id if not _id else _id)
+        loaded = loadConfig(full_sketch['content'])
+        if loaded:
+            self.loaded_id = self.process.sketch.id if not _id else _id
+        else:
+            self.loaded_id = None
+            self.unload()
+        return full_sketch
 
+    def unload(self):
+        if self.loaded_id is not None:
+            NodeManager.stop()
+            NodeManager.clear()
+            self.loaded_id = None
+            return True
+        return False
 
+    def load_config(self, _id, user):
+        return self.load(_id)
 
 ProcessManager = ProcessObjectManager('process', 'operator', 'process')

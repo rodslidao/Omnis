@@ -39,6 +39,9 @@ services:
       - mongo
     volumes: 
       - ./mongodb:/data/db
+    logging:
+      options:
+        max-size: 50m
 
   backend:
     profiles: ["production", "development"]
@@ -55,8 +58,9 @@ services:
 
     environment:
       DB_HOST: mongo_c
-    # links:
-    #   - mongo
+      LOG_LEVEL: ${LOG_LEVEL}
+    links:
+      - mongo-express
     networks:
       - bind-network
     # Enable access to the camera and serial devices (if the device is connected, otherwise it will fail)
@@ -72,8 +76,11 @@ services:
       - /home/ubuntu/.url_host:/app/.url_host
       - /dev:/dev
     command: python main.py
-    # depends_on:
-    #   - mongo-express
+    depends_on:
+      - mongo-express
+    logging:
+      options:
+        max-size: 50m
       
   frontend:
     profiles: ["production"]
@@ -94,6 +101,9 @@ services:
       - backend
     depends_on:
       - backend
+    logging:
+      options:
+        max-size: 50m
 
 networks: 
   bind-network:
