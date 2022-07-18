@@ -53,7 +53,7 @@
                 link
                 @click="item.function()"
               >
-                <v-list-item-title"
+                <v-list-item-title
                   ><v-icon small class="mr-5">mdi-{{ item.btnIcon }}</v-icon
                   >{{ $t(item.title) }}
                 </v-list-item-title>
@@ -167,9 +167,6 @@ export default {
       this.$emit('edit-obj', this.obj);
     },
 
-    dialog() {
-      this.dialogDelete = true;
-    },
   },
 };
 </script>

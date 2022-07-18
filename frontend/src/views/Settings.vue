@@ -45,7 +45,7 @@
           active-class="primary--text text--accent-4"
         >
           <v-list-item
-            v-for="item in items"
+            v-for="item in items.filter((i)=>  $access(i.path))"
             :key="item.title"
             link
             :to="'/config' + item.path"

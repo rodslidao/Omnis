@@ -273,7 +273,7 @@ export default {
 
         .catch((error) => {
           this.$alertFeedback(
-            this.$t('alerts.updateMatrixSuccess'),
+            'alerts.updateMatrixSuccess',
             'error',
             error
           );

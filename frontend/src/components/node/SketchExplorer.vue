@@ -152,7 +152,7 @@ const DUPLICATE_NODE_SHEET = gql`
 const LOAD_CONFIG = gql`
   mutation ($_id: ID!) {
     load_config(_id: $_id) {
-     _id
+      _id
       name
       description
       version
@@ -163,7 +163,7 @@ const LOAD_CONFIG = gql`
       content
       saved
       duplicated
-      }
+    }
   }
 `;
 
@@ -354,6 +354,7 @@ export default {
           );
           // this.isLoading = false;
           // this.setSaved(this.selectedTabIndex);
+          this.dialogDelete = false;
         })
 
         .catch((error) => {

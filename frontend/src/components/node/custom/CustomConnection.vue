@@ -55,7 +55,58 @@ export default {
       deep: true,
     },
   },
+
+  created() {
+    window.addEventListener('resize', () => {
+      this.updateCoords();
+    });
+
+    this.connectToWebsocket();
+    // eslint-disable-next-line no-unused-vars
+    const timeOut = null;
+  },
+
   methods: {
+    connectToWebsocket() {
+      console.log(this.$t('alerts.wsConnecting'));
+      this.WebSocket = new WebSocket(
+        `ws://${process.env.VUE_APP_URL_API_IP}:${process.env.VUE_APP_URL_API_PORT}/nodes`
+      );
+
+      this.WebSocket.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        console.log(data);
+        let timeOut = null;
+        if (
+          data?.info.message.from === this.connection.from.id &&
+          data?.info.message.to === this.connection.to.id
+        ) {
+          this.connectionActive = true; // Activate animation
+          clearTimeout(timeOut); // Reset timeout if called
+          timeOut = setTimeout(() => {
+            // Deactivate animation if method is not called within interval.
+            this.connectionActive = false;
+          }, 750);
+        }
+      };
+
+      this.WebSocket.onopen = (event) => {
+        console.log(event);
+        console.log(this.$t('alerts.wsConnectSuccess'));
+      };
+
+      this.WebSocket.onclose = (event) => {
+        console.log(
+          'Socket is closed. Reconnect will be attempted in 1 second.',
+          event.reason
+        );
+        setTimeout(
+          () => this.connectToWebsocket(),
+          Math.floor(Math.random() * 2500)
+        );
+      };
+    },
+
     transform(x, y) {
       const tx = (x + this.plugin.panning.x) * this.plugin.scaling;
       const ty = (y + this.plugin.panning.y) * this.plugin.scaling;
@@ -76,14 +127,14 @@ export default {
     getPortCoordinates(resolved) {
       if (resolved.node && resolved.interface && resolved.port) {
         return [
-          resolved.node.offsetLeft
-            + resolved.interface.offsetLeft
-            + resolved.port.offsetLeft
-            + resolved.port.clientWidth / 2,
-          resolved.node.offsetTop
-            + resolved.interface.offsetTop
-            + resolved.port.offsetTop
-            + resolved.port.clientHeight / 2,
+          resolved.node.offsetLeft +
+            resolved.interface.offsetLeft +
+            resolved.port.offsetLeft +
+            resolved.port.clientWidth / 2,
+          resolved.node.offsetTop +
+            resolved.interface.offsetTop +
+            resolved.port.offsetTop +
+            resolved.port.clientHeight / 2,
         ];
       }
       return [0, 0];
@@ -111,53 +162,45 @@ export default {
     },
   },
 
-  apollo: {
-    // Subscriptions
-    $subscribe: {
-      // When a tag is added
-      tagAdded: {
-        query: gql`
-          subscription {
-            nodes {
-              type
-              id
-              info{
-                message{
-                  to
-                  from
-                }
-              }
-            }
-          }
-        `,
-        // Result hook
-        // Don't forget to destructure `data`
-        result({ data }) {
-          // console.log('nodes', data.nodes);
-          let timeOut = null;
-          if (
-            data.nodes.info.message.from === this.connection.from.id
-            && data.nodes.info.message.to === this.connection.to.id
-          ) {
-            this.connectionActive = true; // Activate animation
-            clearTimeout(timeOut); // Reset timeout if called
-            timeOut = setTimeout(() => {
-              // Deactivate animation if method is not called within interval.
-              this.connectionActive = false;
-            }, 750);
-          }
-        },
-      },
-    },
-  },
-
-  created() {
-    window.addEventListener('resize', () => {
-      this.updateCoords();
-    });
-    // eslint-disable-next-line no-unused-vars
-    const timeOut = null;
-  },
+  // apollo: {
+  //   // Subscriptions
+  //   $subscribe: {
+  //     // When a tag is added
+  //     tagAdded: {
+  //       query: gql`
+  //         subscription {
+  //           nodes {
+  //             type
+  //             id
+  //             info {
+  //               message {
+  //                 to
+  //                 from
+  //               }
+  //             }
+  //           }
+  //         }
+  //       `,
+  //       // Result hook
+  //       // Don't forget to destructure `data`
+  //       result({ data }) {
+  //         // console.log('nodes', data.nodes);
+  //         let timeOut = null;
+  //         if (
+  //           data.info.message.from === this.connection.from.id &&
+  //           data.info.message.to === this.connection.to.id
+  //         ) {
+  //           this.connectionActive = true; // Activate animation
+  //           clearTimeout(timeOut); // Reset timeout if called
+  //           timeOut = setTimeout(() => {
+  //             // Deactivate animation if method is not called within interval.
+  //             this.connectionActive = false;
+  //           }, 750);
+  //         }
+  //       },
+  //     },
+  //   },
+  // },
 };
 </script>
 <style scoped>

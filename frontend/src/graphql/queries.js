@@ -47,3 +47,12 @@ export const LIST_USER = gql`
     }
   }
 `;
+
+export const LIST_LEVEL = gql`
+  query LIST_LEVEL {
+    get_levels_list {
+    name
+    forbidden_list
+    }
+  }
+`;
