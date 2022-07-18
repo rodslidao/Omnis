@@ -6,7 +6,7 @@ from api.queries import query
 from api.subscriptions import subscription
 from api.mutations import mutation
 
-from src.end_points import custom_video_response, Echo
+from src.end_points import custom_video_response, Echo, Connection
 from src.manager.serial_manager import SerialManager
 from src.manager.camera_manager import CameraManager
 from src.manager.process_manager import ProcessManager as process
@@ -48,6 +48,7 @@ routes_app = [
         "/videos/{video_id}", endpoint=custom_video_response, methods=["GET", "POST"]
     ),
     WebSocketRoute("/ws", endpoint=Echo),
+    WebSocketRoute("/network", endpoint=Connection()),
     WebSocketRoute("/process", endpoint=process.websocket),
     *[WebSocketRoute(f"/controls/{serial._id}", endpoint=serial.websocket) for serial in SerialManager.get()],
     Mount(

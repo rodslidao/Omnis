@@ -47,25 +47,25 @@
       <v-spacer></v-spacer>
       <!-- <SnackBar /> -->
 
-      <RestartButton
-        v-if="$route.name == 'settings'"
-        :online="isConnected"
-      ></RestartButton>
-
-      <!-- <v-icon dark color="light-green lighten-1" v-show="isConnected"
-        >mdi-lan-check</v-icon
-      >
-      <v-icon dark color="red darken-1" v-show="!isConnected"
-        >mdi-lan-disconnect</v-icon
-      > -->
+      <v-spacer></v-spacer>
 
       <login></login>
+      <RestartButton
+        v-if="$router.currentRoute.path.split('/')[1] == 'config'"
+        :online="onlineWeb.value"
+      ></RestartButton>
 
-      <router-link to="/config">
+      <router-link
+        to="/config"
+        v-if="$router.currentRoute.path.split('/')[1] !== 'config'"
+      >
         <v-btn icon v-if="$route.name != 'settings'">
           <v-icon dark id="tune">mdi-cog </v-icon>
         </v-btn>
       </router-link>
+      <v-icon dark color="red darken-1" v-if="!onlineWeb.value">mdi-web</v-icon>
+      <v-icon dark color="red darken-1" v-if="!onlineBack">mdi-wifi-off</v-icon>
+
       <!-- <template v-slot:extension v-if="$route.name == 'node'">
       <TabMenuNodes></TabMenuNodes>
     </template> -->
@@ -79,10 +79,16 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { useOnline } from '@vueuse/core';
+import { onError } from 'apollo-link-error';
+
 import RestartButton from '@/components/navbar/RestarButton.vue';
 import TabMenuNodes from '@/components/node/TabMenuNodes.vue';
 import Login from '@/views/Auth/Login.vue';
+
+const link = onError((error) => {
+  console.log(error);
+});
 
 export default {
   name: 'NavBar',
@@ -95,48 +101,30 @@ export default {
 
   data: () => ({
     restartDialog: false,
-    online: false,
+    onlineWeb: useOnline(),
+    onlineBack: true,
     showOnlineMsg: false,
     alert: true,
-    listImgCantBeShow: ['dashboard', 'node', 'settings'],
   }),
 
   // checa se existe conexão tem a ver com o pwa
-  mounted() {
-    this.online = navigator.onLine;
-    window.addEventListener('online', () => (this.online = true));
-    window.addEventListener('offline', () => {
-      this.online = false;
-      this.showOnlineMsg = true;
-    });
-  },
+  mounted() {},
 
   methods: {
-    validateRoute() {
-      this.listImgCantBeShow.forEach((element) => {
-        if (this.$route.name == element) {
-          console.log(element);
-          return false;
-        }
-      });
-    },
-
     close() {
-      const remote = require('electron').remote;
+      const { remote } = require('electron');
       const window = remote.getCurrentWindow();
       window.close();
     },
 
-    //pwa app
+    // pwa app
     async accept() {
       this.showUpdateUI = false;
       await this.$workbox.messageSW({ type: 'SKIP_WAITING' });
     },
   },
 
-  computed: {
-    ...mapState(['isConnected', 'configuration']),
-  },
+  computed: {},
 };
 </script>
 
@@ -146,12 +134,8 @@ export default {
   height: 1.4em;
   margin-top: 0.5em;
 }
-// v-app-bar {
-//   z-index: 999;
-// }
 
 .alert {
-  // position: absolute;
   width: 100%;
   margin: 0 auto;
 }

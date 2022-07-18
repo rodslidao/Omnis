@@ -8,17 +8,19 @@ type sketch {
   description: String
   author: String
   version: Int
-  last_access: Float
   saved: Boolean
   duplicated:Boolean
   content: JSON
   node_qtd: Int
+  updated_at: timestamptz
+  created_at: timestamptz
 }
 
 input reg_sketch{
   _id: ID
   parent_id: ID
   name: String
+  key: ID
   description: String
   author: String
   version: Int
@@ -34,7 +36,7 @@ extend type Query {
 }
 
 extend type Mutation  {
-  create_sketch(input: reg_sketch): ID
+  create_sketch(_id: ID, input: reg_sketch): ID
   delete_sketch(_id: ID!): ID
   duplicate_sketch(_id: ID!): ID
   update_sketch(_id: ID!, input: reg_sketch): ID

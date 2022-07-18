@@ -59,8 +59,8 @@ services:
     environment:
       DB_HOST: mongo_c
       LOG_LEVEL: ${LOG_LEVEL}
-    # links:
-    #   - mongo
+    links:
+      - mongo-express
     networks:
       - bind-network
     # Enable access to the camera and serial devices (if the device is connected, otherwise it will fail)
@@ -81,8 +81,6 @@ services:
     logging:
       options:
         max-size: 50m
-    # depends_on:
-    #   - mongo-express
       
   frontend:
     profiles: ["production"]

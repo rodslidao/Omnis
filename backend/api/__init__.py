@@ -44,13 +44,14 @@ def auth(lvl=None):
                 token = jwt.decode(token, key=public_key, algorithms=[header_data['alg']])
             except Exception as e:
                 logger.debug(f"Acess Denied, invalid or missing token: {e}.")
-                #raise GraphQLError("Invalid credential")
+                raise GraphQLError("Invalid credential")
             else:
                 user = User(**token)
                 if user >= lvl:
                     logger.debug(f"User: {user.json} requesting {resolver.__name__}")
                     kwargs.update({'user':user})
-                    return resolver(obj, info, *args, **kwargs)
+                    return resolver(*args, **kwargs)
+                    # return resolver(obj, info, *args, **kwargs)
                 logger.debug(f"User: {user.json} don't has permissions to request {resolver.__name__}")
                 raise GraphQLError('Permission Denied')
         return wrapper

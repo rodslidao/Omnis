@@ -69,7 +69,7 @@
       </template>
 
       <template v-slot:item.lastAccess="{ item }">
-        {{ timestampToData(item.last_access) }}
+        {{ timestampToData(item.updated_at) }}
       </template>
       <template v-slot:item.actions="{ item }">
         <!-- <v-icon small class="mr-2" @click="editItem(item)"> mdi-pencil </v-icon>
@@ -126,7 +126,7 @@ const GET_SKETCH_LIST = gql`
       description
       node_qtd
       author
-      last_access
+      updated_at
     }
   }
 `;
@@ -151,14 +151,14 @@ const DUPLICATE_NODE_SHEET = gql`
 
 const LOAD_CONFIG = gql`
   mutation ($_id: ID!) {
-    loadConfig(_id: $_id) {
+    load_config(_id: $_id) {
      _id
       name
       description
       version
       node_qtd
       author
-      last_access
+      updated_at
       parent_id
       content
       saved
@@ -166,31 +166,6 @@ const LOAD_CONFIG = gql`
       }
   }
 `;
-// const LOAD_CONFIG = gql`
-//   mutation ($id: ID!) {
-//     loadConfig(_id: $id) {
-//       data {
-//         content
-//       }
-//     }
-//   }
-// `;
-
-// const GET_LOADED_CONFIG = gql`
-//   query ($id: ID!) {
-//     getLoadedConfig(_id: $id) {
-//       data {
-//         _id
-//         name
-//         description
-//         node_qtd
-//         author
-//         last_access
-//         content
-//       }
-//     }
-//   }
-// `;
 
 export default {
   components: { DialogConfirmation },
@@ -337,8 +312,8 @@ export default {
         })
         .then((data) => {
           // Result
-          console.log('data', data.data.loadConfig);
-          this.loadTabId(data.data.loadConfig);
+          console.log('data', data.data.load_config);
+          this.loadTabId(data.data.load_config);
           this.dialog = true;
           this.$emit('close-dialog');
           // this.isLoading = false;

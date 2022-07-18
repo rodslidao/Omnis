@@ -4,7 +4,7 @@ from pymongo.errors import ConnectionFailure
 from os import environ, getenv
 from api import logger, exception, levels, lvl, custom_handler
 from api.decorators import for_all_methods
-from api.log import custom_handler, DEBUG, db_logger
+from api.log import custom_handler, DEBUG
 from pandas import DataFrame
 
 from numpy import integer, floating, ndarray
@@ -23,32 +23,20 @@ url = (
 )
 
 _db = None
-requiredCollections = [
-    "node-sheets",
-    "camera-manager",
-    "serial-manager",
-    "matrix-manager",
-    "last-values",
-    "log",
-]
 
 
 @exception(logger)
 def getDb():
-    global _db, db_logger
+    global _db
     if _db is None:
         _db = MongoOBJ(environ.get("DB_NAME"), url)
-        custom_handler(logger, "mongo", "json",  _db, levels[lvl])
+        custom_handler(logger, "mongo", "json",  _db, levels[lvl]) #! Works?
     return _db
 
 
 @exception(logger)
 def connectToMongo(database="Teste"):
     getDb()
-    for collectionName in requiredCollections:
-        if collectionName not in _db.list_collection_names():
-            _db.create_collection(collectionName)
-
 
 # @for_all_methods(exception(logger))
 class CustomEncoder(JSONEncoder):
@@ -68,7 +56,7 @@ class CustomEncoder(JSONEncoder):
 
 
 
-@for_all_methods(exception(logger))
+# @for_all_methods(exception(logger))
 class MongoOBJ:
     def __init__(self, db_name, db_url):
         self.dbo = self.connect(db_name, db_url)
@@ -83,7 +71,6 @@ class MongoOBJ:
             logger.error(f"Could not connect to MongoDB using url: {db_url}")
             raise
         else:
-            custom_handler(db_logger, "mongo", "json", self.client.get_database(db_name), DEBUG)
             logger.info("Connected to MongoDB")
             return self.client.get_database(db_name)
 
@@ -100,20 +87,10 @@ class MongoOBJ:
         return self.dbo.create_collection(collectionName)
 
     def insert_one(self, collection_name, data):
-        try:
-            return self.dbo[collection_name].insert_one(data)
-        except InvalidDocument:
-            return self.dbo[collection_name].insert_one(
-                loads(dumps(data, cls=CustomEncoder))
-            )
+        return self.dbo[collection_name].insert_one(data)
 
     def insert_many(self, collection_name, data):
-        try:
-            return self.dbo[collection_name].insert_many(data)
-        except InvalidDocument:
-            return self.dbo[collection_name].insert_many(
-                loads(dumps(data, cls=CustomEncoder))
-            )
+        return self.dbo[collection_name].insert_many(data)
 
     def resolve_ref(self, cursor):
         if isinstance(cursor, (dict, list, DBRef)):
@@ -131,7 +108,7 @@ class MongoOBJ:
     def find_one(self, collection_name, query={}, data={}, **kwargs):
         if kwargs.get('ref'):
             return self.resolve_ref(dict(self.dbo[collection_name].find_one(query, data)))
-        return dict(self.dbo[collection_name].find_one(query, data))
+        return self.dbo[collection_name].find_one(query, data)
 
     def find_many(self, collection_name, query={}, data={}, **kwargs):
         if kwargs.get('ref'):
