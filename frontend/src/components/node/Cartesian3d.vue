@@ -72,6 +72,14 @@ export default {
         // console.log(event);
         console.log(this.$t('alerts.wsConnectSuccess'));
       };
+
+      this.WebSocket.onclose = (event) => {
+        console.log(
+          'Socket is closed. Reconnect will be attempted in 1 second.',
+          event.reason,
+        );
+        setTimeout(() => this.connectToWebsocket(), Math.floor(Math.random() * 2500));
+      };
     },
   },
 
