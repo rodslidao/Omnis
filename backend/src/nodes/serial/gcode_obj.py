@@ -100,7 +100,6 @@ class SerialGcodeOBJ(Serial):
             any((round(v,1) != round(self.M114("R")[i],1)) for i, v in future) #! Round is mandatory
             # any((v != self.M114("R")[i]) for i, v in future)
         ):
-            logger.info(f"future: {future}")
             continue
         return self.M114("R")
     
@@ -115,7 +114,6 @@ class SerialGcodeOBJ(Serial):
         """
         for echo in self.super_send(f"M114 {_type}", echo=True, log=False):
             txt = echo
-            logger.info(echo)
             for n in sequence:
                 txt = txt.replace(n, "")
             try:
