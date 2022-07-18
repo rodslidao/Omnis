@@ -68,13 +68,13 @@ export default {
       deletedNode: (state) => state.deletedNode,
     }),
 
-    checkSavedStatus() {
-      console.log('checkSavedStatus');
-      // if (this.tabList !== []) {
-      //   this.setSaved({ index: this.selectedTabIndex, value: false });
-      // }
-      return 0;
-    },
+    // checkSavedStatus() {
+    //   console.log('checkSavedStatus');
+    //   // if (this.tabList !== []) {
+    //   //   this.setSaved({ index: this.selectedTabIndex, value: false });
+    //   // }
+    //   return 0;
+    // },
   },
 
   created() {
@@ -137,9 +137,7 @@ export default {
 
   methods: {
     ...mapActions('node', [
-      'updateNodeContent',
       'updateContentDefault',
-      'setSaved',
       'saveNodeConfig',
     ]),
 
@@ -190,7 +188,7 @@ export default {
     this.addNodeWithCoordinates(
       StartNode,
       this.$refs.container.clientWidth / 2 - 100,
-      this.$refs.container.clientHeight / 2 - 100
+      this.$refs.container.clientHeight / 2 - 100,
     );
   },
 

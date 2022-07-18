@@ -253,4 +253,10 @@ const routes = [
 
 const router = new Router({ ...{ mode: 'history' }, routes });
 
+// router.beforeEach((to, from) => {
+//   // ...
+//   // explicitly return false to cancel the navigation
+//   return false
+// })
+
 export default router;

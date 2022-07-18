@@ -26,11 +26,9 @@ const actions = {
         query: AUTHENTICATE_USER,
         variables: userData,
       });
+      window.location.reload();
       dispatch('setUserData', authenticateUser);
-      Vue.prototype.$alertFeedback(
-        'greetings.welcome',
-        'info',
-      );
+      Vue.prototype.$alertFeedback('greetings.welcome', 'info');
     } catch (error) {
       Vue.prototype.$alertFeedback('alerts.loginFail', 'error', error);
     }

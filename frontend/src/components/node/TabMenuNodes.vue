@@ -8,6 +8,7 @@
       @remove="close"
       @contextmenu="contextMenu"
       :gap="4"
+      label="name"
     >
       <span slot="after">
         <v-btn class="add-tab" dark depressed icon @click="addTab" small
@@ -177,7 +178,7 @@ export default {
     addTab() {
       // console.log('addTab', this.selectedTabKey);
       // console.log('addTabdddd', this.$refs.tabs.addTab);
-      this.addNewTab();
+      this.addNewTab({ created: true });
       // console.log(this.newTab);
       this.$refs.tabs.addTab({ ...this.newTab });
       this.selectedTabKey = this.newTab.key;
