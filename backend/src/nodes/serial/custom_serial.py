@@ -163,7 +163,7 @@ class Serial(_Serial):
     def write(self, payload):
         try:
             send_lock.acquire()
-            if payload != self.last_value_send: logger.debug(f"Serial: {self.name} send: {payload}")
+            if payload != self.last_value_send: logger.info(f"Serial: {self.name} send: {payload}")
             super().write((f"{payload}\n").encode("ascii"))
         finally:
             send_lock.release()

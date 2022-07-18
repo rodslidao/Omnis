@@ -20,7 +20,7 @@ class ProcessObjectManager(SSPR, BaseManager):
             self.add(Process(**process))
             self.selected_process_id = process['_id']
         self.__status = [self.process]
-        self.websocket = WebProcess(self._id, self.process)
+        self.websocket = WebProcess(self._id, self.status)
         Thread(
             target=self.auto_update, name=f"{self._id}_auto_update", daemon=True
         ).start()
@@ -32,7 +32,7 @@ class ProcessObjectManager(SSPR, BaseManager):
         asyncio.run(self.websocket.broadcast_on_change(self.status, self.status))
 
     def start(self, **kwargs):
-        self.load()
+        self.load(kwargs.get('_id'))
         self.process.start()
 
     def stop(self,  **kwargs):

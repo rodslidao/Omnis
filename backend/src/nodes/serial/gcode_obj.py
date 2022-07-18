@@ -95,6 +95,7 @@ class SerialGcodeOBJ(Serial):
                 if future: break
             except AttributeError:
                 pass
+        if not future: raise AttributeError("SERIAL DEAD")
         while (
             any((round(v,1) != round(self.M114("R")[i],1)) for i, v in future) #! Round is mandatory
             # any((v != self.M114("R")[i]) for i, v in future)

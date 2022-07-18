@@ -64,8 +64,9 @@ class Websocket(WebSocketEndpoint):
     _id = ObjectId()
     connections = {}
 
-    def __init__(self, _id):
+    def __init__(self, _id, updated_info):
         self._id = _id
+        self.updated_info = updated_info
 
     def __call__(self, scope, receive, send):
         super().__init__(scope, receive, send)
@@ -77,6 +78,8 @@ class Websocket(WebSocketEndpoint):
             self.connections[self._id].add(websocket)
         else:
             self.connections[self._id] = set([websocket])
+        await asyncio.sleep(0.5)
+        await self._broadcast(self.parser(self.updated_info))
 
     async def on_receive(self, websocket, data):
         await websocket.send_json({"response": "pong"})
@@ -114,8 +117,8 @@ class Websocket(WebSocketEndpoint):
 
 class Process(Websocket):
     def __init__(self, _id, process):
-        super().__init__(_id)
-        self.process = process
+        super().__init__(_id, process)
+        # self.process = process
 
     # async def _broadcast(self, *args):
     #     await super()._broadcast(self.process.status)
@@ -126,7 +129,7 @@ class Process(Websocket):
 
 class Controls(Websocket):
     def __init__(self, _id, serial):
-        super().__init__(_id)
+        super().__init__(_id, serial.status)
         self.serial = serial
 
     # async def _broadcast(self, *args):

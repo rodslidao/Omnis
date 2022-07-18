@@ -36,7 +36,7 @@ extend type Query {
 }
 
 extend type Mutation  {
-  create_sketch(input: reg_sketch): ID
+  create_sketch(_id: ID, input: reg_sketch): ID
   delete_sketch(_id: ID!): ID
   duplicate_sketch(_id: ID!): ID
   update_sketch(_id: ID!, input: reg_sketch): ID
