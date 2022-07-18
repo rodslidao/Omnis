@@ -1,3 +1,4 @@
+from datetime import datetime
 from src.nodes.node_manager import NodeManager
 from starlette.responses import StreamingResponse
 from os.path import abspath
@@ -59,6 +60,7 @@ class Echo(WebSocketEndpoint):
         print("disconnected")
 
 
+
 class Websocket(WebSocketEndpoint):
     encoding = "json"
     _id = ObjectId()
@@ -115,13 +117,19 @@ class Websocket(WebSocketEndpoint):
     def parser(self, info):
         return info if not callable(info) else info()
 
+
+class Connection(Websocket):
+    def __init__(self) -> None:
+        self._id = "network_status"
+        super().__init__("network_status", lambda: True)
+
+    async def on_receive(self, websocket, data):
+        await self._broadcast({"pong":datetime.utcnow().timestamp()})
+
+
 class Process(Websocket):
     def __init__(self, _id, process):
         super().__init__(_id, process)
-        # self.process = process
-
-    # async def _broadcast(self, *args):
-    #     await super()._broadcast(self.process.status)
     
     async def on_receive(self, websocket, data):
         await super().on_receive(websocket, data)
