@@ -152,7 +152,7 @@ const ADD_MATRIX = gql`
     $origin: JSON
     $slots: JSON
     $subdivisions: JSON
-    $variable: [JSON]
+    $variable: [DBREF_variable]
   ) {
     create_matrix(
       input: {
