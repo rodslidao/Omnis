@@ -21,7 +21,6 @@ mutation = MutationType()
 @auth("developer")
 def createAlert_resolver(*args, **kwargs):
     """Create a new Alert object and return it like a payload"""
-    logger.error(f"DEVELOPER TEST: {kwargs.get('input', 2)}")
     returns = Alert(**kwargs.get('input')).items()
     return returns
 

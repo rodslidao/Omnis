@@ -108,7 +108,7 @@ class MongoOBJ:
     def find_one(self, collection_name, query={}, data={}, **kwargs):
         if kwargs.get('ref'):
             return self.resolve_ref(dict(self.dbo[collection_name].find_one(query, data)))
-        return dict(self.dbo[collection_name].find_one(query, data))
+        return self.dbo[collection_name].find_one(query, data)
 
     def find_many(self, collection_name, query={}, data={}, **kwargs):
         if kwargs.get('ref'):
