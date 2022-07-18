@@ -23,11 +23,12 @@ input reg_matrix {
 
 extend type Query {
     get_matrix_list: [matrix]
-    get_matrix_item: matrix
+    get_matrix_item(_id: ID!): matrix
 }
 
 extend type Mutation  {
   create_matrix(input: reg_matrix): ID
   delete_matrix(_id: ID!): ID
+  duplicate_matrix(_id: ID!): ID
   update_matrix(_id: ID!, input: reg_matrix): ID
 }

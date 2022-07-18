@@ -43,12 +43,16 @@ def auth(lvl=None):
                 header_data = jwt.get_unverified_header(token)
                 token = jwt.decode(token, key=public_key, algorithms=[header_data['alg']])
             except Exception as e:
+                logger.debug(f"Acess Denied, invalid or missing token: {e}.")
                 raise GraphQLError("Invalid credential")
             else:
                 user = User(**token)
                 if user >= lvl:
+                    logger.debug(f"User: {user.json} requesting {resolver.__name__}")
                     kwargs.update({'user':user})
                     return resolver(*args, **kwargs)
+                    # return resolver(obj, info, *args, **kwargs)
+                logger.debug(f"User: {user.json} don't has permissions to request {resolver.__name__}")
                 raise GraphQLError('Permission Denied')
         return wrapper
     return decorator
@@ -123,6 +127,7 @@ def ID_serializar(value):
         return list(map(ID_serializar, value))
     return value
 
+
 @ID.value_parser
 def ID_v_parser(value):
     if value:
@@ -146,7 +151,7 @@ def DB_VALUE_serializar(value, collection=None):
 @DB_VALUE.value_parser
 def DB_VALUE_v_parser(value, collection=None):
     if isinstance(value, dict):
-        return {'$id': ID_v_parser(value['_id']), "$ref":value.get('ref', collection)}
+        return {"$ref":value.get('ref', collection), '$id': ID_v_parser(value['_id'])}
     elif isinstance(value, list):
         if not collection:
             return list(map(DB_VALUE_v_parser, value))

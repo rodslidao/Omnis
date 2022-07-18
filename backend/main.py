@@ -6,7 +6,7 @@ from api.queries import query
 from api.subscriptions import subscription
 from api.mutations import mutation
 
-from src.end_points import custom_video_response, Echo
+from src.end_points import custom_video_response, Echo, Connection
 from src.manager.serial_manager import SerialManager
 from src.manager.camera_manager import CameraManager
 from src.manager.process_manager import ProcessManager as process
@@ -26,6 +26,7 @@ from starlette.routing import Mount, WebSocketRoute
 from starlette.applications import Starlette
 from os import listdir
 from os.path import exists as file_exists
+
 
 type_defs = ""
 for _file in ["schema", "inputs", "types", "results", "interfaces"]:
@@ -47,6 +48,7 @@ routes_app = [
         "/videos/{video_id}", endpoint=custom_video_response, methods=["GET", "POST"]
     ),
     WebSocketRoute("/ws", endpoint=Echo),
+    WebSocketRoute("/network", endpoint=Connection()),
     WebSocketRoute("/process", endpoint=process.websocket),
     *[WebSocketRoute(f"/controls/{serial._id}", endpoint=serial.websocket) for serial in SerialManager.get()],
     Mount(
@@ -75,8 +77,6 @@ if environ.get("NODE_ENV") == "development":
     socketI.connect(("8.8.8.8", 80))
     host = socketI.getsockname()[0]
     socketI.close()
-elif environ.get("SERVER_IP"):
-    host = environ["SERVER_IP"]
 else:
     host = "0.0.0.0"
 

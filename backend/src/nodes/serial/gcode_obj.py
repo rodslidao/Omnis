@@ -63,10 +63,10 @@ class SerialGcodeOBJ(Serial):
         Thread(target=self.auto_update, name=f"{_id}_auto_update", daemon=True).start()
 
     def auto_update(self):
-        asyncio.run(self.websocket.broadcast_on_change(self.status))
+        asyncio.run(self.websocket.broadcast_on_change(self.status, self.status))
 
 
-    @property
+    
     def status(self):
         return self.__status
 
@@ -85,22 +85,22 @@ class SerialGcodeOBJ(Serial):
         # Create a coordinate string based in args.
         cords = ""
         for pos in args:
-            cords += f"{pos[0].upper()}{round(float(pos[1]), 3)} "
+            cords += f"{pos[0].upper()}{round(float(pos[1]), 1)} "
 
         # Send machine to the coordinate string
-        self.super_send(f"G0 {cords}")
+        self.super_send(f"G1 {cords}")
         for _ in range(5):
             try:
                 future = self.M114().items()
                 if future: break
             except AttributeError:
                 pass
-
-        logger.info(f"future: {future}")
+        if not future: raise AttributeError("SERIAL DEAD")
         while (
-            # any((math.ceil(v) != math.ceil(self.M114("R")[i])) for i, v in future) #! Round is mandatory
-            any((v != self.M114("R")[i]) for i, v in future)
+            any((round(v,1) != round(self.M114("R")[i],1)) for i, v in future) #! Round is mandatory
+            # any((v != self.M114("R")[i]) for i, v in future)
         ):
+            logger.info(f"future: {future}")
             continue
         return self.M114("R")
     
@@ -115,6 +115,7 @@ class SerialGcodeOBJ(Serial):
         """
         for echo in self.super_send(f"M114 {_type}", echo=True, log=False):
             txt = echo
+            logger.info(echo)
             for n in sequence:
                 txt = txt.replace(n, "")
             try:
@@ -129,7 +130,7 @@ class SerialGcodeOBJ(Serial):
                     
                 return _echo
             except ValueError:  # ! Why this error?
-                # logger.info('[SerialGcodeOBJ] M114 error: "{}"'.format(echo))
+                logger.warning(f"Serial: {self.name} fail to decode custom M114. Raw payload: {echo}")
                 pass
 
     def M42(self, _id, _value):
@@ -155,9 +156,9 @@ class SerialGcodeOBJ(Serial):
         if sender:
             args = command_splited[1] if len(command_splited) > 1 else []
             kwargs = command_splited[-1] if isinstance(command_splited[-1], dict) else {}
-            logger.info(f"{command_splited[0].upper()}: {sender(*args, **kwargs)}")
+            logger.debug(f"Serial: [Custom GCODE] {command_splited[0].upper()}: {sender(*args, **kwargs)}")
         else:
-            # logger.info(f"Invalid: {command_splited[0].upper()}")
+            logger.warning(f"Serial: [Custom GCODE] {command_splited[0].upper()} can't be found.")
             self.last_value_received=['Invalid: {}'.format(command_splited[0].upper())]
         return self
 

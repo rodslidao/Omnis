@@ -1,12 +1,11 @@
 from datetime import datetime
-from pickle import FALSE
 import threading
 from bson import ObjectId
 from src.nodes.node_manager import NodeManager
 from src.nodes.alerts.alert_obj import Alert
 from api import logger, exception
 from api.decorators import for_all_methods
-from src.loader import load as load_conf
+# from src.loader import load as load_conf
 from src.nodes.base_node import event_list
 from codetiming import Timer
 # from .target import targets, target
@@ -49,21 +48,19 @@ class Process_Thread(threading.Thread):
     def run(self):
         while not self.stopped.is_set():
             while self.paused.is_set():
-                logger.info("Process Paused - loop_info")
                 self.resumed.wait()
-                logger.info("Process Resumed - loop_info")
                 self.resumed.clear()
             if not self.stopped.is_set() and not self.paused.is_set():
                 self.target(*self.args, **self.kwargs)
                 event_list.join()
-                logger.info("Process END [reseting] - loop_info")
-        logger.info("Process Thread Stopped - Normally")
+                logger.debug("Process: restarting automatically")
+        logger.debug("Process: end")
 
     def start(self):
-        logger.info("Process Started")
         self.status = Process_Thread.RUNNING
         self.runningTimer.start()
         self.start_time = datetime.utcnow().timestamp()
+        logger.info("Process Started")
         # super().start()
 
     def resume(self):
@@ -113,6 +110,7 @@ class Process_Thread(threading.Thread):
         self.__status["run_time"]=Timer.timers.get("Running", 0)
         self.__status["pause_time"]=Timer.timers.get("Paused", 0)
         self.__status["total_time"]=Timer.timers.get("Running", 0) + Timer.timers.get("Paused", 0)
+        # logger.info(self.status)
         # self.__status["now"] = datetime.utcnow().timestamp()
         return self.__status
 
@@ -143,31 +141,10 @@ class sample_process():
         #self.__pointer['status'] = self.process.status_rtc
         return self.process.status_rtc
 
-    def load(self, _id=False):
-        self.unload()
-        if self.status.get("status", False):
-            a = load_conf(self.sketch._id if not _id else _id)
-            if a:
-                self.loaded_id = self.sketch._id if not _id else _id
-            else:
-                self.loaded_id = None
-                self.unload()
-            return a
-        return False
-
-    def unload(self):
-        if self.loaded_id is not None:
-            NodeManager.stop()
-            NodeManager.clear()
-            self.loaded_id = None
-            return True
-        return False
-
     def getLoadedId(self):
         return self.loaded_id
 
     def start(self, internal=False, **kwargs):
-        self.load()
         self.process = Process_Thread(self.st, _id=self._id, *self.args, **self.kwargs)
         self.process.start()
         if internal:

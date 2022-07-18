@@ -1,5 +1,5 @@
 from bson import ObjectId
-from .models import NodeSheet, grok
+from .models import  grok
 from ariadne import QueryType
 query = QueryType()
 
@@ -18,16 +18,6 @@ from graphql.error import GraphQLError
 
 
 payload = {"success": False, "errors": None}
-
-
-@query.field("getNodeSheet")
-@auth('developer')
-def getNodeSheet_resolver( **kwargs):
-    """Get a NodeSheet by id and return it like a payload"""
-    result = NodeSheet().getNodeSheetById(_id=kwargs.get("_id"))
-    payload["success"] = True
-    payload["data"] = result
-    return payload
 
 
 @query.field("allPhotos")
@@ -109,7 +99,7 @@ def resolve_getAxisList( **kwargs):
 @query.field("authenticateUser")
 def resolve_authUserProfile(obj, info, username=None, **kwargs):
     keep = {'password':0}
-    user = dbo.find_one("users", {"username": username}, keep)
+    user = dbo.find_one("users", {"username": username}, keep) if username else False
     if not user:
         user = dbo.find_one("users", kwargs, keep)
     if user:

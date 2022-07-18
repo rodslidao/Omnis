@@ -1,3 +1,4 @@
+from datetime import datetime
 from src.nodes.node_manager import NodeManager
 from starlette.responses import StreamingResponse
 from os.path import abspath
@@ -33,7 +34,6 @@ async def custom_video_response(scope):
     """
     Return a async video streaming response for `frame_producer2` generator
     """
-    logger.info(scope)
     assert scope["type"] in ["http", "https"]
     await asyncio.sleep(0.00001)
     return StreamingResponse(
@@ -60,13 +60,15 @@ class Echo(WebSocketEndpoint):
         print("disconnected")
 
 
+
 class Websocket(WebSocketEndpoint):
     encoding = "json"
     _id = ObjectId()
     connections = {}
 
-    def __init__(self, _id):
+    def __init__(self, _id, updated_info):
         self._id = _id
+        self.updated_info = updated_info
 
     def __call__(self, scope, receive, send):
         super().__init__(scope, receive, send)
@@ -78,13 +80,15 @@ class Websocket(WebSocketEndpoint):
             self.connections[self._id].add(websocket)
         else:
             self.connections[self._id] = set([websocket])
+        await asyncio.sleep(0.5)
+        await self._broadcast(self.parser(self.updated_info))
 
     async def on_receive(self, websocket, data):
         await websocket.send_json({"response": "pong"})
 
     async def on_disconnect(self, websocket, close_code=100):
         self.connections.get(self._id, set()).remove(websocket)
-        logger.info(
+        logger.debug(
             f"[{self._id}]: {len(self.connections.get(self._id))} remaining sessions"
         )
 
@@ -101,25 +105,31 @@ class Websocket(WebSocketEndpoint):
 
     async def broadcast_on_change(self, updated_info, payload={}, **kwargs):
         # updated_info = getattr(updated_info_pointer, kwargs.get('attr', '__undefined_attr'), updated_info_pointer)
-        # old_status = updated_info.copy()
+        old_status = self.parser(updated_info).copy()
         while True:
-            # if self._id == 'status':
-            #     logger.info(f"{self._id} {id(updated_info)} {updated_info.copy() != old_status}")
-            # if updated_info.copy() != old_status: #! Sometimes work, sometimes not, try use some ctype pointer instead dicts and props
-            await self._broadcast(payload)
-            await asyncio.sleep(float(kwargs.get('ms', 0.03))) #3ms
+            
+            if self.parser(updated_info) != old_status:
+                old_status = self.parser(updated_info).copy()
+                await self._broadcast(self.parser(payload))
+                await asyncio.sleep(float(kwargs.get('ms', 0.03))) #3ms
                 # await asyncio.sleep(0.01)
-                # old_status = updated_info.copy()
-            # await asyncio.sleep(0.01)
+            await asyncio.sleep(0.03)
+    def parser(self, info):
+        return info if not callable(info) else info()
+
+
+class Connection(Websocket):
+    def __init__(self) -> None:
+        self._id = "network_status"
+        super().__init__("network_status", lambda: True)
+
+    async def on_receive(self, websocket, data):
+        await self._broadcast({"pong":datetime.utcnow().timestamp()})
 
 
 class Process(Websocket):
     def __init__(self, _id, process):
-        super().__init__(_id)
-        self.process = process
-
-    async def _broadcast(self, *args):
-        await super()._broadcast(self.process.status)
+        super().__init__(_id, process)
     
     async def on_receive(self, websocket, data):
         await super().on_receive(websocket, data)
@@ -127,11 +137,11 @@ class Process(Websocket):
 
 class Controls(Websocket):
     def __init__(self, _id, serial):
-        super().__init__(_id)
+        super().__init__(_id, serial.status)
         self.serial = serial
 
-    async def _broadcast(self, *args):
-        await super()._broadcast(self.serial.status)
+    # async def _broadcast(self, *args):
+    #     await super()._broadcast(self.serial.status)
 
     async def on_receive(self, websocket, data):
         if data["context"] == "movementScale":
@@ -155,6 +165,6 @@ class Controls(Websocket):
             axis.move(axis.position + axis.step * (1 if not data["isNegative"] else -1))
             axis.position = self.serial.G0(axis())[axis.name]
         else:
-            logger.info(data)
+            logger.debug(f"Websocket: unknow request {data}")
 
         await websocket.send_json({"respose": "ok"})

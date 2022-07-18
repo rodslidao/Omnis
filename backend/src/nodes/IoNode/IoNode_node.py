@@ -28,11 +28,9 @@ class IoNodeNode(BaseNode):
     def execute(self, message=""):
         target = message.targetName.lower()
         if target == "gatilho":
-            # logger.warning(self.board)
             self.board.send(self.command)
             sleep(0.3)
             self.on("Saida", message.payload)
-            # logger.warning(f"{self.output_connections}")
 
 
     @staticmethod

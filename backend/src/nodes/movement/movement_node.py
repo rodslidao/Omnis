@@ -44,7 +44,7 @@ class MovementNode(BaseNode):
         if self.wait_checks == len(self.wait_for_this) or action == "gatilho":
             self.gatilho_f()
         else:
-            logger.error(f"Waiting for {self.wait_checks}/{len(self.wait_for_this)}")
+            logger.warning(f"MovementNode: Waiting for {self.wait_checks}/{len(self.wait_for_this)} variables.")
 
     def coordinates_f(self, payload):
         try:
@@ -72,7 +72,6 @@ class MovementNode(BaseNode):
                 # t = 1  # ! Remove this line
             else:
                 self.serial.send("G90", log=False)
-            # logger.info(f"coords: {movement}")
             self.serial.G0(*movement)
             self.on("Sucesso", self.serial_id)
 

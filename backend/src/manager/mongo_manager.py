@@ -1,17 +1,17 @@
-from dotenv import load_dotenv, find_dotenv
+from dotenv import load_dotenv
 from pymongo import MongoClient
 from pymongo.errors import ConnectionFailure
 from os import environ, getenv
-from api import logger, exception
+from api import logger, exception, levels, lvl, custom_handler
 from api.decorators import for_all_methods
+from api.log import custom_handler, DEBUG
 from pandas import DataFrame
 
 from numpy import integer, floating, ndarray
-
 from json import loads, dumps, JSONEncoder
-
 from bson.errors import InvalidDocument
 from bson import DBRef, ObjectId
+from threading import Event
 
 load_dotenv()
 load_dotenv(f'.env.{environ.get("NODE_ENV")}')
@@ -23,14 +23,6 @@ url = (
 )
 
 _db = None
-requiredCollections = [
-    "node-sheets",
-    "camera-manager",
-    "serial-manager",
-    "matrix-manager",
-    "last-values",
-    "log",
-]
 
 
 @exception(logger)
@@ -38,19 +30,15 @@ def getDb():
     global _db
     if _db is None:
         _db = MongoOBJ(environ.get("DB_NAME"), url)
+        custom_handler(logger, "mongo", "json",  _db, levels[lvl]) #! Works?
     return _db
 
 
 @exception(logger)
 def connectToMongo(database="Teste"):
     getDb()
-    for collectionName in requiredCollections:
-        if collectionName not in _db.list_collection_names():
-            _db.create_collection(collectionName)
-            logger.info(f"Created collection {collectionName}")
 
-
-@for_all_methods(exception(logger))
+# @for_all_methods(exception(logger))
 class CustomEncoder(JSONEncoder):
     def default(self, obj):
         if isinstance(obj, integer):
@@ -65,14 +53,18 @@ class CustomEncoder(JSONEncoder):
             return super(CustomEncoder, self).default(obj)
 
 
-@for_all_methods(exception(logger))
+
+
+
+# @for_all_methods(exception(logger))
 class MongoOBJ:
     def __init__(self, db_name, db_url):
         self.dbo = self.connect(db_name, db_url)
+        self.closed = Event()
 
     def connect(self, db_name, db_url):
         try:
-            logger.info(f"Connecting to MongoDB using url: {db_url}")
+            logger.debug(f"Connecting to MongoDB using url: {db_url}")
             self.client = MongoClient(db_url)
             self.client.admin.command("ismaster")
         except ConnectionFailure:
@@ -95,36 +87,28 @@ class MongoOBJ:
         return self.dbo.create_collection(collectionName)
 
     def insert_one(self, collection_name, data):
-        try:
-            return self.dbo[collection_name].insert_one(data)
-        except InvalidDocument:
-            return self.dbo[collection_name].insert_one(
-                loads(dumps(data, cls=CustomEncoder))
-            )
+        return self.dbo[collection_name].insert_one(data)
 
     def insert_many(self, collection_name, data):
-        try:
-            return self.dbo[collection_name].insert_many(data)
-        except InvalidDocument:
-            return self.dbo[collection_name].insert_many(
-                loads(dumps(data, cls=CustomEncoder))
-            )
+        return self.dbo[collection_name].insert_many(data)
 
     def resolve_ref(self, cursor):
         if isinstance(cursor, (dict, list, DBRef)):
             if isinstance(cursor, DBRef):
-                return self.find_one(cursor.collection, {'_id':cursor.id})
+                return self.find_one(cursor.collection, {'_id':cursor.id}, ref=True)
             for key, value in (cursor.items() if isinstance(cursor, dict) else enumerate(cursor)):
-                if isinstance(value, DBRef):
-                    cursor[key] = self.find_one(value.collection, {'_id':value.id})
-                if isinstance(value, list):
-                    cursor[key] = map(self.resolve_ref, value)
+                if key in ['object', 'matrix','sketch', 'variable']:
+                    if isinstance(value, DBRef):
+                        cursor[key] = self.find_one(value.collection, {'_id':value.id}, ref=True)
+                    if isinstance(value, list):
+                        cursor[key] = map(self.resolve_ref, value)
         return cursor
+
 
     def find_one(self, collection_name, query={}, data={}, **kwargs):
         if kwargs.get('ref'):
             return self.resolve_ref(dict(self.dbo[collection_name].find_one(query, data)))
-        return dict(self.dbo[collection_name].find_one(query, data))
+        return self.dbo[collection_name].find_one(query, data)
 
     def find_many(self, collection_name, query={}, data={}, **kwargs):
         if kwargs.get('ref'):
@@ -167,6 +151,7 @@ class MongoOBJ:
         return df.to_csv(index=False)
 
     def close(self):
-        logger.info("Closing connection to MongoDB...")
-        self.client.close()
-        logger.info("closed.")
+        if not self.closed.is_set():
+            logger.info("Database connection Closed.")
+            self.client.close()
+            self.closed.set()

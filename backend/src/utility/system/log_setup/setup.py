@@ -16,5 +16,5 @@ def default_setup(logger, logfilepath, timedlogfilepath, level=DEBUG):
     # custom_handler(logger, "file", "json", logfilepath, level)
     # custom_handler(logger, "time_file", "json", timedlogfilepath, level)
     # custom_handler(logger, "stream", "console", None, level)
-    # custom_handler(logger,"time_file", "json", nodelogfilepath, level)
+    # custom_handler(logger, "mongo", "json", nodelogfilepath, level)
     return logger

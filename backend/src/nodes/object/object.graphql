@@ -32,11 +32,12 @@ input reg_object {
 
 extend type Query {
     get_object_list: [object]
-    get_object_item: object
+    get_object_item(_id: ID!): object
 }
 
 extend type Mutation  {
   create_object(input: reg_object): ID
   delete_object(_id: ID!): ID
+  duplicate_object(_id: ID!): ID
   update_object(_id: ID!, input: reg_object): ID
 }
