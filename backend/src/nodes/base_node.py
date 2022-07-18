@@ -1,4 +1,3 @@
-from email import message_from_bytes
 from src.nodes.alerts.alert_obj import Alert
 from src.message import Message
 from src.nodes.node_manager import NodeManager
@@ -7,9 +6,9 @@ from api.decorators import for_all_methods
 from api.store import nodes
 from api.subscriptions import SubscriptionFactory
 from threading import Event
-
+from src.end_points import NodeStatus
 from threading import Thread, Event
-
+import asyncio
 import queue
 event_list = queue.Queue()
 
@@ -17,6 +16,7 @@ from src.manager.process_manager import ProcessManager as process
 
 NODE_TYPE = "BASE_NODE"
 rtc_status = SubscriptionFactory(nodes, "nodes")
+BaseNode_websocket = NodeStatus("node_status_updater", lambda: True)
 
 class Wizard(object):
     def _decorator(exteral_execution):
@@ -77,10 +77,20 @@ class BaseNode(Wizard):
         self.output_connections = output_connections
         self.running = True
         self.stop_event = Event()
+        self.status = "LOADED"
+        self.info = {
+            "name": self.name,
+            "type": self.type,
+            "id": self._id,
+            "info": self.status,
+        }
         self.update_status({"status": "LOADED"})
         self.auto_run = options.get("auto_run", False)
         logger.debug("[%s] Node loaded", self)
+        Thread(target=self.auto_update, name=f"NodeStatus_auto_update", daemon=True).start()
 
+    def auto_update(self):
+        asyncio.run(BaseNode_websocket.broadcast_on_change(self.who_am_i, self.who_am_i))
 
     def onSuccess(self, payload, additional=None):
         self.on("onSuccess", payload, additional)
@@ -131,12 +141,21 @@ class BaseNode(Wizard):
                         },
                     }
                 )
-                Thread(
+                A = Thread(
                     target=node_to_run.execute,
                     args=(message,),
                     name=f"{str(self)}({message.sourceName}) -> {message}",
                     daemon=True,
-                ).start()
+                )
+                A.start()
+                A.join(2)
+                self.status = {
+                        "status": "SENDED",
+                        "message": {
+                            "from": "",
+                            "to": "",
+                        },
+                    }
                 
 
     def AutoRun(self):
@@ -153,18 +172,18 @@ class BaseNode(Wizard):
         self.execute(message)
 
     def who_am_i(self):
-        self.info = {
-            "name": self.name,
-            "type": self.type,
-            "id": self._id,
-            "info": self.status,
-        }
-        rtc_status.put(self.info)
+        self.info["name"] = self.name
+        self.info["type"] = self.type
+        self.info["id"] = self._id
+        self.info["info"] = self.status
+        # rtc_status.put(self.info)
         return self.info
 
     def update_status(self, info):
         self.status = info
-        self.who_am_i()
+        return self.who_am_i()
+        # BaseNode_websocket._broadcast(self.who_am_i())
+        
 
     def pause(self):
         self.running = False
@@ -215,3 +234,4 @@ class BaseNode(Wizard):
         temp = dictionary.copy()
         temp["_id"] = str(dictionary["_id"])
         return temp
+

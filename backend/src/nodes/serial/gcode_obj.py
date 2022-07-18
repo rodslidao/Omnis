@@ -1,5 +1,3 @@
-from inspect import Attribute
-from timeit import default_timer
 from .custom_serial import Serial
 from api import logger, exception
 from api.decorators import for_all_methods
@@ -9,7 +7,7 @@ from json import loads
 from re import split
 from src.end_points import Controls
 import asyncio
-import math
+
 
 @for_all_methods(exception(logger))
 class SerialGcodeOBJ(Serial):
@@ -53,7 +51,7 @@ class SerialGcodeOBJ(Serial):
         self.is_open = True
         self.resumed = Event()
         self.resumed_permission = ["stop", "kill", "quick_stop", "resume"]
-        self.__status = {}
+        self.__status = {"jog_position":{'X':0, 'Y':0, 'Z':0, 'A':0, 'B':0, 'C':0}}
         for msg in startup_commands:
             self.send(msg)
         self.pins = pins

@@ -126,6 +126,9 @@ class Connection(Websocket):
     async def on_receive(self, websocket, data):
         await self._broadcast({"pong":datetime.utcnow().timestamp()})
 
+class NodeStatus(Websocket):
+    def __init__(self, _id, updated_info):
+        super().__init__(_id, updated_info)
 
 class Process(Websocket):
     def __init__(self, _id, process):
