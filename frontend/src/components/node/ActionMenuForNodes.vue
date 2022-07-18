@@ -43,11 +43,18 @@
         </v-btn>
       </v-speed-dial>
 
-      <v-btn class="button" color="primary" fab dark small @click="play">
-        <v-icon> mdi-play </v-icon>
+      <v-btn dark fab class="button" color="primary" @click="commandSelector()">
+        <v-icon>mdi-{{ status[actualStatus].icon }}</v-icon>
       </v-btn>
-      <v-btn class="button" color="primary" fab dark small @click="stop">
-        <v-icon> mdi-pause </v-icon>
+      <v-btn
+        v-if="actualStatus != 'stopped'"
+        fab
+        class="button"
+        color="primary"
+        dark
+        @click="sendCommand(stop.command)"
+      >
+        <v-icon>mdi-{{ stop.icon }}</v-icon>
       </v-btn>
     </div>
     <v-progress-linear
@@ -105,6 +112,30 @@ import { UPDATE_SKETCH, CREATE_SKETCH } from '@/graphql';
 import SketchExplorer from '@/components/node/SketchExplorer.vue';
 import SerialMonitor from '@/components/SerialMonitor.vue';
 
+const START = gql`
+  mutation START($id: ID!) {
+    start_process(_id: $id)
+  }
+`;
+
+const PAUSE = gql`
+  mutation PAUSE {
+    pause_process
+  }
+`;
+
+const RESUME = gql`
+  mutation RESUME {
+    resume_process
+  }
+`;
+
+const STOP = gql`
+  mutation STOP {
+    stop_process
+  }
+`;
+
 export default {
   name: 'ActionMenuForNodes',
   components: {
@@ -114,6 +145,7 @@ export default {
 
   data() {
     return {
+      actualStatus: 'stopped',
       folderDialog: false,
       serialDialog: false,
       fab: false,
@@ -148,10 +180,82 @@ export default {
       'selectedTabName',
       'selectedTabObject', // -> this.getTabName
     ]),
+
+    status() {
+      return {
+        running: {
+          icon: 'pause',
+          text: this.$t('buttons.pause'),
+          command: PAUSE,
+        },
+        stopped: {
+          icon: 'play',
+          text: this.$t('buttons.start'),
+          command: START,
+        },
+        paused: {
+          icon: 'play',
+          text: this.$t('buttons.resume'),
+          command: RESUME,
+        },
+      };
+    },
+
+    stop() {
+      return {
+        icon: 'stop',
+        text: this.$t('buttons.stop'),
+        command: STOP,
+      };
+    },
   },
 
   methods: {
     ...mapActions('node', ['play', 'setSaved']),
+
+    connectToWebsocket() {
+      console.log(this.$t('alerts.wsConnecting'));
+      this.WebSocket = new WebSocket(
+      );
+
+      this.WebSocket.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        this.actualStatus = data.status.toLowerCase();
+      };
+
+      this.WebSocket.onopen = (event) => {
+        console.log(event);
+        console.log(this.$t('alerts.wsConnectSuccess'));
+      };
+    },
+
+    commandSelector() {
+      const status = this.status[this.actualStatus].command;
+      this.sendCommand(status);
+    },
+
+    async sendCommand(command) {
+      if (command === START) await this.save();
+      await this.$apollo
+        .mutate({
+          mutation: command,
+          variables: {
+            // eslint-disable-next-line no-underscore-dangle
+            id: this.selectedTab._id,
+          },
+        })
+
+        .then(() => {})
+
+        .catch((error) => {
+          this.$alertFeedback(
+            this.$t('alerts.runningProcessFail'),
+            'error',
+            error.message,
+          );
+          // We restore the initial user input
+        });
+    },
 
     chooseFiles() {
       document.getElementById('fileUpload').click();
@@ -160,172 +264,10 @@ export default {
       // this.$alertFeedback('George', 'info');
     },
 
-    async play() {
-      this.isLoading = true;
-      this.save();
-
-      await this.$apollo
-        .mutate({
-          mutation: gql`
-            mutation play($id: ID!) {
-              startProcess(_id: $id)
-            }
-          `,
-          variables: {
-            // eslint-disable-next-line no-underscore-dangle
-            id: this.selectedTab._id,
-          },
-        })
-
-        .then((data) => {
-          // Result
-          console.log(data);
-          this.$alertFeedback('alerts.runningProcess', 'success');
-          this.isLoading = false;
-          // this.setSaved(this.selectedTabIndex);
-        })
-
-        .catch((error) => {
-          // Error
-          this.isLoading = false;
-          this.$alertFeedback('alerts.failToRunProcess', 'error', error);
-
-          // We restore the initial user input
-        });
-    },
-
-    async stop() {
-      console.log('stop');
-      this.isLoading = true;
-      // const tabToSave = this.tabList[this.selectedTabIndex];
-
-      await this.$apollo
-        .mutate({
-          mutation: gql`
-            mutation stopProcess() {
-              stopProcess()
-            }
-          `,
-          update: (store, { data: { loadConfig } }) => {
-            console.log(loadConfig.data);
-          },
-        })
-
-        .then((data) => {
-          // Result
-          console.log(data);
-          this.$alertFeedback('alerts.processStopped', 'success');
-          this.isLoading = false;
-          // this.setSaved(this.selectedTabIndex);
-        })
-
-        .catch((error) => {
-          // Error
-          this.isLoading = false;
-          console.error('Não foi possível salvar o arquivo \n', error);
-          this.$alertFeedback('alerts.saveFail', 'error', error);
-
-          // We restore the initial user input
-        });
-    },
-
-    async pause() {
-      console.log('pause');
-      const tabToSave = this.tabList[this.selectedTabIndex];
-      this.isLoading = true;
-
-      await this.$apollo
-        .mutate({
-          mutation: gql`
-            mutation pauseProcess() {
-              pauseProcess() {
-                data {
-                  _id
-                }
-              }
-            }
-          `,
-          variables: {
-            id: tabToSave.id,
-          },
-          update: (store, { data: { loadConfig } }) => {
-            console.log(loadConfig.data);
-          },
-        })
-
-        .then((data) => {
-          // Result
-          console.log(data);
-          this.$alertFeedback('alerts.pauseSuccess', 'success');
-          this.isLoading = false;
-          // this.setSaved(this.selectedTabIndex);
-        })
-
-        .catch((error) => {
-          // Error
-          this.isLoading = false;
-          this.$alertFeedback('alerts.pauseFail', 'error', error);
-
-          // We restore the initial user input
-        });
-    },
-
     findFunction(name) {
       this[name]();
     },
 
-    // async saveClicked() {
-    //   if (this.tabList[this.selectedTabIndex].saved) {
-    //     await this.update();
-    //   } else {
-    //     await this.save();
-    //   }
-    // },
-
-    // async update() {
-    //   console.log('update');
-    //   this.isLoading = true;
-    //   const tabToSave = this.tabList[this.selectedTabIndex];
-
-    //   await this.$apollo
-    //     .mutate({
-    //       mutation: gql`
-    //         mutation updateNodeSheet($id: ID!, $name: String, $content: JSON!) {
-    //           updateNodeSheet(_id: $id, name: $name, content: $content) {
-    //             data {
-    //               _id
-    //             }
-    //           }
-    //         }
-    //       `,
-    //       variables: {
-    //         id: tabToSave.id,
-    //         content: this.editor.save(),
-    //       },
-    //       update: (store, { data: { updateNodeSheet } }) => {
-    //         console.log(updateNodeSheet.data);
-    //       },
-    //     })
-    //     .then((data) => {
-    //       // Result
-    //       console.log(data);
-    //       this.$alertFeedback('Arquivo salvo com sucesso', 'success');
-    //       this.isLoading = false;
-    //       // this.setSaved(this.selectedTabIndex);
-    //     })
-    //     .catch((error) => {
-    //       // Error
-    //       this.isLoading = false;
-    //       console.error('Não foi possível salvar o arquivo \n', error);
-    //       this.$alertFeedback(
-    //         'Não foi possível salvar o arquivo, erro ao conectar com servidor',
-    //         'error',
-    //         error
-    //       );
-
-    //       // We restore the initial user input
-    //     });
-    // },
     async save() {
       const tabToSave = this.selectedTab;
       this.isLoading = true;
@@ -350,7 +292,7 @@ export default {
               content: this.editor.save(),
             },
           })
-          .then((data) => {
+          .then(() => {
             // Result
             this.$alertFeedback('alerts.saveSuccess', 'success');
             this.isLoading = false;
@@ -401,51 +343,6 @@ export default {
       }
     },
 
-    async save2() {
-      console.log('save');
-      this.isLoading = true;
-      console.log(" :salvo com sucesso!'");
-
-      const tabToSave = this.selectedTab;
-      console.log('tab to save', tabToSave);
-
-      await this.$apollo
-        .mutate({
-          mutation: this.saveNodeSheet,
-          variables: {
-            // eslint-disable-next-line no-underscore-dangle
-            _id: tabToSave._id,
-            parent_id: tabToSave.parent_id,
-            name: tabToSave.label,
-            description: `${tabToSave.name} descrição`,
-            version: tabToSave.version,
-            // key: tabToSave.key,
-            author: 'Autor',
-            date: new Date().getTime(),
-            saved: tabToSave.saved,
-            duplicated: tabToSave.duplicated,
-            content: this.editor.save(),
-          },
-          update: (store, { data: { saveNodeSheet2 } }) => {
-            console.log(saveNodeSheet2);
-          },
-        })
-        .then((data) => {
-          // Result
-          console.log(data);
-          this.$alertFeedback('alerts.saveSuccess', 'success');
-          this.isLoading = false;
-          // this.setSaved({ index: this.selectedTabIndex, value: true });
-        })
-        .catch((error) => {
-          // Error
-          this.isLoading = false;
-          this.$alertFeedback('alerts.saveFail', 'error', error);
-
-          // We restore the initial user input
-        });
-    },
-
     download() {
       function download(content, fileName, contentType) {
         const a = document.createElement('a');
@@ -458,7 +355,7 @@ export default {
       download(
         JSON.stringify(this.tabList[this.selectedTabIndex]),
         `${fileName}.oms`,
-        'text/oms'
+        'text/oms',
       );
     },
 
@@ -471,8 +368,8 @@ export default {
       console.log(target.files[0].name.split('.').pop());
 
       if (
-        target.files[0].name.split('.').pop() !== 'oms' &&
-        target.files[0].name.split('.').pop() !== 'json'
+        target.files[0].name.split('.').pop() !== 'oms'
+        && target.files[0].name.split('.').pop() !== 'json'
       ) {
         this.$alertFeedback('alerts.invalidFile', 'error');
 
@@ -505,49 +402,6 @@ export default {
         this.editor.load(json);
         this.isLoading = false;
       });
-      // loadFile(async () => {
-      //   await this.$apollo
-      //     .mutate({
-      //       mutation: gql`
-
-      //         mutation createNodeSheet($input: JSON!) {
-      //           createNodeSheet(input: $input) {
-      //             data {
-      //               _id
-      //             }
-      //           }
-      //         }
-      //       `,
-      //       variables: {
-      //         input: json,
-      //       },
-      //       update: (store, { data: { createNodeSheet } }) => {
-      //         // eslint-disable-next-line no-underscore-dangle
-      //         console.log(createNodeSheet.data._id);
-      //       },
-      //     })
-      //     .then((data) => {
-      //       // Result
-      //       console.log(data);
-      //       this.$alertFeedback('Arquivo salvo com sucesso', 'success');
-      //       this.isLoading = false;
-      //     })
-      //     .catch((error) => {
-      //       // Error
-      //       this.isLoading = false;
-      //       console.error(
-      //         'Não foi possível fazer o UPLOAD do arquivo \n',
-      //         error
-      //       );
-      //       this.$alertFeedback(
-      //         'Não foi possível fazer o upload do arquivo',
-      //         'error'
-      //       );
-
-      //       // We restore the initial user input
-      //     });
-      //   console.log(json);
-      // });
     },
   },
 };

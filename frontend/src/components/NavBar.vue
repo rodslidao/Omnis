@@ -63,9 +63,7 @@
           <v-icon dark id="tune">mdi-cog </v-icon>
         </v-btn>
       </router-link>
-      <v-icon dark color="red darken-1" v-if="!onlineWeb.value"
-        >mdi-web</v-icon
-      >
+      <v-icon dark color="red darken-1" v-if="!onlineWeb.value">mdi-web</v-icon>
       <v-icon dark color="red darken-1" v-if="!onlineBack">mdi-wifi-off</v-icon>
 
       <!-- <template v-slot:extension v-if="$route.name == 'node'">
@@ -82,11 +80,15 @@
 
 <script>
 import { useOnline } from '@vueuse/core';
-// import { onError } from 'apollo-link-error';
+import { onError } from 'apollo-link-error';
 
 import RestartButton from '@/components/navbar/RestarButton.vue';
 import TabMenuNodes from '@/components/node/TabMenuNodes.vue';
 import Login from '@/views/Auth/Login.vue';
+
+const link = onError((error) => {
+  console.log(error);
+});
 
 export default {
   name: 'NavBar',
@@ -106,8 +108,7 @@ export default {
   }),
 
   // checa se existe conexão tem a ver com o pwa
-  mounted() {
-  },
+  mounted() {},
 
   methods: {
     close() {

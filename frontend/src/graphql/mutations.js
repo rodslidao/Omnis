@@ -35,6 +35,7 @@ export const CREATE_SKETCH = gql`
     $content: JSON!
   ) {
     create_sketch(
+      _id: $_id
       input: {
         _id: $_id
         parent_id: $parent_id
