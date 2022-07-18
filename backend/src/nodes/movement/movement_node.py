@@ -5,7 +5,7 @@ from src.manager.serial_manager import SerialManager
 from src.nodes.serial.gcode_obj import SerialGcodeOBJ
 from api import logger, exception
 from api.decorators import for_all_methods
-
+from bson import ObjectId
 NODE_TYPE = "MoveAxisNode"
 
 
@@ -19,8 +19,9 @@ class MovementNode(BaseNode):
     def __init__(self, name, id, options, output_connections, input_connections):
         super().__init__(name, NODE_TYPE, id, options, output_connections)
         self.input_connections = input_connections
-        self.serial_id = options["board"]["id"]
+        self.serial_id = ObjectId(options["board"]["id"])
         self.serial = SerialManager.get_by_id(self.serial_id)
+        if not self.serial: raise TypeError("SERIAL DEAD")
         self.axis = []
         self.coordinates = {}
         self.wait_for_this = [{k.lower():v for k,v in x['to'].items() if k == "name"} for x in self.input_connections]

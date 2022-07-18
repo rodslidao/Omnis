@@ -51,7 +51,7 @@ class Process_Thread(threading.Thread):
                 self.resumed.wait()
                 self.resumed.clear()
             if not self.stopped.is_set() and not self.paused.is_set():
-                self.target(*self.args, **self.kwargs)
+                self.target()
                 event_list.join()
                 logger.debug("Process: restarting automatically")
         logger.debug("Process: end")
@@ -61,7 +61,7 @@ class Process_Thread(threading.Thread):
         self.runningTimer.start()
         self.start_time = datetime.utcnow().timestamp()
         logger.info("Process Started")
-        # super().start()
+        super().start()
 
     def resume(self):
         self.paused.clear()
