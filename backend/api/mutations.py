@@ -1,4 +1,4 @@
-from .models import NodeSheet, ObjectId
+from .models import ObjectId
 from ariadne import MutationType
 from src.nodes.alerts.alert_obj import Alert
 from numpy import uint8, frombuffer
@@ -19,10 +19,11 @@ mutation = MutationType()
 
 @mutation.field("createAlert")
 @auth("developer")
-async def createAlert_resolver( input, **kwargs):
+def createAlert_resolver(*args, **kwargs):
     """Create a new Alert object and return it like a payload"""
-    returns = Alert(**input)
-    return {"data": returns}
+    logger.error(f"DEVELOPER TEST: {kwargs.get('input', 2)}")
+    returns = Alert(**kwargs.get('input')).items()
+    return returns
 
 
 @mutation.field("uploadFile")

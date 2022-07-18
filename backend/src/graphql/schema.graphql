@@ -42,7 +42,7 @@ type Mutation {
   deleteNodeSheet(_id: ID!): Boolean
   duplicateNodeSheet(_id: ID!): Boolean
 
-  createAlert(input: AlertInput!): AlertResult!
+  createAlert(input: AlertInput!): AlertResult
 
   uploadFile(file: Upload!): FileResult!
   uploadPhoto(photo: Upload!): Photo!
