@@ -61,7 +61,7 @@ export default {
       this.updateCoords();
     });
 
-    this.connectToWebsocket();
+    this.connectToWebsocket(); // This will create (Nodes_qtd*(input+output)) sockets instances; How to use same instance for all?
     // eslint-disable-next-line no-unused-vars
     const timeOut = null;
   },
