@@ -198,8 +198,9 @@ export default {
         variable: {
           value: this.obj?.variable,
         },
-        order: {
+        order :{
           value: this.obj?.order,
+          required: true,
         },
       },
       fields: [
@@ -333,7 +334,7 @@ export default {
             slots: this.data.slots,
             subdivisions: this.data.subdivisions,
             variable: this.fields2.variable.value,
-            order: this.fields2.order.value
+            order: this.fields2.order.value,
           },
         })
 
@@ -372,6 +373,7 @@ export default {
             slots: this.data.slots,
             subdivisions: this.data.subdivisions,
             variable: this.fields2.variable.value,
+            order: this.fields2.order.value,
           },
         })
 
