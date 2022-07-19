@@ -55,7 +55,7 @@
           </div>
         </template>
       </settings-items>
-      <div>
+      <div v-if="$access('crudUser')">
         <settings-title>{{
           $t('settings.users.otherAccounts')
         }}</settings-title>

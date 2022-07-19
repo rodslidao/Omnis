@@ -21,20 +21,7 @@
             {{ online ? dilogText.button : isDisconected.button }}
           </v-btn>
 
-          <v-btn
-            v-if="online"
-            color="red darken-1"
-            text
-            v-on:click="
-              () => {
-                SEND_MESSAGE({
-                  command: actions.RESTART_RASPBERRY,
-                });
-                restartDialog = false;
-                request();
-              }
-            "
-          >
+          <v-btn v-if="online" color="red darken-1" text v-on:click="request()">
             reiniciar
           </v-btn>
         </v-card-actions>
@@ -44,7 +31,6 @@
 </template>
 
 <script>
-
 export default {
   name: 'RestartButton',
 
@@ -72,11 +58,7 @@ export default {
   methods: {
     request() {
       fetch(
-        `http://${
-          this.configuration.informations.ip
-        }:${
-          this.configuration.informations.portStream
-        }/exit`,
+        `http://${this.configuration.informations.ip}:${this.configuration.informations.portStream}/exit`
       );
     },
   },

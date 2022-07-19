@@ -1,5 +1,6 @@
+/* eslint-disable camelcase */
 /* eslint-disable no-shadow */
-import { REGISTER_USER, AUTHENTICATED_USER, AUTHENTICATE_USER } from '@/graphql';
+import { REGISTER_USER, AUTHENTICATED_USER, AUTHENTICATE_USER, LIST_LEVEL } from '@/graphql';
 import { apolloClient } from '@/vue-apollo';
 import router from '../../router';
 
@@ -8,11 +9,15 @@ import Vue from 'vue';
 const state = {
   user: {},
   authStatus: false,
+  levelsRules: [
+  ],
+
   token: localStorage.getItem('apollo-token') || null,
 };
 
 const getters = {
   user: (state) => state.user,
+  levelsRules: (state) => state.levelsRules,
   isAuth: (state) => !!state.token,
   authStatus: (state) => state.authStatus,
 };
@@ -51,6 +56,21 @@ const actions = {
     }
 
     // dispatch('setUserData', registerUser);
+  },
+
+  async getLevels({ commit }, userData) {
+    try {
+      const {
+        data: { get_levels_list },
+      } = await apolloClient.query({
+        query: LIST_LEVEL,
+        variables: userData,
+      });
+
+      commit('UPDATE_LEVELS', get_levels_list);
+    } catch (error) {
+      console.log('cant possible get levels list', error);
+    }
   },
 
   async setUserData({ commit }, payload) {
@@ -94,6 +114,9 @@ const mutations = {
     state.user = {};
     state.authStatus = false;
     state.token = null;
+  },
+  UPDATE_LEVELS(state, payload) {
+    state.levelsRules = payload;
   },
 };
 

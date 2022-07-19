@@ -273,7 +273,7 @@ export default {
 
         .catch((error) => {
           this.$alertFeedback(
-            this.$t('alerts.updateMatrixSuccess'),
+            'alerts.updateMatrixSuccess',
             'error',
             error
           );
@@ -295,6 +295,17 @@ export default {
       this.WebSocket.onopen = (event) => {
         console.log(event);
         console.log(this.$t('alerts.wsConnectSuccess'));
+      };
+
+      this.WebSocket.onclose = (event) => {
+        console.log(
+          'Socket is closed. Reconnect will be attempted in 1 second.',
+          event.reason
+        );
+        setTimeout(
+          () => this.connectToWebsocket(),
+          Math.floor(Math.random() * 2500),
+        );
       };
     },
   },
