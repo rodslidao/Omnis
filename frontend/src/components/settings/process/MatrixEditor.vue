@@ -128,6 +128,7 @@ const UPDATE_MATRIX = gql`
     $slots: JSON
     $subdivisions: JSON
     $variable: [DBREF_variable]
+    $order: String
   ) {
     update_matrix(
       _id: $_id
@@ -139,6 +140,7 @@ const UPDATE_MATRIX = gql`
         slots: $slots
         subdivisions: $subdivisions
         variable: $variable
+        order: $order
       }
     )
   }
@@ -153,6 +155,7 @@ const ADD_MATRIX = gql`
     $slots: JSON
     $subdivisions: JSON
     $variable: [DBREF_variable]
+    $order: String
   ) {
     create_matrix(
       input: {
@@ -163,6 +166,7 @@ const ADD_MATRIX = gql`
         slots: $slots
         subdivisions: $subdivisions
         variable: $variable
+        order: $order
       }
     )
   }
@@ -193,6 +197,10 @@ export default {
         },
         variable: {
           value: this.obj?.variable,
+        },
+        order :{
+          value: this.obj?.order,
+          required: true,
         },
       },
       fields: [
@@ -326,6 +334,7 @@ export default {
             slots: this.data.slots,
             subdivisions: this.data.subdivisions,
             variable: this.fields2.variable.value,
+            order: this.fields2.order.value,
           },
         })
 
@@ -364,6 +373,7 @@ export default {
             slots: this.data.slots,
             subdivisions: this.data.subdivisions,
             variable: this.fields2.variable.value,
+            order: this.fields2.order.value,
           },
         })
 
