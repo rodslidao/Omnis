@@ -1,0 +1,24 @@
+
+type levels {
+  _id: ID
+  name: String
+  forbidden_list: [String]
+}
+
+input reg_levels{
+  _id: ID
+  name: String
+  forbidden_list: [String]
+}
+
+extend type Query {
+    get_levels_list: [levels]
+    get_levels_item(_id: ID!): levels
+}
+
+extend type Mutation  {
+  create_levels(_id: ID, input: reg_levels): ID
+  delete_levels(_id: ID!): ID
+  duplicate_levels(_id: ID!): ID
+  update_levels(_id: ID!, input: reg_levels): ID
+}

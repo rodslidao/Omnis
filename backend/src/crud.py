@@ -10,22 +10,22 @@ class CRUD:
         self.collection = collection
         self.auth_level = auth_level
 
-        self.create = (auth(self.auth_level))(self.create)
+        self.create = (auth(self.auth_level))(self.create) if self.auth_level else self.create
         mutation.set_field(f"create_{self.collection}", self.create)
 
-        self.update = (auth(self.auth_level))(self.update)
+        self.update = (auth(self.auth_level))(self.update) if self.auth_level else self.update
         mutation.set_field(f"update_{self.collection}", self.update)
 
-        self.delete = (auth(self.auth_level))(self.delete)
+        self.delete = (auth(self.auth_level))(self.delete) if self.auth_level else self.delete
         mutation.set_field(f"delete_{self.collection}", self.delete)
 
-        self.duplicate = (auth(self.auth_level))(self.duplicate)
+        self.duplicate = (auth(self.auth_level))(self.duplicate) if self.auth_level else self.duplicate
         mutation.set_field(f"duplicate_{self.collection}", self.duplicate)
 
-        self.get_list = (auth(self.auth_level))(self.get_list)
+        self.get_list = (auth(self.auth_level))(self.get_list) if self.auth_level else self.get_list
         query.set_field(f"get_{self.collection}_list", self.get_list)
 
-        self.get_item = (auth(self.auth_level))(self.get_item)
+        self.get_item = (auth(self.auth_level))(self.get_item) if self.auth_level else self.get_item
         query.set_field(f"get_{self.collection}_item", self.get_item)
 
     def create(self, *args, **kwargs):
