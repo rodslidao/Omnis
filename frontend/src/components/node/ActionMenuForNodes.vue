@@ -215,8 +215,7 @@ export default {
 
     connectToWebsocket() {
       console.log(this.$t('alerts.wsConnecting'));
-      this.WebSocket = new WebSocket(
-      );
+      this.WebSocket = new WebSocket();
 
       this.WebSocket.onmessage = (event) => {
         const data = JSON.parse(event.data);
@@ -226,6 +225,17 @@ export default {
       this.WebSocket.onopen = (event) => {
         console.log(event);
         console.log(this.$t('alerts.wsConnectSuccess'));
+      };
+
+      this.WebSocket.onclose = (event) => {
+        console.log(
+          'Socket is closed. Reconnect will be attempted in 1 second.',
+          event.reason
+        );
+        setTimeout(
+          () => this.connectToWebsocket(),
+          Math.floor(Math.random() * 2500)
+        );
       };
     },
 
@@ -251,7 +261,7 @@ export default {
           this.$alertFeedback(
             this.$t('alerts.runningProcessFail'),
             'error',
-            error.message,
+            error.message
           );
           // We restore the initial user input
         });
@@ -355,7 +365,7 @@ export default {
       download(
         JSON.stringify(this.tabList[this.selectedTabIndex]),
         `${fileName}.oms`,
-        'text/oms',
+        'text/oms'
       );
     },
 
@@ -368,8 +378,8 @@ export default {
       console.log(target.files[0].name.split('.').pop());
 
       if (
-        target.files[0].name.split('.').pop() !== 'oms'
-        && target.files[0].name.split('.').pop() !== 'json'
+        target.files[0].name.split('.').pop() !== 'oms' &&
+        target.files[0].name.split('.').pop() !== 'json'
       ) {
         this.$alertFeedback('alerts.invalidFile', 'error');
 

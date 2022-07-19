@@ -80,15 +80,10 @@
 
 <script>
 import { useOnline } from '@vueuse/core';
-import { onError } from 'apollo-link-error';
 
 import RestartButton from '@/components/navbar/RestarButton.vue';
 import TabMenuNodes from '@/components/node/TabMenuNodes.vue';
 import Login from '@/views/Auth/Login.vue';
-
-const link = onError((error) => {
-  console.log(error);
-});
 
 export default {
   name: 'NavBar',
