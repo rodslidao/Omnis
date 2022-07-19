@@ -88,7 +88,7 @@ class Websocket(WebSocketEndpoint):
 
     async def on_disconnect(self, websocket, close_code=100):
         self.connections.get(self._id, set()).remove(websocket)
-        logger.debug(
+        logger.info(
             f"[{self._id}]: {len(self.connections.get(self._id))} remaining sessions"
         )
 
@@ -124,7 +124,7 @@ class Connection(Websocket):
         super().__init__("network_status", lambda: True)
 
     async def on_receive(self, websocket, data):
-        await self._broadcast({"pong":datetime.utcnow().timestamp()})
+        await self._broadcast({"pong":datetime.utcnow().timestamp(), "connections":{str(k):len(v) for k, v in self.connections.items()}})
 
 class NodeStatus(Websocket):
     def __init__(self, _id, updated_info):
