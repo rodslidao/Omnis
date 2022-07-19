@@ -26,7 +26,8 @@ class Wizard(object):
                 event_list.get()
             except Exception as e:
                 Alert("error", "Falha durante o processo", "Erro: {}".format(e))
-                process.stop()
+                # process.stop()
+                exit()
                 raise e
             finally:
                 event_list.task_done()
