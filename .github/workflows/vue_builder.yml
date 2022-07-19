@@ -11,21 +11,17 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     strategy:
       matrix:
         node-version: [16.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-
     steps:
     - uses: actions/checkout@v3
       with:
         ref: ${{ github.head_ref }}
     - name: configure repo
       run:  |
-        git config --global user.name 'Omnis'
+        git config --global user.name 'Omnis-Builder'
         git config --global user.email 'Omnis-Actions@users.noreply.github.com'
         git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
     - name: Use Node.js ${{ matrix.node-version }}
@@ -33,12 +29,6 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-    - name: create env file
-      run: |
-        touch .env
-        echo VUE_APP_URL_API_IP=192.168.1.55 >> .env
-        echo VUE_APP_URL_API_PORT=5200 >> .env
-        echo VUE_APP_URL_API_STREAMING_PORT=5200 >> .env
     - name: Cleaning Instalation
       run: npm ci
       working-directory: ./frontend
@@ -51,6 +41,6 @@ jobs:
     - name: Commit report
       run: |
         git add .
-        git commit -m "Automated report"
+        git commit -m "[build]"
         git push
     
