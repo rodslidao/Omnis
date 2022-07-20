@@ -1,5 +1,6 @@
 from datetime import datetime
 import threading
+from time import sleep
 from .models import ObjectId
 from ariadne import MutationType
 from src.nodes.alerts.alert_obj import Alert
@@ -18,13 +19,18 @@ from api import logger, auth, dbo
 import os
 mutation = MutationType()
 
+def restart():
+    sleep(2)
+    os._exit(1)
+
 @mutation.field("restart")
 @auth('operator')
 def restart_resolver(*args, **kwargs):
     try:
         logger.warning(f"User {kwargs.get('user').first_name} restarting machine at: {datetime.now().strftime('%d/%m/%Y, %H:%M:%S')}")
     finally:
-        os._exit(1)
+        threading.Thread(target=restart).start()
+        return 15 #? How to calculate time of reboot?
 
 
 

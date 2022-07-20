@@ -102,6 +102,7 @@ class Websocket(WebSocketEndpoint):
             await client.send_json(payload)
         except (RuntimeError, AttributeError):
             logger.warning('Fail to send message on websocket.')
+            await self.on_disconnect(client, -5)
 
     async def broadcast_on_change(self, updated_info, payload={}, **kwargs):
         # updated_info = getattr(updated_info_pointer, kwargs.get('attr', '__undefined_attr'), updated_info_pointer)
@@ -124,7 +125,8 @@ class Connection(Websocket):
         super().__init__("network_status", lambda: True)
 
     async def on_receive(self, websocket, data):
-        await self._broadcast({"pong":datetime.utcnow().timestamp(), "connections":{str(k):len(v) for k, v in self.connections.items()}})
+        cons = {str(k):len(v) for k, v in self.connections.items()}
+        await self._broadcast({"pong":datetime.utcnow().timestamp(), "connections":cons if cons else "nothing"})
 
 class NodeStatus(Websocket):
     def __init__(self, _id, updated_info):
