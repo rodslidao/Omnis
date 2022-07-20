@@ -88,7 +88,7 @@ class Websocket(WebSocketEndpoint):
 
     async def on_disconnect(self, websocket, close_code=100):
         self.connections.get(self._id, set()).remove(websocket)
-        logger.info(
+        logger.debug(
             f"[{self._id}]: {len(self.connections.get(self._id))} remaining sessions"
         )
 

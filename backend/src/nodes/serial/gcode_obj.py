@@ -28,7 +28,7 @@ class SerialGcodeOBJ(Serial):
         is_gcode=True,
         disabled=False,
         startup_commands = [
-            "G28",
+            # "G28",
         ],
         pins={},
         axes={}

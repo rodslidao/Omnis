@@ -64,6 +64,7 @@ type Mutation {
   registerUser(newUser: reg_user): Boolean!
   deleteUser(_id: ID!): Boolean!
   updateUser(_id: ID!, input: reg_user): Boolean!
+  restart: Boolean
 }
 
 type Query {
