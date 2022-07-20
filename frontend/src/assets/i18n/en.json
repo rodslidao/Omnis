@@ -232,7 +232,9 @@
     "wsConnectSuccess": "Websocket was connected with successfully",
     "wsConnectFail": "Could not connect to Websocket",
     "wsConnecting": "Connecting to Websocket",
-    "updateVariableSuccess": "The variable was updated👍"
+    "updateVariableSuccess": "The variable was updated👍",
+    "restart_ok":"Server restarted",
+    "restart_fail":"Server can't restart"
     
   },
   "list": {

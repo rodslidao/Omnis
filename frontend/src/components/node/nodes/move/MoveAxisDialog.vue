@@ -15,7 +15,8 @@
               description="Selecione a placa que executara o movimento."
             >
               <v-select
-                :items="('options' in getNodeInfo.data) ? getNodeInfo.data.options : []"
+                :v-if="getNodeInfo"
+                :items="getNodeInfo.data.options"
                 v-model="selectedBoard"
                 item-text="name"
                 return-object
@@ -113,7 +114,7 @@ import TextEditable from '@/components/node/nodes/dialogs/TextEditable.vue';
 import NodeConfigTitle from '@/components/node/nodes/NodeConfigTitle.vue';
 
 const GET_BOARDS = gql`
-  query {
+  query getNodeInfo{
     getNodeInfo(node_type: "MoveAxisNode") {
       data {
         options
@@ -121,6 +122,7 @@ const GET_BOARDS = gql`
     }
   }
 `;
+
 
 export default {
   data: () => ({
@@ -132,7 +134,7 @@ export default {
     boardList: [],
     Description: '',
     requiredRules: [(v) => !!v || 'Esse campo não pode ficar em branco'],
-
+    getNodeInfo:{data:{options:[]}},
 
     rules: {
       positive: (value) => value >= 0 || 'voce só pode inserir numeros',
@@ -158,15 +160,13 @@ export default {
   },
 
   apollo: {
-    getNodeInfo: {
-      query: GET_BOARDS,
-    },
+    getNodeInfo: GET_BOARDS
   },
 
   watch: {
     getNodeInfo() {
-      if (this.boardCopy.id) {
-        this.selectedBoard = this.this.boardCopy;
+      if (this.boardCopy?.id) {
+        this.selectedBoard = this.boardCopy;
       } else {
         // eslint-disable-next-line prefer-destructuring
         this.selectedBoard = this.getNodeInfo.data.options[0];
