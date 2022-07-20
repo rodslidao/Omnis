@@ -122,7 +122,10 @@
     "saveSuccess": "The process was saved 👌",
     "invalidFile": "Invalid file, your file must be an '.oms' 😢",
     "deleteFail": "Could't possible to delete the {obj} 😢",
-    "deleteSuccess": "The {obj} was deleted 👍"
+    "deleteSuccess": "The {obj} was deleted 👍",
+    "updateVariableSuccess": "The variable was updated👍",
+    "restart_ok":"Server restarted",
+    "restart_fail":"Server can't restart"
   },
   "list": {
     "sortBy": "Sort by",
