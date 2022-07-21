@@ -1,11 +1,5 @@
-# from tkinter import Scale
-from asyncio.log import logger
-from hashlib import new
-from re import M
-from tkinter import Y
 from bson import ObjectId
-from src.manager.mongo_manager import CustomEncoder
-from numpy import ndarray, ndenumerate, generic, reshape
+from numpy import ndarray, ndenumerate, generic, fliplr, rot90, flipud, array, integer, floating
 from json import loads, dumps
 from cv2 import (
     drawMarker,
@@ -14,10 +8,22 @@ from cv2 import (
     FONT_HERSHEY_SIMPLEX,
     LINE_AA
 )
-
-from numpy import fliplr, rot90, flipud, array, meshgrid, arange, arange, ndindex
+from json import JSONEncoder
 from src.crud import CRUD
 __matrix = CRUD("matrix", "operator")
+
+class CustomEncoder(JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, integer):
+            return int(obj)
+        elif isinstance(obj, floating):
+            return float(obj)
+        elif isinstance(obj, ndarray):
+            return obj.tolist()
+        elif isinstance(obj, ObjectId):
+            return str(obj)
+        else:
+            return super(CustomEncoder, self).default(obj)
 
 class Slot:
     """
@@ -319,7 +325,7 @@ class Blister:
                 str(slot.position[:2]),
                 tuple(
                     (slot.center[:2].astype(int))
-                    + [int((slot.width * -1) / 2) + 5, int(slot.height / 4) - 5]
+                    + [int((slot.sizes[0] * -1) / 2) + 5, int(slot.sizes[1] / 4) - 5]
                 ),
                 FONT_HERSHEY_SIMPLEX,
                 1.2,
@@ -353,17 +359,12 @@ class Blister:
         return self.data
 
     def export(self):
-        data = loads(
-            dumps(
-                {
+        data = {
                     "shape": self.shape,
                     "slot_config": self.slot_config,
                     "name":self.name,
                     "kwargs": self.kwargs,
-                },
-                cls=CustomEncoder,
-            )
-        )
+                }
         data["_id"] = self._id
         return data
 
