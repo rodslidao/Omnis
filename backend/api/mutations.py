@@ -73,7 +73,7 @@ async def uploadPhoto_resolver( **kwargs):
 
 
 @mutation.field("takePhoto")
-async def takePhoto_resolver( **kwargs):
+async def takePhoto_resolver(*args, **kwargs):
     camera_id = kwargs.get("camera_id")
     p = Picture(str(camera_id))
     path = f"{abspath('./src')}/{p.path}{p.name}.jpeg"
