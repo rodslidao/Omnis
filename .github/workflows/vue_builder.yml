@@ -42,5 +42,7 @@ jobs:
       run: |
         git add .
         git commit -m "[build]"
+        git fetch
+        git pull
         git push
     
