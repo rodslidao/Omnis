@@ -5,6 +5,7 @@ from api import logger, exception
 from api.decorators import for_all_methods
 from vidgear.gears import CamGear
 from cv2 import cvtColor, COLOR_BGR2GRAY, arcLength, VideoWriter_fourcc
+from .roi_aruco import ROI_ARUCO as ROI
 
 from cv2.aruco import (
     DetectorParameters_create,
@@ -51,6 +52,7 @@ class Camera(CamGear):
         self.name = name
         self.source = source
         self.opt = options
+        self.last_c, self.last_i = None, None
         self.config = options.get("config")
         self.aruco_parms = DetectorParameters_create()
         self.aruco_dict = Dictionary_get(ARUCO_DICT.get(self.config.get("marker_type")))
@@ -75,7 +77,10 @@ class Camera(CamGear):
     def read(self):
         # if self.marker_len:
         #     return undistort(super().read(), self.mtx, self.dist, None) #? Too slow for 4K. Maybe use a smaller image?
-        return super().read()
+        c, i, _ = self.detect_markers()
+        if len(i.flatten())==4:
+            self.last_c, self.last_i = c, i
+        return ROI(super().read(), self.aruco_dict, self.aruco_parms, corners=self.last_c, ids=self.last_i)[0]
 
     def remove(self):
         CameraManager.remove(self)
@@ -86,7 +91,7 @@ class Camera(CamGear):
 
     def detect_markers(self):
         return detectMarkers(
-            cvtColor(self.read(), COLOR_BGR2GRAY),
+            cvtColor(super().read(), COLOR_BGR2GRAY),
             self.aruco_dict,
             parameters=self.aruco_parms,
         )
