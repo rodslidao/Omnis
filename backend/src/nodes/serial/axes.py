@@ -1,6 +1,6 @@
 from threading import Event
 class axis:
-    def __init__(self, _id, name, board, step=1):
+    def __init__(self, _id, name, board, setup, step=1):
         self._id = _id
         self.name = name
         self.step = step
@@ -8,6 +8,7 @@ class axis:
         self.target = 0
         self.moving = Event()
         self.board = board
+        self.feed_rate = setup[setup["default"]]["feed_rate"]
     
     def is_moving(self):
         return self.moving.is_set()
@@ -18,7 +19,7 @@ class axis:
         return self.__str__()
 
     def __call__(self):
-        return(self.name, self.position)
+        return (self.name, self.position), ('F', self.feed_rate)
 
     def stop(self):
         self.moving.clear()

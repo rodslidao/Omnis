@@ -28,6 +28,7 @@ import { createProvider } from './vue-apollo';
 
 Vue.use(BaklavaVuePlugin);
 
+
 // const options = {
 //   // reconnectionAttempts: 3,
 //   reconnection: true,
@@ -69,6 +70,7 @@ Vue.use(AccessControl, {
 });
 
 Vue.prototype.$workbox = wb;
+Vue.config.devtools = true
 
 new Vue({
   vuetify,

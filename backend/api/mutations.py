@@ -1,3 +1,6 @@
+from datetime import datetime
+import threading
+from time import sleep
 from .models import ObjectId
 from ariadne import MutationType
 from src.nodes.alerts.alert_obj import Alert
@@ -13,8 +16,22 @@ from src.manager.serial_manager import SerialManager
 
 from src.utility.system.date import set_system_date
 from api import logger, auth, dbo
-
+import os
 mutation = MutationType()
+
+def restart():
+    sleep(2)
+    os._exit(1)
+
+@mutation.field("restart")
+@auth('operator')
+def restart_resolver(*args, **kwargs):
+    try:
+        logger.warning(f"User {kwargs.get('user').first_name} restarting machine at: {datetime.now().strftime('%d/%m/%Y, %H:%M:%S')}")
+    finally:
+        threading.Thread(target=restart).start()
+        return 15 #? How to calculate time of reboot?
+
 
 
 @mutation.field("createAlert")
@@ -56,7 +73,7 @@ async def uploadPhoto_resolver( **kwargs):
 
 
 @mutation.field("takePhoto")
-async def takePhoto_resolver( **kwargs):
+async def takePhoto_resolver(*args, **kwargs):
     camera_id = kwargs.get("camera_id")
     p = Picture(str(camera_id))
     path = f"{abspath('./src')}/{p.path}{p.name}.jpeg"

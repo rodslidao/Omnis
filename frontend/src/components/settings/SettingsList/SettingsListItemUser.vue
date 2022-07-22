@@ -31,7 +31,7 @@
         :del="$t('settings.users.user')"
         @confirm-event="remove"
       ></dialog-confirmation>
-      <v-chip class="mr-4">
+      <v-chip v-if="user.level" class="mr-4">
         {{ $t('levels.' + user.level) }}
       </v-chip>
       <div>

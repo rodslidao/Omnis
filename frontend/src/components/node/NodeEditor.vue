@@ -104,8 +104,6 @@ export default {
 
     this.editor.events.checkConnection.addListener(this, (c) => {
       // return false if the connection is not allowed
-      console.log('checkConnection', c);
-      console.log(this.editor.events);
       return true;
     });
 

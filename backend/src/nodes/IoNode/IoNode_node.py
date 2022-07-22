@@ -5,6 +5,7 @@ from api.decorators import for_all_methods
 from api import dbo
 from src.manager.serial_manager import SerialManager
 from src.utility.system.sleep_alternative import sleep
+from bson import ObjectId
 NODE_TYPE = "IoNode"
 
 
@@ -18,7 +19,7 @@ class IoNodeNode(BaseNode):
         super().__init__(name, NODE_TYPE, id, options, output_connections)
         self.input_connections = input_connections
         self.config = options["port"]
-        self.board = SerialManager.get_by_id(self.config["board"])
+        self.board = SerialManager.get_by_id(ObjectId(self.config["board"]))
         self.command = self.config["command"].replace("<pin>", str(self.config["port"])).replace("<pwm>", str(255 if self.config["pwm"] else 0))
         self.auto_run = options.get("auto_run", False)
         NodeManager.addNode(self)

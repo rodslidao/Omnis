@@ -102,6 +102,7 @@ class Websocket(WebSocketEndpoint):
             await client.send_json(payload)
         except (RuntimeError, AttributeError):
             logger.warning('Fail to send message on websocket.')
+            await self.on_disconnect(client, -5)
 
     async def broadcast_on_change(self, updated_info, payload={}, **kwargs):
         # updated_info = getattr(updated_info_pointer, kwargs.get('attr', '__undefined_attr'), updated_info_pointer)
@@ -124,7 +125,8 @@ class Connection(Websocket):
         super().__init__("network_status", lambda: True)
 
     async def on_receive(self, websocket, data):
-        await self._broadcast({"pong":datetime.utcnow().timestamp()})
+        cons = {str(k):len(v) for k, v in self.connections.items()}
+        await self._broadcast({"pong":datetime.utcnow().timestamp(), "connections":cons if cons else "nothing"})
 
 class NodeStatus(Websocket):
     def __init__(self, _id, updated_info):
@@ -155,8 +157,8 @@ class Controls(Websocket):
         elif data["context"] == "joggingDistance":
             # Move a distancia especificada
             axis = self.serial.axes[data["id"]]
-            axis.move(data["value"])
-            axis.position = self.serial.G0(axis())[axis.name]
+            axis.move(float(data["value"]))
+            axis.position = self.serial.G0(*axis())[axis.name]
 
         elif data["context"] == "outputDevices":
             # Ativa ou desativa os dispositivos de saida
@@ -166,7 +168,7 @@ class Controls(Websocket):
             # Movimento "Relativo"
             axis = self.serial.axes[data["id"]]
             axis.move(axis.position + axis.step * (1 if not data["isNegative"] else -1))
-            axis.position = self.serial.G0(axis())[axis.name]
+            axis.position = self.serial.G0(*axis())[axis.name]
         else:
             logger.debug(f"Websocket: unknow request {data}")
 

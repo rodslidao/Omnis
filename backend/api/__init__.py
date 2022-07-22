@@ -61,7 +61,7 @@ def auth(lvl=None):
 pins = [pin(**p) for p in dbo.find_many("pins")]
 axes = [
     axis(**a)
-    for a in dbo.find_many("machine_axis", data={"_id": 1, "name": 1, "board": 1})
+    for a in dbo.find_many("machine_axis", data={"_id": 1, "name": 1, "board": 1, "setup":1})
 ]
 
 def Managers_Import(definitions):

@@ -229,7 +229,7 @@ export default {
   methods: {
     rules() {
       return {
-        required: (value) => !!value || 'Required.',
+        required: (value) => !!value ||  this.$t('form.required'),
       };
     },
 

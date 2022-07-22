@@ -26,8 +26,8 @@
           v-model="user.last_name"
           :rules="[rules().required]"
           :error-messages="errorMessages"
-          :label="$t('form.lastName')"
-          :placeholder="$t('form.name')"
+          :label="$t('form.last_name')"
+          :placeholder="$t('form.last_name')"
           outlined
           required
           :dense="dense"
@@ -189,7 +189,7 @@ export default {
     }),
     rules() {
       return {
-        required: (value) => !!value || 'form.required',
+        required: (value) => !!value || this.$t('form.required'),
 
         min: (v) =>
           v.length >= 8 || this.$t('form.minCharacters', { count: 8 }),

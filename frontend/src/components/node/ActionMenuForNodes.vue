@@ -1,7 +1,7 @@
 /* eslint-disable no-underscore-dangle */
 <template>
   <div class="actions-container">
-    <div class="menuList" v-on:keyup.ctrl.s="save">
+    <div  class="menuList" v-on:keyup.ctrl.s="save">
       <v-speed-dial
         v-model="fab"
         direction="top"
@@ -32,7 +32,7 @@
           @change="upload"
           accept=".oms,"
         />
-        <v-btn color="primary" class="" dark @click="chooseFiles()">
+        <v-btn v-show="false" color="primary" class="" dark @click="chooseFiles()">
           <v-icon left dark>mdi-upload</v-icon>Upload
         </v-btn>
         <v-btn color="primary" class="" dark @click="folderDialog = true">
@@ -91,10 +91,6 @@
       transition="dialog-bottom-transition"
       max-width="750px"
       ><v-card>
-        <!-- <v-toolbar dark color="primary">
-          <v-toolbar-title>Monitor Serial</v-toolbar-title>
-          <v-spacer></v-spacer>
-        </v-toolbar> -->
         <div class="pa-5" v-if="serialDialog">
           <serial-monitor></serial-monitor>
         </div>
@@ -168,6 +164,10 @@ export default {
     };
   },
 
+  created() {
+    this.connectToWebsocket();
+  },
+
   computed: {
     ...mapState('node', {
       selectedTabIndex: (state) => state.selectedTabIndex,
@@ -215,10 +215,11 @@ export default {
 
     connectToWebsocket() {
       console.log(this.$t('alerts.wsConnecting'));
-      this.WebSocket = new WebSocket();
+      this.WebSocket = new WebSocket(`ws://${process.env.VUE_APP_URL_API_IP}:${process.env.VUE_APP_URL_API_PORT}/process`);
 
       this.WebSocket.onmessage = (event) => {
         const data = JSON.parse(event.data);
+        console.log(data)
         this.actualStatus = data.status.toLowerCase();
       };
 

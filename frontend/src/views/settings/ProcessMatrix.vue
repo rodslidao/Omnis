@@ -53,6 +53,7 @@ const LIST_MATRIX = gql`
         name
         _id
       }
+      order
     }
   }
 `;
@@ -96,7 +97,7 @@ export default {
     },
 
     edit(obj) {
-      console.log(obj);
+      console.log('aQUI', obj);
 
       this.$router.push({
         name: 'matrixEdit',

@@ -6,9 +6,11 @@ import Vue from 'vue';
 Vue.use(VueI18n);
 
 export default new VueI18n({
-  locale: localStorage.getItem('lang') || 'en',
+  lazy:true,
+  locale: localStorage.getItem('lang') || navigator.language || navigator.userLanguage || 'en',
   messages: {
-    pt,
-    en,
+    "pt":pt,
+    "pt-BR":pt,
+    "en":en,
   },
 });

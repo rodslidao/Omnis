@@ -101,7 +101,7 @@ export default {
     requiredRules: [(v) => !!v || 'Campo não pode ficar em branco'],
 
     rules: {
-      required: (value) => !!value || 'Required.',
+      required: (value) => !!value ||  this.$t('form.required'),
       positive: (value) => value > 0 || 'Positive number required.',
     },
     valid: false,

@@ -7,6 +7,7 @@ type matrix {
   subdivisions: JSON
   description: String
   origin: JSON
+  order: String
   part_number: String
   variable: [variable]
 }
@@ -17,6 +18,7 @@ input reg_matrix {
   subdivisions: JSON
   description: String
   origin: JSON
+  order: String
   part_number: String
   variable: [DBREF_variable]
 }

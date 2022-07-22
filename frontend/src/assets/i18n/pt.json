@@ -1,13 +1,14 @@
 {
+  "language": "Português",
   "settings": {
     "name": "Configurações",
     "system": {
       "name": "Sistema",
       "languageAndData": {
-        "name": "Idioma e Dados",
+        "name": "Idioma e dados",
         "exhibitionLanguage": {
-          "title": "Língua de Exposição",
-          "subtitle": "A linguagem de todo o programa será exibida no idioma selecionado"
+          "title": "Idioma da exposição",
+          "subtitle": "Selecione o idioma da exposição"
         }
       }
     },
@@ -16,39 +17,89 @@
     },
     "process": {
       "name": "Processo",
+      "myProcess":  "Meu Processo",
+      "otherSettings": "Outras configurações",
+      "editProcess": {
+        "title": "Editar processo"
+      },
+      "process": {
+        "name": "Meu Processo",
+        "title": "Processo",
+        "subtitle": "Crie e edite o processo",
+        "add": "Adicionar processo",
+        "edit": "Editar processo",
+        "list": "Listar de processos",
+        "lastPlayed": "Última vez Iniciado",
+        "sketch": "Esboço"
+      },
+      "nodes": {
+        "name": "Nodes",
+        "title": "Nodes",
+        "subtitle": "Crie e edite o processo"
+      },
       "matrix": {
         "name": "Matriz",
         "title": "Matriz",
-        "subtitle": "Criar e editar a matriz para usar em nosmos"
+        "subtitle": "Criar e editar a matriz para usar em nodes",
+        "add": "Adicionar matriz",
+        "edit": "Editar matriz",
+        "list": "Listar matrizes",
+        "slotsSubtitle": "Quantidade de slots, margens e tamanho",
+        "subdivisionsSubtitle": "Quantidade de subdivisões",
+        "originSubtitle": "Define a origem da matriz, em relação a maquina"
+        
+      },
+      "objects": {
+        "name": "Nome",
+        "title": "Objetos",
+        "subtitle": "Criar e editar objetos",
+        "add": "Adicionar objeto",
+        "edit": "Editar objeto",
+        "list": "Listar objetos",
+        "type": "Tipo"
+      },
+      "variables": {
+        "name": "Variáveis",
+        "title": "Variáveis",
+        "subtitle": "Criar e editar variáveis",
+        "add": "Adicionar variável",
+        "edit": "Editar variável",
+        "list": "Listar variáveis",
+        "type": "Tipo de variável"
       }
     },
     "users": {
-      "name": "Utilizadores",
-      "user": "utilizador",
-      "otherAccounts": "Outras Contas",
+      "name": "Usurários",
+      "user": "usuário",
+      "otherAccounts": "Outras contas",
+      "editUser": {
+        "title": "Editar usuário"
+      },
       "accountsDetails": {
-        "name": "contasDetails",
-        "title": "Detalhes da Conta",
-        "subtitle": "Ver e editar os detalhes da sua conta"
+        "name": "Detalhes de conta",
+        "title": "Detalhes da conta",
+        "subtitle": "Ver e editar detalhes da sua conta"
       },
       "fields": {
-        "level": "Nível",
+        "level": "Cargo",
         "first_name": "Nome",
         "last_name": "Sobrenome",
         "username": "CPF",
         "email": "Email",
-        "last_access": "Último Acesso"
+        "last_access": "Último Acesso",
+        "_id": "ID",
+        "avatar_image": "Foto de Perfil"
       },
-      "myAccount": "Minha Conta",
+      "myAccount": "Minha conta",
       "registerUser": {
-        "name": "Novo Usuário",
-        "title": "Registrar novo usuário",
-        "subtitle": "Criar usuário."
+        "name": "Novo usuário",
+        "title":  "Registrar usuário", 
+        "subtitle": "Crie uma nova conta"
       },
       "listUsers": {
-        "name": "Lista de usuário",
-        "title": "Lista de usuário",
-        "subtitle": "Lista usuários e regras, edição dos usuários"
+        "name": "Listar usuários",
+        "title": "Listar usuários",
+        "subtitle": "Lista os usuários e os seus cargos. Você pode editar os usuários"
       }
     },
     "networkAndInternet": {
@@ -62,21 +113,62 @@
     }
   },
   "form": {
-    "name": "Nome",
-    "lastName": "Last Nome",
-    "email": "Email",
-    "username": "CPF",
-    "password": "Senha",
+    "color_hex": "Cor (Hexadecimal)",
+    "color_name": "Nome da COR",
+    "color": "Cor",
     "confirmPassword": "Confirmar senha",
-    "showPassword": "Mostrar senha",
+    "created_at": "Criado em",
+    "created_by": "Criado por",
+    "date": "Data",
+    "description": "Descrição",
+    "edited_by": "Editado por",
+    "email": "Email",
+    "img": "Imagem",
+    "imgUrl": "URL da imagem",
+    "last_played": "Última vez Iniciado",
+    "lastNome": "Sobrenome",
+    "minCharacters": "Esse campo deve ter pelo menos {count} caracteres",
+    "name": "Nome",
+    "part_number": "Código da peça",
+    "parts": "Peças",
+    "password": "Senha",
+    "passwordMatch": "As senhas não conferem",
+    "process": "Processo",
     "register": "Registrar",
-    "required": "Ei! Eu sou obrigatório",
-    "validEmail": "Esse e-mail não é valido",
-    "validPassword": "Senha inválida",
-    "passwordMatch": "As senha não são iguais",
-    "minCharacters": "This field must have at least {count} characters",
+    "required": "Obrigatório",
+    "requiredFields": "Preencha todos os campos obrigatórios",
+    "showPassword": "Mostrar senha",
     "singIn": "Login",
-    "singInTitle": "Login"
+    "singInTitle": "Login",
+    "sketch": "Esboço",
+    "supplier": "Fornecedor",
+    "unit": "Unidade",
+    "updated_at": "Atualizado em",
+    "username": "CPF",
+    "validEmail": "Insira um email válido",
+    "validPassword": "Insira uma senha válida",
+    "user": "Usuário",
+    "subdivisions": "Subdivisões",
+    "quantityX": "Quantidade em X",
+    "quantityY": "Quantidade em Y",
+    "sizeX": "Tamanho em X",
+    "sizeY": "Tamanho em Y",
+    "marginX": "Margem em X",
+    "marginY": "Margem em Y",
+    "originX": "Origem em X",
+    "originY": "Origem em Y",
+    "slots": "Lugares",
+    "partNumber": "Código da peça",
+    "partNumberAb": "CP",
+    "variable": "Variável",
+    "matrix": "Matriz",
+    "object": "Objeto",
+    "origin": "Origem",
+    "order":"Ordem",
+    "last_name": "Sobrenome",
+    "first_name": "Nome",
+    "_id":"ID"
+
   },
   "levels": {
     "name": "Nível",
@@ -86,54 +178,81 @@
     "maintenance": "Manutenção"
   },
   "buttons": {
-    "save": "Salvar",
-    "confirm": "Confirmar",
+    "add": "Adicionar",
     "cancel": "Cancelar",
-    "delete": "Delete",
-    "edit": "Edit",
-    "add": "Add",
-    "remove": "Remove",
-    "close": "Close",
-    "send": "Send",
+    "changePassword": "Mudar a senha",
+    "close": "Fechar",
+    "confirm": "Confirmar",
+    "delete": "Deletar",
+    "edit": "Editar",
+    "forgotPassword": "Esqueci a senha",
+    "list": "Lista",
     "login": "Login",
-    "logout": "Logout",
-    "register": "Register",
-    "forgotPassword": "Forgot Password",
-    "resetPassword": "Reset Password",
-    "changePassword": "Change Password"
+    "logout": "Sair",
+    "register": "Registrar",
+    "remove": "Remover",
+    "resetPassword": "Mudar a Senha",
+    "save": "Salvar",
+    "search": "Pesquisar",
+    "play": "Iniciar",
+    "resume": "Continuar",
+    "start": "Iniciar",
+    "pause": "Pausar",
+    "stop": "Parar",
+    "send": "Enviar"
   },
   "prepositions": {
-    "or": "or"
+    "or": "ou"
   },
   "greetings": {
-    "hello": "Hello",
-    "welcome": "Welcome! "
+    "hello": "Olá",
+    "welcome": "Bem vindo! "
   },
   "alerts": {
-    "loginFail": "Failed to login, make sure your details are correct, 😢",
-    "runningProcess": "The process is running 🚀",
-    "pauseSuccess": "Process was paused ✋",
-    "pauseFail": "Fail to pause the process, 😢",
-    "failToRunProcess": "Failed to run process, 😢",
-    "RegisterUserFail": "Failed to register user, 😢",
-    "RegisterUserSuccess": "User registered successfully 🤙",
-    "processStopped": "The process was stopped ✋",
-    "saveFail": "Could not save file 😢",
-    "saveSuccess": "The process was saved 👌",
-    "invalidFile": "Invalid file, your file must be an '.oms' 😢",
-    "deleteFail": "Could't possible to delete the {obj} 😢",
-    "deleteSuccess": "The {obj} was deleted 👍"
+    "copied": "👌 Copiado!",
+    "deleteFail": "❌ Não foi possível deletar",
+    "deleteSuccess": "Deletado com sucesso 👌 ",
+    "failToRunProcess": "Falha ao executar o processo 😢",
+    "invalidFile": "Arquivo inválido, seu arquivo deve ser um '.oms' 😢",
+    "loginFail": "Não foi possível fazer o login, verifique seus dados 😢",
+    "pauseFail": "Não foi possível pausar o processo 😢",
+    "pauseSuccess": "Processo pausado com sucesso 👌 ",
+    "processStopped": "Processo parado com sucesso 👌 ",
+    "registerUserFail": "Não foi possível registrar o usuário 😢",
+    "registerUserSuccess": "Usuário registrado com sucesso 👌 ",
+    "registerMatrixFail": "Não foi possível registrar a matriz 😢",
+    "registerMatrixSuccess": "Matriz registrada com sucesso 👌 ",
+    "runningProcess": "Processo em execução",
+    "runningProcessFail": "Não foi possível iniciar o processo 😢",
+    "saveFail": "Não foi possível salvar 😢",
+    "saveSuccess": "Salvo com sucesso 👌 ",
+    "updateObjFail": "Não foi possível atualizar o objeto 😢",
+    "updateObjSuccess": "Objeto atualizado com sucesso 👌 ",
+    "updateProcessFail": "Não foi possível atualizar o processo 😢",
+    "updateProcessSuccess": "Processo atualizado com sucesso 👌 ",
+    "updateUserFail": "Não foi possível atualizar o usuário 😢",
+    "updateUserSuccess": "Usuário atualizado com sucesso 👌 ",
+    "updateMatrixFail": "Não foi possível atualizar a matriz 😢",
+    "updateMatrixSuccess": "Matriz atualizada com sucesso 👌 ",
+    "updateVariableFail": "Não foi possível atualizar a variável 😢",
+    "formError": "Preencha todos os campos obrigatórios",
+    "wsConnectSuccess": "Conectado com sucesso 👌 ",
+    "wsConnectFail": "Não foi possível conectar 😢",
+    "wsConnecting": "Conectando...",
+    "updateVariableSuccess": "Variável atualizada com sucesso 👌 ",
+    "restart_ok":"Reiniciado com sucesso 👌 ",
+    "restart_fail":"Não foi possível reiniciar 😢"
   },
   "list": {
-    "sortBy": "Sort by",
-    "filterBy": "Filter by",
-    "Search": "Search",
-    "totalUsers": "total of users"
+    "sortBy": "Ordenar por",
+    "filterBy": "Filtrar por",
+    "Search": "Pesquisar",
+    "totalUsers": "Total de usuários"
   },
   "dialogs": {
-    "removeConfirm": "Are you sure you want to delete?",
-    "removeDescription": "This {obj} will be deleted, are you sure you want to delete it?"
+    "removeConfirm": "Você tem certeza que deseja remover?",
+    "removeDescription": "Você não poderá recuperar o {obj} depois de removido.",
+    "selectObject": "Selecione um objeto",
+    "selectMatrix": "Selecione uma matriz"
   }
-
-  
 }

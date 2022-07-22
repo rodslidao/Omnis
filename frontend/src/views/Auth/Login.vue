@@ -2,7 +2,7 @@
   <div>
     <div v-if="!isAuth">
       <v-row justify="end">
-        <v-dialog v-model="dialog" max-width="500px" class="rounded-xl">
+        <v-dialog v-model="dialog" max-width="500px" class="rounded-xl" persistent>
           <template v-slot:activator="{ on, attrs }">
             <v-btn
               color="primary"
@@ -11,15 +11,16 @@
               dark
               v-bind="attrs"
               v-on="on"
+              :disabled="dialog"
             >
               {{ $t('form.singIn') }}
             </v-btn>
           </template>
           <v-card>
             <div class="d-flex justify-end">
-              <v-btn icon @click="dialog = false">
+              <!-- <v-btn icon @click="dialog = false">
                 <v-icon>mdi-close</v-icon>
-              </v-btn>
+              </v-btn> -->
             </div>
             <v-card-title class="d-flex justify-center">
               <span class="text-h4 my-4">{{ $t('form.singInTitle') }}</span>
@@ -122,7 +123,7 @@ import { mapActions, mapGetters } from 'vuex';
 
 export default {
   data: () => ({
-    dialog: false,
+    dialog: true,
     valid: true,
     loading: false,
     items: [],

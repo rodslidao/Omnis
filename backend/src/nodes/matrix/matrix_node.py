@@ -108,9 +108,10 @@ class MatrixNode(BaseNode):
         try:
             self.blister = Blister(
                 **dbo.find_one(
-                    "matrix-manager", {"_id": ObjectId("62c7144bfee7046eafa54d82")}
+                    "matrix-manager", {"_id": ObjectId(options["matrix"]["id"])}
                 )
             )
+
         except TypeError:
             TypeError(Alert(
                 "error",

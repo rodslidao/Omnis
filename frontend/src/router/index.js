@@ -43,7 +43,7 @@ const routes = [
     redirect: '/config/system',
     component: Settings,
     meta: {
-      breadCrumb: 'Configurações',
+      breadCrumb: 'settings.name',
     },
     children: [
       {

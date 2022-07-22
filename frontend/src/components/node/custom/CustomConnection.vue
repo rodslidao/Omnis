@@ -61,7 +61,7 @@ export default {
       this.updateCoords();
     });
 
-    this.connectToWebsocket();
+    // this.connectToWebsocket(); // This will create (Nodes_qtd*(input+output)) sockets instances; How to use same instance for all?
     // eslint-disable-next-line no-unused-vars
     const timeOut = null;
   },
@@ -75,11 +75,10 @@ export default {
 
       this.WebSocket.onmessage = (event) => {
         const data = JSON.parse(event.data);
-        console.log(data);
         let timeOut = null;
         if (
-          data?.info.message.from === this.connection.from.id &&
-          data?.info.message.to === this.connection.to.id
+          data?.info?.message?.from === this.connection.from.id &&
+          data?.info?.message?.to === this.connection.to.id
         ) {
           this.connectionActive = true; // Activate animation
           clearTimeout(timeOut); // Reset timeout if called
@@ -90,16 +89,8 @@ export default {
         }
       };
 
-      this.WebSocket.onopen = (event) => {
-        console.log(event);
-        console.log(this.$t('alerts.wsConnectSuccess'));
-      };
-
       this.WebSocket.onclose = (event) => {
-        console.log(
-          'Socket is closed. Reconnect will be attempted in 1 second.',
-          event.reason
-        );
+        this.WebSocket.close()
         setTimeout(
           () => this.connectToWebsocket(),
           Math.floor(Math.random() * 2500)

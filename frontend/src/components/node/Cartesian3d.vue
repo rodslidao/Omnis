@@ -45,9 +45,14 @@ export default {
 
   created() {
     this.connectToWebsocket();
+    window.addEventListener('beforeunload', this.leaving);
   },
 
   methods: {
+    leaving: function () {
+        console.log("Exiting")
+        this.WebSocket.close()
+    },
     // generate() {
     //   setInterval(() => {
     //     this.cssVars['--position-x'] = Math.floor(Math.random() * 1000);
@@ -78,6 +83,7 @@ export default {
           'Socket is closed. Reconnect will be attempted in 1 second.',
           event.reason,
         );
+        this.WebSocket.close()
         setTimeout(() => this.connectToWebsocket(), Math.floor(Math.random() * 2500));
       };
     },

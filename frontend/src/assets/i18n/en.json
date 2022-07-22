@@ -83,7 +83,9 @@
         "last_name": "Surname",
         "username": "SSN",
         "email": "Email",
-        "last_access": "Last Access"
+        "last_access": "Last Access",
+        "_id": "ID",
+        "avatar_image": "Profile Picture"
       },
       "myAccount": "My Account",
       "registerUser": {
@@ -158,7 +160,11 @@
     "variable": "Variables",
     "matrix": "Matrix",
     "object": "Object",
-    "origin": "Origin"
+    "origin": "Origin",
+    "order":"Order",
+    "last_name": "Surname",
+    "first_name": "Name",
+    "_id":"ID"
 
   },
   "levels": {
@@ -231,7 +237,9 @@
     "wsConnectSuccess": "Websocket was connected with successfully",
     "wsConnectFail": "Could not connect to Websocket",
     "wsConnecting": "Connecting to Websocket",
-    "updateVariableSuccess": "The variable was updated👍"
+    "updateVariableSuccess": "The variable was updated👍",
+    "restart_ok":"Server restarted",
+    "restart_fail":"Server can't restart"
     
   },
   "list": {
