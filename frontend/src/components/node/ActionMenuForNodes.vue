@@ -1,7 +1,7 @@
 /* eslint-disable no-underscore-dangle */
 <template>
   <div class="actions-container">
-    <div class="menuList" v-on:keyup.ctrl.s="save">
+    <div  class="menuList" v-on:keyup.ctrl.s="save">
       <v-speed-dial
         v-model="fab"
         direction="top"
@@ -32,7 +32,7 @@
           @change="upload"
           accept=".oms,"
         />
-        <v-btn color="primary" class="" dark @click="chooseFiles()">
+        <v-btn v-show="false" color="primary" class="" dark @click="chooseFiles()">
           <v-icon left dark>mdi-upload</v-icon>Upload
         </v-btn>
         <v-btn color="primary" class="" dark @click="folderDialog = true">

@@ -54,7 +54,7 @@ export default {
     nodeCopy: null,
     valueCopy: null,
     rules: {
-      required: (value) => !!value || 'Required.',
+      required: (value) => !!value ||  this.$t('form.required'),
       positive: (value) => value > 0 || 'Positive number required.',
     },
     valid: false,

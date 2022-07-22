@@ -16,7 +16,7 @@
                   <img v-if="user.avatar_image" :src="user.avatar_image" />
                   <!-- <span v-else class="text-uppercase">{{ getInitials }}</span> -->
                 </v-avatar>
-                <v-chip class="mt-2" small>
+                <v-chip v-if="user.level" class="mt-2" small>
                   {{ $t('levels.' + user.level) }}
                 </v-chip>
               </div>

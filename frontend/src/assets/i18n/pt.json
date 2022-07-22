@@ -78,7 +78,7 @@
       "accountsDetails": {
         "name": "Detalhes de conta",
         "title": "Detalhes da conta",
-        "subtitle": "Ver e editar detalhes da conta"
+        "subtitle": "Ver e editar detalhes da sua conta"
       },
       "fields": {
         "level": "Cargo",
@@ -86,7 +86,9 @@
         "last_name": "Sobrenome",
         "username": "CPF",
         "email": "Email",
-        "last_access": "Último Acesso"
+        "last_access": "Último Acesso",
+        "_id": "ID",
+        "avatar_image": "Foto de Perfil"
       },
       "myAccount": "Minha conta",
       "registerUser": {
@@ -162,7 +164,10 @@
     "matrix": "Matriz",
     "object": "Objeto",
     "origin": "Origem",
-    "order":"Ordem"
+    "order":"Ordem",
+    "last_name": "Sobrenome",
+    "first_name": "Nome",
+    "_id":"ID"
 
   },
   "levels": {

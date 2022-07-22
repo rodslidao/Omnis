@@ -21,7 +21,7 @@
           >
             {{ nameComplete }}
           </div>
-          <div class="text-subtitle-2">{{ $t('levels.' + user.level) }}</div>
+          <div v-if="user.level" class="text-subtitle-2">{{ $t('levels.' + user.level) }}</div>
         </div>
       </div>
 

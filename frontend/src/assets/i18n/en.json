@@ -83,7 +83,9 @@
         "last_name": "Surname",
         "username": "SSN",
         "email": "Email",
-        "last_access": "Last Access"
+        "last_access": "Last Access",
+        "_id": "ID",
+        "avatar_image": "Profile Picture"
       },
       "myAccount": "My Account",
       "registerUser": {
@@ -159,7 +161,10 @@
     "matrix": "Matrix",
     "object": "Object",
     "origin": "Origin",
-    "order":"Order"
+    "order":"Order",
+    "last_name": "Surname",
+    "first_name": "Name",
+    "_id":"ID"
 
   },
   "levels": {
