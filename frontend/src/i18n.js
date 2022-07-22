@@ -7,9 +7,10 @@ Vue.use(VueI18n);
 
 export default new VueI18n({
   lazy:true,
-  locale: localStorage.getItem('lang') || 'en',
+  locale: localStorage.getItem('lang') || navigator.language || navigator.userLanguage || 'en',
   messages: {
     "pt":pt,
+    "pt-BR":pt,
     "en":en,
   },
 });
