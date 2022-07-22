@@ -1,8 +1,5 @@
-from api import logger, exception
-
-
+from bson import ObjectId
 class Message:
-    @exception(logger)
     def __init__(
         self,
         sourceId,
@@ -22,7 +19,7 @@ class Message:
         self.targetNodeId = targetNodeId
         self.payload = payload
         self.additional = additional
+        self._id = ObjectId()
 
-    @exception(logger)
     def __str__(self) -> str:
-        return f"[{self.sourceName}] -> [{self.targetNodeId}|{self.targetName}] : {self.payload}"
+        return f"([{self.targetNodeId}|{self.targetName}]"

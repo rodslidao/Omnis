@@ -1,0 +1,6 @@
+interface metadata {
+  created_at: timestamptz!
+  created_by: user!
+  edited_by: user
+  updated_at: timestamptz
+}

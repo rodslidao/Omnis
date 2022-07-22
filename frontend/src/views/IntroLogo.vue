@@ -10,18 +10,16 @@
     >
       <source src="../assets/img/logo-red-white.mp4" type="video/mp4" />
     </video>
-  
   </section>
 </template>
 
 <script>
 // import mixins from "../_linkers/conectors.js";
-import { mapActions, mapState } from "vuex";
-import {socket_events, socket_actions } from "../socket/socketio";
+import { mapActions, mapState } from 'vuex';
 
 export default {
   // mixins: [mixins],
-  name: "IntroLogo",
+  name: 'IntroLogo',
   data: () => ({
     videoElement: null,
     loaded: false,
@@ -33,49 +31,46 @@ export default {
   }),
 
   mounted() {},
-  sockets:socket_events,
   methods: {
-    ...mapActions(["startConnection", "sendMessage"]),
-    ...socket_actions,
+    ...mapActions(['startConnection', 'sendMessage']),
     getElement(event) {
+      // eslint-disable-next-line no-restricted-globals
       if (!isNaN(event.target.duration) && !this.loaded) {
         // console.log(socket_actions)//("setup_objects");
         // socket_actions.call_function("setup_objects");
         this.duration = event.target.duration;
         this.nextPage(event.target.duration);
+        // eslint-disable-next-line no-param-reassign
         event.target.currentTime = 0;
-       event.target.play();
+        event.target.play();
         this.loaded = true;
       }
     },
 
     nextPage(timeout) {
-      setTimeout(
-        () => {
-          if(this.$route.name == 'intro-logo'){
-            // call_function('setup_objects')
-          this.$router.push({ path: "/progress" }).catch(() => {})
-          }
-        },
-        timeout*1000+500
-      );
+      setTimeout(() => {
+        if (this.$route.name === 'intro-logo') {
+          // call_function('setup_objects')
+          this.$router.push({ path: '/progress' }).catch(() => {});
+        }
+      }, timeout * 1000 + 500);
     },
   },
 
-  created: function () {
+  created() {
     this.startConnection();
   },
 };
 </script>
 
 <style scoped lang="scss">
-@import "@/assets/scss/_variables.scss";
+@import '@/assets/scss/_variables.scss';
 
 .content {
   display: grid;
   place-items: center;
   height: 100%;
-  background-color: #e93926;
+  background-color: #d53329;
 
   .video {
     width: 80vw;

@@ -1,6 +1,7 @@
 from src.nodes.node_manager import NodeManager
-from src.nodes.base_node import BaseNode
+from src.nodes.base_node import BaseNode, Wizard
 from api import logger, exception
+from api.decorators import for_all_methods
 
 from cv2 import (
     getStructuringElement,
@@ -38,15 +39,15 @@ element_types = {
 }
 
 
+@for_all_methods(exception(logger))
 class MorphoperationNode(BaseNode):
     """
     insert_node_description_here
     """
 
-    @exception(logger)
-    def __init__(self, name, id, options, outputConnections, inputConnections) -> None:
-        super().__init__(name, NODE_TYPE, id, options, outputConnections)
-        self.inputConnections = inputConnections
+    def __init__(self, name, id, options, output_connections, input_connections):
+        super().__init__(name, NODE_TYPE, id, options, output_connections)
+        self.input_connections = input_connections
         self.op_type = options.operation_type["value"]
         self.element_type = options.element_type["value"]
         self.k_size = options.k_size["value"]
@@ -54,25 +55,30 @@ class MorphoperationNode(BaseNode):
             element_types[self.element_type], (self.k_size, self.k_size)
         )
 
-        self.auto_run = options["auto_run"]
+        self.auto_run = options.get("auto_run", False)
         NodeManager.addNode(self)
 
-    @exception(logger)
+    @Wizard._decorator
     def execute(self, message):
-        self.image = message["payload"]
+        self.image = message.payload
         try:
             _ = morphologyEx(self.image, operations_types[self.op_type], self.kernel)
             self.onSuccess(_)
         except Exception as e:
             self.onFailure(f"{self._id} cant execute.", pulse=True, errorMessage=str(e))
 
-    @exception(logger)
     def get_frame(self):
         return self.image
 
     @staticmethod
-    @exception(logger)
-    def get_info():
+    def apply_morph(image, operation_type, element_type, k_size, iterations=1):
+        kernel = getStructuringElement(element_types[element_type], (k_size, k_size))
+        return morphologyEx(
+            image, operations_types[operation_type], kernel, iterations=iterations
+        )
+
+    @staticmethod
+    def get_info(**kwargs):
         return {
             "options": {
                 "operations_types": list(operations_types.keys()),

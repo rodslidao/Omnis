@@ -1,37 +1,76 @@
-input NodeSheetInput {
+input NodeSheetInput{
   name: String!
 }
 
 input CameraInput {
   src: Int!
   name: String
+  _id: ID
 }
 
-input SerialInput{
-  baudrate:Int
-  bytesize:Int
-  description:Int
-  device:Int
-  dsrdtr:Boolean
-  is_gcode:Boolean
-  manufacturer:Int
-  parity:String
-  pid:Int
-  port:String
-  rtscts:Boolean
-  serial_number:Int
-  stopbits:Int
-  subsystem:Int
-  timeout:Int
-  vid:Int
-  xonxoff:Boolean
+input SerialInput {
+  baudrate: Int
+  bytesize: Int
+  description: Int
+  device: Int
+  dsrdtr: Boolean
+  is_gcode: Boolean
+  manufacturer: Int
+  parity: String
+  pid: Int
+  port: String
+  rtscts: Boolean
+  serial_number: Int
+  stopbits: Int
+  subsystem: Int
+  timeout: Int
+  vid: Int
+  xonxoff: Boolean
+  _id: ID
 }
 
 input AlertInput {
   level: String!
   title: String!
   description: String!
-  how2solve: String
-  buttonText: String
-  buttonAction: String
+  how_to_solve: String
+  button_text: String
+  button_action: String
+}
+
+input CalibrateRequestInput {
+  camera_id: ID!
+  frame_interval: Int!
+  data_set_size: Int!
+  min_blur: Int!
+  max_blur: Int!
+  show: Boolean
+  export_path: String!
+  squaresX: Int!
+  squaresY: Int!
+  squareLength: Int!
+  markerSize: Int!
+  dictionary_name: String!
+}
+
+
+input reg_user {
+  username: String
+  password: String
+  email: String
+  first_name: String
+  last_name: String
+  level: String
+}
+
+input reg_target{
+  name: String
+  description: String
+  part_number: String
+  supplier: String
+  parts: Int
+  unit: String
+  color_hex: String
+  color_name: String
+  img: String
 }

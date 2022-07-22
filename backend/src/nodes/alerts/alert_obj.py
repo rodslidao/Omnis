@@ -1,66 +1,56 @@
 from datetime import datetime
 from api.store import alerts
 from api import logger, exception
+from api.decorators import for_all_methods
+from api.subscriptions import SubscriptionFactory
 
 AlertLevel = {"INFO": "INFO", "WARNING": "WARNING", "ERROR": "ERROR", "LOG": "LOG"}
 
+AlertManager = SubscriptionFactory(alerts, 'alerts')
 
-class AlertManager:
-    async def add(alert):
-        """
-        Await to add alert to queue
-        """
-        for queue in alerts:
-            await queue.put(alert)
-
-    def put(alert):
-        """
-        Put alert to queue without await
-        """
-        for queue in alerts:
-            queue.put_nowait(alert)
-
-
+@for_all_methods(exception(logger))
 class Alert:
     """
     Add an alert object to all subscribed queue's.
     """
 
-    @exception(logger)
     def __init__(
         self,
         level,
         title,
         description,
-        how2solve="",
-        buttonText="Ok",
-        buttonAction="Ok",
+        how_to_solve="",
+        button_text="Ok",
+        button_action="Ok",
+        delay=0,
     ):
         """
         Create a new Alert object.
         """
-        self.level = level
+        self.level = level 
         self.date = float(datetime.now().timestamp())
         self.title = title
         self.description = description
-        self.how2solve = how2solve
-        self.buttonText = buttonText
-        self.buttonAction = buttonAction
+        self.how_to_solve = how_to_solve
+        self.button_text = button_text
+        self.button_action = button_action
+        getattr(logger, self.level.lower())(f"{self.items()}")
         AlertManager.put(self)
-        # await AlertManager.add(self)
 
     def __str__(self) -> str:
         """
         Return a string representation of the Alert object.
         """
         message = ""
-        for k, v in self.__dict__.items():
+        for k, v in self.items():
             message += f"{k[0].upper()}{k[1:]}:\t{v}\n"
         return message
 
-    @classmethod
-    def dict(self):
+    def __repr__(self) -> str:
+        return str(self)
+
+    def items(self):
         """
         Return a dictionary representation of the Alert object.
         """
-        return self.__dict__
+        return vars(self)

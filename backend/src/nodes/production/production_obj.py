@@ -1,8 +1,10 @@
 from datetime import datetime, timedelta
 from bson import ObjectId
 from api import logger, exception
+from api.decorators import for_all_methods
 
 
+@for_all_methods(exception(logger))
 class ProductionOBJ:
     """
     A class thats format a process execution time and status to be stored in an NoSQL database.]
@@ -22,7 +24,7 @@ class ProductionOBJ:
     Notes:\n
     \t'process_seconds' is a float value calculated when 'finish' is called.\n
     \t'finish(model, status)' must be called to finish the process and is a magic method that returns a dict representation of the process.\n
-    \t'expireAt': is calculated suming the 'expire_delay' keys with 'createAt'.\n
+    \t'expireAt': is calculated summing the 'expire_delay' keys with 'createAt'.\n
     \t'expire_delay' is a dict with the following keys:\n
     \t\t\tseconds: Number of seconds to add to 'createAt' to calculate 'expireAt'.\n
     \t\t\tminutes: Minutes to add to 'createAt' to calculate 'expireAt'.\n
@@ -35,7 +37,6 @@ class ProductionOBJ:
 
     """
 
-    @exception(logger)
     def __init__(self, expire_delay={"minutes": 0.5}) -> None:
         self.process_seconds = None
         self.date = datetime.utcnow()
@@ -43,14 +44,12 @@ class ProductionOBJ:
         self.st = datetime.utcnow()
         self.delay = expire_delay
 
-    @exception(logger)
     def start(self):
         """
         Overwrite 'createAt' with actual utc timestamp.
         """
         self.st = datetime.utcnow()
 
-    @exception(logger)
     def finish(self, model=None, status=False):
         """
         Calculate: 'process_seconds' and 'expireAt'.
@@ -62,7 +61,6 @@ class ProductionOBJ:
         self.expire = self.date + timedelta(**self.delay)
         return self()
 
-    @exception(logger)
     def __call__(self):
         return {
             "_id": self._id,

@@ -1,29 +1,20 @@
 import Vue from 'vue';
-import App from './App.vue';
 import router from '@/router';
 import VueTheMask from 'vue-the-mask';
 import VueHaptic from 'vue-haptic';
-import JsonEditor from 'vue-json-edit';
 import VueApexCharts from 'vue-apexcharts';
+// import {WebRTC} from 'vue-webrtc';
 
 import AlertFeedback from '@/plugins/alertFeedback';
+import AccessControl from '@/plugins/AccessControl';
+
+import timestampToDate from '@/plugins/dateTime';
 
 import { BaklavaVuePlugin } from '@baklavajs/plugin-renderer-vue';
+import i18n from './i18n';
+import App from './App.vue';
 import '@baklavajs/plugin-renderer-vue/dist/styles.css';
 
-// import VueSocketIOExt from 'vue-socket.io-extended';
-// import { io } from 'socket.io-client';
-// import store from './store/index'
-
-// const socket = io('http://192.168.1.31:5000');
-
-// Vue.use(VueSocketIOExt, socket, { store });
-
-// const SocketInstance = SocketIO(MY_URL);
-// -------
-
-// import VueSocketIO from 'vue-socket.io';
-// import SocketIO from 'socket.io-client';
 import { store } from './store/index';
 import vuetify from './plugins/vuetify';
 import '@/assets/scss/main.scss';
@@ -37,26 +28,13 @@ import { createProvider } from './vue-apollo';
 
 Vue.use(BaklavaVuePlugin);
 
-const options = {
-  // reconnectionAttempts: 3,
-  reconnection: true,
-  // reconnectionDelay: 10,
-  // timeout: 30,
-};
 
-// Vue.use(new VueSocketIO({
-//   debug: true,
-//   // connection: SocketIO('http://' + process.env.VUE_APP_URL_API_IP +':'+ process.env.VUE_APP_URL_API_PORT, options),
-//   connection: SocketIO(`http://${process.env.VUE_APP_URL_API_IP}:${process.env.VUE_APP_URL_API_PORT}`, options),
-//   vuex: {
-//     store,
-//     mutationPrefix: 'SOCKET_',
-//     actionsPrefix: 'SOCKET_',
-//   },
-
-// }));
-
-// -------
+// const options = {
+//   // reconnectionAttempts: 3,
+//   reconnection: true,
+//   // reconnectionDelay: 10,
+//   // timeout: 30,
+// };
 
 // Vue.use(VueApexCharts)
 
@@ -78,23 +56,27 @@ Vue.use(VueHaptic, {
 });
 
 // Vue.use(VueTheMask)
-// soket.io instance creat
-// import socketio from 'socket.io';
-// import VueSocketIO from 'vue-socket.io';
-// Vue.use(VueSocketIO, SocketInstance, store)
 
-// Vue.use(VueSocketIO, SocketInstance)
-Vue.use(VueTheMask, JsonEditor, VueApexCharts, BaklavaVuePlugin);
+// Vue.component(WebRTC.name, WebRTC);
+Vue.use(VueTheMask, VueApexCharts, BaklavaVuePlugin, i18n);
+Vue.use(timestampToDate);
+
 Vue.use(AlertFeedback, {
   store,
 });
 
+Vue.use(AccessControl, {
+  store,
+});
+
 Vue.prototype.$workbox = wb;
+Vue.config.devtools = true
 
 new Vue({
   vuetify,
-  render: (h) => h(App),
+  i18n,
   router,
   apolloProvider: createProvider(),
   store,
+  render: (h) => h(App),
 }).$mount('#app');

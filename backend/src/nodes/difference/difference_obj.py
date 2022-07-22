@@ -15,7 +15,7 @@ def direct_diff(img1, img2, threshold):
 
 
 @exception(logger)
-def similariy_diff(img1, img2, threshold):
+def similarity_diff(img1, img2, threshold):
     img1 = cvtColor(img1, COLOR_BGR2GRAY)
     img2 = cvtColor(img2, COLOR_BGR2GRAY)
 

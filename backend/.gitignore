@@ -2,3 +2,6 @@
 r.txt
 *.log
 *.*.json
+core
+*.pckl
+*Test.py

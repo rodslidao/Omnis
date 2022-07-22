@@ -1,11 +1,15 @@
-include .env
+NODE_ENV?=production
+env ?= .env.${NODE_ENV}
+include $(env)
+export $(shell sed 's/=.*//' $(env))
+
 .PHONY: up
 up:
-	docker-compose up -d
+	docker-compose --env-file .env.${NODE_ENV} --profile ${NODE_ENV}  up -d --remove-orphans && make logs 
 
 .PHONY: down
 down:
-	docker-compose down
+	docker-compose down -v
 
 .PHONY: update
 update:
@@ -19,18 +23,14 @@ build:
 logs:
 	docker-compose logs -f
 
-.PHONY: graph_up
-graph_up:
-	docker-compose  --env-file=.env --file ./elasticstack/elastic-compose.yml up -d --build
-
-.PHONY: graph_down
-graph_down:
-	docker-compose --env-file=.env --file ./elasticstack/elastic-compose.yml down
-
 .PHONY: restart
 restart:
 	docker-compose restart
 
 .PHONY: restart-force
 restart-force:
-	docker-compose down && docker-compose up -d
+	docker-compose down -v && docker-compose --env-file .env.${NODE_ENV} --profile ${NODE_ENV} up -d --remove-orphans && make logs 
+
+.PHONY: test
+test:
+	echo ${DB_PASS}

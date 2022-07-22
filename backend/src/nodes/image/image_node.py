@@ -1,7 +1,8 @@
 from src.nodes.node_manager import NodeManager
-from src.nodes.base_node import BaseNode
+from src.nodes.base_node import BaseNode, Wizard
 from src.nodes.image.image_obj import Image
 from api import logger, exception
+from api.decorators import for_all_methods
 
 NODE_TYPE = "IMAGE"
 
@@ -19,34 +20,32 @@ properties = [
 ]
 
 
+@for_all_methods(exception(logger))
 class ImageNode(BaseNode):
     """
     Node to manipulate an image with mos common operations.
     """
 
-    @exception(logger)
-    def __init__(self, name, id, options, outputConnections, inputConnections) -> None:
-        super().__init__(name, NODE_TYPE, id, options, outputConnections)
-        self.inputConnections = inputConnections
+    def __init__(self, name, id, options, output_connections, input_connections):
+        super().__init__(name, NODE_TYPE, id, options, output_connections)
+        self.input_connections = input_connections
         self.image = None  # ? Maybe we should use a Image object instead of None ?
         self.properties = options.image.get("properties", [])
-        self.auto_run = options["auto_run"]
+        self.auto_run = options.get("auto_run", False)
         NodeManager.addNode(self)
 
-    @exception(logger)
+    @Wizard._decorator
     def execute(self, message=""):
 
-        self.image = Image(image=message["payload"])
+        self.image = Image(image=message.payload)
         self.onSuccess(self.image)
 
         for prop in self.properties:
             self.on(prop, getattr(self.image, prop))
 
-    @exception(logger)
     def get_frame(self):
         return self.image()
 
     @staticmethod
-    @exception(logger)
-    def get_info():
+    def get_info(**kwargs):
         return {"options": {"properties": properties}}
