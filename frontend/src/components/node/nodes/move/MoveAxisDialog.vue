@@ -46,7 +46,6 @@
                     v-if="axis.name != 'F'"
                     class="ml-3"
                     v-model="axis.value"
-                    type="number"
                     :disabled="!axis.isActive"
                     dense
                     hide-details
@@ -68,9 +67,7 @@
                 <v-text-field
                   class="ml-3"
                   v-model="axisListCopy.at(-1).value"
-                  number
                   :disabled="!axisListCopy.at(-1).isActive"
-                  type="number"
                   dense
                   hide-details
                 ></v-text-field>
