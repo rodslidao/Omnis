@@ -23,6 +23,7 @@
           <settings-list-item-matrix
             @remove="remove"
             @edit="edit"
+            @duplicate="duplicate"
             :obj="itemList.data"
           ></settings-list-item-matrix>
           <v-divider></v-divider>
@@ -64,6 +65,13 @@ const REMOVE_MATRIX = gql`
   }
 `;
 
+const DUPLICATE_MATRIX= gql`
+  mutation ($_id: ID!) {
+    duplicate_matrix(_id: $_id)
+  }
+`;
+
+
 export default {
   components: {
     SettingsItems,
@@ -97,7 +105,6 @@ export default {
     },
 
     edit(obj) {
-      console.log('aQUI', obj);
 
       this.$router.push({
         name: 'matrixEdit',
@@ -127,6 +134,29 @@ export default {
           // Error
           this.isLoading = false;
           this.$alertFeedback(this.$t('alerts.deleteFail'), 'error', error);
+          // We restore the initial user input
+        });
+    },
+    async duplicate(_id) {
+      console.log('duplicate ==>>', _id);
+      await this.$apollo
+        .mutate({
+          mutation: DUPLICATE_MATRIX,
+          variables: {
+            _id
+          }
+        })
+        .then(() => {
+          // Result
+          this.refetch();
+          this.$alertFeedback(this.$t('alerts.duplicateSuccess'), 'success');
+          // this.isLoading = false;
+          // this.setSaved(this.selectedTabIndex);
+        })
+        .catch((error) => {
+          // Error
+          this.isLoading = false;
+          this.$alertFeedback(this.$t('alerts.duplicateFail'), 'error', error);
           // We restore the initial user input
         });
     },

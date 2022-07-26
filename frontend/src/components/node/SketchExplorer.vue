@@ -145,7 +145,7 @@ const DELETE_NODE_SHEET = gql`
 
 const DUPLICATE_NODE_SHEET = gql`
   mutation ($id: ID!) {
-    duplicateNodeSheet(_id: $id)
+    duplicate_sketch(_id: $id)
   }
 `;
 
