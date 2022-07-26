@@ -55,10 +55,12 @@ class CRUD:
         )
         return _id
 
-    def duplicate(self, *args, **kwargs):
-        item = self.get_item(args, **kwargs)
-        item.pop('_id')
-        return self.create(*args, input=item)
+    async def duplicate(self, *args, **kwargs):
+        item = await self.get_item(*args, **kwargs)
+        a = item.pop('_id')
+        kwargs.pop('_id')
+        logger.warning(self.create(*args, **kwargs, input=item))
+        return a 
         
 
 
@@ -71,7 +73,7 @@ class CRUD:
         return dbo.find_many(kwargs.get('collection', self.collection), ref=True)
 
     async def get_item(self, *args, **kwargs):
-        return dbo.find_one(kwargs.get('collection', self.collection), {"_id": ObjectId(kwargs.get("_id"))}, ref=True)
+        return dbo.find_one(kwargs.get('collection', self.collection), {"_id": ObjectId(kwargs.get("_id"))})
 
 
 class SSPR(CRUD):

@@ -202,12 +202,12 @@ export default {
           function: this.open,
           enabled: true,
         },
-        {
-          title: 'Duplicar',
-          btnIcon: 'content-duplicate',
-          function: this.duplicate,
-          enabled: true,
-        },
+        // {
+        //   title: 'Duplicar',
+        //   btnIcon: 'content-duplicate',
+        //   function: this.duplicate,
+        //   enabled: true,
+        // },
         // {
         //   title: 'Editar',
         //   btnIcon: 'pencil',

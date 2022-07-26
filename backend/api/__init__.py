@@ -37,16 +37,17 @@ from src.utility.crud.user import User
 
 def auth(lvl=None):
     def decorator(resolver):
-        def wrapper(obj, info: GraphQLResolveInfo, *args, **kwargs):
+        def wrapper(obj=None, info: GraphQLResolveInfo=None, logged=None, *args, **kwargs):
             try:
-                token = info.context["request"].headers.get('authorization').split(' ')[-1]
-                header_data = jwt.get_unverified_header(token)
-                token = jwt.decode(token, key=public_key, algorithms=[header_data['alg']])
+                if not kwargs.get('user'):
+                    token = info.context["request"].headers.get('authorization').split(' ')[-1]
+                    header_data = jwt.get_unverified_header(token)
+                    token = jwt.decode(token, key=public_key, algorithms=[header_data['alg']])
             except Exception as e:
                 logger.debug(f"Acess Denied, invalid or missing token: {e}.")
                 raise GraphQLError("Invalid credential")
             else:
-                user = User(**token)
+                user = User(**token) if not kwargs.get('user') else kwargs.get('user')
                 if user >= lvl:
                     logger.debug(f"User: {user.json} requesting {resolver.__name__}")
                     kwargs.update({'user':user})
