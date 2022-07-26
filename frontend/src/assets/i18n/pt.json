@@ -199,7 +199,8 @@
     "start": "Iniciar",
     "pause": "Pausar",
     "stop": "Parar",
-    "send": "Enviar"
+    "send": "Enviar",
+    "duplicate": "Duplicar"
   },
   "prepositions": {
     "or": "ou"
@@ -241,7 +242,9 @@
     "wsConnecting": "Conectando...",
     "updateVariableSuccess": "Variável atualizada com sucesso 👌 ",
     "restart_ok":"Reiniciado com sucesso 👌 ",
-    "restart_fail":"Não foi possível reiniciar 😢"
+    "restart_fail":"Não foi possível reiniciar 😢",
+    "duplicateSuccess": "Duplicado com sucesso 👌 ",
+    "duplicateFail": "Não foi possível duplicar 😢"
   },
   "list": {
     "sortBy": "Ordenar por",

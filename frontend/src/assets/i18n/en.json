@@ -196,7 +196,8 @@
     "start": "Start",
     "pause": "Pause",
     "stop": "Stop",
-    "send": "Send"
+    "send": "Send",
+    "duplicate":"Duplicate"
 
   },
   "prepositions": {
@@ -239,7 +240,9 @@
     "wsConnecting": "Connecting to Websocket",
     "updateVariableSuccess": "The variable was updated👍",
     "restart_ok":"Server restarted",
-    "restart_fail":"Server can't restart"
+    "restart_fail":"Server can't restart",
+    "duplicateFail": "Could't possible to duplicate 😢",
+    "duplicateSuccess": "The object was duplicated👍"
     
   },
   "list": {
