@@ -11,10 +11,11 @@
     <v-navigation-drawer
       dark
       v-model="drawer"
-      absolute
+      hide-overlay='true'
       right
       :permanent="drawer"
       width="400px"
+      app
     >
     <move></move>
     </v-navigation-drawer>
