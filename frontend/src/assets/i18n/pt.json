@@ -254,7 +254,7 @@
   },
   "dialogs": {
     "removeConfirm": "Você tem certeza que deseja remover?",
-    "removeDescription": "Você não poderá recuperar o {obj} depois de removido.",
+    "removeDescription": "Após confirmação, essa ação não poderá ser desfeita.",
     "selectObject": "Selecione um objeto",
     "selectMatrix": "Selecione uma matriz"
   }

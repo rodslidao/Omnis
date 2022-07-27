@@ -15,8 +15,8 @@
       <div class="d-flex">
         <dialog-confirmation
           v-if="dialogDelete"
-          :del="$t('settings.objs.obj')"
           @confirm-event="remove"
+          @cancel-event="dialogDelete = false"
         ></dialog-confirmation>
         <div>
           <v-menu transition="slide-x-transition" bottom left offset-x>

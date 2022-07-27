@@ -30,6 +30,7 @@
         v-if="dialogDelete"
         :del="$t('settings.users.user')"
         @confirm-event="remove"
+        @cancel-event="dialogDelete = false"
       ></dialog-confirmation>
       <v-chip v-if="user.level" class="mr-4">
         {{ $t('levels.' + user.level) }}
