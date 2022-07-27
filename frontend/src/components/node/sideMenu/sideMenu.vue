@@ -10,6 +10,7 @@
     >
     <v-navigation-drawer
       dark
+      absolute
       v-model="drawer"
       hide-overlay='true'
       right
@@ -18,6 +19,7 @@
       app
     >
     <move></move>
+    <v-footer class="justify-center pl-0" inset app></v-footer> 
     </v-navigation-drawer>
   </div>
 </template>
