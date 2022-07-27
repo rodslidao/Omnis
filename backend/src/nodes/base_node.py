@@ -70,9 +70,9 @@ class BaseNode(Wizard):
 
     """
 
-    def __init__(self, name, type, id, options, output_connections) -> None:
+    def __init__(self, name, type_, id, options, output_connections) -> None:
         self.name = name
-        self.type = type
+        self.type = type_
         self._id = id
         self.options = options
         self.output_connections = output_connections
@@ -87,7 +87,7 @@ class BaseNode(Wizard):
         }
         self.update_status({"status": "LOADED"})
         self.auto_run = options.get("auto_run", False)
-        logger.debug("[%s] Node loaded", self)
+        logger.debug(f"[{type(self).__name__}] || {self.name} Node loaded")
         Thread(target=self.auto_update, name=f"NodeStatus_auto_update", daemon=True).start()
 
     def auto_update(self):
