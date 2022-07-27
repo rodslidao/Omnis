@@ -7,6 +7,16 @@ on:
   push:
     branches: [ develop ]
   pull_request:
+    branches: [ Desenvolvimento ]
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'     
+        required: true
+        default: 'warning'
+      tags:
+        description: 'Test scenario tags'
+
 
 jobs:
   build:
