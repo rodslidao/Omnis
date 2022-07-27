@@ -5,9 +5,17 @@ name: Build Vue
 
 on:
   push:
-    branches: [ Desenvolvimento ]
+    branches: [ develop ]
   pull_request:
     branches: [ Desenvolvimento ]
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'     
+        required: true
+        default: 'warning'
+      tags:
+        description: 'Test scenario tags'
 
 jobs:
   build:
@@ -21,7 +29,7 @@ jobs:
         ref: ${{ github.head_ref }}
     - name: configure repo
       run:  |
-        git config --global user.name 'Omnis-Builder'
+        git config --global user.name 'action-builder'
         git config --global user.email 'Omnis-Actions@users.noreply.github.com'
         git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
     - name: Use Node.js ${{ matrix.node-version }}
@@ -38,11 +46,20 @@ jobs:
     - name: Deploy
       run: npm run build        
       working-directory: ./frontend
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        ref: ${{ github.head_ref }}
+    - name: configure repo
+      run:  |
+        git config --global user.name 'action-publisher-dist'
+        git config --global user.email 'Omnis-Actions@users.noreply.github.com'
+        git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
     - name: Commit report
       run: |
         git add .
         git commit -m "[build]"
-        git fetch
-        git pull
         git push
-    
+
