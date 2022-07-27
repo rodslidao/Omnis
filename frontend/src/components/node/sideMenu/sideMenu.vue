@@ -12,7 +12,7 @@
       dark
       absolute
       v-model="drawer"
-      hide-overlay='true'
+      hide-overlay
       right
       :permanent="drawer"
       width="400px"
