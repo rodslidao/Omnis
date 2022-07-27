@@ -4,10 +4,9 @@
     <AlertFeedback />
     <DialogAlert />
     <NavBar class="NavBar" v-if="$route.name != 'intro'" />
-      <transition>
-        <router-view></router-view>
-      </transition>
-    </div>
+    <transition>
+      <router-view></router-view>
+    </transition>
   </v-app>
 </template>
 
@@ -16,7 +15,6 @@ import { mapState } from 'vuex';
 import NavBar from '@/components/NavBar.vue';
 import DialogAlert from '@/components/DialogAlert.vue';
 import AlertFeedback from '@/plugins/alertFeedback/AlertFeedback.vue';
-import gql from 'graphql-tag';
 
 export default {
   name: 'App',
@@ -31,7 +29,9 @@ export default {
     return {};
   },
 
-  created() {
+  async created() {
+    await this.$store.dispatch('auth/getAuthUser');
+    await this.$store.dispatch('auth/getLevels');
     if (this.$workbox) {
       this.$workbox.addEventListener('waiting', () => {
         this.showUpdateUI = true;

@@ -1,22 +1,23 @@
 from src.nodes.node_manager import NodeManager
-from src.nodes.base_node import BaseNode
+from src.nodes.base_node import BaseNode, Wizard
 from .production_obj import ProductionOBJ
 from api import logger, exception
+from api.decorators import for_all_methods
 
 NODE_TYPE = "PRODUCTION"
 
 
+@for_all_methods(exception(logger))
 class ProductionNode(BaseNode):
-    @exception(logger)
-    def __init__(self, name, id, options, outputConnections, inputConnections) -> None:
-        super().__init__(name, NODE_TYPE, id, options, outputConnections)
+    def __init__(self, name, id, options, output_connections, input_connections):
+        super().__init__(name, NODE_TYPE, id, options, output_connections)
         self.model = options["model"]["value"]
         self.status = None
         self.production_obj = ProductionOBJ(**options)
-        self.auto_run = options["auto_run"]
+        self.auto_run = options.get("auto_run", False)
         NodeManager.addNode(self)
 
-    @exception(logger)
+    @Wizard._decorator
     def execute(self, message):
         target = message.targetName.lower()
         if target == "start":
@@ -25,4 +26,4 @@ class ProductionNode(BaseNode):
             _ = self.production_obj.finish(model=self.model, status=self.status)
             self.onSuccess(_)
         elif target == "status":
-            self.status = message["payload"]
+            self.status = message.payload

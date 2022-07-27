@@ -1,0 +1,36 @@
+scalar DBREF_matrix
+
+type matrix {
+  _id : ID!
+  name: String
+  slots: JSON
+  subdivisions: JSON
+  description: String
+  origin: JSON
+  order: String
+  part_number: String
+  variable: [variable]
+}
+
+input reg_matrix {
+  name: String
+  slots: JSON
+  subdivisions: JSON
+  description: String
+  origin: JSON
+  order: String
+  part_number: String
+  variable: [DBREF_variable]
+}
+
+extend type Query {
+    get_matrix_list: [matrix]
+    get_matrix_item(_id: ID!): matrix
+}
+
+extend type Mutation  {
+  create_matrix(input: reg_matrix): ID
+  delete_matrix(_id: ID!): ID
+  duplicate_matrix(_id: ID!): ID
+  update_matrix(_id: ID!, input: reg_matrix): ID
+}

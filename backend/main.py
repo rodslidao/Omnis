@@ -1,76 +1,90 @@
-from api import logger
+from os import environ
+import uvicorn
+import socket
+from api import logger, dbo, custom_types
+from api.queries import query
+from api.subscriptions import subscription
+from api.mutations import mutation
 
-try:
-    from api import *
-    from api.queries import query
-    from api.mutations import mutation
-    from api.subscriptions import subscription
-    from src.imageStream import imgRoute, videoRoute
+from src.end_points import custom_video_response, Echo, Connection
+from src.nodes.base_node import BaseNode_websocket
+from src.manager.serial_manager import SerialManager
+from src.manager.camera_manager import CameraManager
+from src.manager.process_manager import ProcessManager as process
+from src.manager.matrix_manager import MatrixManager as matrix
 
-    from os import environ
-    import uvicorn
-    import socket
+from starlette.routing import Route
 
-    from ariadne import (
-        load_schema_from_path,
-        make_executable_schema,
-        snake_case_fallback_resolvers,
-    )
-    from ariadne.asgi import GraphQL
+from ariadne.asgi import GraphQL
+from ariadne import (
+    load_schema_from_path,
+    make_executable_schema,
+    snake_case_fallback_resolvers,
+)
 
-    from starlette.middleware.cors import CORSMiddleware
-    from starlette.middleware import Middleware
-    from starlette.applications import Starlette
-    from starlette.routing import Mount
+from starlette.middleware.cors import CORSMiddleware
+from starlette.routing import Mount, WebSocketRoute
+from starlette.applications import Starlette
+from os import listdir
+from os.path import exists as file_exists
 
-    type_defs = ""
-    for _file in ["schema", "inputs", "types", "results"]:
-        type_defs += load_schema_from_path(f"./src/graphql/{_file}.graphql") + (
-            "\n" * 2
-        )
 
-    schema = make_executable_schema(
-        type_defs, query, mutation, subscription, snake_case_fallback_resolvers
-    )
+type_defs = ""
+for _file in ["schema", "inputs", "types", "results", "interfaces"]:
+    type_defs += load_schema_from_path(f"./src/graphql/{_file}.graphql") + ("\n" * 2)
 
-    middleware = [
-        Middleware(
-            CORSMiddleware,
-            allow_origins=["*"],
-            allow_methods=["*"],
-            allow_headers=["*"],
-        )
-    ]
+for _dir in list(
+    filter(lambda x: not (x[-3:] == ".py" or x[0] == "_"), listdir("src/nodes"))
+):
+    if file_exists(f'src/nodes/{_dir}/{_dir}.graphql'):
+        type_defs += load_schema_from_path(f'src/nodes/{_dir}/{_dir}.graphql') + ("\n" * 2)
 
-    routes = [
-        Mount("/imgs", routes=imgRoute),
-        Mount("/videos", routes=videoRoute),
-    ]
+schema = make_executable_schema(
+    type_defs, query, mutation, subscription, snake_case_fallback_resolvers, *custom_types 
+)
 
-    app = Starlette(debug=True, routes=routes)
-    app.mount(
+
+routes_app = [
+    Route(
+        "/videos/{video_id}", endpoint=custom_video_response, methods=["GET", "POST"]
+    ),
+    WebSocketRoute("/ws", endpoint=Echo),
+    WebSocketRoute("/network", endpoint=Connection()),
+    WebSocketRoute("/process", endpoint=process.websocket),
+    WebSocketRoute("/nodes", endpoint=BaseNode_websocket),
+    *[WebSocketRoute(f"/controls/{serial._id}", endpoint=serial.websocket) for serial in SerialManager.get()],
+    Mount(
         "/",
-        CORSMiddleware(
-            GraphQL(schema, debug=True, logger=logger),
+        app=CORSMiddleware(
+            GraphQL(schema, debug=True),
             allow_origins=["*"],
             allow_methods=["*"],
             allow_headers=["*"],
         ),
     )
+]
 
-    port = environ["SERVER_PORT"] if environ.get("SERVER_PORT") else 5000
-    if environ.get("ENV_MODE") == "production":
-        host = "0.0.0.0"
-    else:
-        socketI = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        socketI.connect(("8.8.8.8", 80))
-        host = socketI.getsockname()[0]
-        socketI.close()
+app = Starlette(debug=True, routes=routes_app, on_shutdown=[dbo.close])
 
-    if __name__ == "__main__":
-        uvicorn.run("main:app", host=host, port=int(port), log_level="info")
+@app.on_event("shutdown")
+def shutdown_event():
+    try:
+        CameraManager.stop()
+    except Exception as e:
+        logger.error(e)
 
-except KeyboardInterrupt:
-    logger.debug("Server stopped manually")
-except Exception as e:
-    logger.critical(e)
+port = environ.get("SERVER_PORT", 80)
+if environ.get("NODE_ENV") == "development":
+    socketI = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    socketI.connect(("8.8.8.8", 80))
+    host = socketI.getsockname()[0]
+    socketI.close()
+else:
+    host = "0.0.0.0"
+
+if __name__ == "__main__":
+    try:
+        uvicorn.run(app=app, host=host, port=int(port), log_level=logger.level)
+    finally:
+        CameraManager.stop()
+        dbo.close()

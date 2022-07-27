@@ -1,0 +1,45 @@
+scalar DBREF_sketch
+
+type sketch {
+  _id: ID
+  parent_id: ID
+  name: String
+  key: ID
+  description: String
+  author: String
+  version: Int
+  saved: Boolean
+  duplicated:Boolean
+  content: JSON
+  node_qtd: Int
+  updated_at: timestamptz
+  created_at: timestamptz
+  edited_by: user
+  created_by: user
+}
+
+input reg_sketch{
+  _id: ID
+  parent_id: ID
+  name: String
+  key: ID
+  description: String
+  author: String
+  version: Int
+  saved: Boolean
+  duplicated:Boolean
+  content: JSON
+  node_qtd: Int
+}
+
+extend type Query {
+    get_sketch_list: [sketch]
+    get_sketch_item(_id: ID!): sketch
+}
+
+extend type Mutation  {
+  create_sketch(_id: ID, input: reg_sketch): ID
+  delete_sketch(_id: ID!): ID
+  duplicate_sketch(_id: ID!): ID
+  update_sketch(_id: ID!, input: reg_sketch): ID
+}

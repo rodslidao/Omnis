@@ -1,6 +1,8 @@
 scalar JSON
 scalar Decimal
 scalar Upload
+scalar timestamptz
+scalar DB_VALUE
 
 schema {
   mutation: Mutation
@@ -9,58 +11,95 @@ schema {
 }
 
 type Mutation {
-  createNodeSheet(_id: ID!,  sketchName: String, saved: Boolean, duplicated: Boolean, content: JSON!): NodeSheetResult!
-  updateNodeSheet(_id: ID!, sketchName:String, content: JSON): NodeSheetResult
-  deleteNodeSheet(id: ID!): NodeSheetResult
+  createNodeSheet(
+    _id: ID!
+    name: String
+    saved: Boolean
+    duplicated:Boolean
+    last_access: Float
+    description: String
+    node_qtd: Int
+    author: String
+    content: JSON!
+  ): Boolean
 
-  startProcess: ProcessResult!
-  stopProcess: ProcessResult!
-  resumeProcess: ProcessResult!
-  pauseProcess: ProcessResult!
+  saveNodeSheet(
+    _id: ID
+    parent_id: ID
+    label: String
+    description: String
+    author: String
+    version: Int
+    last_access: Float
+    saved: Boolean
+    duplicated:Boolean
+    content: JSON
+    node_qtd: Int
+    key: ID
+  ): SketchListResult!
 
-  loadConfig(_id: ID!): Boolean!
-  getLoadedConfig: ID!
+  updateNodeSheet(_id: ID!, name: String, content: JSON): Boolean
+  deleteNodeSheet(_id: ID!): Boolean
+  duplicateNodeSheet(_id: ID!): Boolean
 
-  createAlert(input: AlertInput!): AlertResult!
+  createAlert(input: AlertInput!): AlertResult
 
   uploadFile(file: Upload!): FileResult!
   uploadPhoto(photo: Upload!): Photo!
+  takePhoto(camera_id: ID!): Photo!
 
   createCamera(input: CameraInput!): CameraResult!
   startCamera(_id: ID!): CameraResult!
   stopCamera(_id: ID!): CameraResult!
   resetCamera(_id: ID!): CameraResult!
 
-  createSerial(input: JSON): SerialResult!
-  startSerial(_id: ID!): SerialResult!
-  stopSerial(_id: ID!): SerialResult!
-  resetSerial(_id: ID!): SerialResult!
-  communicateSerial(_id: ID!, payload:String!): SerialResult!
+  createSerial(input: JSON): Serial!
+  startSerial(_id: ID!): Serial!
+  stopSerial(_id: ID!): Serial!
+  resetSerial(_id: ID!): Serial!
+  sendSerial(_id: ID!, payload: String!): Serial!
   setCameraProperty(_id: ID!, input: JSON): CameraResult!
 
   syncHostTime(timestamp: Int): Boolean!
+  registerUser(newUser: reg_user): Boolean!
+  deleteUser(_id: ID!): Boolean!
+  updateUser(_id: ID!, input: reg_user): Boolean!
+  restart: Int
 }
 
 type Query {
-  getNodeSheet(id: ID!): NodeSheetResult!
-  getSketchList:SketchListResult!
+  getNodeSheet(_id: ID!): NodeSheetResult!
+  getAxisList: [AxisResult!]
+  getDevicesList: [DeviceResult!]
+  getNodeInfo(node_type: String!, kwargs: JSON): NodeInfoResult!
 
-  getNodeInfo(node_type: ID!): NodeInfoResult!
-
-  getCamera(id: ID!): CameraResult!
+  getCamera(_id: ID!): CameraResult!
   getCameras: CamerasResult!
 
-  getSerial(id: ID!): SerialResult!
+  getSerial(_id: ID!): Serial!
   getSerials: SerialsResult!
 
-  getProcess: ProcessResult!
+  getProcess: ProcessResult
 
   updateAlerts: DefaultStatus
   allPhotos: [Photo]
+
+  getManutention: ManutentionResult
+  getThr: [String]
+
+  calibrateCamera(input: CalibrateRequestInput!): Boolean
+  getLoadedNodes: [Node_Status]
+  getLoadedConfig: NodeSheet
+  authenticateUser(username: String, password: String, email: String): user_with_token
+  authUserProfile: user
+  getUsersList: [user]
 }
 
 type Subscription {
   alerts: AlertResult
   cameras: Camera
   serials: Serial
+  calibrations: StepResult
+  nodes: Node_Status
+  controls: control_status
 }

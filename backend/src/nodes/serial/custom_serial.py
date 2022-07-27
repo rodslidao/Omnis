@@ -1,11 +1,22 @@
+from datetime import datetime
+from multiprocessing import Event
+from telnetlib import ECHO
 from serial.tools import list_ports
-from serial import Serial, serialutil
+from serial import Serial as _Serial, serialutil
 from bson import ObjectId
 from src.manager.serial_manager import SerialManager
 from api import logger, exception
+from api.decorators import for_all_methods
+from threading import Lock
+import queue
+from threading import Thread
+from timeit import default_timer as timer
+
+send_lock = Lock()
 
 
-class CustomSerial(Serial):
+@for_all_methods(exception(logger))
+class Serial(_Serial):
     """
     Class to comunicate with serial port.
 
@@ -34,7 +45,6 @@ class CustomSerial(Serial):
 
     """
 
-    @exception(logger)
     def __init__(
         self,
         port=None,
@@ -44,20 +54,21 @@ class CustomSerial(Serial):
         bytesize=8,
         parity="N",
         stopbits=1,
-        timeout=0.01,
+        timeout=1,
         xonxoff=False,
         rtscts=False,
         dsrdtr=False,
         is_gcode=False,
+        _id=None,
     ) -> None:
-        self._id = ObjectId()
+        self._id = ObjectId(_id)
         super().__init__(
             port, baudrate, bytesize, parity, stopbits, timeout, xonxoff, rtscts, dsrdtr
         )
         self.port = port
         self.baudrate = baudrate
-        self.is_open = False
         self.is_gcode = is_gcode
+        self.is_open = True
         self.last_value_send = None
         self.last_value_received = None
 
@@ -67,11 +78,16 @@ class CustomSerial(Serial):
             self.name = name
 
         self.filters = filters
+        self.__comands = queue.Queue()
+        self.__echos = queue.Queue()
+        self.answers = {}
+        self.__signals = queue.Queue()
+        Thread(target=self.__command_writer, name=f"{self.name}_writer").start()
+        Thread(target=self.__command_reader, name=f"{self.name}_reader").start()
         SerialManager.add(self)
 
-    @exception(logger)
     def start(self):
-        try:
+        if not self.is_open:
             if self.port is None:
                 compatible = self.findMostCompatiblePort()
                 if compatible is not None:
@@ -81,60 +97,96 @@ class CustomSerial(Serial):
             assert (
                 self.port is not None
             ), "Port is not set and no compatible filter found!"
-            super().open()
-            self.is_open = True
-
-        except serialutil.SerialException as e:
-            if "No such file or directory" in str(e):
-                print(f"Porta não encontrada! [{self.port}]")
-            raise e
+            self.open()
         return self
 
-    @exception(logger)
     def close(self):
-        SerialManager.remove(self)
         super().close()
-        self.is_open = False
+
+    def stop(self):
+        self.close()
         return self
 
-    @exception(logger)
+    def remove(self):
+        SerialManager.remove(self)
+
     def reset(self):
         self.close()
         self.start()
         return self
 
-    @exception(logger)
-    def send(self, message, echo=False):
-        try:
-            _ = self.write(message)
-            if echo:
-                return _
-        except serialutil.PortNotOpenError:
-            self.start()
-            return self.send(message, echo)
-        except Exception as e:
-            self.close()
-            print("Trigger alert and log error - serial.send()")
-            raise e
+    def send(self, message, echo=False, log=True):
 
-    @exception(logger)
+        ID = ObjectId()
+        event = Event()
+        if echo:
+            self.__signals.put((event,ID))
+        self.__comands.put((message, echo))
+        if echo:
+            event.wait()
+            return self.answers.pop(ID, None)
+        return self
+        # return event, ID
+        # if echo:
+        #     self.__signals.join()
+        #     return self.answers.pop(ID, 'Fail')
+
+    def __command_writer(self):
+        while True:
+            try:
+                message, echo = self.__comands.get()
+                # try:
+                _echo = self.write(message)
+                # except serialutil.PortNotOpenError:
+                #     self.open()
+                #     _echo = self.write(message)
+                
+                if echo:
+                    event, ID = self.__signals.get()
+                    self.__echos.put((_echo, ID, event))
+            finally:
+                self.__comands.task_done()
+
+    
+    
+    def __command_reader(self):
+        while True:
+            try:
+                _echo, ID, event = self.__echos.get()
+                self.answers[ID] = _echo
+                event.set()
+            finally:
+                self.__signals.task_done()
+                self.__echos.task_done()
+
+
     def write(self, payload):
-        super().write((f"{payload}\n").encode("ascii"))
-        self.last_value_send = payload
-        return self.echo()
+        try:
+            send_lock.acquire()
+            # if payload != self.last_value_send: logger.debug(f"Serial: {self.name} send: {payload}")
+            super().write((f"{payload}\n").encode("ascii"))
+        finally:
+            send_lock.release()
+            self.last_value_send = payload
+            return self.echo()
 
-    @exception(logger)
     def echo(self):
         lines = []
         _b = self.readline()
-        while _b != b"" and self.inWaiting() != 0:
-            lines.append(_b.decode("ascii").rstrip())
+        while _b != b"" or self.inWaiting() != 0:
+            if len(lines) < 200:
+                try:
+                    lines.append(_b.decode("ascii").rstrip())
+                except UnicodeDecodeError:
+                    pass
             _b = self.readline()
-        lines.append(_b.decode("ascii").rstrip())
+        try:
+            lines.append(_b.decode("ascii").rstrip())
+        except UnicodeDecodeError:
+            pass
         self.last_value_received = lines
         return lines
 
-    @exception(logger)
     def findMostCompatiblePort(self):
         ports = {}
         port_list = {f"{p.vid}{p.serial_number}": p for p in list_ports.comports()}
@@ -148,22 +200,15 @@ class CustomSerial(Serial):
         if ports:
             return port_list.get(max(ports, key=ports.get))
 
-    @exception(logger)
     def to_dict(self):
         return {
             "_id": self._id,
             "port": self.port,
             "name": self.name,
             "baudrate": self.baudrate,
-            "is_open": self.is_open,
-            "is_gcode": self.is_gcode,
+            "is_open": self.is_open == True,
+            "is_gcode": self.is_gcode == True,
             "last_value_send": self.last_value_send,
             "last_value_received": self.last_value_received,
+            "date": datetime.timestamp(datetime.utcnow()),
         }
-
-
-@exception(logger)
-def checker():
-    a = CustomSerial(device="/dev/ttyACM0", baudrate=250000)
-    a.open()
-    a.close()

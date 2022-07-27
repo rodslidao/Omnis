@@ -1,0 +1,260 @@
+{
+  "settings": {
+    "name": "Settings",
+    "system": {
+      "name": "System",
+      "languageAndData": {
+        "name": "Language and Data",
+        "exhibitionLanguage": {
+          "title": "Exhibition Language",
+          "subtitle": "The language of the entire program will be displayed in the selected language"
+        }
+      }
+    },
+    "devices": {
+      "name": "Devices"
+    },
+    "process": {
+      "name": "Process",
+      "myProcess": "My Process",
+      "otherSettings": "Other Settings",
+      "editProcess": {
+        "title": "Process Edit"
+      },
+      "process": {
+        "name": "MyProcess",
+        "title": "Process",
+        "subtitle": "Create and edit the process",
+        "add": "Register new Process",
+        "edit": "Edit process",
+        "list": "List process",
+        "lastPlayed": "Last played",
+        "sketch": "Sketch"
+      },
+      "nodes": {
+        "name": "Nodes",
+        "title": "Nodes",
+        "subtitle": "Create and edit the program"
+      },
+      "matrix": {
+        "name": "Matrix",
+        "title": "Matrix",
+        "subtitle": "Create and edit the matrix to use in nodes",
+        "add": "Register new Matrix",
+        "edit": "Edit Matrix",
+        "list": "List Matrix",
+        "slotsSubtitle": "Quantity of slots, margins and size",
+        "subdivisionsSubtitle": "If your matrix has a subdivision",
+        "originSubtitle": "Define distance matrix of 0 machine"
+        
+      },
+      "objects": {
+        "name": "Objects",
+        "title": "Objects",
+        "subtitle": "Create and edit the objects",
+        "add": "Register Object",
+        "edit": "Edit Object",
+        "list": "List Objects"
+      },
+      "variables": {
+        "name": "Variables",
+        "title": "Variables",
+        "subtitle": "Create and edit the variables",
+        "add": "Register new variable",
+        "edit": "Edit variable",
+        "list": "List variable"
+      }
+    },
+    "users": {
+      "name": "Users",
+      "user": "user",
+      "otherAccounts": "Other Accounts",
+      "editUser": {
+        "title": "Account Edit"
+      },
+      "accountsDetails": {
+        "name": "accountsDetails",
+        "title": "Account Details",
+        "subtitle": "View and edit your account details"
+      },
+      "fields": {
+        "level": "Level",
+        "first_name": "Name",
+        "last_name": "Surname",
+        "username": "SSN",
+        "email": "Email",
+        "last_access": "Last Access",
+        "_id": "ID",
+        "avatar_image": "Profile Picture"
+      },
+      "myAccount": "My Account",
+      "registerUser": {
+        "name": "New User",
+        "title": "Register new User",
+        "subtitle": "Create users."
+      },
+      "listUsers": {
+        "name": "List of users",
+        "title": "List of users",
+        "subtitle": "List users and their roles. You can edit the users"
+      }
+    },
+    "networkAndInternet": {
+      "name": "Network & Internet"
+    },
+    "personalize": {
+      "name": "Personalize"
+    },
+    "support": {
+      "name": "Support"
+    }
+  },
+  "form": {
+    "color_hex": "Color (Hexadecimal)",
+    "color_name": "Color Name",
+    "color": "Color",
+    "confirmPassword": "Confirm Password",
+    "created_at": "Created at",
+    "created_by": "Created by",
+    "date": "Date",
+    "description": "Description",
+    "edited_by": "Edited by",
+    "email": "Email",
+    "img": "Image",
+    "imgUrl": "Image URL",
+    "last_played": "Last Played",
+    "lastName": "Last Name",
+    "minCharacters": "This field must have at least {count} characters",
+    "name": "Name",
+    "part_number": "Part Number",
+    "parts": "Parts",
+    "password": "Password",
+    "passwordMatch": "This passwords do not match",
+    "process": "Process",
+    "register": "Register",
+    "required": "Hey! I'm required",
+    "requiredFields": "This fields are required",
+    "showPassword": "Show Password",
+    "singIn": "Login",
+    "singInTitle": "Login",
+    "sketch": "Sketch",
+    "supplier": "Supplier",
+    "unit": "Unit",
+    "updated_at": "Updated at",
+    "username": "Username (SSN)",
+    "validEmail": "This e-mail is not valid",
+    "validPassword": "This password is not valid",
+    "user": "User",
+    "subdivisions": "Subdivisions",
+    "quantityX": "Quantity X",
+    "quantityY": "Quantity Y",
+    "sizeX": "Size X",
+    "sizeY": "Size Y",
+    "marginX": "Margin X",
+    "marginY": "Margin Y",
+    "slots": "Slots",
+    "originX": "Origin X",
+    "originY": "Origin Y",
+    "partNumber": "Part Number",
+    "partNumberAb": "PN",
+    "variable": "Variables",
+    "matrix": "Matrix",
+    "object": "Object",
+    "origin": "Origin",
+    "order":"Order",
+    "last_name": "Surname",
+    "first_name": "Name",
+    "_id":"ID"
+
+  },
+  "levels": {
+    "name": "Level",
+    "operator": "Operator",
+    "manager": "Manager",
+    "developer": "Developer",
+    "maintenance": "Maintenance"
+  },
+  "buttons": {
+    "add": "Add",
+    "cancel": "Cancel",
+    "changePassword": "Change Password",
+    "close": "Close",
+    "confirm": "Confirm",
+    "delete": "Delete",
+    "edit": "Edit",
+    "forgotPassword": "Forgot Password",
+    "list": "List",
+    "login": "Login",
+    "logout": "Logout",
+    "register": "Register",
+    "remove": "Remove",
+    "resetPassword": "Reset Password",
+    "save": "Save",
+    "search": "Search",
+    "play": "Play",
+    "resume": "Resume",
+    "start": "Start",
+    "pause": "Pause",
+    "stop": "Stop",
+    "send": "Send",
+    "duplicate":"Duplicate"
+
+  },
+  "prepositions": {
+    "or": "or"
+  },
+  "greetings": {
+    "hello": "Hello",
+    "welcome": "Welcome! "
+  },
+  "alerts": {
+    "copied": "👌 Copied ",
+    "deleteFail": "Could't possible to delete 😢",
+    "deleteSuccess": "Was deleted 👍",
+    "failToRunProcess": "Failed to run process, 😢",
+    "invalidFile": "Invalid file, your file must be an '.oms' 😢",
+    "loginFail": "Failed to login, make sure your details are correct, 😢",
+    "pauseFail": "Fail to pause the process, 😢",
+    "pauseSuccess": "Process was paused ✋",
+    "processStopped": "The process was stopped ✋",
+    "registerUserFail": "Failed to register user, 😢",
+    "registerUserSuccess": "User registered successfully 🤙",
+    "registerMatrixFail": "Failed to register matrix, 😢",
+    "registerMatrixSuccess": "Matrix registered successfully 🤙",
+    "runningProcess": "The process is running 🚀",
+    "runningProcessFail": "Fail to run 😢",
+    "saveFail": "Could not save 😢",
+    "saveSuccess": "Was saved successfully 👌",
+    "updateObjFail": "Could't possible to update 😢",
+    "updateObjSuccess": "The object was updated👍",
+    "updateProcessFail": "Could't possible to update 😢",
+    "updateProcessSuccess": "The process was updated👍",
+    "updateUserFail": "Could't possible to update 😢",
+    "updateUserSuccess": "The data was updated👍",
+    "updateMatrixFail": "Could't possible to update the matrix😢",
+    "updateMatrixSuccess": "The matrix was updated👍",
+    "updateVariableFail": "Could't possible to update 😢",
+    "formError": "Some fields are required or wrong 😢",
+    "wsConnectSuccess": "Websocket was connected with successfully",
+    "wsConnectFail": "Could not connect to Websocket",
+    "wsConnecting": "Connecting to Websocket",
+    "updateVariableSuccess": "The variable was updated👍",
+    "restart_ok":"Server restarted",
+    "restart_fail":"Server can't restart",
+    "duplicateFail": "Could't possible to duplicate 😢",
+    "duplicateSuccess": "The object was duplicated👍"
+    
+  },
+  "list": {
+    "sortBy": "Sort by",
+    "filterBy": "Filter by",
+    "Search": "Search",
+    "totalUsers": "total of users"
+  },
+  "dialogs": {
+    "removeConfirm": "Are you sure you want to delete?",
+    "removeDescription": "After confirm, you will not be able to recover it",
+    "selectObject": "Select an object which you want to mount.",
+    "selectMatrix": "Select a matrix which you want to mount."
+  }
+}

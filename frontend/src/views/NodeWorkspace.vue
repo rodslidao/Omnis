@@ -1,7 +1,7 @@
 <template>
   <div class="containerNode">
     <!-- <v-tabs-items v-model="selectedTab">
-      <v-tab-item v-for="item in tabList" :key="item.sketchName"> </v-tab-item>
+      <v-tab-item v-for="item in tabList" :key="item.name"> </v-tab-item>
     </v-tabs-items> -->
 
     <NodeEditor
@@ -13,8 +13,8 @@
 </template>
 
 <script>
-// import TabMenuNodes from '@/components/nodes/TabMenuNodes.vue';
-import NodeEditor from '@/components/nodes/NodeEditor.vue';
+// import TabMenuNodes from '@/components/node/nodes/TabMenuNodes.vue';
+import NodeEditor from '@/components/node/NodeEditor.vue';
 import { mapState } from 'vuex';
 
 export default {

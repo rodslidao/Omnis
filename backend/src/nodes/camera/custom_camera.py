@@ -1,202 +1,146 @@
 from bson import ObjectId
-import cv2
-from threading import Thread
-from time import sleep
 from src.manager.camera_manager import CameraManager
-from time import sleep
-
-import datetime
-from collections import deque
-
+from cv2 import error
 from api import logger, exception
+from api.decorators import for_all_methods
+from vidgear.gears import CamGear
+from cv2 import cvtColor, COLOR_BGR2GRAY, arcLength, VideoWriter_fourcc
+from .roi_aruco import ROI_ARUCO as ROI
+
+from cv2.aruco import (
+    DetectorParameters_create,
+    Dictionary_get,
+    detectMarkers,
+    # drawAxis,
+    drawDetectedMarkers,
+    estimatePoseSingleMarkers,
+)
+
+from numpy import mean
+from src.utility.image_processing.guess_aruco_type import ARUCO_DICT
 
 
-class FPS:
+@for_all_methods(exception(logger))
+class Camera(CamGear):
     """
-    FPS class for calculating frames per second. \n
+        CamGear supports a diverse range of video streams which can handle/control video stream almost any IP/USB Cameras, multimedia video file format (upto 4k tested),
+        any network stream URL such as http(s), rtp, rstp, rtmp, mms, etc. It also supports Gstreamer's RAW pipelines.
 
-    Usage: \n
-    \tFPS().start():\t-> returns FPS() itself and start the counter \n
-    \tFPS().update():\t returns None and updates the counter \n
-    \tFPS().fps():\t\t returns the current FPS
+        CamGear API provides a flexible, high-level multi-threaded wrapper around OpenCV's VideoCapture API with direct access to almost all of its available parameters.
+        It relies on Threaded Queue mode for threaded, error-free and synchronized frame handling.
 
-    """
-
-    @exception(logger)
-    def __init__(self):
-        self._start = None
-        self._end = None
-        self._numFrames = 0
-
-    @exception(logger)
-    def start(self):
-        self._start = datetime.datetime.now()
-        return self
-
-    @exception(logger)
-    def update(self):
-        if self.elapsed() >= 5:
-            self._numFrames = 0
-            self.start()
-        self._numFrames += 1
-
-    @exception(logger)
-    def elapsed(self):
-        return (datetime.datetime.now() - self._start).total_seconds()
-
-    @exception(logger)
-    def fps(self):
-        return self._numFrames / self.elapsed()
-
-
-class camera:
-    """
-    Complex api for USB cameras.
-    When a new camera is started, it will be added to the CameraManager using camera._id as key.
-    When a camera is stopped, it will be removed from the CameraManager.
-
-    :set_property(name, value):
-        Set a property of the camera.
-        a list of properties can be found here: https://docs.opencv.org/4.x/d4/d15/group__videoio__flags__base.html
-
-    :get_property(name):
-        Get a property of the camera.
-
-    :get_properties():
-        Get all properties of the camera.
-
-    :start():
-        Start the camera.
-        returns self.
-
-    :stop():
-        Stop the camera.
-        returns self.
-
-    :reset():
-        Reset the camera.
-        returns self.
-
-    :read():
-        Read the current frame.
-        returns the current frame.
-
-    :to_dict():
-        Returns a dictionary representation of the camera.
-
-
+        CamGear internally implements `yt_dlp` backend class for seamlessly pipelining live video-frames and metadata from various streaming services like YouTube, Dailymotion,
+        Twitch, and [many more ➶](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md#supported-sites)
     """
 
-    @exception(logger)
-    def __init__(self, src=0, name="WebcamVideoStream"):
-        self.src = src
-        self.stream = cv2.VideoCapture(src, cv2.CAP_V4L2)
-        self.stream.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc("M", "J", "P", "G"))
+    def __init__(
+        self,
+        _id=None,
+        name="WebcamVideoStream",
+        source=0,
+        **options,
+    ):
+
+        """
+        This constructor method initializes the object state and attributes of the CamGear class.
+
+        Parameters:
+            source (based on input): defines the source for the input stream, eg. '/dev/video0' or '-1'
+            options (dict): provides ability to alter Source Tweak Parameters.
+        """
+        self._id = ObjectId(_id)
         self.name = name
-        self._id = ObjectId()
-        self.stopped = True
-        self.properties = {}
-        if self.stream.isOpened():
-            (self.grabbed, self.frame) = self.stream.read()
+        self.source = source
+        self.opt = options
+        self.last_c, self.last_i = None, None
+        self.config = options.get("config")
+        self.aruco_parms = DetectorParameters_create()
+        self.aruco_dict = Dictionary_get(ARUCO_DICT.get(self.config.get("marker_type")))
+        if self.opt.get("props", {}).get("CAP_PROP_FOURCC"):
+            self.opt["props"]["CAP_PROP_FOURCC"] = VideoWriter_fourcc(
+                *options["props"]["CAP_PROP_FOURCC"][:4]
+            )
+        
+        for s in self.source:
+            try:
+                super().__init__(s, **self.opt.get("props"))
+                logger.debug(f"Camera {self.name} initialized with source {s}")
+                break
+            except ValueError:
+                self.stop()
+            except (error, RuntimeError):
+                logger.debug("Camera source: {} fail".format(s))
+
+        self.start()
         CameraManager.add(self)
 
-    @exception(logger)
-    def set_property(self, name, value):
-        self.stream.set(getattr(cv2, name) if isinstance(name, str) else name, value)
-
-    @exception(logger)
-    def set_properties(self, properties):
-        for name, value in properties.items():
-            self.set_property(name, value)
-
-    @exception(logger)
-    def reset(self):
-        print("Resetting camera...")
-        self.stopped = True
-        CameraManager.update()
-        self.start()
-        return self
-
-    @exception(logger)
-    def start(self):
-        """
-        Start the camera.
-        returns self.
-        """
-        self.fps = FPS().start()
-        self.stopped = False
-        self.t = Thread(target=self.updateFrame, name=self.name, args=(), daemon=True)
-        self.t.start()
-        CameraManager.update()
-        return self
-
-    @exception(logger)
-    def updateFrame(self):
-        """
-        Update the frame of the camera.
-        returns None.
-        """
-        while not self.stopped:
-            (self.grabbed, self.frame) = self.stream.read()
-            cv2.putText(
-                self.frame,
-                "FPS: {:.2f}".format(self.fps.fps()),
-                (10, 30),
-                cv2.FONT_HERSHEY_SIMPLEX,
-                0.7,
-                (0, 0, 255),
-                2,
-            )
-            self.fps.update()
-
-    @exception(logger)
     def read(self):
-        """
-        Read the current frame.
-        returns the current frame.
-        """
-        return self.frame
+        # if self.marker_len:
+        #     return undistort(super().read(), self.mtx, self.dist, None) #? Too slow for 4K. Maybe use a smaller image?
+        c, i, _ = self.detect_markers()
+        if len(i.flatten())==4:
+            self.last_c, self.last_i = c, i
+        return ROI(super().read(), self.aruco_dict, self.aruco_parms, corners=self.last_c, ids=self.last_i)[0]
 
-    @exception(logger)
-    def stop(self):
-        """
-        Stop the camera.
-        returns self.
-        """
-        self.stopped = True
-        try:
-            self.t.join()
-        except RuntimeError:
-            pass
+    def remove(self):
         CameraManager.remove(self)
-        return self
 
-    @exception(logger)
-    def __del__(self):
-        if not self.stopped:
-            self.stop()
-        self.stream.release()
+    def get_scale(self):
+        corners, _, _ = self.detect_markers()
+        return self.estimate_pixel_cm_ratio(corners, self.config.get("marker_size"))
 
-    @exception(logger)
+    def detect_markers(self):
+        return detectMarkers(
+            cvtColor(super().read(), COLOR_BGR2GRAY),
+            self.aruco_dict,
+            parameters=self.aruco_parms,
+        )
+
+    # def draw_markers(self, size_of_marker=0.010):
+    #     corners, ids, rejected = self.detect_markers()
+    #     rvecs, tvecs, _ = estimatePoseSingleMarkers(
+    #         corners, size_of_marker, self.mtx, self.dist
+    #     )
+    #     length_of_axis = size_of_marker / 2
+    #     frame = drawDetectedMarkers(self.read().copy(), corners, ids)
+        
+    #     if tvecs is not None:
+    #         for r, t in zip(rvecs, tvecs):
+    #             frame = drawAxis(
+    #                 frame,
+    #                 self.mtx,
+    #                 self.dist,
+    #                 r,
+    #                 t,
+    #                 length_of_axis,
+    #             )
+    #     return frame
+
+    @staticmethod
+    def estimate_pixel_cm_ratio(corners, aruco_size):
+        """
+        Estimate the pixel to cm ratio of the aruco marker.
+        :param corners: corners of the aruco marker
+        :param aruco_size: size of the aruco marker
+        :return: pixel to cm ratio
+        """
+        print(arcLength(corners[0], True)/4)
+
+        return mean([arcLength(corner, True) / (aruco_size * 4) for corner in corners])
+
     def to_dict(self):
         """
         Returns a dictionary representation of the camera.
         """
         return {
             "_id": str(self._id),
-            "src": self.src,
+            "src": self.source,
             "name": self.name,
-            "properties": self.properties,
-            "running": not self.stopped,
+            "properties": self.opt,
         }
 
+    def __str__(self) -> str:
+        return str(self.to_dict())
 
-@exception(logger)
-def checker(src=2):
-    """
-    Checks if the camera is running.
-    """
-    cam = camera(src)
-    cam.start()
-    sleep(src)
-    cam.stop()
+    def __dell__(self):
+        self.stop()

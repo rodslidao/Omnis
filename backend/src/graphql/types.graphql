@@ -1,9 +1,16 @@
 type NodeSheet {
-  _id: ID!
-  name: String
+  _id: ID
+  parent_id: ID
+  label: String
+  key: ID
+  description: String
+  author: String
+  version: Int
+  last_access: Float
   saved: Boolean
   duplicated:Boolean
-  content: NDS
+  content: JSON
+  node_qtd: Int
 }
 
 type NDS {
@@ -14,22 +21,23 @@ type NDS {
 }
 
 type Camera{
-  _id: ID!
-  src: Int!
-  name: String!
-  properties: JSON!
-  running: Boolean!
+  _id: ID
+  src: Int
+  name: String
+  properties: JSON
+  running: Boolean
 }
 
 type Serial {
-  _id: ID!
-  port: String!
-  name: String!
-  baudrate: Int!
-  is_open: Boolean!
-  is_gcode: Boolean!
-  last_value_send: String!
-  last_value_received: [String!]!
+  _id: ID
+  port: String
+  name: String
+  baudrate: Int
+  is_open: Boolean
+  is_gcode: Boolean
+  last_value_send: String
+  last_value_received: [String]
+  date: timestamptz
 }
 
 type connection {
@@ -85,4 +93,47 @@ type NodeInfo{
   name: String
   type: String
   options: JSON
+}
+type Manutention{
+  proto: String
+  url: String
+  port: String
+}
+
+type Node_Status{
+  name: String
+  type: String
+  id: ID
+  info: node_status_info
+}
+
+type node_status_info{
+  status: String!
+  message: target_message
+}
+
+type target_message{
+  from: ID
+  to: ID
+}
+
+type control_status{
+  jog_position: JSON
+  endstops: JSON
+}
+
+type user {
+    _id: ID
+    username: String
+    avatar_image: String
+    email: String
+    last_name: String
+    first_name: String
+    level: String
+    last_access: timestamptz
+  }
+
+type user_with_token{
+  user: user
+  token: String
 }

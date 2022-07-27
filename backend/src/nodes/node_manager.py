@@ -1,56 +1,74 @@
 from api import logger, exception
+from api.decorators import for_all_methods
 
-nodes = []
+# from src.enums import loadConfig, LoadingMode
+import threading
+
+nodes = {}
+auto_run_nodes = {}
 
 
+@for_all_methods(exception(logger))
 class NodeManager:
-    @exception(logger)
     def getNodeById(nodeId):
-        for node in nodes:
-            if node._id == nodeId:
-                return node
-        return None
+        return nodes.get(nodeId)
 
-    @exception(logger)
     def getNodesByType(nodeType):
         return list(filter(lambda node: node.get("type") == nodeType, nodes))
 
-    @exception(logger)
     def addNode(BaseNode):
-        nodes.append(BaseNode)
+        nodes[BaseNode._id] = BaseNode
         if BaseNode.auto_run:
-            logger.info(f"{BaseNode} start automatically.")
-            BaseNode.execute(message="")
+            auto_run_nodes[BaseNode._id] = BaseNode._id
 
-    @exception(logger)
+    def removeNode(nodeId):
+        global nodes, auto_run_nodes
+        del nodes[nodeId]
+        if nodeId in auto_run_nodes:
+            del auto_run_nodes[nodeId]
+
     def getActiveNodes():
-        return nodes
+        return [node.who_am_i() for node in nodes.values()]
 
-    @exception(logger)
-    def reset():
-        global nodes
-        for node in nodes:
-            node.stop()
-        nodes = []
+    def start():
+        ths = {}
+        for node_id in auto_run_nodes.keys():
+            node = NodeManager.getNodeById(node_id)
+            ths[node._id] = threading.Thread(
+                name=f"{node._id}_auto_run_start", target=node.AutoRun
+            )
+            ths[node._id].start()
 
-    @exception(logger)
-    def stop():
-        NodeManager.reset()
+        for _ in ths.values():
+            _.join()
 
-    @exception(logger)
+    def stop(context="external"):
+        ths = {}
+        global nodes, auto_run_nodes
+        for node in list(nodes.values()):
+            ths[node._id] = threading.Thread(
+                name=f"{node._id}_auto_run_stop", target=node.stop
+            )
+            ths[node._id].start()
+
+        for _ in ths.values():
+            _.join
+
     def pause():
-        for node in nodes:
+        for node in nodes.values():
             node.pause()
 
-    @exception(logger)
     def resume():
-        for node in nodes:
+        for node in nodes.values():
             node.resume()
 
-    @exception(logger)
-    def resetNode(nodeId):
-        global nodes
-        node = NodeManager.getNodeById(nodeId)
-        if node:
-            node.stop()
-            nodes = list(filter(lambda node: node.get("id") != nodeId, nodes))
+    def reset():
+        pass
+
+    def clear():
+        global nodes, auto_run_nodes
+        nodes, auto_run_nodes = {}, {}
+
+    def restart():
+        NodeManager.stop()
+        NodeManager.start()

@@ -5,6 +5,7 @@ from src.nodes.[node_name_folder].[node_name] import [NodeName] ( node_name pack
 from os import listdir
 import importlib
 from api import logger, exception
+from api.decorators import for_all_methods
 
 
 class RegEntry:
@@ -13,15 +14,14 @@ class RegEntry:
     clss: class of the node
     """
 
-    @exception(logger)
     def __init__(self, name, clss):
         self.name = name
         self.clss = clss
 
 
+@for_all_methods(exception(logger))
 class NodeRegistry:
     @staticmethod
-    @exception(logger)
     def getNodeClassByName(name):
         """
         :param name: name of the node, e.g. 'identify'
@@ -32,11 +32,11 @@ class NodeRegistry:
             if entry.name == name:
                 return entry.clss
         else:
-            raise Exception("Class " + name + " not registered")
+            raise Exception("Class " + str(name) + " not registered")
 
 
 package_nodes = []  # list of package names and classes
-nodeRegistry = []  # list of RegEntry objects created from package_nodes
+nodeRegistry = []   # list of RegEntry objects created from package_nodes
 
 # Use map() and filter() to filter out all the files that end with .py or start with _ in the list '_all'
 for _dir in list(
@@ -49,13 +49,16 @@ for _dir in list(
                 {
                     "package_name": f".{_dir}.{x[:-3]}",
                     "class_name": f"{x[0].upper()}{x[1:-8]}Node",
+                    "graphql": f"{_dir}.graphql"# if file_exists(f"{_dir}.graphql")  else False
                 }
             ),
             filter(lambda x: x[-8:] == "_node.py", listdir(f"src/nodes/{_dir}")),
         )
     )
 
-# import all the nodes in the list 'package_nodes', and store them in the list 'nodeRegistry' using the RegEntry class
+# import all the nodes in the list 'package_nodes',
+# and store them in the list 'nodeRegistry' using the RegEntry class
+
 for mod in package_nodes:
     mod["package_name"] = importlib.import_module(mod["package_name"], __package__)
     nodeRegistry.append(
@@ -64,3 +67,8 @@ for mod in package_nodes:
             getattr(mod["package_name"], mod["class_name"]),
         )
     )
+
+from src.nodes.object.object import __object
+from src.nodes.variable.variable import __variable
+from src.nodes.sketch.sketch import __sketch
+from src.nodes.levels.levels import __levels

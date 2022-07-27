@@ -1,62 +1,37 @@
 import asyncio
-from .store import alerts, serials, cameras
+import queue
 from ariadne import SubscriptionType
-from src.manager.camera_manager import CameraManager
-from src.manager.serial_manager import SerialManager
+
+from api.decorators import for_all_methods
+from api import logger, exception
 
 subscription = SubscriptionType()
 
+"""
+Create a decorator to pass (self.name) attribute from SubscriptionFactory method decorated with @subscription.source(self.name)
+"""
 
-@subscription.source("alerts")
-async def alerts_source(obj, info):
-    print("listenning alert queue...")
-    queue = asyncio.Queue()
-    alerts.append(queue)
-    try:
-        while True:
-            alert = await queue.get()
-            yield alert
-    except asyncio.CancelledError:
-        alerts.remove(queue)
-        raise
+@for_all_methods(exception(logger))
+class SubscriptionFactory:
+    def __init__(self, store, name):
+        self.store = asyncio.Queue()
+        self.name = name
 
+        @subscription.source(self.name)
+        async def alerts_source(obj, info):
+            try:
+                while True:
+                    yield await self.store.get()
+            finally:
+                logger.debug(f"Subscription: {self.name} closing...")
 
-@subscription.field("alerts")
-async def alerts_resolver(obj, info):
-    return obj
-
-
-#! Escopo de código repetido, verificar possivel solução
-@subscription.source("cameras")
-async def cameras_source(obj, info):
-    print("listenning camera queue...")
-    queue = asyncio.Queue()
-    CameraManager.queues.append(queue)
-    try:
-        while True:
-            camera = await queue.get()
-            yield camera
-    except asyncio.CancelledError:
-        CameraManager.queues.remove(queue)
-        raise
-
-@subscription.field("cameras")
-async def cameras_resolver(obj, info):
-    return obj
-
-#! Escopo de código repetido, verificar possivel solução
-@subscription.source("serials")
-async def serials_source(obj, info):
-    print("listenning serial queue...")
-    queue = asyncio.Queue()
-    SerialManager.queues.append(queue)
-    try:
-        while True:
-            yield await queue.get()
-    except asyncio.CancelledError:
-        SerialManager.queues.remove(queue)
-        raise
-
-@subscription.field("serials")
-async def serials_resolver(obj, info):
-    return obj
+        @subscription.field(self.name)
+        async def sub_resolver(obj, info):
+            return obj
+    
+    def put(self, info):
+        """
+        Send a message to the subscription queue.
+        info (dict): message to be sent.
+        """
+        self.store.put_nowait(dict(info.items()))

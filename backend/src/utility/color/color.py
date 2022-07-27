@@ -12,5 +12,6 @@ class ColorPrint:
     U = "\033[4m"
     B = "\033[1m"
 
+
 def color(string, color):
     return str(getattr(ColorPrint, color) + str(string) + "\033[0m")

@@ -1,0 +1,43 @@
+scalar DBREF_process
+
+type process implements metadata {
+  _id:  ID!
+  img: String
+  name: String
+  description: String 
+  sketch: sketch
+  last_played: timestamptz
+  date: timestamptz
+  created_at: timestamptz!
+  created_by: user!
+  edited_by: user
+  updated_at: timestamptz
+  object: [object]
+}
+
+input reg_process {
+  img: String
+  name: String
+  description: String 
+  sketch: DBREF_sketch
+  object: [DBREF_object]
+}
+
+extend type Query {
+    get_process_list: [process]
+    get_process_item(_id: ID!): process
+}
+
+extend type Mutation  {
+  create_process(input: reg_process): ID
+  update_process(_id: ID!, input: reg_process): ID
+  delete_process(_id: ID!): ID
+  duplicate_process(_id: ID!): ID
+  start_process(_id: ID): Boolean
+  stop_process:  Boolean
+  pause_process: Boolean
+  resume_process: Boolean
+  select_process(_id: ID!): Boolean
+  load_config(_id: ID!): sketch
+  getLoadedConfig: ID!
+}

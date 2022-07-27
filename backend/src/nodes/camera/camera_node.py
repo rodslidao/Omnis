@@ -1,13 +1,12 @@
 from src.manager.camera_manager import CameraManager
 from src.nodes.node_manager import NodeManager
-from src.nodes.base_node import BaseNode
-from src.nodes.camera.custom_camera import camera
-from src.nodes.timer.task_time import setInterval
+from src.nodes.base_node import BaseNode, Wizard
 from api import logger, exception
+from api.decorators import for_all_methods
 
-NODE_TYPE = "CAMERA"
+NODE_TYPE = "CameraNode"
 
-
+@for_all_methods(exception(logger))
 class CameraNode(BaseNode):
     """
     Trigger it self every 'n' seconds.\n
@@ -16,40 +15,21 @@ class CameraNode(BaseNode):
     \t:onSuccess: - Send last frame read.\n
     """
 
-    @exception(logger)
-    def __init__(self, name, id, options, outputConnections, inputConnections) -> None:
-        super().__init__(name, NODE_TYPE, id, options, outputConnections)
-        self.inputConnections = inputConnections
-        self.camera = camera(options.hardware.get("camera_id"))
-        self.auto_run = options["auto_run"]
+    def __init__(self, name, id, options, output_connections, input_connections):
+        super().__init__(name, NODE_TYPE, id, options, output_connections)
+        self.input_connections = input_connections
+        self.camera_id = options["camera"]["_id"]
+        self.camera = CameraManager.get_by_id(self.camera_id)
+        self.auto_run = options.get("auto_run", {"value":False})["value"]
         NodeManager.addNode(self)
-        self.stop_event = self.execute()
 
-    @setInterval(0.5)
-    @exception(logger)
+    @Wizard._decorator
     def execute(self, message=""):
-        try:
-            self.onSuccess(self.get_frame())
-        except Exception as e:
-            self.camera.reset()
-            self.onFailure("Cant read camera frame", pulse=True, errorMessage=str(e))
+        self.on("Imagem", self.read())
 
-    @exception(logger)
-    def get_frame(self):
+    def read(self):
         return self.camera.read()
 
-    @exception(logger)
-    def stop(self):
-        self.stop_event.set()
-
-    @exception(logger)
-    def reset(self):
-        self.stop_event = self.execute()
-
     @staticmethod
-    @exception(logger)
-    def get_info():
-        info = {}
-        print(CameraManager.get())
-        info["options"] = {"hardware": CameraManager.get()}
-        return info
+    def get_info(**kwargs):
+        return {"options": CameraManager.get_info()}

@@ -1,11 +1,13 @@
-import imp
 from src.nodes.node_manager import NodeManager
-from src.nodes.base_node import BaseNode
+from src.nodes.base_node import BaseNode, Wizard
 from api import logger, exception
+from api.decorators import for_all_methods
+from src.manager.process_manager import ProcessManager as process
 
 NODE_TYPE = "FORLOOP"
 
 
+@for_all_methods(exception(logger))
 class ForloopNode(BaseNode):
     """
     Interfaces ->
@@ -17,26 +19,35 @@ class ForloopNode(BaseNode):
         :Fim: - Envia um sinal de fim de execução, reseta o iterator. \n
     """
 
-    @exception(logger)
-    def __init__(self, name, type, id, options, outputConnections) -> None:
-        super().__init__(name, type, id, options, outputConnections)
-        self.iterator = []
-        self.backup = []
-        self.auto_run = options["auto_run"]
+    def __init__(self, name, id, options, output_connections, input_connections):
+        super().__init__(name, NODE_TYPE, id, options, output_connections)
+        self.iterator = enumerate(options["iterator"]["value"])
+        self.backup = options["iterator"]["value"][:]
+        self.auto_run = options.get("auto_run", False)
         NodeManager.addNode(self)
 
-    @exception(logger)
+    @Wizard._decorator
     def execute(self, message):
-        target = message["targetName"]
-        if target == "Lista":
-            self.iterator = enumerate(message["payload"])
-            self.backup = self.iterator.copy()
-        elif target == "Trigger":
-            try:
-                self._id, self.item = next(self.iterator)
-                self.on("item", self.item)
-            except StopIteration:
-                self.on("Fim")
-                self.iterator = self.backup.copy()
-            except Exception as e:
-                self.onFailure(e)
+        target = message.targetName
+
+        if target == "next" or "auto_run":
+            if target == "iterator":
+                self.iterator = message.payload
+                # self.backup = self.iterator
+            # Is important iterate the iterator before or back up it, before send signal to avoid infinite loop or empty list.
+            if not self.stop_event.is_set():
+                try:
+                    self.item_id, self.item = next(self.iterator)
+                    self.on("item", self.item)
+                    # process.stop(wait=False)
+                except StopIteration:
+                    process.stop(wait=False)
+                    # self.iterator = self.backup#enumerate(self.backup[:])
+                    self.on("end", "")
+        else:
+            # ? This is necessary?
+            raise "Target not found"
+
+    def reset(self):
+        super().reset()
+        self.iterator = enumerate(self.backup[:])

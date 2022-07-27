@@ -1,183 +1,121 @@
-from .models import *
+from datetime import datetime
+import threading
+from time import sleep
+from .models import ObjectId
 from ariadne import MutationType
 from src.nodes.alerts.alert_obj import Alert
 from numpy import uint8, frombuffer
 from cv2 import imdecode, imwrite
 from os.path import abspath
 
-from src.nodes.camera.custom_camera import camera
-from src.nodes.serial.custom_serial import CustomSerial
+from src.nodes.camera.custom_camera import Camera
+from src.nodes.serial.custom_serial import Serial
 
 from src.manager.camera_manager import CameraManager
 from src.manager.serial_manager import SerialManager
 
 from src.utility.system.date import set_system_date
+from api import logger, auth, dbo
+import os
 mutation = MutationType()
 
+def restart():
+    sleep(2)
+    os._exit(1)
 
-@defaultException
-@mutation.field("createNodeSheet")
-def createNodeSheet_resolver(obj, info, _id, **kwargs):
-    """Create a new NodeSheet object and return it like a payload"""
-    print(kwargs)
-    returns = NodeSheet().createNodeSheet(_id, **kwargs)
-    return {"data": returns}
-
-
-@defaultException
-@mutation.field("updateNodeSheet")
-def updateNodeSheet_resolver(obj, info, _id, **kwargs):
-    """Update a NodeSheet by id and return it like a payload"""
-    returns = NodeSheet().updateNodeSheet(_id, **kwargs)
-    return {"data": returns}
-
-
-@defaultException
-@mutation.field("deleteNodeSheet")
-def deleteNodeSheet_resolver(obj, info, id):
-    """Delete a NodeSheet by id and return it like a payload"""
-    returns = NodeSheet().deleteNodeSheet(id)
-    return {"data": returns}
-
-
-@defaultException
-@mutation.field("startProcess")
-def startProcess_resolver(obj, info):
-    """Start a process by id and return it like a payload"""
-    process.startProcess()
-    returns = process.dict()
-    return {"data": returns}
-
-
-@defaultException
-@mutation.field("stopProcess")
-def stopProcess_resolver(obj, info):
-    """Stop a process by id and return it like a payload"""
-    process.stopProcess()
-    returns = process.dict()
-    return {"data": returns}
-
-
-@defaultException
-@mutation.field("pauseProcess")
-def pauseProcess_resolver(obj, info):
-    """Pause a process by id and return it like a payload"""
-    process.pauseProcess()
-    returns = process.dict()
-    return {"data": returns}
-
-
-@defaultException
-@mutation.field("resumeProcess")
-def resumeProcess_resolver(obj, info):
-    """Resume a process by id and return it like a payload"""
-    process.resumeProcess()
-    returns = process.dict()
-    return {"data": returns}
-
-
-@defaultException
-@mutation.field("loadConfig")
-def loadConfig_resolver(obj, info, _id):
+@mutation.field("restart")
+@auth('operator')
+def restart_resolver(*args, **kwargs):
     try:
-        LastValue.loadConfig(_id)
-        return True
-    except Exception as e:
-        print(e)
-        return False
+        logger.warning(f"User {kwargs.get('user').first_name} restarting machine at: {datetime.now().strftime('%d/%m/%Y, %H:%M:%S')}")
+    finally:
+        threading.Thread(target=restart).start()
+        return 15 #? How to calculate time of reboot?
 
 
-@defaultException
-@mutation.field("getLoadedConfig")
-def getLoadedConfig_resolver(obj, info):
-    try:
-        return LastValue.getLoadedConfig()
-    except Exception as e:
-        print(e)
-        return False
 
-
-@defaultException
 @mutation.field("createAlert")
-async def createAlert_resolver(obj, info, input):
+@auth("developer")
+def createAlert_resolver(*args, **kwargs):
     """Create a new Alert object and return it like a payload"""
-    returns = Alert(**input)
-    return {"data": returns}
+    returns = Alert(**kwargs.get('input')).items()
+    return returns
 
 
-@defaultException
 @mutation.field("uploadFile")
-async def uploadFile_resolver(obj, info, file):
+async def uploadFile_resolver( file, **kwargs):
     """Upload a file and return it like a payload"""
     print(file)
     return {"data": file}
 
 
-class Picutre:
-    def __init__(self, name, _id=ObjectId()):
+class Picture:
+    def __init__(self, name, _id=ObjectId(), **kwargs):
         self._id = _id
         self.name = name[:-3]
         self.extension = name[-3:]
         self.path = f"/imgs/{self._id}"
 
-    def export(self, path, img):
+    def export(self, path, img, **kwargs):
         """Export the picture to the path"""
         imwrite(path, img)
         return self.__dict__
 
 
-@defaultException
 @mutation.field("uploadPhoto")
-async def uploadPhoto_resolver(obj, info, **kwargs):
+async def uploadPhoto_resolver( **kwargs):
     name = kwargs.get("photo").filename
-    p = Picutre(name)
+    p = Picture(name)
     path = f"{abspath('./src')}/{p.path}"
     img = imdecode(frombuffer(kwargs.get("photo").file.read(), uint8), 1)
     print(p.export(path, img))
     return {"filename": p.id, "path": p.path}
 
 
-# @mutation.field("createNode") #? Como criar novos nodes de forma dinamica e individual?
+@mutation.field("takePhoto")
+async def takePhoto_resolver(*args, **kwargs):
+    camera_id = kwargs.get("camera_id")
+    p = Picture(str(camera_id))
+    path = f"{abspath('./src')}/{p.path}{p.name}.jpeg"
+    img = CameraManager.get_by_id(camera_id).read()
+    print(p.export(path, img))
+    return {"filename": p._id, "path": p.path}
+
 
 # *  ----------- Cameras ----------- * #
-@defaultException
 @mutation.field("createCamera")
-def createCamera_resolver(obj, info, **kwargs):
+def createCamera_resolver( **kwargs):
     """Create a new Camera object and return it like a payload"""
-    returns = camera(**kwargs.get("input", {})).to_dict()
+    returns = Camera(**kwargs.get("input", {})).to_dict()
     return {"data": returns}
 
 
-@defaultException
 @mutation.field("startCamera")
-def startCamera_resolver(obj, info, _id):
+def startCamera_resolver( _id, **kwargs):
     """Start a camera by id and return it like a payload"""
-    camera = (CameraManager.get_by_id(_id)).start()
+    camera = CameraManager.get_by_id(_id)
     returns = camera.to_dict()
     return {"data": returns}
 
 
-@defaultException
 @mutation.field("stopCamera")
-def stopCamera_resolver(obj, info, _id):
+def stopCamera_resolver( _id, **kwargs):
     """Stop a camera by id and return it like a payload"""
     camera = (CameraManager.get_by_id(_id)).stop()
     returns = camera.to_dict()
     return {"data": returns}
 
 
-@defaultException
 @mutation.field("resetCamera")
-def resetCamera_resolver(obj, info, _id):
+def resetCamera_resolver( _id, **kwargs):
     """Reset a camera by id and return it like a payload"""
     camera = (CameraManager.get_by_id(_id)).reset()
     returns = camera.to_dict()
     return {"data": returns}
 
 
-@defaultException
 @mutation.field("setCameraProperty")
-def setCameraProperty_resolver(obj, info, _id, **kwargs):
+def setCameraProperty_resolver( _id, **kwargs):
     """Set a camera property by id and return it like a payload"""
     camera = CameraManager.get_by_id(_id)
     returns = camera.set_properties(kwargs.get("input", {}))
@@ -185,47 +123,63 @@ def setCameraProperty_resolver(obj, info, _id, **kwargs):
 
 
 # *  ----------- Serial ----------- * #
-@defaultException
 @mutation.field("createSerial")
-def createSerial_resolver(obj, info, **kwargs):
+def createSerial_resolver( **kwargs):
     """Create a new Serial object and return it like a payload"""
-    returns = CustomSerial(**kwargs.get("input", {})).to_dict()
-    return {"data": returns}
+    returns = Serial(**kwargs.get("input", {})).to_dict()
+    return returns
 
 
-@defaultException
 @mutation.field("startSerial")
-def startSerial_resolver(obj, info, _id):
+def startSerial_resolver( _id, **kwargs):
     """Start a serial by id and return it like a payload"""
-    serial = SerialManager.get_by_id(_id).start()
+    serial = SerialManager.get_by_id(_id)
     returns = serial.to_dict()
-    return {"data": returns}
+    return returns
 
 
-@defaultException
 @mutation.field("stopSerial")
-def stopSerial_resolver(obj, info, _id):
+def stopSerial_resolver( _id, **kwargs):
     """Stop a serial by id and return it like a payload"""
     serial = SerialManager.get_by_id(_id).stop()
     returns = serial.to_dict()
-    return {"data": returns}
+    return returns
 
 
-@defaultException
-@mutation.field("communicateSerial")
-def communicateSerial_resolver(obj, info, _id, payload):
+@mutation.field("sendSerial")
+@auth("operator")
+def sendSerial_resolver( _id, payload, **kwargs):
     """Communicate a serial by id and return it like a payload"""
-    serial = SerialManager.get_by_id(_id)
-    serial.send(payload)
-    print("ok")
-    return {"status": True, "data": serial.to_dict()}
+    return SerialManager.get_by_id(_id).send(payload).to_dict()
 
-@defaultException
+
 @mutation.field("syncHostTime")
-def syncHostTime_resolver(obj, info, timestamp):
+def syncHostTime_resolver( timestamp, **kwargs):
     """Sync the host time with the server time"""
     try:
         set_system_date(timestamp)
-    except:
+    except Exception:
         return False
+    return True
+
+
+# *  ----------- User ----------- * #
+@mutation.field("registerUser")
+@auth("manager")
+def registerUser_resolver( **kwargs):
+    dbo.insert_one("users", kwargs["newUser"])
+    return True
+
+
+@mutation.field("deleteUser")
+@auth("manager")
+def deleteUser_resolver( _id, user, **kwargs):
+    dbo.delete_one("users", {"_id": ObjectId(_id)})
+    return True
+
+
+@mutation.field("updateUser")
+@auth("manager")
+def updateUser_resolver( _id, **kwargs):
+    dbo.update_one("users", {"_id": ObjectId(_id)}, {"$set": kwargs["input"]})
     return True

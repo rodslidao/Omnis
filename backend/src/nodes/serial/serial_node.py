@@ -1,43 +1,38 @@
 from src.nodes.node_manager import NodeManager
-from src.nodes.base_node import BaseNode
+from src.nodes.base_node import BaseNode, Wizard
 from src.nodes.timer.task_time import setInterval
 from src.manager.serial_manager import SerialManager
 from api import logger, exception
+from api.decorators import for_all_methods
 
 NODE_TYPE = "SERIAL"
 
 
+@for_all_methods(exception(logger))
 class SerialNode(BaseNode):
-    @exception(logger)
-    def __init__(self, name, id, options, outputConnections, inputConnections) -> None:
-        super().__init__(name, NODE_TYPE, id, options, outputConnections)
-        self.inputConnections = inputConnections
+    def __init__(self, name, id, options, output_connections, input_connections):
+        super().__init__(name, NODE_TYPE, id, options, output_connections)
+        self.input_connections = input_connections
         self.serial_id = options["hardware"]["serial_id"]
         self.serial = SerialManager.get_by_id(self.serial_id)
         self.stop_event = self.execute()
-        self.auto_run = options["auto_run"]
+        self.auto_run = options.get("auto_run", False)
         NodeManager.addNode(self)
 
     @setInterval(1)
-    @exception(logger)
+    @Wizard._decorator
     def execute(self, message=""):
         if not self.serial.is_open:
-            try:
-                self.serial.start()
-                self.onSuccess(self.serial)
-                self.on("serial", self.serial)
-                return True
-            except Exception as e:
-                self.onFailure("Cant start serial", pulse=True, errorMessage=str(e))
+            self.serial.start()
+            self.onSuccess(self.serial)
+            self.on("serial", self.serial)
+            return True
         else:
             self.onSuccess(self.serial)
             return True
-        return False
 
-    @exception(logger)
     def stop(self):
         self.stop_event.set()
 
-    @exception(logger)
     def reset(self):
         self.stop_event = self.execute()

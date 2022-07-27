@@ -2,6 +2,8 @@ import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { createApolloClient, restartWebsockets } from 'vue-cli-plugin-apollo/graphql-client';
+import { InMemoryCache } from 'apollo-cache-inmemory';
+import { setContext } from 'apollo-link-context';
 
 // Install the vue plugin
 Vue.use(VueApollo);
@@ -17,15 +19,19 @@ function urlMaker(protocol, port) {
 
 const httpEndpoint = urlMaker('http', process.env.VUE_APP_URL_API_PORT) || 'http://localhost:5000';
 
+const authLink = setContext(async (_, { headers }) => {
+  const token = localStorage.getItem('apollo-token');
+  return {
+    Authorization: token || '',
+  };
+});
 // Config
 const defaultOptions = {
   // You can use `https` for secure connection (recommended in production)
   httpEndpoint,
   // You can use `wss` for secure connection (recommended in production)
   // Use `null` to disable subscriptions
-  wsEndpoint:
-    urlMaker('ws', process.env.VUE_APP_URL_API_PORT)
-    || 'ws://localhost:4000/',
+  wsEndpoint: urlMaker('ws', process.env.VUE_APP_URL_API_PORT) || 'ws://localhost:4000/',
   // LocalStorage token
   tokenName: AUTH_TOKEN,
   // Enable Automatic Query persisting with Apollo Engine
@@ -39,7 +45,11 @@ const defaultOptions = {
   // Override default apollo link
   // note: don't override httpLink here, specify httpLink options in the
   // httpLinkOptions property of defaultOptions.
-  // link: myLink
+  link: authLink,
+
+  cache: new InMemoryCache({
+    addTypename: false,
+  }),
 
   // Override default cache
   // cache:
@@ -53,6 +63,10 @@ const defaultOptions = {
   // Client local data (see apollo-link-state)
   // clientState: { resolvers: { }, defaults: { } }
 };
+
+export const { apolloClient } = createApolloClient({
+  ...defaultOptions,
+});
 
 // Call this in the Vue app file
 export function createProvider(options = {}) {
@@ -77,7 +91,7 @@ export function createProvider(options = {}) {
       console.log(
         '%cError',
         'background: red; color: white; padding: 2px 4px; border-radius: 3px; font-weight: bold;',
-        error.message,
+        error.message
       );
     },
   });
