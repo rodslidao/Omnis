@@ -2,7 +2,7 @@ from api import dbo, auth, logger
 from api.mutations import mutation
 from api.queries import query
 from bson import ObjectId
-from datetime import datetime    
+from datetime import datetime
 
 
 class CRUD:
@@ -10,22 +10,36 @@ class CRUD:
         self.collection = collection
         self.auth_level = auth_level
 
-        self.create = (auth(self.auth_level))(self.create) if self.auth_level else self.create
+        self.create = (
+            (auth(self.auth_level))(self.create) if self.auth_level else self.create
+        )
         mutation.set_field(f"create_{self.collection}", self.create)
 
-        self.update = (auth(self.auth_level))(self.update) if self.auth_level else self.update
+        self.update = (
+            (auth(self.auth_level))(self.update) if self.auth_level else self.update
+        )
         mutation.set_field(f"update_{self.collection}", self.update)
 
-        self.delete = (auth(self.auth_level))(self.delete) if self.auth_level else self.delete
+        self.delete = (
+            (auth(self.auth_level))(self.delete) if self.auth_level else self.delete
+        )
         mutation.set_field(f"delete_{self.collection}", self.delete)
 
-        self.duplicate = (auth(self.auth_level))(self.duplicate) if self.auth_level else self.duplicate
+        self.duplicate = (
+            (auth(self.auth_level))(self.duplicate)
+            if self.auth_level
+            else self.duplicate
+        )
         mutation.set_field(f"duplicate_{self.collection}", self.duplicate)
 
-        self.get_list = (auth(self.auth_level))(self.get_list) if self.auth_level else self.get_list
+        self.get_list = (
+            (auth(self.auth_level))(self.get_list) if self.auth_level else self.get_list
+        )
         query.set_field(f"get_{self.collection}_list", self.get_list)
 
-        self.get_item = (auth(self.auth_level))(self.get_item) if self.auth_level else self.get_item
+        self.get_item = (
+            (auth(self.auth_level))(self.get_item) if self.auth_level else self.get_item
+        )
         query.set_field(f"get_{self.collection}_item", self.get_item)
 
     def create(self, *args, **kwargs):
@@ -34,46 +48,51 @@ class CRUD:
             {
                 "created_by": kwargs["user"].dbref,
                 "created_at": datetime.utcnow().timestamp(),
-                "_id": _id
+                "_id": _id,
             }
         )
-        dbo.insert_one(kwargs.get('collection', self.collection), kwargs.get("input", {}))
+        dbo.insert_one(
+            kwargs.get("collection", self.collection), kwargs.get("input", {})
+        )
         return _id
 
     def update(self, *args, **kwargs):
         _id = ObjectId(kwargs.get("_id"))
-        kwargs["input"].update(
-            {
-                "edited_by": kwargs["user"].dbref,
-                "updated_at": datetime.utcnow().timestamp(),
-            }
-        )
+        kwargs.get("input", {"input":{}}).update ({
+            "edited_by": kwargs["user"].dbref,
+            "updated_at": datetime.utcnow().timestamp(),
+        })
+
         dbo.update_one(
-            kwargs.get('collection', self.collection),
+            kwargs.get("collection", self.collection),
             {"_id": _id},
-            {"$set": kwargs.get("input", {})},
+            {"$set": kwargs.get("input", {"input":{}})},
         )
         return _id
 
     async def duplicate(self, *args, **kwargs):
         item = await self.get_item(*args, **kwargs)
-        a = item.pop('_id')
-        kwargs.pop('_id')
-        logger.warning(self.create(*args, **kwargs, input=item))
-        return a 
-        
-
+        item.pop("_id")
+        kwargs.pop("_id")
+        if item.get("name"):
+            item.update({"name": item["name"] + " - copy"})
+        new_id = self.create(*args, **kwargs, input=item)
+        self.update(*args, **kwargs, _id=new_id)
+        return new_id
 
     def delete(self, *args, **kwargs):
         _id = ObjectId(kwargs.get("_id"))
-        dbo.delete_one(kwargs.get('collection', self.collection), {"_id": _id})
+        dbo.delete_one(kwargs.get("collection", self.collection), {"_id": _id})
         return _id
 
     async def get_list(self, *args, **kwargs):
-        return dbo.find_many(kwargs.get('collection', self.collection), ref=True)
+        return dbo.find_many(kwargs.get("collection", self.collection), ref=True)
 
     async def get_item(self, *args, **kwargs):
-        return dbo.find_one(kwargs.get('collection', self.collection), {"_id": ObjectId(kwargs.get("_id"))})
+        return dbo.find_one(
+            kwargs.get("collection", self.collection),
+            {"_id": ObjectId(kwargs.get("_id"))},
+        )
 
 
 class SSPR(CRUD):
