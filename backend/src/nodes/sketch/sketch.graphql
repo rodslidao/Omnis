@@ -14,6 +14,8 @@ type sketch {
   node_qtd: Int
   updated_at: timestamptz
   created_at: timestamptz
+  edited_by: user
+  created_by: user
 }
 
 input reg_sketch{

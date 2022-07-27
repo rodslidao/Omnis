@@ -53,8 +53,8 @@
         >
         <dialog-confirmation
           v-if="dialogDelete"
-          :del="$t('settings.objs.obj')"
           @confirm-event="remove"
+          @cancel-event="dialogDelete = false"
         ></dialog-confirmation>
         <div>
           <v-menu transition="slide-x-transition" bottom left offset-x>
@@ -159,6 +159,11 @@ export default {
           btnIcon: 'delete',
           function: this.dialog,
         },
+        {
+          title: 'buttons.duplicate',
+          btnIcon: 'content-duplicate',
+          function: this.duplicate,
+        },
       ],
     };
   },
@@ -203,6 +208,11 @@ export default {
 
     edit() {
       this.$emit('edit', this.obj);
+    },
+
+    duplicate() {
+      this.$emit('duplicate', this.obj._id);
+      console.log('duplicate');
     },
 
     dialog() {

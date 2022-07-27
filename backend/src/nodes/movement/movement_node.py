@@ -6,6 +6,7 @@ from src.nodes.serial.gcode_obj import SerialGcodeOBJ
 from api import logger, exception
 from api.decorators import for_all_methods
 from bson import ObjectId
+from collections import Counter
 NODE_TYPE = "MoveAxisNode"
 
 
@@ -24,12 +25,17 @@ class MovementNode(BaseNode):
         if not self.serial: raise TypeError("SERIAL DEAD")
         self.axis = []
         self.coordinates = {}
+        self.special_coordinates = {}
         self.wait_for_this = [{k.lower():v for k,v in x['to'].items() if k == "name"} for x in self.input_connections]
         self.wait_checks = 0
-        for axi in options["axislist"]:
-            if axi["isActive"]:
-                self.axis.append(axi["name"].lower())
-                self.coordinates[axi["name"].lower()] = axi["value"]
+        for axis in options["axislist"]:
+            if axis["isActive"]:
+                self.axis.append(axis["name"].lower())
+                if (str(axis['value']).startswith('!')):
+                    self.special_coordinates[axis["name"].lower()] = float(axis['value'][1:])
+                else:
+                    self.coordinates[axis["name"].lower()] = float(axis['value'])
+
         self.relative = options.get("relative", False)
         self.trigger_delay = 2
         self.auto_run = options.get("auto_run", False)
@@ -60,9 +66,11 @@ class MovementNode(BaseNode):
         self.wait_checks = 0
         # return
         if self.serial is not None and self.serial.is_open:
+            pre_move = Counter(self.coordinates.copy())
+            pre_move.update(Counter(self.special_coordinates.copy()))
             movement = [
                 (k, v)
-                for k, v in self.coordinates.items()
+                for k, v in pre_move.items()
                 if v is not None
             ]
 

@@ -97,7 +97,7 @@ class MongoOBJ:
             if isinstance(cursor, DBRef):
                 return self.find_one(cursor.collection, {'_id':cursor.id}, ref=True)
             for key, value in (cursor.items() if isinstance(cursor, dict) else enumerate(cursor)):
-                if key in ['object', 'matrix','sketch', 'variable']:
+                if key in ['object', 'matrix','sketch', 'variable', 'created_by', 'edited_by']:
                     if isinstance(value, DBRef):
                         cursor[key] = self.find_one(value.collection, {'_id':value.id}, ref=True)
                     if isinstance(value, list):

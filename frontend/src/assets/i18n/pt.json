@@ -199,7 +199,8 @@
     "start": "Iniciar",
     "pause": "Pausar",
     "stop": "Parar",
-    "send": "Enviar"
+    "send": "Enviar",
+    "duplicate": "Duplicar"
   },
   "prepositions": {
     "or": "ou"
@@ -241,7 +242,9 @@
     "wsConnecting": "Conectando...",
     "updateVariableSuccess": "Variável atualizada com sucesso 👌 ",
     "restart_ok":"Reiniciado com sucesso 👌 ",
-    "restart_fail":"Não foi possível reiniciar 😢"
+    "restart_fail":"Não foi possível reiniciar 😢",
+    "duplicateSuccess": "Duplicado com sucesso 👌 ",
+    "duplicateFail": "Não foi possível duplicar 😢"
   },
   "list": {
     "sortBy": "Ordenar por",
@@ -251,7 +254,7 @@
   },
   "dialogs": {
     "removeConfirm": "Você tem certeza que deseja remover?",
-    "removeDescription": "Você não poderá recuperar o {obj} depois de removido.",
+    "removeDescription": "Após confirmação, essa ação não poderá ser desfeita.",
     "selectObject": "Selecione um objeto",
     "selectMatrix": "Selecione uma matriz"
   }

@@ -5,7 +5,7 @@
       v-model="dialog"
       :persistent="persistent"
       :max-width="maxWidth"
-      scrollable 
+      scrollable
     >
       <v-card max-height="80vh">
         <template v-slot:activator="{ on, attrs }">
@@ -25,7 +25,7 @@
           }}
           <slot name="description"></slot>
         </v-card-text>
-                  <v-divider></v-divider>
+        <v-divider></v-divider>
 
         <v-card-actions v-if="!del">
           <v-spacer></v-spacer>
@@ -66,7 +66,7 @@ export default {
     title: String,
     description: String,
     del: String,
-    persistent: Boolean,
+    persistent: { type: Boolean, default: true },
     dark: Boolean,
     visible: Boolean,
     maxWidth: {

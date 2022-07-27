@@ -11,6 +11,23 @@
         itemsPerPageAllText: 'Todos',
       }"
     >
+      <template v-slot:item.author="{ item }">
+        <v-tooltip top allow-overflow nudge-top>
+          <template v-slot:activator="{ on }">
+            <div class="user" v-on="on">
+              <v-avatar size="40">
+                <img
+                  :src=" item.created_by.avatar_image"
+                  alt="avatar"
+                  class="avatar"
+                />
+              </v-avatar>
+            </div>
+          </template>
+          <span>{{ item.created_by.first_name.toLowerCase()}}</span>
+        </v-tooltip>
+      </template>
+
       <template v-slot:item.name="{ item }" class="name">
         <div
           v-if="!(selectedId == item._id && editNameMode)"
@@ -108,7 +125,9 @@
       v-if="dialogDelete"
       del
       @confirm-event="del"
-    ></dialog-confirmation>
+      @cancel-event="dialogDelete = false"
+    >
+        </dialog-confirmation>
   </div>
 </template>
 
@@ -125,7 +144,14 @@ const GET_SKETCH_LIST = gql`
       name
       description
       node_qtd
-      author
+      edited_by {
+        first_name
+        avatar_image
+      }
+      created_by {
+        first_name
+        avatar_image
+      }
       updated_at
     }
   }
@@ -145,7 +171,7 @@ const DELETE_NODE_SHEET = gql`
 
 const DUPLICATE_NODE_SHEET = gql`
   mutation ($id: ID!) {
-    duplicateNodeSheet(_id: $id)
+    duplicate_sketch(_id: $id)
   }
 `;
 
@@ -174,15 +200,16 @@ export default {
       dialog: false,
       dialogDelete: false,
       headers: [
+        { text: 'Autor', value: 'author' },
         {
           text: 'Nome',
           align: 'start',
           value: 'name',
         },
         { text: 'Descrição', value: 'description' },
-        { text: 'Versão', value: 'version' },
-        { text: 'Qtd. nó', value: 'node_qtd' },
-        { text: 'Autor', value: 'author' },
+        // { text: 'Versão', value: 'version' },
+        // { text: 'Qtd. nó', value: 'node_qtd' },
+        
         { text: 'ID', value: '_id' },
         { text: 'Ultima Alteração', value: 'lastAccess' },
         { text: 'Ações', value: 'actions', sortable: false },
@@ -447,5 +474,10 @@ export default {
 .table-warper {
   width: 100%;
   height: 100%;
+}
+.user {
+  display: flex;
+  align-items: center;
+  width: 100%;
 }
 </style>
