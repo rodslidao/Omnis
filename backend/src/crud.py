@@ -57,10 +57,10 @@ class CRUD:
 
     async def duplicate(self, *args, **kwargs):
         item = await self.get_item(*args, **kwargs)
-        a = item.pop('_id')
+        original_id = item.pop('_id')
         kwargs.pop('_id')
         logger.warning(self.create(*args, **kwargs, input=item))
-        return a 
+        return original_id 
         
 
 
