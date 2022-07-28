@@ -23,11 +23,9 @@ export default {
   height: 100%;
   background-image: linear-gradient(
     to bottom,
-    #ff4814,
-    #ff6b85,
-    #ffa2d3,
-    #f9d6fc,
-    #ffffff
+     #da2829,
+     #c31432,
+     #240b36
   );
 
   div {
