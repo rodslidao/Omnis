@@ -132,7 +132,6 @@ export default {
 .perspective {
   content: '';
   display: block;
-  position: absolute;
   height: calc(var(--container-height) + var(--cube-size));
   width: calc(var(--container-width) + var(--cube-size));
   transform: rotateX(70deg) rotateY(0deg) rotateZ(45deg);
