@@ -71,7 +71,7 @@
         > -->
         <v-spacer></v-spacer>
         <v-btn color="primary" @click="validate()" rounded>
-          {{ obj ? $t('buttons.edit') : $t('buttons.register') }}
+          {{ edit ? $t('buttons.edit') : $t('buttons.register') }}
         </v-btn>
       </div>
     </v-form>
