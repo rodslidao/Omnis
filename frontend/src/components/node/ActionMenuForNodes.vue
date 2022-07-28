@@ -16,7 +16,7 @@
         </template>
         <v-btn
           color="primary"
-          class=""
+          class="option"
           dark
           v-for="(item, index) in items"
           :key="index"
@@ -32,13 +32,13 @@
           @change="upload"
           accept=".oms,"
         />
-        <v-btn v-show="false" color="primary" class="" dark @click="chooseFiles()">
+        <v-btn v-show="false" color="primary" class="option" dark @click="chooseFiles()">
           <v-icon left dark>mdi-upload</v-icon>Upload
         </v-btn>
-        <v-btn color="primary" class="" dark @click="folderDialog = true">
+        <v-btn color="primary" class="option" dark @click="folderDialog = true">
           <v-icon left dark>mdi-folder</v-icon>Arquivos
         </v-btn>
-        <v-btn color="primary" class="" dark @click="serialDialog = true">
+        <v-btn color="primary" class="option" dark @click="serialDialog = true">
           <v-icon left dark>mdi-console</v-icon>Serial
         </v-btn>
       </v-speed-dial>
@@ -428,7 +428,11 @@ export default {
   align-items: center;
 
   .button {
-    margin-left: 8px;
+    margin-left: 0.5rem;
+  }
+  .option{
+    width: 9rem;
+    justify-content: left;
   }
 }
 
