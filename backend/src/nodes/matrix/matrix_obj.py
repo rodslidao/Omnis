@@ -150,27 +150,66 @@ class matrix_sorter:
     def __init__(self, matrix):
         self.matrix = matrix
     
-    def BRU(m,S=False): return fliplr(rot90(m, 1))
-
-    def BRL(m,S=False): return rot90(m, 2)
-
-    def BLR(m,S=False): return flipud(m)
-
     def BLU(m, S=False):
-            
-        m = rot90(m,3)
-        print(S)
-        if S:
-            return matrix_sorter.S(m)
-        return m
+        """
+        Matrix will start from bottom-let and goin up with a ZigZag pattern.
+        3  6  9 
+        2  5  8
+        1  4  7
+        """
+        return rot90(m, 3)
+    
+    def TRB(m,S=False):
+        """
+        Matrix will start from top-right and goin Bottom with a ZigZag pattern.
+        7  4  1
+        8  5  2
+        9  6  3
+        """
+        return rot90(m, 1)
+    
+    def BRL(m,S=False):
+        """
+        Matrix will start from bottom-right and goin left with a ZigZag pattern.
+        9  8  7
+        6  5  4
+        3  2  1
+        """
+        return rot90(m, 2)
+    
+    def TLR(m,S=False):
+        """
+        Matrix will start from top-left and goin right with a ZigZag pattern.
+        1  2  3
+        4  5  6
+        7  8  9
+        """
+        return rot90(m, 4)
 
-    def TRB(m,S=False): return rot90(m, 1)
+    def BRU(m,S=False):
+        """
+        Matrix will start from bottom-right and goin up with a ZigZag pattern.
+        9  6  3 
+        8  5  2 
+        7  4  1 
+        """
+        return flipud(rot90(m, 3))
+
+
+    def BLR(m,S=False):
+        """
+        Matrix will start from bottom-left and goin right with a ZigZag pattern.
+        7  8  9
+        4  5  6
+        1  2  3
+        """
+        return fliplr(rot90(m, 3))
+    
 
     def TRL(m,S=False): return fliplr(m)
 
     def TLB(m,S=False): return m.transpose()
 
-    def TLR(m,S=False): return m
 
     def S(m):
         s = m.copy()

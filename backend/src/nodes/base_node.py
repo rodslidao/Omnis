@@ -235,4 +235,3 @@ class BaseNode(Wizard):
         temp = dictionary.copy()
         temp["_id"] = str(dictionary["_id"])
         return temp
-
