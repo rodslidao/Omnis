@@ -10,6 +10,7 @@ from cv2 import (
 )
 from json import JSONEncoder
 from src.crud import CRUD
+from threading import Event
 __matrix = CRUD("matrix", "operator")
 
 class CustomEncoder(JSONEncoder):
@@ -122,7 +123,6 @@ class Slot:
 
         self.start = tuple((self.center[:2] - (self.sizes[:2] / 2)).astype(int))
         self.end = tuple((self.center[:2] + (self.sizes[:2] / 2)).astype(int))
-
         self.unscaled = Slot(position, origin, sizes, borders, counter, extra, item, _id, **{**kwargs, "scale": 1, "copy": False}) if (self.scale != 1 and kwargs.get('copy', self.scale!=1)) else self
         # (BN * P)+(O + (S / 2)) + int((BE * (P / C)) - (BN * (P / C)))
 
@@ -224,6 +224,7 @@ class Blister:
         self.name = name
         self.shape = tuple(shape)
         self.kwargs = kwargs
+        self.empty = Event()
         self.data = self.re_order(self.generate_data(shape, **self.slot_config), order)
         self.reset_iterator()
 
@@ -297,6 +298,7 @@ class Blister:
 
     def reset_iterator(self):
         self.iterator = ndenumerate(self.data)
+        self.empty.clear()
         # self.iterator = 
         # pass
         # self.iterator = ndenumerate(self.order_matrix)
@@ -304,7 +306,13 @@ class Blister:
 
     def __next__(self):
         # _id = next(self.iterator)
-        return next(self.iterator)#self.data[_id[0], _id[1]]
+        try:
+            if not self.empty.is_set():
+                return next(self.iterator)
+        except StopIteration:
+            self.empty.set()
+
+            #self.data[_id[0], _id[1]]
         # return self.get_slot(next(self.iterator)).center
         # return self.get_slot(next(self.iterator))
 

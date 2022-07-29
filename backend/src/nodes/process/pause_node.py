@@ -10,8 +10,8 @@ class PauseNode(ProcessNode):
 
     def execute(self, message):
         super().execute(message)
-        # while not self.process.is_paused():
-        #     if self.process.is_stopped():
-        #         return
-        # else:
-        #     self.on("Saida", message.payload)
+        while not self.manager.process.is_paused():
+            if self.manager.process.is_stopped():
+                return
+        else:
+            self.on("Saida", message.payload)

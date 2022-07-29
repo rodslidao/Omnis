@@ -88,7 +88,7 @@ class BaseNode(Wizard):
         self.update_status({"status": "LOADED"})
         self.auto_run = options.get("auto_run", False)
         logger.debug(f"[{type(self).__name__}] || {self.name} Node loaded")
-        Thread(target=self.auto_update, name=f"NodeStatus_auto_update", daemon=True).start()
+        # Thread(target=self.auto_update, name=f"NodeStatus_auto_update", daemon=True).start()
 
     def auto_update(self):
         asyncio.run(BaseNode_websocket.broadcast_on_change(self.who_am_i, self.who_am_i))

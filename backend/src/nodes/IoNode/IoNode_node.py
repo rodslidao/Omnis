@@ -30,7 +30,7 @@ class IoNodeNode(BaseNode):
         target = message.targetName.lower()
         if target == "gatilho":
             self.board.send(self.command)
-            sleep(0.3)
+            # sleep(0.3)
             self.on("Saida", message.payload)
 
 
