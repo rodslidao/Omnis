@@ -23,6 +23,7 @@ class MovementNode(BaseNode):
         self.serial_id = ObjectId(options["board"]["id"])
         self.serial = SerialManager.get_by_id(self.serial_id)
         if not self.serial: raise TypeError("SERIAL DEAD")
+        self.serial.resume()
         self.axis = []
         self.coordinates = {}
         self.special_coordinates = {}
@@ -81,8 +82,11 @@ class MovementNode(BaseNode):
                 # t = 1  # ! Remove this line
             else:
                 self.serial.send("G90", log=False)
-            self.serial.G0(*movement)
-            self.on("Sucesso", self.serial_id)
+            try:
+                self.serial.G0(*movement)
+                self.on("Sucesso", self.serial_id)
+            except AttributeError as e :
+                self.on("Falha", e)
 
         else:
             if not self.serial.is_open:
@@ -91,19 +95,19 @@ class MovementNode(BaseNode):
             if self.serial is None:
                 self.on("Falha","Serial not connected", pulse=True)
 
+    #! Marlin sometimes doesn't Homming after stop commands.
     # def stop(self):
     #     self.serial.stop()
     #     super().stop()
-
-    # def resume(self):
-    #     logger.info(f"{self.name} resumed")
     #     self.serial.resume()
-    #     super().resume()
 
-    # def pause(self):
-    #     logger.info(f"{self.name} resumed")
-    #     self.serial.pause()
-    #     super().pause()
+    def resume(self):
+        self.serial.resume()
+        super().resume()
+
+    def pause(self):
+        self.serial.pause()
+        super().pause()
 
     def get_info(**kwargs):
         return {"options": SerialManager.get_info()}

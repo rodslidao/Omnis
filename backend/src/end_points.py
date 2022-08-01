@@ -169,6 +169,10 @@ class Controls(Websocket):
             axis = self.serial.axes[data["id"]]
             axis.move(axis.position + axis.step * (1 if not data["isNegative"] else -1))
             axis.position = self.serial.G0(*axis())[axis.name]
+        elif data["context"] == "contextMenuCommand":
+            # Executa um comando do menu
+            logger.info("Executing command: {}".format(data["command"]))
+            self.serial.send(data["command"])
         else:
             logger.debug(f"Websocket: unknow request {data}")
 

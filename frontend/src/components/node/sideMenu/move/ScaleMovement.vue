@@ -21,11 +21,15 @@ export default {
   components: { SideMenuTitle },
   data() {
     return {
-      stepSelected: '1',
+      stepSelected: 3,
       stepsList: [
         {
           name: '0,2',
           value: '0.2',
+        },
+        {
+          name: '0,5',
+          value: '0.5',
         },
         {
           name: '1',
@@ -38,6 +42,10 @@ export default {
         {
           name: '100',
           value: '100',
+        },
+        {
+          name: '500',
+          value: '500',
         },
       ],
     };

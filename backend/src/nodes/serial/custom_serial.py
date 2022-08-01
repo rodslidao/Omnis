@@ -82,8 +82,8 @@ class Serial(_Serial):
         self.__echos = queue.Queue()
         self.answers = {}
         self.__signals = queue.Queue()
-        Thread(target=self.__command_writer, name=f"{self.name}_writer").start()
-        Thread(target=self.__command_reader, name=f"{self.name}_reader").start()
+        # Thread(target=self.__command_writer, name=f"{self.name}_writer").start()
+        # Thread(target=self.__command_reader, name=f"{self.name}_reader").start()
         SerialManager.add(self)
 
     def start(self):
@@ -117,19 +117,17 @@ class Serial(_Serial):
 
     def send(self, message, echo=False, log=True):
 
-        ID = ObjectId()
-        event = Event()
-        if echo:
-            self.__signals.put((event,ID))
-        self.__comands.put((message, echo))
-        if echo:
-            event.wait()
-            return self.answers.pop(ID, None)
-        return self
-        # return event, ID
+        # ID = ObjectId()
+        # event = Event()
         # if echo:
-        #     self.__signals.join()
-        #     return self.answers.pop(ID, 'Fail')
+        #     self.__signals.put((event,ID))
+        # self.__comands.put((message, echo))
+        # if echo:
+        #     event.wait()
+        #     return self.answers.pop(ID, None)
+        # return self
+        answer = self.write(message)
+        if echo: return answer
 
     def __command_writer(self):
         while True:
@@ -161,29 +159,24 @@ class Serial(_Serial):
 
 
     def write(self, payload):
+        echo = 'FAIL'
         try:
             send_lock.acquire()
             # if payload != self.last_value_send: logger.debug(f"Serial: {self.name} send: {payload}")
             super().write((f"{payload}\n").encode("ascii"))
+            self.last_value_send = payload
+            echo = self.echo()
         finally:
             send_lock.release()
-            self.last_value_send = payload
-            return self.echo()
+            return echo
 
     def echo(self):
         lines = []
         _b = self.readline()
-        while _b != b"" or self.inWaiting() != 0:
-            if len(lines) < 200:
-                try:
-                    lines.append(_b.decode("ascii").rstrip())
-                except UnicodeDecodeError:
-                    pass
-            _b = self.readline()
-        try:
+        while _b != b"":
             lines.append(_b.decode("ascii").rstrip())
-        except UnicodeDecodeError:
-            pass
+            if self.inWaiting() != 0: _b = self.readline()
+            else: break
         self.last_value_received = lines
         return lines
 

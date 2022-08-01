@@ -256,6 +256,7 @@
     "removeConfirm": "Você tem certeza que deseja remover?",
     "removeDescription": "Após confirmação, essa ação não poderá ser desfeita.",
     "selectObject": "Selecione um objeto",
-    "selectMatrix": "Selecione uma matriz"
+    "selectMatrix": "Selecione uma matriz",
+    "selectProcess":"Selecione um processo"
   }
 }

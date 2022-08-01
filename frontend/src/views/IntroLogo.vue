@@ -70,7 +70,7 @@ export default {
   display: grid;
   place-items: center;
   height: 100%;
-  background-color: #d53329;
+  background-color: #da2829;
 
   .video {
     width: 80vw;

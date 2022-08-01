@@ -130,7 +130,8 @@ class MatrixNode(BaseNode):
             case "reset":
                 if isinstance(message.payload, Blister):
                     self.blister.update_data(message.payload.data)
-                    # return self.item()
+                self.reset()
+                self.item()
 
             case "próximo":
                 return self.item()
@@ -139,17 +140,18 @@ class MatrixNode(BaseNode):
                 self.on("Matriz", self.blister.roi(message.payload))
 
     def item(self):
-        try:
-            _ = next(self.blister)[1]
+        _ = next(self.blister)
+        if not self.blister.empty.is_set():
+            item = _[1]
             self.on(
-                "Item", _
+                "Item", item
             )  # Send only the slot. Maybe another node is required to split item and slot data.
             self.on(
-                "XY", dict(zip(["X", "Y"], _.center))
+                "XY", dict(zip(["X", "Y"], item.center))
             )  #! Thats is not the best option ...
-        except StopIteration:
+        else:
             self.on("Fim", True)
-            self.reset()
+            # self.reset()
 
     def reset(self):
         self.blister.reset_iterator()

@@ -255,6 +255,7 @@
     "removeConfirm": "Are you sure you want to delete?",
     "removeDescription": "After confirm, you will not be able to recover it",
     "selectObject": "Select an object which you want to mount.",
-    "selectMatrix": "Select a matrix which you want to mount."
+    "selectMatrix": "Select a matrix which you want to mount.",
+    "selectProcess": "Select the process which you want to start."
   }
 }
