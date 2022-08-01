@@ -46,8 +46,8 @@
         "list": "Listar matrizes",
         "slotsSubtitle": "Quantidade de slots, margens e tamanho",
         "subdivisionsSubtitle": "Quantidade de subdivisões",
-        "originSubtitle": "Define a origem da matriz, em relação a maquina"
-        
+        "originSubtitle": "Define a origem da matriz, em relação a maquina",
+        "order": "Define a ordem de acesso aos slots"
       },
       "objects": {
         "name": "Nome",
