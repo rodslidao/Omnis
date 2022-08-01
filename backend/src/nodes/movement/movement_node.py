@@ -29,7 +29,9 @@ class MovementNode(BaseNode):
         self.special_coordinates = {}
         self.wait_for_this = [{k.lower():v for k,v in x['to'].items() if k == "name"} for x in self.input_connections]
         self.wait_checks = 0
+        self.homing_axis =[]
         for axis in options["axislist"]:
+            if axis.get('homing'): self.homing_axis.append(axis['name'].upper())
             if axis["isActive"]:
                 self.axis.append(axis["name"].lower())
                 if (str(axis['value']).startswith('!')):
@@ -50,6 +52,8 @@ class MovementNode(BaseNode):
         elif action == "xy":
             self.coordinates_f(message.payload)
         if self.wait_checks == len(self.wait_for_this) or action == "gatilho":
+            if self.homing_axis != "G28 ":
+                self.serial.G28(self.homing_axis)
             self.gatilho_f()
         else:
             logger.warning(f"MovementNode: Waiting for {self.wait_checks}/{len(self.wait_for_this)} variables.")

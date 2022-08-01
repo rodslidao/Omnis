@@ -1,5 +1,7 @@
 from time import sleep
 from timeit import default_timer as timer
+
+from click import echo
 from .custom_serial import Serial
 from api import logger, exception
 from api.decorators import for_all_methods
@@ -53,7 +55,7 @@ class SerialGcodeOBJ(Serial):
         self.is_open = True
         self.resumed = Event()
         self.was_stopped = Event()
-        self.timeout = 5
+        self.timeout = 40 # Max time to wait for a response from the machine (G28 will take a while)
         self.resumed_permission = ["stop", "kill", "quick_stop", "resume"]
         self.__status = {"jog_position":{'X':0, 'Y':0, 'Z':0, 'A':0, 'B':0, 'C':0}}
         self.resume()
@@ -79,6 +81,25 @@ class SerialGcodeOBJ(Serial):
             if not self.is_open or not self.resumed.is_set(): return
             return function(self, *args, **kwargs)
         return wrapper
+
+    @verify
+    def G28(self, axis=[]):
+        self.super_send("G28" +' '.join(axis), echo=True)
+        t0 = timer()
+        while self.resumed.is_set() and ((timer()-t0) < self.timeout) and not self.M119({name.upper():'TRIGGERED' for name in axis}):
+            sleep(0.3)
+        return True
+
+    def M119(self, axis={}):
+        if axis is not None:
+            compare = []
+            echo = self.super_send("M119", echo=True)
+            if echo.pop(0) == "Reporting endstop status" and echo.pop() == 'ok':
+                for status in echo:
+                    name, value = status.split(":")
+                    compare.append(axis.get(name[0].upper(), value.replace(" ", "")) == value.replace(" ", ""))
+                if all(compare): return True
+                return False
 
     @verify
     def G0(self, *args, **kwargs):
