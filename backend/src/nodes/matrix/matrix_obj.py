@@ -152,25 +152,35 @@ class matrix_sorter:
     
     def BLU(m, S=False):
         """
-        Matrix will start from bottom-let and goin up with a ZigZag pattern.
+        Matrix will start from bottom-let.
         3  6  9 
         2  5  8
         1  4  7
         """
         return rot90(m, 3)
     
-    def TRB(m,S=False):
+    def BRU(m,S=False):
         """
-        Matrix will start from top-right and goin Bottom with a ZigZag pattern.
-        7  4  1
-        8  5  2
-        9  6  3
+        Matrix will start from bottom-right.
+        9  6  3 
+        8  5  2 
+        7  4  1 
         """
-        return rot90(m, 1)
+        return flipud(rot90(m, 3))
+
     
+    def BLR(m,S=False):
+        """
+        Matrix will start from bottom-left.
+        7  8  9
+        4  5  6
+        1  2  3
+        """
+        return fliplr(rot90(m, 3))
+
     def BRL(m,S=False):
         """
-        Matrix will start from bottom-right and goin left with a ZigZag pattern.
+        Matrix will start from bottom-right.
         9  8  7
         6  5  4
         3  2  1
@@ -179,44 +189,28 @@ class matrix_sorter:
     
     def TLR(m,S=False):
         """
-        Matrix will start from top-left and goin right with a ZigZag pattern.
+        Matrix will start from top-left.
         1  2  3
         4  5  6
         7  8  9
         """
         return rot90(m, 4)
-
-    def BRU(m,S=False):
-        """
-        Matrix will start from bottom-right and goin up with a ZigZag pattern.
-        9  6  3 
-        8  5  2 
-        7  4  1 
-        """
-        return flipud(rot90(m, 3))
-
-
-    def BLR(m,S=False):
-        """
-        Matrix will start from bottom-left and goin right with a ZigZag pattern.
-        7  8  9
-        4  5  6
-        1  2  3
-        """
-        return fliplr(rot90(m, 3))
     
+    def TRB(m,S=False):
+        """
+        Matrix will start from top-right.
+        7  4  1
+        8  5  2
+        9  6  3
+        """
+        return rot90(m, 1)
 
     def TRL(m,S=False): return fliplr(m)
 
     def TLB(m,S=False): return m.transpose()
 
-
-    def S(m):
-        s = m.copy()
-        s[1::2, :] = s[1::2, ::-1]
-        return s
     def get(tag, matrix):
-        return getattr(matrix_sorter, tag[0:3])(matrix, tag[-1] == 'S')
+        return getattr(matrix_sorter, tag[0:3])(matrix)
 
 
 class Blister:
