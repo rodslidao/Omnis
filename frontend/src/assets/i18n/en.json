@@ -45,7 +45,8 @@
         "list": "List Matrix",
         "slotsSubtitle": "Quantity of slots, margins and size",
         "subdivisionsSubtitle": "If your matrix has a subdivision",
-        "originSubtitle": "Define distance matrix of 0 machine"
+        "originSubtitle": "Define distance matrix of 0 machine",
+        "order":"Define the access order of the matrix slots"
         
       },
       "objects": {
