@@ -9,37 +9,28 @@
             </v-btn>
             <div class="ml-2">
               {{
-                step1 ? $t('dialogs.selectObject') : $t('dialogs.selectMatrix')
+                $t('dialogs.selectProcess')
               }}
             </div>
           </v-card-title>
           <v-card-text max-height="50vh">
             <v-card
               link
-              v-for="(item, index) in step1
-                ? get_object_list
-                : !step3
-                ? get_matrix_list
-                : process"
+              v-for="(item, index) in get_process_list"
               :key="index"
-              class="d-flex my-2"
-              @click="
-                step1
-                  ? selectedObject(item)
-                  : !step3
-                  ? selectedMatrix(item)
-                  : selectedProcess(item._id)
-              "
+              class="mx-auto"
+              @click="selectedProcess(item._id)"
             >
-              <div class="viewer"></div>
-              <div class="pl-4 pr-4 my-4">
-                <span
-                  class="text-subtitle text-capitalize font-weight-bold"
-                  my-2
-                  >{{ item.name }}</span
-                >
-                <div class="text-subtitle-2">{{ item.description }}</div>
-              </div>
+            <v-tooltip top >
+              <template v-slot:activator="{ on }">
+                <!-- <div class="viewer"></div> -->
+                <div class="pl-4 pr-4 my-4" v-on='on'>
+                  <v-card-text class="text-center text-subtitle text-capitalize font-weight-bold">{{ item.name }}</v-card-text>
+                  <!-- <div class="text-subtitle-2">{{ item.description }}</div> -->
+                </div>
+              </template>
+              <span>{{ item._id }}</span>
+            </v-tooltip>
             </v-card>
           </v-card-text>
         </v-card>
@@ -158,8 +149,8 @@ export default {
   },
 
   apollo: {
-    get_process_list: LIST_PROCESS,
-    get_object_list: LIST_OBJECT,
+    get_process_list: LIST_PROCESS
+    // get_object_list: LIST_OBJECT,
   },
 
   computed: {
@@ -208,7 +199,11 @@ export default {
         .catch((error) => {
           // Error
           this.isLoading = false;
-          this.$alertFeedback(this.$t('alerts.deleteFail'), 'error', error);
+          this.$alertFeedback(
+            this.$t('alerts.failToRunProcess'),
+            'error',
+            error
+          );
           // We restore the initial user input
         });
     },
@@ -272,11 +267,7 @@ export default {
         .then(() => {})
 
         .catch((error) => {
-          this.$alertFeedback(
-            'alerts.updateMatrixSuccess',
-            'error',
-            error
-          );
+          this.$alertFeedback('alerts.updateMatrixSuccess', 'error', error);
           // We restore the initial user input
         });
     },
@@ -304,7 +295,7 @@ export default {
         );
         setTimeout(
           () => this.connectToWebsocket(),
-          Math.floor(Math.random() * 2500),
+          Math.floor(Math.random() * 2500)
         );
       };
     },

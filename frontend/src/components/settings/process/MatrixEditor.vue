@@ -25,7 +25,22 @@
               chips
               deletable-chips
             ></v-autocomplete>
-
+            <div v-else-if="key == 'order'">
+              <div class="text-h6 font-weight-black">
+                {{ $t('form.order') }}
+              </div>
+              <div class="text-subtitle-2 mb-2">
+                {{ $t('settings.process.matrix.order') }}
+              </div>
+              <v-radio-group v-model="fields2[key].value" row>
+                <v-radio
+                  v-for="(order, i) in order_list"
+                  :key="i"
+                  :label="order"
+                  :value="order"
+                ></v-radio>
+              </v-radio-group>
+            </div>
             <div v-else class="warper">
               <v-text-field
                 :label="$t('form.' + key) + (fields2[key].required ? '*' : '')"
@@ -41,6 +56,7 @@
               </v-text-field>
             </div>
           </div>
+
           <!-- custom -->
           <div v-for="(field, index) in fields" :key="index" class="mt-6">
             <v-row>
@@ -184,6 +200,7 @@ export default {
       edit: '',
       suffixList: ['sizeX', 'sizeY', 'marginX', 'marginY'],
       requireList: ['name'],
+      order_list: ['TLR', 'TRL', 'TLB', 'TRB', 'BLU', 'BRU', 'BLR', 'BRL'],
       fields2: {
         name: {
           value: this.obj?.name,
@@ -198,7 +215,7 @@ export default {
         variable: {
           value: this.obj?.variable,
         },
-        order :{
+        order: {
           value: this.obj?.order,
           required: true,
         },
@@ -289,7 +306,7 @@ export default {
   methods: {
     rules() {
       return {
-        required: (value) => !!value ||  this.$t('form.required'),
+        required: (value) => !!value || this.$t('form.required'),
       };
     },
 
@@ -343,7 +360,7 @@ export default {
           this.$emit('refetch');
           this.$alertFeedback(
             this.$t('alerts.registerMatrixSuccess'),
-            'success',
+            'success'
           );
         })
 
@@ -359,7 +376,7 @@ export default {
     },
 
     async editMatrix() {
-      console.log(this.fields2.variable.value);
+      console.log(this.fields2.order);
       await this.$apollo
         .mutate({
           mutation: UPDATE_MATRIX,

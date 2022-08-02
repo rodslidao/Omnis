@@ -101,7 +101,7 @@ export default {
       if (newData) {
         // this.cssUpdate(pos.X, pos.Y, pos.Z);0
         this.cssVars['--position-x'] = newData.X;
-        this.cssVars['--position-y'] = newData.Y;
+        this.cssVars['--position-y'] = newData.Y? newData.Y : -10; // -10 para não ficar sobre o eixo y ! Remover depois
         this.cssVars['--position-z'] = newData.Z;
       }
     },
@@ -130,20 +130,17 @@ export default {
 }
 
 .perspective {
-  background-color: hsla(0, 0%, 100%, 0.185);
-  box-shadow: 0 0 0 0.1em hsla(0, 0%, 0%, 0.2);
-  height: calc(var(--container-height) + var(--cube-size));
-  width: calc(var(--container-width) + var(--cube-size));
   content: '';
   display: block;
-  /* position: absolute; */
-  /* left: 50%;
-  top: 50%; */
+  height: calc(var(--container-height) + var(--cube-size));
+  width: calc(var(--container-width) + var(--cube-size));
   transform: rotateX(70deg) rotateY(0deg) rotateZ(45deg);
   transform-style: preserve-3d;
   border-top: 2px solid;
   border-image: linear-gradient(to right, red, rgba(0, 0, 0, 0)) 1 5%;
-  border-radius: 0 5px 5px 5px;
+  background-color: hsla(0, 0%, 100%, 0.185);
+  box-shadow: 0 0 0 0.1em hsla(0, 0%, 0%, 0.2);
+  
 }
 .perspective:after {
   content: '';
@@ -165,7 +162,6 @@ export default {
   height: calc(var(--container-height) + var(--cube-size));
   width: calc(var(--container-width) + var(--cube-size));
   border-left: 2px solid;
-
   border-image: linear-gradient(to bottom, rgb(0, 255, 81), rgba(0, 0, 0, 0)) 1
     100%;
 }

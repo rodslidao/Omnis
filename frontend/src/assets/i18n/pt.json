@@ -46,8 +46,8 @@
         "list": "Listar matrizes",
         "slotsSubtitle": "Quantidade de slots, margens e tamanho",
         "subdivisionsSubtitle": "Quantidade de subdivisões",
-        "originSubtitle": "Define a origem da matriz, em relação a maquina"
-        
+        "originSubtitle": "Define a origem da matriz, em relação a maquina",
+        "order": "Define a ordem de acesso aos slots"
       },
       "objects": {
         "name": "Nome",
@@ -69,7 +69,7 @@
       }
     },
     "users": {
-      "name": "Usurários",
+      "name": "Usuários",
       "user": "usuário",
       "otherAccounts": "Outras contas",
       "editUser": {
@@ -256,6 +256,7 @@
     "removeConfirm": "Você tem certeza que deseja remover?",
     "removeDescription": "Após confirmação, essa ação não poderá ser desfeita.",
     "selectObject": "Selecione um objeto",
-    "selectMatrix": "Selecione uma matriz"
+    "selectMatrix": "Selecione uma matriz",
+    "selectProcess":"Selecione um processo"
   }
 }

@@ -32,7 +32,7 @@ export default {
   props: {
     color: {
       type: String,
-      default: 'grey darken-4',
+      default: 'grey darken-1',
     },
     tooltipMaxWidth: {
       type: String,

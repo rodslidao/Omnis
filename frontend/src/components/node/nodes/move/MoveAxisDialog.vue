@@ -25,6 +25,7 @@
                 :rules="requiredRules"
               ></v-select>
             </NodeConfigTitle>
+            </NodeConfigTitle>
             <NodeConfigTitle
               title="Distancias"
               description="Distancia que a maquina vai se mexer em relação a origem da maquina."
@@ -35,6 +36,15 @@
                   :key="index"
                   class="mb-4 d-flex"
                 >
+                  <v-checkbox
+                    class="mt-0"
+                    v-if="axis.name != 'F'"
+                    v-model="axis.homing"
+                    hide-details
+                    off-icon='mdi-home-circle'
+                    on-icon='mdi-home-circle'
+                    :color="axis.homing ? 'green' : 'grey'"
+                  ></v-checkbox>
                   <v-checkbox
                     class="mt-0"
                     v-if="axis.name != 'F'"

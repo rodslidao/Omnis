@@ -10,13 +10,13 @@ export default class MoveAxisNode extends Node {
   name = 'Mover Eixo';
 
   axisList = [
-    { name: 'X', isActive: false, value: 0 },
-    { name: 'Y', isActive: false, value: 0 },
-    { name: 'Z', isActive: false, value: 0 },
-    { name: 'A', isActive: false, value: 0 },
-    { name: 'B', isActive: false, value: 0 },
-    { name: 'C', isActive: false, value: 0 },
-    { name: 'F', isActive: false, value: 0 },
+    { name: 'X', isActive: false, value: 0, homing: false },
+    { name: 'Y', isActive: false, value: 0, homing: false },
+    { name: 'Z', isActive: false, value: 0, homing: false },
+    { name: 'A', isActive: false, value: 0, homing: false },
+    { name: 'B', isActive: false, value: 0, homing: false },
+    { name: 'C', isActive: false, value: 0, homing: false },
+    { name: 'F', isActive: false, value: 0, homing: false },
   ];
 
   board = { name: '', id: '' };
