@@ -168,15 +168,7 @@ class matrix_sorter:
         """
         return flipud(rot90(m, 3))
 
-    
-    def BLR(m,S=False):
-        """
-        Matrix will start from bottom-left.
-        7  8  9
-        4  5  6
-        1  2  3
-        """
-        return fliplr(rot90(m, 3))
+
 
     def BRL(m,S=False):
         """
@@ -208,6 +200,15 @@ class matrix_sorter:
     def TRL(m,S=False): return fliplr(m)
 
     def TLB(m,S=False): return m.transpose()
+
+    def BLR(m,S=False):
+        """
+        Matrix will start from bottom-left.
+        7  8  9
+        4  5  6
+        1  2  3
+        """
+        return fliplr(rot90(m, 2))
 
     def get(tag, matrix):
         return getattr(matrix_sorter, tag[0:3])(matrix)
