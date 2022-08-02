@@ -24,6 +24,7 @@
                   link
                   v-for="(item, index) in axis.context_menu"
                   :key="index"
+                  @click='contextMenuCommand(item.command)'
                 >
                   <v-list-item-title>{{ item.title }}</v-list-item-title>
                   <v-list-item-icon>
@@ -210,6 +211,14 @@ export default {
         id: button._id,
       };
       console.log('msg', button);
+      this.$emit('send', msg);
+    },
+
+    contextMenuCommand(command) {
+      const msg = {
+        context: 'contextMenuCommand',
+        command: command,
+      };
       this.$emit('send', msg);
     },
 

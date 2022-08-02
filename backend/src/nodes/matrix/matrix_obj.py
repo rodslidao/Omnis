@@ -10,6 +10,7 @@ from cv2 import (
 )
 from json import JSONEncoder
 from src.crud import CRUD
+from threading import Event
 __matrix = CRUD("matrix", "operator")
 
 class CustomEncoder(JSONEncoder):
@@ -122,7 +123,6 @@ class Slot:
 
         self.start = tuple((self.center[:2] - (self.sizes[:2] / 2)).astype(int))
         self.end = tuple((self.center[:2] + (self.sizes[:2] / 2)).astype(int))
-
         self.unscaled = Slot(position, origin, sizes, borders, counter, extra, item, _id, **{**kwargs, "scale": 1, "copy": False}) if (self.scale != 1 and kwargs.get('copy', self.scale!=1)) else self
         # (BN * P)+(O + (S / 2)) + int((BE * (P / C)) - (BN * (P / C)))
 
@@ -150,34 +150,68 @@ class matrix_sorter:
     def __init__(self, matrix):
         self.matrix = matrix
     
-    def BRU(m,S=False): return fliplr(rot90(m, 1))
-
-    def BRL(m,S=False): return rot90(m, 2)
-
-    def BLR(m,S=False): return flipud(m)
-
     def BLU(m, S=False):
-            
-        m = rot90(m,3)
-        print(S)
-        if S:
-            return matrix_sorter.S(m)
-        return m
+        """
+        Matrix will start from bottom-let.
+        3  6  9 
+        2  5  8
+        1  4  7
+        """
+        return rot90(m, 3)
+    
+    def BRU(m,S=False):
+        """
+        Matrix will start from bottom-right.
+        9  6  3 
+        8  5  2 
+        7  4  1 
+        """
+        return flipud(rot90(m, 3))
 
-    def TRB(m,S=False): return rot90(m, 1)
+
+
+    def BRL(m,S=False):
+        """
+        Matrix will start from bottom-right.
+        9  8  7
+        6  5  4
+        3  2  1
+        """
+        return rot90(m, 2)
+    
+    def TLR(m,S=False):
+        """
+        Matrix will start from top-left.
+        1  2  3
+        4  5  6
+        7  8  9
+        """
+        return rot90(m, 4)
+    
+    def TRB(m,S=False):
+        """
+        Matrix will start from top-right.
+        7  4  1
+        8  5  2
+        9  6  3
+        """
+        return rot90(m, 1)
 
     def TRL(m,S=False): return fliplr(m)
 
     def TLB(m,S=False): return m.transpose()
 
-    def TLR(m,S=False): return m
+    def BLR(m,S=False):
+        """
+        Matrix will start from bottom-left.
+        7  8  9
+        4  5  6
+        1  2  3
+        """
+        return fliplr(rot90(m, 2))
 
-    def S(m):
-        s = m.copy()
-        s[1::2, :] = s[1::2, ::-1]
-        return s
     def get(tag, matrix):
-        return getattr(matrix_sorter, tag[0:3])(matrix, tag[-1] == 'S')
+        return getattr(matrix_sorter, tag[0:3])(matrix)
 
 
 class Blister:
@@ -224,6 +258,7 @@ class Blister:
         self.name = name
         self.shape = tuple(shape)
         self.kwargs = kwargs
+        self.empty = Event()
         self.data = self.re_order(self.generate_data(shape, **self.slot_config), order)
         self.reset_iterator()
 
@@ -297,6 +332,7 @@ class Blister:
 
     def reset_iterator(self):
         self.iterator = ndenumerate(self.data)
+        self.empty.clear()
         # self.iterator = 
         # pass
         # self.iterator = ndenumerate(self.order_matrix)
@@ -304,7 +340,13 @@ class Blister:
 
     def __next__(self):
         # _id = next(self.iterator)
-        return next(self.iterator)#self.data[_id[0], _id[1]]
+        try:
+            if not self.empty.is_set():
+                return next(self.iterator)
+        except StopIteration:
+            self.empty.set()
+
+            #self.data[_id[0], _id[1]]
         # return self.get_slot(next(self.iterator)).center
         # return self.get_slot(next(self.iterator))
 

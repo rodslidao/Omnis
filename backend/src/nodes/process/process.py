@@ -46,14 +46,15 @@ class Process_Thread(threading.Thread):
         }
 
     def run(self):
-        while not self.stopped.is_set():
-            while self.paused.is_set():
-                self.resumed.wait()
-                self.resumed.clear()
-            if not self.stopped.is_set() and not self.paused.is_set():
-                self.target()
-                event_list.join()
-                logger.debug("Process: restarting automatically")
+        # while not self.stopped.is_set():
+        #     while self.paused.is_set():
+        #         self.resumed.wait()
+        #         self.resumed.clear()
+        if not self.stopped.is_set() and not self.paused.is_set():
+            self.target()
+            event_list.join()
+            # self.stop()
+                # logger.debug("Process: restarting automatically")
         logger.debug("Process: end")
 
     def start(self):

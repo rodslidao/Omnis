@@ -150,7 +150,9 @@ def stopSerial_resolver( _id, **kwargs):
 @auth("operator")
 def sendSerial_resolver( _id, payload, **kwargs):
     """Communicate a serial by id and return it like a payload"""
-    return SerialManager.get_by_id(_id).send(payload).to_dict()
+    serial = SerialManager.get_by_id(_id)
+    serial.send(payload)
+    return serial.to_dict()
 
 
 @mutation.field("syncHostTime")

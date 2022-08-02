@@ -4,6 +4,7 @@ from src.manager.process_manager import ProcessManager as process
 from api import logger, exception
 from api.decorators import for_all_methods
 from threading import Thread
+from src.utility.crud.user import User
 
 NODE_TYPE = "ProcessNode"
 
@@ -30,7 +31,7 @@ class ProcessNode(BaseNode):
         self.input_connections = input_connections
         self.function = process_options[options["action"]]
         self.auto_run = options.get("auto_run", False)
-        self.process = process
+        self.manager = process
         NodeManager.addNode(self)
 
     # @Wizard._decorator # Since this can be a start node, a wizar is not necessary
@@ -38,7 +39,7 @@ class ProcessNode(BaseNode):
         if self.auto_run:
             self.on("Gatilho", True)
         else:
-            Thread(target=self.function).start()
+            Thread(target=self.function, kwargs={'user':User('omnis', 'bot', 'developer', 'parallax@orakolo.com')}).start()
 
     @staticmethod
     def get_info(**kwargs):
