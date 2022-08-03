@@ -1,7 +1,6 @@
 from time import sleep
 from timeit import default_timer as timer
 
-from click import echo
 from .custom_serial import Serial
 from api import logger, exception
 from api.decorators import for_all_methods
@@ -55,15 +54,14 @@ class SerialGcodeOBJ(Serial):
         self.is_open = True
         self.resumed = Event()
         self.was_stopped = Event()
-        self.timeout = 40 # Max time to wait for a response from the machine (G28 will take a while)
+        self.timeout = 50 # Max time to wait for a response from the machine (G28 will take a while)
         self.resumed_permission = ["stop", "kill", "quick_stop", "resume"]
         self.__status = {"jog_position":{'X':0, 'Y':0, 'Z':0, 'A':0, 'B':0, 'C':0}}
         self.resume()
         for msg in startup_commands:
-            self.send(msg)
+            self.super_send(msg)
         self.pins = pins
         self.axes = axes
-        # logger.info(self.axes)
         self.websocket = Controls(self._id, self)
         Thread(target=self.auto_update, name=f"{_id}_auto_update", daemon=True).start()
 
@@ -125,7 +123,7 @@ class SerialGcodeOBJ(Serial):
             raise AttributeError("SERIAL DEAD")
         while (
             any((self.resumed.is_set() and (round(v,1) != round(self.M114("R")[i],1))) for i, v in future) #! Round is mandatory
-            # any((v != self.M114("R")[i]) for i, v in future)
+
         ):
             continue
         else:
@@ -201,12 +199,13 @@ class SerialGcodeOBJ(Serial):
             return loads(string)
         return string
 
-    @verify
+    # @verify
     def pause(self):
         """
         The M0 command pause after the last movement and wait for the user to continue.
         """
         self.resumed.clear()
+        self.send("P000")
         # self.send("M0")
 
     @verify
@@ -219,32 +218,31 @@ class SerialGcodeOBJ(Serial):
         """
         self.send("M112")
 
-    @verify
+    # @verify
     def stop(self):
         """
         Stop all steppers instantly.
         Since there will be no deceleration,
         steppers are expected to be out of position after this command.
         """
+        self.pause()
+        # self.resumed.clear()
         if not self.was_stopped.is_set():
-            self.resumed.clear()
             self.was_stopped.set()
-            self.send("P000")
-            self.send("M410")
-            self.send("M0")
-        # self.resume()
+        #     self.send("M410")
+        #     self.send("M0")
+        self.resume()
 
     def resume(self):
         """
         Resume machine from pause (M0) using M108 command.
         """
-        if not self.resumed.is_set():
-            self.send("M108")
-            if self.was_stopped.is_set():
-                self.send("R000")
-                self.send("G28")
-                self.was_stopped.clear()
-            self.resumed.set()
+            # self.send("M108")
+        self.send("R000")
+        if self.was_stopped.is_set():
+            # self.super_send("G28")
+            self.was_stopped.clear()
+        self.resumed.set()
 
     def __str__(self) -> str:
         return f"[[SerialGcodeOBJ] {self.name}, {self.port}, {self.baudrate}]"

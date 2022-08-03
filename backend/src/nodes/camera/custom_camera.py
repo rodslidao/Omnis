@@ -78,7 +78,7 @@ class Camera(CamGear):
         # if self.marker_len:
         #     return undistort(super().read(), self.mtx, self.dist, None) #? Too slow for 4K. Maybe use a smaller image?
         c, i, _ = self.detect_markers()
-        if len(i.flatten())==4:
+        if i is not None and len(i.flatten())==4:
             self.last_c, self.last_i = c, i
         return ROI(super().read(), self.aruco_dict, self.aruco_parms, corners=self.last_c, ids=self.last_i)[0]
 

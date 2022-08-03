@@ -52,7 +52,7 @@ class MovementNode(BaseNode):
         elif action == "xy":
             self.coordinates_f(message.payload)
         if self.wait_checks == len(self.wait_for_this) or action == "gatilho":
-            if self.homing_axis != "G28 ":
+            if any(self.homing_axis):
                 self.serial.G28(self.homing_axis)
             self.gatilho_f()
         else:
@@ -86,11 +86,9 @@ class MovementNode(BaseNode):
                 # t = 1  # ! Remove this line
             else:
                 self.serial.send("G90", log=False)
-            try:
-                self.serial.G0(*movement)
-                self.on("Sucesso", self.serial_id)
-            except AttributeError as e :
-                self.on("Falha", e)
+            self.serial.G0(*movement)
+            self.on("Sucesso", self.serial_id)
+
 
         else:
             if not self.serial.is_open:
@@ -100,10 +98,10 @@ class MovementNode(BaseNode):
                 self.on("Falha","Serial not connected", pulse=True)
 
     #! Marlin sometimes doesn't Homming after stop commands.
-    # def stop(self):
-    #     self.serial.stop()
-    #     super().stop()
-    #     self.serial.resume()
+    def stop(self):
+        self.serial.stop()
+        super().stop()
+        # self.serial.resume()
 
     def resume(self):
         self.serial.resume()

@@ -27,7 +27,7 @@ def ROI_ARUCO(img, aruco_dict, aruco_parms, aruco_sequence_id=[93, 137, 159, 115
             aruco_dict,
             parameters=aruco_parms,
         )
-    ids = ids.flatten()
+    ids = ids.flatten() if ids is not None else []
     if len(ids) == 4:
         try:
             refPts = [squeeze(corners[squeeze(where(ids == i))]) for i in aruco_sequence_id]
