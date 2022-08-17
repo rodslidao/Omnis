@@ -3,7 +3,7 @@ from .custom_serial import Serial
 from .gcode_obj import SerialGcodeOBJ as MarlinAPI
 from src.nodes.serial.pins_obj import pin
 from src.nodes.serial.axes import axis
-logger.debug('Serial and MarlinAPI modules loaded')
+logger.info('Serial and MarlinAPI modules loaded')
 pins = [pin(**p) for p in dbo.find_many("pins")]
 axes = [
     axis(**a)
@@ -15,6 +15,7 @@ for config in dbo.find_many("serial-manager", {}):
     if not config.get("disabled", False):
         match config.get("is_gcode"):
             case True:
+                logger.info('Creating MarlinAPI...')
                 MarlinAPI(
                     pins={
                         str(p._id): p

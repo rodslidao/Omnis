@@ -56,6 +56,7 @@ class Camera(CamGear):
         self.config = options.get("config")
         self.aruco_parms = DetectorParameters_create()
         self.aruco_dict = Dictionary_get(ARUCO_DICT.get(self.config.get("marker_type")))
+        self.valid_source = False
         if self.opt.get("props", {}).get("CAP_PROP_FOURCC"):
             self.opt["props"]["CAP_PROP_FOURCC"] = VideoWriter_fourcc(
                 *options["props"]["CAP_PROP_FOURCC"][:4]
@@ -65,13 +66,17 @@ class Camera(CamGear):
             try:
                 super().__init__(s, **self.opt.get("props"))
                 logger.debug(f"Camera {self.name} initialized with source {s}")
+                self.valid_source = True
                 break
             except ValueError:
-                self.stop()
+                # self.stop()
+                pass
             except (error, RuntimeError):
                 logger.debug("Camera source: {} fail".format(s))
-
+                
+        # if self.valid_source:
         self.start()
+        c, i, _ = self.detect_markers()
         CameraManager.add(self)
 
     def read(self):
@@ -109,7 +114,7 @@ class Camera(CamGear):
     #             frame = drawAxis(
     #                 frame,
     #                 self.mtx,
-    #                 self.dist,
+    #                 self.dist,0000000000
     #                 r,
     #                 t,
     #                 length_of_axis,

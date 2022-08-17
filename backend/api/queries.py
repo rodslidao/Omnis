@@ -104,7 +104,7 @@ def resolve_authUserProfile(obj, info, username=None, **kwargs):
         user = dbo.find_one("users", kwargs, keep)
     if user:
         payload = user.copy()
-        payload.update({"exp": datetime.now(tz=timezone.utc) + timedelta(hours=payload.get('exp', 24)), '_id': str(payload['_id'])})
+        payload.update({"exp": datetime.now(tz=timezone.utc) + timedelta(hours=payload.get('exp', 48)), '_id': str(payload['_id'])})
         token = jwt.encode(
             payload,
             key=private_key,

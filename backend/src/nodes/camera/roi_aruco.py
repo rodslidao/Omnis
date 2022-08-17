@@ -17,7 +17,7 @@ def center(array):
     return (cX, cY)
 
 
-def ROI_ARUCO(img, aruco_dict, aruco_parms, aruco_sequence_id=[93, 137, 159, 115], corners=None, ids=None):
+def ROI_ARUCO(img, aruco_dict, aruco_parms, aruco_sequence_id=[160, 130, 159, 43], corners=None, ids=None):
     """
     return: ROI, (refPtTL, refPtTR, refPtBL, refPtBR)
     """
