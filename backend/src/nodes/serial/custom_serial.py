@@ -174,7 +174,11 @@ class Serial(_Serial):
         lines = []
         _b = self.readline()
         while _b != b"":
-            lines.append(_b.decode("ascii").rstrip())
+            try:
+                lines.append(_b.decode("ascii").rstrip())
+            except UnicodeDecodeError:
+                logger.warning(f'cant decode serial input: {_b}')
+                pass
             if self.inWaiting() != 0: _b = self.readline()
             else: break
         self.last_value_received = lines

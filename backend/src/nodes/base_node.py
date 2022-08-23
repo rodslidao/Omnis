@@ -13,6 +13,7 @@ import queue
 event_list = queue.Queue()
 
 from src.manager.process_manager import ProcessManager as process
+from src.utility.crud.user import User
 
 NODE_TYPE = "BASE_NODE"
 rtc_status = SubscriptionFactory(nodes, "nodes")
@@ -26,8 +27,7 @@ class Wizard(object):
                 event_list.get()
             except Exception as e:
                 Alert("error", "Falha durante o processo", "Erro: {}".format(e))
-                # process.stop()
-                exit()
+                process.stop(user=User('omnis', 'bot', 'developer', 'parallax@orakolo.com'))
                 raise e
             finally:
                 event_list.task_done()

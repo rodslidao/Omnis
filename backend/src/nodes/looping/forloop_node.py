@@ -33,16 +33,12 @@ class ForloopNode(BaseNode):
         if target == "next" or "auto_run":
             if target == "iterator":
                 self.iterator = message.payload
-                # self.backup = self.iterator
-            # Is important iterate the iterator before or back up it, before send signal to avoid infinite loop or empty list.
             if not self.stop_event.is_set():
                 try:
                     self.item_id, self.item = next(self.iterator)
                     self.on("item", self.item)
-                    # process.stop(wait=False)
                 except StopIteration:
                     process.stop(wait=False)
-                    # self.iterator = self.backup#enumerate(self.backup[:])
                     self.on("end", "")
         else:
             # ? This is necessary?
