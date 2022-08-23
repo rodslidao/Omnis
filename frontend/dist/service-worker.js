@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/precache-manifest.0331fb9287587c54ce97149ac4b4de2d.js"
+  "/precache-manifest.5dd7ccd7bee36851485c9499e7d920fd.js"
 );
 
 workbox.core.setCacheNameDetails({prefix: "omnis"});
