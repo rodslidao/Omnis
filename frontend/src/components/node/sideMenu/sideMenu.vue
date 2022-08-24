@@ -9,17 +9,15 @@
       >movimentação</v-btn
     >
     <v-navigation-drawer
-      dark
-      absolute
       v-model="drawer"
-      hide-overlay
-      right
-      :permanent="drawer"
       width="400px"
+      right
+      dark
       app
+      :absolute="drawer"
+      :permanent="drawer"
     >
-    <move></move>
-    <v-footer class="justify-center pl-0" inset app></v-footer> 
+      <move></move>
     </v-navigation-drawer>
   </div>
 </template>

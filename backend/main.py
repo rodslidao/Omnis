@@ -1,7 +1,8 @@
 from os import environ
 import uvicorn
 import socket
-from api import logger, dbo, custom_types
+from api import logger, dbo
+from api.graphql_types import custom_types
 from api.queries import query
 from api.subscriptions import subscription
 from api.mutations import mutation
@@ -84,6 +85,7 @@ else:
 
 if __name__ == "__main__":
     try:
+        # _import()
         uvicorn.run(app=app, host=host, port=int(port), log_level=logger.level)
     finally:
         CameraManager.stop()

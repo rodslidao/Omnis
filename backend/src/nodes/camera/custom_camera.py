@@ -56,6 +56,7 @@ class Camera(CamGear):
         self.config = options.get("config")
         self.aruco_parms = DetectorParameters_create()
         self.aruco_dict = Dictionary_get(ARUCO_DICT.get(self.config.get("marker_type")))
+        self.valid_source = False
         if self.opt.get("props", {}).get("CAP_PROP_FOURCC"):
             self.opt["props"]["CAP_PROP_FOURCC"] = VideoWriter_fourcc(
                 *options["props"]["CAP_PROP_FOURCC"][:4]
@@ -65,20 +66,24 @@ class Camera(CamGear):
             try:
                 super().__init__(s, **self.opt.get("props"))
                 logger.debug(f"Camera {self.name} initialized with source {s}")
+                self.valid_source = True
                 break
             except ValueError:
-                self.stop()
+                # self.stop()
+                pass
             except (error, RuntimeError):
                 logger.debug("Camera source: {} fail".format(s))
-
+                
+        # if self.valid_source:
         self.start()
+        c, i, _ = self.detect_markers()
         CameraManager.add(self)
 
     def read(self):
         # if self.marker_len:
         #     return undistort(super().read(), self.mtx, self.dist, None) #? Too slow for 4K. Maybe use a smaller image?
         c, i, _ = self.detect_markers()
-        if len(i.flatten())==4:
+        if i is not None and len(i.flatten())==4:
             self.last_c, self.last_i = c, i
         return ROI(super().read(), self.aruco_dict, self.aruco_parms, corners=self.last_c, ids=self.last_i)[0]
 
@@ -109,7 +114,7 @@ class Camera(CamGear):
     #             frame = drawAxis(
     #                 frame,
     #                 self.mtx,
-    #                 self.dist,
+    #                 self.dist,0000000000
     #                 r,
     #                 t,
     #                 length_of_axis,
