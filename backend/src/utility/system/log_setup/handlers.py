@@ -65,7 +65,7 @@ class MongoHandler(Handler):
             if not self.database.closed.is_set():
                 self.database.insert_one(self.collection, r)
         except Exception as e:
-            print("MongoHandler-EEEEE", e)
+            print("CustomMongoLogger [ERROR]: ", e, r)
 
 
 handlers = {

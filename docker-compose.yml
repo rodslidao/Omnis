@@ -50,7 +50,7 @@ services:
     image: omnisofc/backend:latest
     build:
       context: ./backend
-    restart: always
+    restart: unless-stopped
     env_file:
       - .env.development
     ports:
@@ -75,6 +75,8 @@ services:
       - ./.ssh:/.ssh
       - /home/ubuntu/.url_host:/app/.url_host
       - /dev:/dev
+      - /var/run/shutdown_signal:/shutdown_signal
+      
     command: python main.py
     depends_on:
       - mongo-express
@@ -104,7 +106,18 @@ services:
     logging:
       options:
         max-size: 50m
-
+  host_commands:
+    profiles: ["production", "development"]
+    container_name: command
+    restart: unless-stopped
+    image:  omnisofc/host_commands:latest
+    build:
+      context: ./host_commands
+    ports:
+      - 3000:3000
+    volumes:
+      # - ./host_commands:/usr/src/app
+      -  /var/run/host_signal:/command
 networks: 
   bind-network:
     driver: bridge
