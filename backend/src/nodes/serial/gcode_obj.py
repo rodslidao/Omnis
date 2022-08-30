@@ -31,7 +31,7 @@ class SerialGcodeOBJ(Serial):
         is_gcode=True,
         disabled=False,
         startup_commands = [
-            # "G28",
+            "G28",
         ],
         pins={},
         axes={}
@@ -163,7 +163,7 @@ class SerialGcodeOBJ(Serial):
                 return _echo
             except ValueError as e:
                 print('ValueError on M114:', e)
-                return self._status['jog_position']
+                return self.__status['jog_position']
                 # if kwargs.get('counter', 0) < kwargs.get('max_tries', 3):
                 #    return self.M114(_type, counter=kwargs.get('counter', -1)+1, max_tries=kwargs.get('max_tries', 3))
                 # raise ValueError(f"Custom M114 can't decode {echo}")

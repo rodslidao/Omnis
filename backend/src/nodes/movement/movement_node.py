@@ -37,8 +37,7 @@ class MovementNode(BaseNode):
                 self.trigger.set()
         else:
             self.trigger.set()
-
-        logger.warning(f"{self.name}, {self.wait_for_this}")
+            
         self.wait_checks = 0
         self.homing_axis =[]
         for axis in options["axislist"]:

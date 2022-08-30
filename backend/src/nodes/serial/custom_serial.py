@@ -1,8 +1,9 @@
 from datetime import datetime
 from multiprocessing import Event
 from telnetlib import ECHO
+from typing import Counter
 from serial.tools import list_ports
-from serial import Serial as _Serial, serialutil
+from serial import Serial as _Serial, serialutil, SerialException
 from bson import ObjectId
 from src.manager.serial_manager import SerialManager
 from api import logger, exception
@@ -62,6 +63,7 @@ class Serial(_Serial):
         _id=None,
     ) -> None:
         self._id = ObjectId(_id)
+        self.alternative_ports = [port, '/dev/ttyACM0']
         super().__init__(
             port, baudrate, bytesize, parity, stopbits, timeout, xonxoff, rtscts, dsrdtr
         )
@@ -100,6 +102,16 @@ class Serial(_Serial):
             self.open()
         return self
 
+    def open(self, counter=0):
+        try:
+            super().open()
+        except Exception as e:
+            if counter < len(self.alternative_ports):
+                self.port = self.alternative_ports[counter]
+                self.open(counter + 1)
+            else:
+                raise
+
     def close(self):
         super().close()
 
@@ -116,16 +128,6 @@ class Serial(_Serial):
         return self
 
     def send(self, message, echo=False, log=True):
-
-        # ID = ObjectId()
-        # event = Event()
-        # if echo:
-        #     self.__signals.put((event,ID))
-        # self.__comands.put((message, echo))
-        # if echo:
-        #     event.wait()
-        #     return self.answers.pop(ID, None)
-        # return self
         answer = self.write(message)
         if echo: return answer
 
@@ -133,12 +135,7 @@ class Serial(_Serial):
         while True:
             try:
                 message, echo = self.__comands.get()
-                # try:
                 _echo = self.write(message)
-                # except serialutil.PortNotOpenError:
-                #     self.open()
-                #     _echo = self.write(message)
-                
                 if echo:
                     event, ID = self.__signals.get()
                     self.__echos.put((_echo, ID, event))
