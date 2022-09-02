@@ -50,10 +50,10 @@
       <v-spacer></v-spacer>
 
       <login></login>
-      <RestartButton
+      <PowerButton
         v-if="$router.currentRoute.path.split('/')[1] == 'config'"
         :online="onlineWeb.value"
-      ></RestartButton>
+      ></PowerButton>
 
       <router-link
         to="/config"
@@ -81,7 +81,7 @@
 <script>
 import { useOnline } from '@vueuse/core';
 
-import RestartButton from '@/components/navbar/RestarButton.vue';
+import PowerButton from '@/components/navbar/PowerButton.vue';
 import TabMenuNodes from '@/components/node/TabMenuNodes.vue';
 import Login from '@/views/Auth/Login.vue';
 
@@ -90,7 +90,7 @@ export default {
 
   components: {
     Login,
-    RestartButton,
+    PowerButton,
     TabMenuNodes,
   },
 
