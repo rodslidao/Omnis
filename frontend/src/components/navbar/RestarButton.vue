@@ -1,8 +1,33 @@
 <template>
   <div>
-    <v-btn icon @click="restartDialog = true">
-      <v-icon dark>mdi-restart</v-icon>
-    </v-btn>
+    <div class="ml-4">
+      <v-btn icon @click="refresh">
+        <v-icon dark>mdi-refresh</v-icon>
+      </v-btn>
+      <v-menu open-on-hover bottom offset-y>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn text icon v-bind="attrs" v-on="on">
+            <v-icon>mdi-power</v-icon>
+          </v-btn>
+        </template>
+
+        <v-list>
+          <v-list-item
+            link
+            v-for="(item, index) in items"
+            :key="index"
+            @click="(selectedItem = item.dialog), (selectedItem.show = true)"
+          >
+            <v-list-item-icon>
+              <v-icon v-text="'mdi-' + item.icon"></v-icon>
+            </v-list-item-icon>
+
+            <v-list-item-title>{{ $t(item.button) }}</v-list-item-title>
+          </v-list-item>
+          <!-- <v-divider></v-divider> -->
+        </v-list>
+      </v-menu>
+    </div>
     <dialog-confirmation
       v-if="selectedItem.show"
       :visible="selectedItem.show"
@@ -30,58 +55,35 @@
       :confirm-disable="loading"
       :cancel-disable="loading"
     >
+    </dialog-confirmation
+    ><dialog-confirmation
+      v-if="selectedItem.show"
+      :visible="selectedItem.show"
+      :title="
+        online
+          ? loading
+            ? $t('dialogs.waitALittle')
+            : $t(selectedItem.title)
+          : $t(isDisconnected.title)
+      "
+      :loading="loading"
+      :description="
+        online
+          ? loading && selectedItem.secondsToComplete > 0
+            ? $t('dialogs.processWillTake', {
+                s: selectedItem.secondsToComplete,
+              })
+            : $t(selectedItem.description)
+          : $t(isDisconnected.title)
+      "
+      :cancelText="$t('buttons.cancel')"
+      :confirmText="online ? $t(selectedItem.button) : isDisconnected.button"
+      @cancel-event="cancel()"
+      @confirm-event="selectedItem.buttonAction"
+      :confirm-disable="loading"
+      :cancel-disable="loading"
+    >
     </dialog-confirmation>
-    <v-menu open-on-hover bottom offset-y>
-      <template v-slot:activator="{ on, attrs }">
-        <v-btn text icon v-bind="attrs" v-on="on">
-          <v-icon>mdi-power</v-icon>
-        </v-btn>
-      </template>
-
-      <v-list>
-        <v-list-item
-          link
-          v-for="(item, index) in items"
-          :key="index"
-          @click="(selectedItem = item.dialog), (selectedItem.show = true)"
-        >
-          <v-list-item-title>{{ $t(item.button) }}</v-list-item-title>
-          <!-- <span>
-            <v-dialog v-model="item.dialog.show" max-width="400" persistent>
-              <v-card :loading="loading" :disabled="loading">
-                <v-card-title class="text-h5">
-                  {{
-                    online ? $t(item.dialog.title) : $t(isDisconnected.title)
-                  }}
-                </v-card-title>
-                <v-card-text>
-                  {{
-                    online
-                      ? $t(item.dialog.description) +
-                        (loading && timerCount > 0
-                          ? $t('dialogs.processWillTake', { s: timerCount })
-                          : '')
-                      : $t(isDisconnected.title)
-                  }}
-                </v-card-text>
-                <v-card-actions>
-                  <v-spacer></v-spacer>
-
-                  <v-btn v-if="!online" text @click="restartDialog = false">
-                    {{ $t(isDisconnected.button) }}
-                  </v-btn>
-
-                  <v-btn v-else text @click="item.dialog.buttonAction">
-                    {{ online ? $t(item.dialog.title) : isDisconnected.button }}
-                  </v-btn>
-                </v-card-actions>
-              </v-card>
-            </v-dialog>
-          </span> -->
-        </v-list-item>
-        <!-- <v-divider></v-divider> -->
-      </v-list>
-    </v-menu>
   </div>
 </template>
 
@@ -101,9 +103,7 @@ export default {
 
   data() {
     return {
-      restartDialog: false,
       loading: false,
-      timerCount: 60,
       selectedItem: {
         show: false,
         secondsToComplete: 180,
@@ -112,6 +112,7 @@ export default {
       items: [
         {
           button: 'buttons.fastRestart',
+          icon: 'restart',
           dialog: {
             title: 'dialogs.fastRestartConfirm.title',
             description: 'dialogs.fastRestartConfirm.description',
@@ -123,7 +124,22 @@ export default {
           },
         },
         {
+          button: 'buttons.restart',
+          icon: 'restart',
+
+          dialog: {
+            title: 'dialogs.restartConfirm.title',
+            description: 'dialogs.restartConfirm.description',
+            button: 'buttons.restart',
+            buttonAction: this.restart,
+            secondsToComplete: 60 * 4 + 20,
+            show: true,
+          },
+        },
+        {
           button: 'buttons.shutdown',
+          icon: 'power',
+
           dialog: {
             title: 'dialogs.shutdownConfirm.title',
             description: 'dialogs.shutdownConfirm.description',
@@ -134,17 +150,6 @@ export default {
             show: true,
           },
         },
-        {
-          button: 'buttons.restart',
-          dialog: {
-            title: 'dialogs.restartConfirm.title',
-            description: 'dialogs.restartConfirm.description',
-            button: 'buttons.restart',
-            buttonAction: this.restart,
-            secondsToComplete: 60 * 4 + 20,
-            show: true,
-          },
-        }
       ],
 
       isDisconnected: {
@@ -187,24 +192,22 @@ export default {
           mutation: RESTART,
         })
         .then(({ data }) => {
-          this.timerCount = data.restart;
           setTimeout(() => {
             fetch(
-              `http://${process.env.VUE_APP_URL_API_IP}:${process.env.VUE_APP_URL_API_PORT}`
+              `http://${process.env.VUE_APP_URL_API_IP}:${process.env.VUE_APP_URL_API_PORT}`,
             )
               .then(() => {
-                this.$alertFeedback('alerts.restart_ok', 'success');
-                this.restartDialog = false;
+                this.$alertFeedback('alerts.restartSuccess', 'success');
                 this.refreshAfter(2);
               })
               .catch(() => {
-                this.$alertFeedback('alerts.restart_fail', 'error');
+                this.$alertFeedback('alerts.restartFail', 'error');
               })
               .finally((this.loading = false));
           }, data.restart * 1000);
         })
         .catch(() => {
-          this.$alertFeedback('alerts.restart_fail', 'error');
+          this.$alertFeedback('alerts.restartFail', 'error');
           this.loading = false;
         });
     },
@@ -218,7 +221,7 @@ export default {
           this.loading = true;
           setTimeout(() => {
             fetch(
-              `http://${process.env.VUE_APP_URL_API_IP}:${process.env.VUE_APP_URL_API_PORT}`
+              `http://${process.env.VUE_APP_URL_API_IP}:${process.env.VUE_APP_URL_API_PORT}`,
             )
               .then(() => {
                 this.$alertFeedback('alerts.shutdownFail', 'error');
@@ -286,11 +289,11 @@ export default {
     isBackendRunningAfter(
       seconds,
       successCallback = console.log,
-      failCallback = console.log
+      failCallback = console.log,
     ) {
       setTimeout(() => {
         fetch(
-          `http://${process.env.VUE_APP_URL_API_IP}:${process.env.VUE_APP_URL_API_PORT}`
+          `http://${process.env.VUE_APP_URL_API_IP}:${process.env.VUE_APP_URL_API_PORT}`,
         )
           .then(() => {
             successCallback();
@@ -306,6 +309,10 @@ export default {
     cancel() {
       console.log('cancelar', this.selectedItem.show);
       this.selectedItem.show = false;
+    },
+
+    refresh() {
+      document.location.reload(false);
     },
   },
 };
