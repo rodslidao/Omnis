@@ -93,9 +93,11 @@ import DialogConfirmation from '@/components/settings/DialogConfirmation.vue';
 
 export default {
   components: { DialogConfirmation },
+
   props: {
     obj: Object,
   },
+
   data() {
     return {
       show: false,
@@ -119,7 +121,7 @@ export default {
         {
           title: 'buttons.remove',
           btnIcon: 'delete',
-          function: this.dialog,
+          function: this.remove,
         },
       ],
     };

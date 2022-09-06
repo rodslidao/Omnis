@@ -1,5 +1,5 @@
 # Omnis - VueJs
-![enter image description here](https://img.shields.io/badge/build-1.0.0-green)
+[![Build Vue](https://github.com/HenryckeBSchenberk/Omnis/actions/workflows/vue_builder.yml/badge.svg?branch=develop&event=push)](https://github.com/HenryckeBSchenberk/Omnis/actions/workflows/vue_builder.yml)
 
 ## Dependencies
 -Docker
