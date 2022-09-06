@@ -7,7 +7,7 @@ from api.queries import query
 from api.subscriptions import subscription
 from api.mutations import mutation
 
-from src.end_points import custom_video_response, Echo, Connection
+from src.end_points import custom_video_response, Echo, Connection, health
 from src.nodes.base_node import BaseNode_websocket
 from src.manager.serial_manager import SerialManager
 from src.manager.camera_manager import CameraManager
@@ -49,6 +49,7 @@ routes_app = [
     Route(
         "/videos/{video_id}", endpoint=custom_video_response, methods=["GET", "POST"]
     ),
+    Route("/health",  endpoint=health,  methods=["GET", "POST"]),
     WebSocketRoute("/ws", endpoint=Echo),
     WebSocketRoute("/network", endpoint=Connection()),
     WebSocketRoute("/process", endpoint=process.websocket),
