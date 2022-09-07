@@ -78,7 +78,7 @@
                       v-model.number="field.fields[key]"
                       :type="subField.type || 'number'"
                       dense
-                      oninput="if(this.value < 0) this.value = 0;"
+                      :oninput="canBeNegative(key)"
                       :label="$t('form.' + key)"
                       :suffix="suffix(key)"
                       @focus="
@@ -199,6 +199,7 @@ export default {
       isValid: true,
       edit: '',
       suffixList: ['sizeX', 'sizeY', 'marginX', 'marginY'],
+      negativeList: ['originX', 'originY'],
       requireList: ['name'],
       order_list: ['TLR', 'TRL', 'TLB', 'TRB', 'BLU', 'BRU', 'BLR', 'BRL'],
       fields2: {
@@ -319,6 +320,12 @@ export default {
     isRequire(key) {
       if (this.requireList.includes(key)) return true;
       return false;
+    },
+
+    canBeNegative(key) {
+      console.log(this.negativeList.includes(key));
+      if (this.negativeList.includes(key)) return '';
+      return 'if(this.value < 0) this.value = 0;';
     },
 
     validate() {
