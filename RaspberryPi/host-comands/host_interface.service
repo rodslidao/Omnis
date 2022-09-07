@@ -1,0 +1,10 @@
+[Unit]
+Description=reboot_or_shutdown_host_machine_by_writen_in_a_file
+
+[Service]
+WorkingDirectory=/home/ubuntu
+ExecStart=/usr/bin/host_interface.sh
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
