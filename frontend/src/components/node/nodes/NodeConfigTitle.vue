@@ -5,7 +5,9 @@
         ><div class="text-h6 text-uppercase text--darken--primary">
           {{ title }}
         </div>
-        <p>{{ description }}</p></v-col
+        <p>{{ description }}</p>
+         <slot name="description"></slot>
+        </v-col
       >
       <v-col v-if="!noContent">
         <slot></slot>
