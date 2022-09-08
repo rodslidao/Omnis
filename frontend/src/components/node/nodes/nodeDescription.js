@@ -48,6 +48,21 @@ export const descriptions = [
     hasHistory: false,
   },
   {
+    name: 'Ajuste de Posição',
+    type: 'PositionAdjustmentNode',
+    text: `Cria movimentos baseados em uma coordenada especifica
+    `,
+    icon: 'bullseye-arrow',
+    examples: `Digamos que vc esta com o ovo em cima da bandeja mas por algum motivo a bandeja não está alinha, esse nó gera alguns movimentos que podem auxiliar o encaixe do ovo na bandeja
+    `,
+    category: 'Utilidades',
+    tags: ['position', 'fine', 'math', 'count'],
+    resettable: true,
+    stoppable: false,
+    configurable: true,
+    hasHistory: false,
+  },
+  {
     name: 'Variável',
     type: 'VariableNode',
     text: ` Este nó armazena informação 
