@@ -212,6 +212,7 @@ class SerialGcodeOBJ(Serial):
         """
         The M0 command pause after the last movement and wait for the user to continue.
         """
+        self.send("G90")
         self.resumed.clear()
         
         # self.send("M0")
