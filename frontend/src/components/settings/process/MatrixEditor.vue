@@ -238,8 +238,8 @@ export default {
             quantityY: this.obj?.slots.qtd.y || 4,
             sizeX: this.obj?.slots.size.x || 20,
             sizeY: this.obj?.slots.size.y || 20,
-            marginX: this.obj?.slots.margin.x || 2,
-            marginY: this.obj?.slots.margin.y || 2,
+            marginX: this.obj?.slots.margin.x || 0,
+            marginY: this.obj?.slots.margin.y || 0,
           },
         },
         {
