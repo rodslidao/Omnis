@@ -98,7 +98,7 @@
             </NodeConfigTitle>
             <NodeConfigTitle
               title="Divisões"
-              description="A cada vez que uma repetição for executada a distancia de X e Y ira ser multiplicada por esse numero, caso queira dividir pela metade basta colocar '0,5' por exemplo"
+              description="A cada vez que uma repetição for executada a distancia de X e Y ira ser dividida por esse numero"
             >
                <div class="d-flex">
                 <v-text-field
@@ -112,7 +112,7 @@
             </NodeConfigTitle>
             <NodeConfigTitle
               title="Sentido"
-              description="Define quantas vezes o movimento sera repetido"
+              description="O sequência padrão é do X para o Y do sentido -(Negativo) para o (+)Positivo"
             >
               <div >
                 <v-checkbox
@@ -234,8 +234,8 @@ export default {
     boardList: [],
     Description: '',
     axisList: [
-      { name: 'X', min: 1, max: 1 },
-      { name: 'Y', min: 1, max: 1 },
+      { name: 'X', min: -1, max: 1 },
+      { name: 'Y', min: -1, max: 1 },
     ],
     requiredRules: [(v) => !!v || 'Esse campo não pode ficar em branco'],
     getNodeInfo: { data: { options: [] } },

@@ -20,11 +20,10 @@
               {{ alert.description }}
 
             <div v-if="alert.how_to_solve">
-              <p class="mt-2">Como Solucionar</p>
+              <p class="mt-4 text-h6">Como Solucionar</p>
               <v-divider></v-divider>
-              <p>{{ alert.how_to_solve }}</p>
+              <p class="my-3 ">{{ alert.how_to_solve }}</p>
 
-              <v-divider></v-divider>
             </div>
             <v-row justify="center">
               <v-btn x-large class="mt-4 mb-3" @click="closeDialog">

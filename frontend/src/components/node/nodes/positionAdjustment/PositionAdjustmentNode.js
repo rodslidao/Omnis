@@ -42,8 +42,8 @@ export default class PositionAdjustmentNode extends Node {
   selectedBoard = null;
 
   axisListDialog = [
-    { name: 'X', min: 1, max: 1 },
-    { name: 'Y', min: 1, max: 1 },
+    { name: 'X', min: -1, max: 1 },
+    { name: 'Y', min: -1, max: 1 },
   ];
 
   constructor() {
