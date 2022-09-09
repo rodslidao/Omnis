@@ -78,7 +78,7 @@ def resolve_getLoadedNodes( **kwargs):
     return NodeManager.getActiveNodes()
 
 @query.field("getDevicesList")
-@auth('developer')
+@auth('operator')
 def resolve_getDevicesList( **kwargs):
     """Get a Node by id and return it like a payload"""
     temp = list(dbo.find_many("pins"))
