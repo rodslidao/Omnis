@@ -93,6 +93,7 @@ type Query {
   authenticateUser(username: String, password: String, email: String): user_with_token
   authUserProfile: user
   getUsersList: [user]
+  getMacrosList:[Macro]
 }
 
 type Subscription {

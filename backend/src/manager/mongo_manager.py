@@ -152,6 +152,9 @@ class MongoOBJ:
 
     def close(self):
         if not self.closed.is_set():
-            logger.info("Database connection Closed.")
-            self.client.close()
+            # logger.info("Database connection Closed.")
             self.closed.set()
+            try:
+                self.client.close()
+            except Exception:
+                pass

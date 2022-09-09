@@ -1,7 +1,6 @@
 from time import sleep
 from timeit import default_timer as timer
 
-from click import echo
 from .custom_serial import Serial
 from api import logger, exception
 from api.decorators import for_all_methods
@@ -55,15 +54,14 @@ class SerialGcodeOBJ(Serial):
         self.is_open = True
         self.resumed = Event()
         self.was_stopped = Event()
-        self.timeout = 40 # Max time to wait for a response from the machine (G28 will take a while)
+        self.timeout = 50 # Max time to wait for a response from the machine (G28 will take a while)
         self.resumed_permission = ["stop", "kill", "quick_stop", "resume"]
         self.__status = {"jog_position":{'X':0, 'Y':0, 'Z':0, 'A':0, 'B':0, 'C':0}}
         self.resume()
         for msg in startup_commands:
-            self.send(msg)
+            self.super_send(msg)
         self.pins = pins
         self.axes = axes
-        # logger.info(self.axes)
         self.websocket = Controls(self._id, self)
         Thread(target=self.auto_update, name=f"{_id}_auto_update", daemon=True).start()
 
@@ -88,16 +86,18 @@ class SerialGcodeOBJ(Serial):
         t0 = timer()
         while self.resumed.is_set() and ((timer()-t0) < self.timeout) and not self.M119({name.upper():'TRIGGERED' for name in axis}):
             sleep(0.3)
+        self.M114('R')
         return True
 
     def M119(self, axis={}):
         if axis is not None:
             compare = []
             echo = self.super_send("M119", echo=True)
-            if echo.pop(0) == "Reporting endstop status" and echo.pop() == 'ok':
+            if echo and not isinstance(echo, str) and echo.pop(0) == "Reporting endstop status" and echo.pop() == 'ok':
                 for status in echo:
                     name, value = status.split(":")
-                    compare.append(axis.get(name[0].upper(), value.replace(" ", "")) == value.replace(" ", ""))
+                    if name in axis.keys():
+                        compare.append(axis.get(name[0].upper(), value.replace(" ", "")) == value.replace(" ", ""))
                 if all(compare): return True
                 return False
 
@@ -118,15 +118,17 @@ class SerialGcodeOBJ(Serial):
                 try:
                     future = self.M114().items()
                     if future != 'FAIL': break
-                except AttributeError:
-                    logger.info("Can't get M114")
+                except AttributeError as e:
+                    logger.info(f"Can't get M114: {str(e)}")
                     sleep(0.3)
         else:
             raise AttributeError("SERIAL DEAD")
         while (
             any((self.resumed.is_set() and (round(v,1) != round(self.M114("R")[i],1))) for i, v in future) #! Round is mandatory
-            # any((v != self.M114("R")[i]) for i, v in future)
+            
+
         ):
+            # print(self.__status)
             continue
         else:
             if not self.resumed.is_set(): return
@@ -135,7 +137,7 @@ class SerialGcodeOBJ(Serial):
             axis.position = last_pos[axis.name]
         return last_pos
     @verify
-    def M114(self, _type="", sequence=["X", "Y", "Z", "A", "B", "C", ":"], *args, **kwargs):
+    def M114(self, _type="", sequence=["X", "Y", "Z", "E", ":"], *args, **kwargs):
         """
         Get current position of machine.
         _type:
@@ -156,11 +158,15 @@ class SerialGcodeOBJ(Serial):
                 )
                 if _type == "R":
                     self.__status["jog_position"] = _echo
-                    
+                    for axis in self.axes.values():
+                        axis.position = _echo[axis.name]
                 return _echo
-            except ValueError:  # ! Why this error?
-                logger.warning(f"Serial: {self.name} fail to decode custom M114. Raw payload: {echo}")
-                pass
+            except ValueError as e:
+                print('ValueError on M114:', e)
+                return self.__status['jog_position']
+                # if kwargs.get('counter', 0) < kwargs.get('max_tries', 3):
+                #    return self.M114(_type, counter=kwargs.get('counter', -1)+1, max_tries=kwargs.get('max_tries', 3))
+                # raise ValueError(f"Custom M114 can't decode {echo}")
 
     def M42(self, _id, _value):
         return super().send(self.pins[_id].set_value(_value)) if self.pins.get(_id) else False
@@ -201,12 +207,14 @@ class SerialGcodeOBJ(Serial):
             return loads(string)
         return string
 
-    @verify
+    # @verify
     def pause(self):
         """
         The M0 command pause after the last movement and wait for the user to continue.
         """
+        self.send("G90")
         self.resumed.clear()
+        
         # self.send("M0")
 
     @verify
@@ -219,32 +227,32 @@ class SerialGcodeOBJ(Serial):
         """
         self.send("M112")
 
-    @verify
+    # @verify
     def stop(self):
         """
         Stop all steppers instantly.
         Since there will be no deceleration,
         steppers are expected to be out of position after this command.
         """
+        self.pause()
+        self.send("P000")
+        # self.resumed.clear()
         if not self.was_stopped.is_set():
-            self.resumed.clear()
             self.was_stopped.set()
-            self.send("P000")
-            self.send("M410")
-            self.send("M0")
-        # self.resume()
+        #     self.send("M410")
+        #     self.send("M0")
+        self.resume()
 
     def resume(self):
         """
         Resume machine from pause (M0) using M108 command.
         """
-        if not self.resumed.is_set():
-            self.send("M108")
-            if self.was_stopped.is_set():
-                self.send("R000")
-                self.send("G28")
-                self.was_stopped.clear()
-            self.resumed.set()
+            # self.send("M108")
+        self.send("R000")
+        if self.was_stopped.is_set():
+            # self.super_send("G28")
+            self.was_stopped.clear()
+        self.resumed.set()
 
     def __str__(self) -> str:
         return f"[[SerialGcodeOBJ] {self.name}, {self.port}, {self.baudrate}]"

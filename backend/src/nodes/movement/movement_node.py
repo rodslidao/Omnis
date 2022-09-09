@@ -7,6 +7,7 @@ from api import logger, exception
 from api.decorators import for_all_methods
 from bson import ObjectId
 from collections import Counter
+from threading import Event
 NODE_TYPE = "MoveAxisNode"
 
 
@@ -28,6 +29,15 @@ class MovementNode(BaseNode):
         self.coordinates = {}
         self.special_coordinates = {}
         self.wait_for_this = [{k.lower():v for k,v in x['to'].items() if k == "name"} for x in self.input_connections]
+        self.trigger = Event()
+        self.has_trigger = {"name":"Gatilho"} in self.wait_for_this
+        if self.has_trigger:
+            self.wait_for_this.remove({"name":"Gatilho"})
+            if len(self.wait_for_this) == 0:
+                self.trigger.set()
+        else:
+            self.trigger.set()
+            
         self.wait_checks = 0
         self.homing_axis =[]
         for axis in options["axislist"]:
@@ -51,12 +61,16 @@ class MovementNode(BaseNode):
             self.coordinates[action] = message.payload
         elif action == "xy":
             self.coordinates_f(message.payload)
-        if self.wait_checks == len(self.wait_for_this) or action == "gatilho":
-            if self.homing_axis != "G28 ":
+        if (self.wait_checks >= len(self.wait_for_this)) and self.has_trigger: self.trigger.set()
+        if (action == "gatilho" and  self.trigger.wait(120)) or ((self.wait_checks >= len(self.wait_for_this)) and not self.has_trigger):
+            if self.has_trigger: self.trigger.clear()
+            if any(self.homing_axis):
                 self.serial.G28(self.homing_axis)
             self.gatilho_f()
-        else:
-            logger.warning(f"MovementNode: Waiting for {self.wait_checks}/{len(self.wait_for_this)} variables.")
+        # else:
+        #     logger.info(f"{action}, {self.trigger.is_set()}")
+        #     self.on("Falha", "Invalid action")
+        #     raise TypeError("Invalid action")
 
     def coordinates_f(self, payload):
         try:
@@ -79,18 +93,17 @@ class MovementNode(BaseNode):
                 if v is not None
             ]
 
+            # if (pre_move.get('y',0) - self.coordinates.get('y',0)) > 2: logger.error(f"Valor de offset muito alto: {pre_move['y'] - self.coordinates['y']}")
             # t = 0.5  # ! Remove this line
 
-            if self.relative:
-                self.serial.send("G91", log=False)
-                # t = 1  # ! Remove this line
-            else:
-                self.serial.send("G90", log=False)
-            try:
-                self.serial.G0(*movement)
-                self.on("Sucesso", self.serial_id)
-            except AttributeError as e :
-                self.on("Falha", e)
+            # if self.relative:
+            #     self.serial.send("G91", log=False)
+            #     # t = 1  # ! Remove this line
+            # else:
+            #     self.serial.send("G90", log=False)
+            self.serial.G0(*movement)
+            self.on("Sucesso", self.serial_id)
+
 
         else:
             if not self.serial.is_open:
@@ -100,10 +113,10 @@ class MovementNode(BaseNode):
                 self.on("Falha","Serial not connected", pulse=True)
 
     #! Marlin sometimes doesn't Homming after stop commands.
-    # def stop(self):
-    #     self.serial.stop()
-    #     super().stop()
-    #     self.serial.resume()
+    def stop(self):
+        self.serial.stop()
+        super().stop()
+        # self.serial.resume()
 
     def resume(self):
         self.serial.resume()

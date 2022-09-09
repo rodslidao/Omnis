@@ -78,7 +78,7 @@
                       v-model.number="field.fields[key]"
                       :type="subField.type || 'number'"
                       dense
-                      oninput="if(this.value < 0) this.value = 0;"
+                      :oninput="canBeNegative(key)"
                       :label="$t('form.' + key)"
                       :suffix="suffix(key)"
                       @focus="
@@ -199,6 +199,7 @@ export default {
       isValid: true,
       edit: '',
       suffixList: ['sizeX', 'sizeY', 'marginX', 'marginY'],
+      negativeList: ['originX', 'originY'],
       requireList: ['name'],
       order_list: ['TLR', 'TRL', 'TLB', 'TRB', 'BLU', 'BRU', 'BLR', 'BRL'],
       fields2: {
@@ -225,8 +226,8 @@ export default {
           title: 'origin',
           subtitle: 'originSubtitle',
           fields: {
-            originX: this.obj?.origin.x || 50,
-            originY: this.obj?.origin.y || 50,
+            originX: this.obj?.origin.x || 0,
+            originY: this.obj?.origin.y || 0,
           },
         },
         {
@@ -237,8 +238,8 @@ export default {
             quantityY: this.obj?.slots.qtd.y || 4,
             sizeX: this.obj?.slots.size.x || 20,
             sizeY: this.obj?.slots.size.y || 20,
-            marginX: this.obj?.slots.margin.x || 2,
-            marginY: this.obj?.slots.margin.y || 2,
+            marginX: this.obj?.slots.margin.x || 0,
+            marginY: this.obj?.slots.margin.y || 0,
           },
         },
         {
@@ -319,6 +320,12 @@ export default {
     isRequire(key) {
       if (this.requireList.includes(key)) return true;
       return false;
+    },
+
+    canBeNegative(key) {
+      console.log(this.negativeList.includes(key));
+      if (this.negativeList.includes(key)) return '';
+      return 'if(this.value < 0) this.value = 0;';
     },
 
     validate() {
