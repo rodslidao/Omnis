@@ -176,6 +176,10 @@ class Controls(Websocket):
             # Executa um comando do menu
             logger.info("Executing command: {}".format(data["command"]))
             self.serial.send(data["command"])
+        elif data["context"] == "macroAction":
+            # Executa uma macro
+            logger.info("Executing macro: {}".format(data["value"]))
+            self.serial.send(data["value"])
         else:
             logger.debug(f"Websocket: unknow request {data}")
 
