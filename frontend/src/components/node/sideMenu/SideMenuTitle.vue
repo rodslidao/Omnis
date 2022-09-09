@@ -1,6 +1,6 @@
 <template>
   <div class="text-overline text--white d-flex">
-    <slot></slot>
+    <div class="text-color"><slot></slot></div>
     <v-tooltip
       v-if="tooltip"
       open-delay="550"
@@ -51,5 +51,8 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
+.text-color {
+  color: white;
+}
 </style>
