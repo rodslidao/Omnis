@@ -4,15 +4,16 @@
       Ações automáticas
     </side-menu-title>
     <div class="mb-4">
-      <v-chip
+      <v-btn
         class="mr-2 mb-2 px-8"
         v-for="item in (getDevicesList ? getDevicesList : shortcutsList)"
         v-show="item.visible"
         :key="item.text"
-        link
+        rounded
+        dark
         large
         @click="sendCommand(item.command)"
-        ><v-icon left> mdi-{{ item.icon }} </v-icon> {{ item.text }}</v-chip
+        ><v-icon left> mdi-{{ item.icon }} </v-icon> {{ item.text }}</v-btn
       >
     </div>
   </div>
@@ -56,7 +57,7 @@ export default {
     },
   },
 
-  watch: {
+  methods: {
     sendCommand(command) {
       const msg = {
         context: 'macroAction',
