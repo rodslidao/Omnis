@@ -86,7 +86,10 @@ def resolve_getDevicesList( **kwargs):
         i["_id"] = str(i["_id"])
     return temp
 
-
+@query.field("getMacrosList")
+@auth('operator')
+def resolve_getMacrosList( **kwargs):
+    return []
 @query.field("getAxisList")
 @auth('operator')
 def resolve_getAxisList( **kwargs):
