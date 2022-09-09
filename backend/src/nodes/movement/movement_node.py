@@ -93,7 +93,7 @@ class MovementNode(BaseNode):
                 if v is not None
             ]
 
-            if (pre_move.get('y',0) - self.coordinates.get('y',0)) > 2: logger.error(f"Valor de offset muito alto: {pre_move['y'] - self.coordinates['y']}")
+            # if (pre_move.get('y',0) - self.coordinates.get('y',0)) > 2: logger.error(f"Valor de offset muito alto: {pre_move['y'] - self.coordinates['y']}")
             # t = 0.5  # ! Remove this line
 
             # if self.relative:
