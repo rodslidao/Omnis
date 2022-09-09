@@ -226,8 +226,8 @@ export default {
           title: 'origin',
           subtitle: 'originSubtitle',
           fields: {
-            originX: this.obj?.origin.x || 50,
-            originY: this.obj?.origin.y || 50,
+            originX: this.obj?.origin.x || 0,
+            originY: this.obj?.origin.y || 0,
           },
         },
         {
