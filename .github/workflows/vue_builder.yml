@@ -5,9 +5,7 @@ name: Build Vue
 
 on:
   push:
-    branches: [ develop ]
-  pull_request:
-    branches: [ Desenvolvimento ]
+    branches: [ main ]
   workflow_dispatch:
     inputs:
       logLevel:
