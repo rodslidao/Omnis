@@ -2,6 +2,7 @@
   <div class="container">
     <v-btn
       dark
+      :style="tabButton"
       class="tab-button"
       :class="drawer ? 'active' : ''"
       color="#4e4e4e"
@@ -9,17 +10,16 @@
       >movimentação</v-btn
     >
     <v-navigation-drawer
-      dark
-      absolute
+      :style="navigationDrawer"
       v-model="drawer"
-      hide-overlay
-      right
-      :permanent="drawer"
       width="400px"
+      right
+      dark
       app
+      :absolute="drawer"
+      :permanent="drawer"
     >
-    <move></move>
-    <v-footer class="justify-center pl-0" inset app></v-footer> 
+      <move></move>
     </v-navigation-drawer>
   </div>
 </template>
@@ -31,10 +31,28 @@ export default {
   components: {
     Move,
   },
+
+  props: {
+    paddingTop: String,
+  },
+
   data: () => ({
     drawer: false,
     group: null,
   }),
+
+  computed: {
+    navigationDrawer() {
+      return {
+        'padding-top': this.paddingTop,
+      };
+    },
+    tabButton() {
+      return {
+        'margin-top': this.paddingTop,
+      };
+    },
+  },
 
   watch: {
     group() {

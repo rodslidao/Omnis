@@ -78,7 +78,7 @@ def resolve_getLoadedNodes( **kwargs):
     return NodeManager.getActiveNodes()
 
 @query.field("getDevicesList")
-@auth('developer')
+@auth('operator')
 def resolve_getDevicesList( **kwargs):
     """Get a Node by id and return it like a payload"""
     temp = list(dbo.find_many("pins"))
@@ -86,7 +86,10 @@ def resolve_getDevicesList( **kwargs):
         i["_id"] = str(i["_id"])
     return temp
 
-
+@query.field("getMacrosList")
+@auth('operator')
+def resolve_getMacrosList( **kwargs):
+    return []
 @query.field("getAxisList")
 @auth('operator')
 def resolve_getAxisList( **kwargs):
@@ -104,7 +107,7 @@ def resolve_authUserProfile(obj, info, username=None, **kwargs):
         user = dbo.find_one("users", kwargs, keep)
     if user:
         payload = user.copy()
-        payload.update({"exp": datetime.now(tz=timezone.utc) + timedelta(hours=payload.get('exp', 24)), '_id': str(payload['_id'])})
+        payload.update({"exp": datetime.now(tz=timezone.utc) + timedelta(hours=payload.get('exp', 48)), '_id': str(payload['_id'])})
         token = jwt.encode(
             payload,
             key=private_key,

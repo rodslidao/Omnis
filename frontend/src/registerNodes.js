@@ -57,6 +57,10 @@ import AlertDialog from '@/components/node/nodes/alert/AlertDialog.vue';
 import ArithmeticNode from '@/components/node/nodes/arithmetic/ArithmeticNode';
 import ArithmeticDialog from '@/components/node/nodes/arithmetic/ArithmeticDialog.vue';
 
+// PositionAdjustment
+import PositionAdjustmentNode from '@/components/node/nodes/positionAdjustment/PositionAdjustmentNode';
+import PositionAdjustmentDialog from '@/components/node/nodes/positionAdjustment/PositionAdjustmentDialog.vue';
+
 export function registerOptions(viewPlugin) {
   viewPlugin.registerOption('EventButtonOption', EventButtonOption);
   viewPlugin.registerOption('ArithmeticOption', ArithmeticOption);
@@ -71,6 +75,7 @@ export function registerOptions(viewPlugin) {
   viewPlugin.registerOption('AlertDialog', AlertDialog);
   viewPlugin.registerOption('DelayDialog', DelayDialog);
   viewPlugin.registerOption('ArithmeticDialog', ArithmeticDialog);
+  viewPlugin.registerOption('PositionAdjustmentDialog', PositionAdjustmentDialog);
 }
 
 export function registerNodes(editorInstance) {
@@ -81,6 +86,8 @@ export function registerNodes(editorInstance) {
   editorInstance.registerNodeType('TextTemplateNode', TextTemplateNode, 'Text');
 
   editorInstance.registerNodeType('MoveAxisNode', MoveAxisNode, 'Move');
+
+  editorInstance.registerNodeType('PositionAdjustmentNode', PositionAdjustmentNode, 'Move');
 
   editorInstance.registerNodeType('CameraNode', CameraNode, 'Img');
 

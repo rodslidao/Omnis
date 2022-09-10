@@ -143,6 +143,7 @@ class MatrixNode(BaseNode):
         _ = next(self.blister)
         if not self.blister.empty.is_set():
             item = _[1]
+            logger.debug(f'item index: {_[0]}')
             self.on(
                 "Item", item
             )  # Send only the slot. Maybe another node is required to split item and slot data.

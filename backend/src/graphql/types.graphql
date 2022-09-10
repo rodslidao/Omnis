@@ -20,6 +20,13 @@ type NDS {
   scaling: Float
 }
 
+type Macro{
+  _id:ID,
+  name:String,
+  command:String,
+  icon:String,
+  visible:Boolean
+}
 type Camera{
   _id: ID
   src: Int

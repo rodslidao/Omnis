@@ -1,6 +1,6 @@
 from datetime import datetime
 from src.nodes.node_manager import NodeManager
-from starlette.responses import StreamingResponse
+from starlette.responses import StreamingResponse, JSONResponse
 from os.path import abspath
 import simplejpeg
 from cv2 import imread, imencode
@@ -40,6 +40,9 @@ async def custom_video_response(scope):
         frame_producer(scope.path_params.get("video_id", "default")),
         media_type="multipart/x-mixed-replace; boundary=frame",
     )
+
+async def health(*args):
+    return JSONResponse({'success': True, 'message': "It is working" })
 
 class Echo(WebSocketEndpoint):
     encoding = "json"
@@ -173,6 +176,10 @@ class Controls(Websocket):
             # Executa um comando do menu
             logger.info("Executing command: {}".format(data["command"]))
             self.serial.send(data["command"])
+        elif data["context"] == "macroAction":
+            # Executa uma macro
+            logger.info("Executing macro: {}".format(data["value"]))
+            self.serial.send(data["value"])
         else:
             logger.debug(f"Websocket: unknow request {data}")
 

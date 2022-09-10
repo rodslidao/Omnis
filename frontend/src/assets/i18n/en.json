@@ -46,8 +46,7 @@
         "slotsSubtitle": "Quantity of slots, margins and size",
         "subdivisionsSubtitle": "If your matrix has a subdivision",
         "originSubtitle": "Define distance matrix of 0 machine",
-        "order":"Define the access order of the matrix slots"
-        
+        "order": "Define the access order of the matrix slots"
       },
       "objects": {
         "name": "Objects",
@@ -162,11 +161,10 @@
     "matrix": "Matrix",
     "object": "Object",
     "origin": "Origin",
-    "order":"Order",
+    "order": "Order",
     "last_name": "Surname",
     "first_name": "Name",
-    "_id":"ID"
-
+    "_id": "ID"
   },
   "levels": {
     "name": "Level",
@@ -190,6 +188,9 @@
     "register": "Register",
     "remove": "Remove",
     "resetPassword": "Reset Password",
+    "restart": "Restart",
+    "shutdown": "Shutdown",
+    "fastRestart": "Soft restart",
     "save": "Save",
     "search": "Search",
     "play": "Play",
@@ -198,8 +199,8 @@
     "pause": "Pause",
     "stop": "Stop",
     "send": "Send",
-    "duplicate":"Duplicate"
-
+    "duplicate": "Duplicate",
+    "gotIt": "Got it"
   },
   "prepositions": {
     "or": "or"
@@ -240,11 +241,12 @@
     "wsConnectFail": "Could not connect to Websocket",
     "wsConnecting": "Connecting to Websocket",
     "updateVariableSuccess": "The variable was updated👍",
-    "restart_ok":"Server restarted",
-    "restart_fail":"Server can't restart",
+    "restartSuccess": "Server was restarted",
+    "restartFail": "Server can't restart, try do manually",
+    "shutdownSuccess": "Server was shutdown",
+    "shutdownFail": "Server can't shutdown, try do manually",
     "duplicateFail": "Could't possible to duplicate 😢",
     "duplicateSuccess": "The object was duplicated👍"
-    
   },
   "list": {
     "sortBy": "Sort by",
@@ -254,9 +256,34 @@
   },
   "dialogs": {
     "removeConfirm": "Are you sure you want to delete?",
+    "restartConfirm": {
+      "title": "Are you sure you want to restart?",
+      "description": "This will take a while, but the most persistent problems can be fixed. ",
+      "textAfterTime":"Finished! Refreshing the app now :)"
+    },
+    "shutdownConfirm": {
+      "title": "Are you sure you want to shutdown?",
+      "description": "Wait a few minutes for the shutdown process to finish to turn off the machine on the physical button",
+      "textAfterTime": "You can now turn off the machine on the physical button"
+    },
+    "fastRestartConfirm":{
+      "title": "Are you sure you want to restart?",
+      "description": "This will take a few seconds, but can resolve strange behaviors",
+      "textAfterTime": "Finished! Refreshing the app now :)"
+    },
     "removeDescription": "After confirm, you will not be able to recover it",
     "selectObject": "Select an object which you want to mount.",
     "selectMatrix": "Select a matrix which you want to mount.",
-    "selectProcess": "Select the process which you want to start."
+    "selectProcess": "Select the process which you want to start.",
+    "processWillTake": "This process will be finished in {s} seconds.",
+    "tabletDisconnected": {
+      "title": "Tablet disconnected",
+      "description": " Unable to access the machine's system, to re-establish the machine's connection, you will need to do a manual reset. Turn off the machine using the black button on the panel, wait 10 minutes and turn it on again."
+    },
+    "turningOff": "Turning off.",
+    "waitALittle": "Wait a little bit"
+    
+  },
+  "nodes":{
   }
 }

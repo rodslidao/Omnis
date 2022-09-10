@@ -1,11 +1,17 @@
 <template>
   <div class="p-2 pl-4 d-flex flex-column">
-    <jog-buttons
-      :axisDistances="axisDistances"
+    <div v-if="$access('jogButtons')">
+      <jog-buttons
+        :axisDistances="axisDistances"
+        @send="sendMessage"
+      ></jog-buttons>
+      <scale-movement @send="sendMessage"></scale-movement>
+    </div>
+    <output-devices
+      v-if="$access('outputDevices')"
       @send="sendMessage"
-    ></jog-buttons>
-    <scale-movement @send="sendMessage"></scale-movement>
-    <output-devices @send="sendMessage"></output-devices>
+    ></output-devices>
+    <macros v-if="$access('macros')" @send="sendMessage"></macros>
   </div>
 </template>
 
@@ -14,9 +20,16 @@ import { mapActions } from 'vuex';
 import OutputDevices from './OutputDevices.vue';
 import JogButtons from './JogButtons.vue';
 import ScaleMovement from './ScaleMovement.vue';
+import Macros from './Macros.vue';
 
 export default {
-  components: { JogButtons, ScaleMovement, OutputDevices },
+  components: {
+    JogButtons,
+    ScaleMovement,
+    OutputDevices,
+    Macros,
+  },
+
   data() {
     return {
       axisDistances: {},
@@ -41,7 +54,7 @@ export default {
     connectToWebsocket() {
       console.log(this.$t('alerts.wsConnecting'));
       this.WebSocket = new WebSocket(
-        `ws://${process.env.VUE_APP_URL_API_IP}:${process.env.VUE_APP_URL_API_PORT}/controls/6244b0ad3a8338aceae46cf1`
+        `ws://${process.env.VUE_APP_URL_API_IP}:${process.env.VUE_APP_URL_API_PORT}/controls/6244b0ad3a8338aceae46cf1`,
       );
 
       this.WebSocket.onmessage = (event) => {
